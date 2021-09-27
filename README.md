@@ -81,11 +81,12 @@ ansible-playbook vulns.yml
 
 ### Servers
 This lab is actually composed of three virtual machines:
-- **kingslanding** : DC01 running on Windows Server 2019 (up tod ate with windefender enabled by default)
-- **dragonstone**  : DC02 running on Windows Server 2016 (not up to date and windefender disabled by default)
-- **winterfell**   : Simple Server running on Windows Server 2019 (up to date with windefender disabled by default)
+- **kingslanding** : DC01 running on Windows Server 2019 (2020.07.17 with windefender enabled by default)
+- **dragonstone**  : DC02 running on Windows Server 2016 (2017.12.14 and windefender disabled by default)
+- **winterfell**   : Simple Server running on Windows Server 2019 (2020.07.17 with windefender disabled by default)
 
 The lab setup is automated using vagrant and ansible automation tools.
+You can change the vm version in the Vagrantfile according to Stefan Scherer vagrant repository : https://app.vagrantup.com/StefanScherer
 
 Blueteam :
 - **elk** a kibana is configured on http://192.168.56.50:5601 to follow the lab events
