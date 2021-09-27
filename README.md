@@ -103,7 +103,7 @@ Blueteam :
   - jon.snow:          KERBEROASTING
   - hodor:             PASSWORD SPRAY (user=password)
 - NIGHT WATCH
-  - samwell.tarly:
+  - samwell.tarly:     Password in ldap description
   - jeor.mormont:      ACL writedacl-writeowner on group Night Watch
 - LANISTERS
   - tywin.lannister:   ACL genericall-on-user cersei.lannister

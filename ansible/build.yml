@@ -23,7 +23,7 @@
   roles:
     - { role: 'common', tags: 'common' }
     - { role: 'settings/keyboard_fr', tags: 'keyboard_fr' }
-    - { role: 'settings/gpmc', tags: 'gpmc' }
+    #- { role: 'settings/gpmc', tags: 'gpmc' } # not needed
     - { role: 'settings/windows_defender', tags: 'windows_defender', windows_defender_status: 'off' }
 
 # buid ws01
