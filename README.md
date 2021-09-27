@@ -29,6 +29,7 @@ For the setup to work properly you need to install:
 - **ansible community.windows** `ansible-galaxy collection install community.windows`
 - **ansible chocolatey** `ansible-galaxy collection install chocolatey.chocolatey`
 - **ansible community.general**  `ansible-galaxy collection install community.general`
+- you also need `sshpass` for the elk installation
 
 > Vagrant and virtualbox are used to provide the virtual machines and Ansible is use to automate the configuration and vulnerabilites setup.
 
