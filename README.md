@@ -18,9 +18,11 @@ This lab use free windows VM only (180 days). After that delay enter a licence o
 So far the lab has only been tested on a linux machine, but it should work as well on macOS. Ansible has some problems with Windows hosts so I don't know about that.
 
 For the setup to work properly you need to install:
-- **vagrant** from their official site [vagrant](https://www.vagrantup.com/). The version you can install through your favourite package manager (apt, yum, ...) is probably not the latest one.
+- **vagrant** from their official site [vagrant](https://www.vagrantup.com/downloads). The version you can install through your favourite package manager (apt, yum, ...) is probably not the latest one.
 - Install vagrant plugin vbguest: `vagrant plugin install vagrant-vbguest`
 - **ansible** following the extensive guide on their website [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
+  - **Tested with ansible-core (2.11)**
+  - `pip install ansible-core==2.11.1 --user`
 - **virtualbox** actually the vms are provided to be run on virtualbox so you need a working virtualbox environement on your computer
 - **pywinrm** be sure you got the pywinrm package installed `pip install pywinrm`
 - **ansible windows** `ansible-galaxy collection install ansible.windows`
