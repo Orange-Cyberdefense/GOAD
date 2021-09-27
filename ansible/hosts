@@ -1,0 +1,26 @@
+[all:vars]
+ansible_user=vagrant
+ansible_password=vagrant
+password=Str0nGPassw0rd123_
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+domain_name=sevenkingdoms.local
+
+[dc01]
+192.168.56.10
+
+[dc02]
+192.168.56.11
+
+[srv01]
+192.168.56.20
+
+[elk:vars]
+ansible_connection=ssh
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=./.vagrant/machines/elk/virtualbox/private_key
+ansible_ssh_port=22
+host_key_checking = false
+
+[elk]
+192.168.56.50

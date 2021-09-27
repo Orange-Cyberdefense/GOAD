@@ -1,0 +1,6 @@
+# https://www.ntweekly.com/2020/10/19/install-group-policy-management-tools-with-ansible/
+- name: "Install Group Policy Management Console"
+  win_feature:
+    name: GPMC
+    state: present
+

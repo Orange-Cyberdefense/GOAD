@@ -1,0 +1,32 @@
+---
+# set AD datas ==================================================================================================
+- name: DC01
+  hosts: dc01
+  roles:
+    - { role: 'domain_controller', tags: 'dc' }
+    - { role: 'settings/download_files', tags: 'download_files' }
+    - { role: "settings/adjust_rights", tags: 'adjust_rights_dc01', local_groups: "{{lab.hosts['dc01'].local_groups}}"}
+  vars:
+    hostname: "{{lab.hosts['dc01'].hostname}}"
+    ad_users: "{{lab.domains[domain_name].users}}"
+    ad_ou: "{{lab.domains[domain_name].organisation_units}}"
+    ad_groups: "{{lab.domains[domain_name].groups}}"
+
+- name: DC02
+  hosts: dc02
+  roles:
+  - { role: 'domain_controller_slave', tags: 'dc_slave' }
+  - { role: 'settings/download_files', tags: 'download_files' }
+  - { role: "settings/adjust_rights", tags: 'adjust_rights_dc02', local_groups: "{{lab.hosts['dc02'].local_groups}}"}
+  vars:
+    hostname: "{{lab.hosts['dc02'].hostname}}"
+
+- name: "play server 01 configuration"
+  hosts: srv01
+  roles:
+    - { role: 'member_server', tags: 'server'}
+    - { role: 'settings/download_files', tags: 'download_files' }
+    - { role: "settings/adjust_rights", tags: 'adjust_rights_srv01', local_groups: "{{lab.hosts['srv01'].local_groups}}"}
+  vars:
+    hostname: "{{lab.hosts['srv01'].hostname}}"
+    domain_ou_path: "{{lab.hosts['srv01'].path}}"

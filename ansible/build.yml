@@ -1,0 +1,33 @@
+---
+# BUILD (this part could be changed to packer) ===============================================================
+# build dc01
+- name: build DC01
+  hosts: dc01
+  roles:
+    - { role: 'common', tags: 'common' }
+    - { role: 'settings/keyboard_fr', tags: 'keyboard_fr' }
+    - { role: 'settings/windows_defender', tags: 'windows_defender', windows_defender_status: 'on' }
+
+# build dc02
+- name: build DC02
+  hosts: dc02
+  roles:
+  - { role: 'common', tags: 'common' }
+  - { role: 'settings/keyboard_fr', tags: 'keyboard_fr' }
+  - { role: 'settings/no_updates', tags: 'no_updates' }
+  - { role: 'settings/windows_defender', tags: 'windows_defender', windows_defender_status: 'off' }
+ 
+# build Server 01 (srv01)
+- name: "build srv01"
+  hosts: srv01
+  roles:
+    - { role: 'common', tags: 'common' }
+    - { role: 'settings/keyboard_fr', tags: 'keyboard_fr' }
+    - { role: 'settings/gpmc', tags: 'gpmc' }
+    - { role: 'settings/windows_defender', tags: 'windows_defender', windows_defender_status: 'off' }
+
+# buid ws01
+# - name: "build ws01"
+#   hosts: ws01
+#   roles:
+#     - { role: 'commonwkstn', tags: 'common' }

@@ -1,0 +1,2 @@
+- name: Disable windows update
+  script: noupdate.ps1

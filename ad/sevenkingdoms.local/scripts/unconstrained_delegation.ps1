@@ -1,0 +1,1 @@
+Get-ADComputer -Identity "kingslanding" | Set-ADAccountControl -TrustedForDelegation $true

@@ -1,0 +1,4 @@
+# default user for using become: runas method
+# used for installing Powershell 5.0 in this role.
+ansible_become_password: vagrant
+ansible_become_user: vagrant

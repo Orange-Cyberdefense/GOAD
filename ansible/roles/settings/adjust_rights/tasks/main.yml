@@ -1,0 +1,7 @@
+---
+- name: Add domain users to local administrators
+  win_group_membership:
+    name: "{{item.key}}"
+    members: "{{ item.value }}"
+    state: present
+  with_dict: "{{ local_groups }}"

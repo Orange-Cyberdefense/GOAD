@@ -1,0 +1,14 @@
+# LOGS and Monitoring ==========================================================================================
+- name: Install ELK
+  hosts: elk
+  become: yes
+  roles:
+    - { role: 'elk', tags: 'elk' }
+
+- name: Install log agent on windows vms
+  hosts: 
+    - srv01
+    - dc01
+    - dc02
+  roles:
+    - { role: 'logs_windows', tags: 'agent' }

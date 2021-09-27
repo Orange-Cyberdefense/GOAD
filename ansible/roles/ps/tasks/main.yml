@@ -1,0 +1,2 @@
+- name: Play task {{ps_script}}
+  script: "{{ps_script}}"

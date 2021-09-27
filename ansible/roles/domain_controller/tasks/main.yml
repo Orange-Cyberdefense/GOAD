@@ -1,0 +1,149 @@
+- name: Ensure chocolatey is installed
+  win_chocolatey:
+    name:
+    - chocolatey
+    - chocolatey-core.extension
+    state: present
+
+- name: Disable enhanced exit codes
+  win_chocolatey_feature:
+    name: useEnhancedExitCodes
+    state: disabled
+
+- name: Install multiple packages sequentially
+  win_chocolatey:
+    name: '{{ item }}'
+    state: present
+  with_items:
+  - notepadplusplus
+  - putty
+  - python
+  - git
+  - 7zip
+  - sysinternals
+  - wget
+  - pstools 
+
+- name: Set hostname
+  win_hostname:
+    name: "{{hostname}}"
+  register: win_hostname
+
+- name: Reboot
+  win_reboot:
+  when: win_hostname.reboot_required
+  
+- name: Ensure that Admin is present with a valid password
+  win_user:
+    name: Administrator
+    password: "{{password}}"
+    password_never_expires: yes
+    state: present
+  ignore_errors: yes
+
+- name: Ensure that {{domain_name}} domain exists
+  win_domain:
+    dns_domain_name: "{{domain_name}}"
+    safe_mode_password: "{{password}}"
+  register: check_domain
+
+- name: Reboot to complete {{domain_name}} domain creation
+  win_reboot:
+    reboot_timeout: 600
+    post_reboot_delay: 300
+  when: check_domain.changed
+
+- name: Ensure the server is a domain controller
+  win_domain_controller:
+    dns_domain_name: "{{domain_name}}"
+    domain_admin_user: "Administrator@{{domain_name}}"
+    domain_admin_password: "{{password}}"
+    safe_mode_password: "{{password}}"
+    state: domain_controller
+    log_path: C:\ansible_win_domain_controller.txt
+  register: check_domain_controller
+
+- name: Change password policy
+  script: change_password_policy.ps1
+
+- name: Reboot to complete domain controller setup
+  win_reboot:
+    reboot_timeout: 600
+    post_reboot_delay: 300
+  when: check_domain_controller.changed
+
+- name: Check for xDnsServer Powershell module
+  win_psmodule:
+    name: xDnsServer
+    state: present
+
+- name: Configure DNS Forwarders
+  win_dsc:
+    resource_name: xDnsServerForwarder
+    IsSingleInstance: 'yes'
+    UseRootHint: false
+    IPAddresses:
+      - "1.1.1.1"
+      - "9.9.9.9"
+
+- win_shell: install-packageprovider -name nuget -force
+- name: "Install XactiveDirectory"
+  win_psmodule:
+    name: ActiveDirectoryDSC
+    state: present
+
+- name: "Create OU"
+  win_dsc:
+    resource_name: ADOrganizationalUnit
+    name: "{{ item.key }}"
+    path:  "{{ item.value.path }}"
+  with_dict: "{{ad_ou}}"
+
+# - name: "Create OU Users"
+#   win_dsc:
+#     resource_name: ADOrganizationalUnit
+#     name: "Users"
+#     path:  "OU={{ item.key }},{{ item.value.path }}"
+#   with_dict: "{{ad_ou}}"
+# 
+# - name: "Create OU Computers"
+#   win_dsc:
+#     resource_name: ADOrganizationalUnit
+#     name: "Computers"
+#     path:  "OU={{ item.key }},{{ item.value.path }}"
+#   with_dict: "{{ad_ou}}"
+# 
+# - name: "Create OU Groups"
+#   win_dsc:
+#     resource_name: ADOrganizationalUnit
+#     name: "Groups"
+#     path:  "OU={{ item.key }},{{ item.value.path }}"
+#   with_dict: "{{ad_ou}}"
+# 
+- name: Create Groups 
+  win_domain_group:
+    name: "{{ item.key }}"
+    scope: global
+    path: "{{item.value.path}}"
+    state: present
+  with_dict: "{{ ad_groups }}"
+
+- name: "Ensure that Users presents in OU"
+  win_domain_user:
+    name: "{{ item.key }}"
+    firstname: "{{item.value.firstname}}"
+    surname: "{{ item.value.surname }}"
+    password: "{{ item.value.password }}"
+    password_never_expires: yes
+    state: present
+    path: "{{item.value.path}}"
+    description: "{{item.value.description}}"
+    groups: "{{ item.value.groups}}"
+    city: "{{item.value.city}}"
+  with_dict: "{{ ad_users }}"
+
+- name: Assign Management Groups to users
+  win_domain_group:
+    name: "{{ item.key }}"
+    managed_by: "{{ item.value.managed_by }}"
+  with_dict: "{{ ad_groups }}"

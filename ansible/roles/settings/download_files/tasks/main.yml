@@ -1,0 +1,4 @@
+- name: Download Stark Wallpaper in C:\tmp
+  win_get_url:
+    url: https://wallpapercave.com/wp/wp4747281.jpg
+    dest: C:\tmp\stark.jpg

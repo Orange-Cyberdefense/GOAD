@@ -1,0 +1,26 @@
+# https://answers.microsoft.com/en-us/protect/forum/protect_defender-protect_start-windows_10/how-do-i-stop-sending-antivirus-samples-to/a2e7b280-a8ba-43f5-b391-0a12c109f990
+- name: Install windows defender
+  win_feature:
+    name: Windows-Defender
+  register: win_defender_install
+
+- name: Reboot if needed
+  win_reboot:
+  when: win_defender_install.reboot_required
+
+- name: Disable windows defender sending sample
+  win_shell: Set-MpPreference -MAPSReporting 0
+
+- name: Disable windows defender sending sample #2 : never send
+  win_shell: Set-MpPreference -SubmitSamplesConsent 2
+
+- name: Disable network drive scanning
+  win_shell: Set-MpPreference -DisableScanningMappedNetworkDrivesForFullScan $true
+  when: windows_defender_status == "off"
+
+- name: Disable realtime monitoring
+  win_shell: Set-MpPreference -DisableRealtimeMonitoring $true
+  when: windows_defender_status == "off"
+
+#- name: Uninstall windows defender
+#  win_shell: Uninstall-WindowsFeature -Name Windows-Defender
