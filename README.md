@@ -34,8 +34,8 @@ For the setup to work properly you need to install:
 > Vagrant and virtualbox are used to provide the virtual machines and Ansible is use to automate the configuration and vulnerabilites setup.
 
 ### Space use
-- the lab take environ 60Go (but you have to get the space for the vms vagrant images + ~50Go)
-- the total space needed for the lab is ~100-110Go (and more if you take snapshots)
+- the lab take environ 60Go (but you have to get the space for the vms vagrant images windows server 2016 (6.15Go) / windows server 2019 (6.52) / ubuntu 18.04 (502M))
+- the total space needed for the lab is ~80-100 Go (and more if you take snapshots)
 
 ### Start / Setup
 The default domain will be **sevenkingdoms.local**, on the subnet 192.168.56.1/24 and each machine has only been allocated with 1CPU and 1024MB of memory. If you want to change some of these performance settings you can modify the Vagrantfile.
