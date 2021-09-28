@@ -4,7 +4,7 @@
 - name: build DC01
   hosts: dc01
   roles:
-    - { role: 'common', tags: 'common' }
+    - { role: 'common', tags: 'common', http_proxy: "{{enable_http_proxy}}"}
     - { role: 'settings/keyboard_fr', tags: 'keyboard_fr' }
     - { role: 'settings/windows_defender', tags: 'windows_defender', windows_defender_status: 'on' }
 
@@ -12,7 +12,7 @@
 - name: build DC02
   hosts: dc02
   roles:
-  - { role: 'common', tags: 'common' }
+  - { role: 'common', tags: 'common', http_proxy: "{{enable_http_proxy}}"}
   - { role: 'settings/keyboard_fr', tags: 'keyboard_fr' }
   - { role: 'settings/no_updates', tags: 'no_updates' }
   - { role: 'settings/windows_defender', tags: 'windows_defender', windows_defender_status: 'off' }
@@ -21,7 +21,7 @@
 - name: "build srv01"
   hosts: srv01
   roles:
-    - { role: 'common', tags: 'common' }
+    - { role: 'common', tags: 'common', http_proxy: "{{enable_http_proxy}}"}
     - { role: 'settings/keyboard_fr', tags: 'keyboard_fr' }
     #- { role: 'settings/gpmc', tags: 'gpmc' } # not needed
     - { role: 'settings/windows_defender', tags: 'windows_defender', windows_defender_status: 'off' }

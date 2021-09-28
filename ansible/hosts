@@ -7,6 +7,9 @@ ansible_winrm_server_cert_validation=ignore
 domain_name=sevenkingdoms.local
 ansible_winrm_operation_timeout_sec=400
 ansible_winrm_read_timeout_sec=500
+enable_http_proxy=no
+ad_http_proxy=http://x.x.x.x:xxxx
+ad_https_proxy=http://x.x.x.x:xxxx
 
 [dc01]
 192.168.56.10

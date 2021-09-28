@@ -1,3 +1,10 @@
+- name: Set a proxy for specific protocols
+  community.windows.win_http_proxy:
+    proxy:
+      http: "{{ad_http_proxy}}"
+      https: "{{ad_https_proxy}}"
+  when: http_proxy == "yes"
+
 - name: Windows | Check for ComputerManagementDsc Powershell module
   win_psmodule:
     name: ComputerManagementDsc

@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
     }
   ]
 #  ,
-#    { :name => "highgarden", :ip => "192.168.56.21", :box => "win7/box/windows7_pro.box", :os => "windows",
+#    { :name => "highgarden", :ip => "192.168.56.30", :box => "win7/box/windows7_pro.box", :os => "windows",
 #      :forwarded_port => [
 #        {:guest => 3389, :host => 33389, :id => "msrdp"},
 #        {:guest => 5985, :host => 35985, :id => "winrm"}
