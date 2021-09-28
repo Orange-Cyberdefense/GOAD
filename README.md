@@ -42,16 +42,18 @@ The default domain will be **sevenkingdoms.local**, on the subnet 192.168.56.1/2
 
 To have the lab up and running this is the commands you should do:
 
-- Vm creations
+- VMs creation
+
 ```bash
 git clone git@github.com:Orange-Cyberdefense/GOAD.git
 cd GOAD/
 vagrant up # this will create the vms
 ```
 
-- Vm provisionning 
+- VMs provisionning
   - The main.yml playbook is build in 4 parts. each parts can be run independently 
-```
+
+```bash
 cd ansible
 ansible-playbook build.yml # Install stuff and prepare vm
 ansible-playbook elk.yml   # Install elk on the ubuntu vm and log agent on windows vm
@@ -59,18 +61,21 @@ ansible-playbook ad.yml    # Install active directory by following the config.js
 ansible-playbook vulns.yml # Configure some vulnerabilities
 ```
 
-- Or you can run all the playbook in one step 
-```
+- Or you can run all the playbook in one step
+
+```bash
 ansible-playbook main.yml # this will configure the vms in order to play ansible when the vms are ready
 ```
 
 - when you finish playing you could do :
-```
+
+```bash
 vagrant halt # will stop all the vm
 ```
 
 - to just relaunch the lab (no need to replay ansible as you already do that in the first place)
-```
+
+```bash
 vagrant up   # will start the lab
 ```
 
@@ -165,13 +170,16 @@ Blueteam :
 - [ ] exchange abuse
 
 ## MISC commands
-### Force replication
+
+### Force replication
+
 - On dragonstone play as domain admin user :
 ```
 repadmin /replicate kingslanding.sevenkingdoms.local dragonstone.sevenkingdoms.local dc=sevenkingdoms,dc=local /full
 ```
 
 ### vagrant usefull commands (vm management)
+
 - start all lab vms :
 ```
 vagrant up
