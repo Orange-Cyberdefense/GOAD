@@ -23,6 +23,7 @@
   - sysinternals
   - wget
   - pstools
+  ignore_errors: yes
 
 - name: "Change the hostname to {{hostname}}"
   win_hostname:

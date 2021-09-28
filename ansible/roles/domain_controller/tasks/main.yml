@@ -22,7 +22,8 @@
   - 7zip
   - sysinternals
   - wget
-  - pstools 
+  - pstools
+  ignore_errors: yes
 
 - name: Set hostname
   win_hostname:

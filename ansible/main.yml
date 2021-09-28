@@ -3,20 +3,11 @@
 - import_playbook: build.yml
 # Add monitoring
 - import_playbook: elk.yml
-
 # --------------------------------------------------------------------
 # VM ready - start insert specific scenario
-# modify this part with the config.json file only
 # --------------------------------------------------------------------
-
-# Load datas
-- import_playbook: data.yml
-  vars:
-    data_path: "../ad/{{domain_name}}/data/"
 # Turn server into DC and load active directory data (users/groups/ou)
 - import_playbook: ad.yml
-
-
 # --------------------------------------------------------------------
 # specifics vulns linked to the scenario are here
 - import_playbook: vulns.yml

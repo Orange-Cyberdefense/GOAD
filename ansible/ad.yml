@@ -1,4 +1,9 @@
 ---
+# Load datas
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+
 # set AD datas ==================================================================================================
 - name: DC01
   hosts: dc01

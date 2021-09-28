@@ -23,8 +23,8 @@
   register: result
 
 - name: Get sysmon zip
-  win_get_url:
-    url: "{{ sysmon_download_url_base }}/{{ sysmon_download_file }}{{ file_ext }}"
+  win_copy:
+    src: "{{ sysmon_download_file }}{{ file_ext }}"
     dest: "{{ sysmon_install_location }}/{{ sysmon_download_file }}{{ file_ext }}"
 
 - name: Unzip sysmon
@@ -33,8 +33,8 @@
     dest: "{{ sysmon_install_location }}"
 
 - name: Copy sysmon config
-  win_get_url:
-    url: "{{ sysmon_config_url }}"
+  win_copy:
+    src: sysmonconfig-export.xml
     dest: c:\sysmon\sysmonconfig-export.xml
 
 # RUN sysmon

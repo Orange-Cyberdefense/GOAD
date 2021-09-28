@@ -2,7 +2,7 @@ Vagrant.configure("2") do |config|
 
 # versions available : https://app.vagrantup.com/StefanScherer/boxes/windows_10
   boxes = [
-    { :name => "kingslanding", :ip => "192.168.56.10", :box => "StefanScherer/windows_2019", :box_version => "2020.07.17", :os => "windows",
+    { :name => "kingslanding", :ip => "192.168.56.10", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows",
       :forwarded_port => [
         {:guest => 3389, :host => 23389, :id => "msrdp"},
         {:guest => 5985, :host => 25985, :id => "winrm"}

@@ -42,11 +42,25 @@ The default domain will be **sevenkingdoms.local**, on the subnet 192.168.56.1/2
 
 To have the lab up and running this is the commands you should do:
 
+- Vm creations
 ```bash
 git clone git@github.com:Orange-Cyberdefense/GOAD.git
-cd GOAD
+cd GOAD/
 vagrant up # this will create the vms
-cd ansible/
+```
+
+- Vm provisionning 
+  - The main.yml playbook is build in 4 parts. each parts can be run independently 
+```
+cd ansible
+ansible-playbook build.yml # Install stuff and prepare vm
+ansible-playbook elk.yml   # Install elk on the ubuntu vm and log agent on windows vm
+ansible-playbook ad.yml    # Install active directory by following the config.json file (domain/users/groups/...)
+ansible-playbook vulns.yml # Configure some vulnerabilities
+```
+
+- Or you can run all the playbook in one step 
+```
 ansible-playbook main.yml # this will configure the vms in order to play ansible when the vms are ready
 ```
 
@@ -81,7 +95,7 @@ ansible-playbook vulns.yml
 
 ### Servers
 This lab is actually composed of three virtual machines:
-- **kingslanding** : DC01 running on Windows Server 2019 (2020.07.17 with windefender enabled by default)
+- **kingslanding** : DC01 running on Windows Server 2019 (2021.05.15 with windefender enabled by default)
 - **dragonstone**  : DC02 running on Windows Server 2016 (2017.12.14 and windefender disabled by default)
 - **winterfell**   : Simple Server running on Windows Server 2019 (2020.07.17 with windefender disabled by default)
 
