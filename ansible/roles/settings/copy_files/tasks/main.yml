@@ -1,0 +1,4 @@
+- name: Download GOAD img in C:\tmp
+  win_copy:
+    src: GOAD.png
+    dest: C:\tmp\GOAD.png

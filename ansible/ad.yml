@@ -9,7 +9,7 @@
   hosts: dc01
   roles:
     - { role: 'domain_controller', tags: 'dc' }
-    - { role: 'settings/download_files', tags: 'download_files' }
+    - { role: 'settings/copy_files', tags: 'download_files' }
     - { role: "settings/adjust_rights", tags: 'adjust_rights_dc01', local_groups: "{{lab.hosts['dc01'].local_groups}}"}
   vars:
     hostname: "{{lab.hosts['dc01'].hostname}}"
@@ -21,7 +21,7 @@
   hosts: dc02
   roles:
   - { role: 'domain_controller_slave', tags: 'dc_slave' }
-  - { role: 'settings/download_files', tags: 'download_files' }
+  - { role: 'settings/copy_files', tags: 'download_files' }
   - { role: "settings/adjust_rights", tags: 'adjust_rights_dc02', local_groups: "{{lab.hosts['dc02'].local_groups}}"}
   vars:
     hostname: "{{lab.hosts['dc02'].hostname}}"
@@ -30,7 +30,7 @@
   hosts: srv01
   roles:
     - { role: 'member_server', tags: 'server'}
-    - { role: 'settings/download_files', tags: 'download_files' }
+    - { role: 'settings/copy_files', tags: 'download_files' }
     - { role: "settings/adjust_rights", tags: 'adjust_rights_srv01', local_groups: "{{lab.hosts['srv01'].local_groups}}"}
   vars:
     hostname: "{{lab.hosts['srv01'].hostname}}"
