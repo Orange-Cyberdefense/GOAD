@@ -1,3 +1,8 @@
+- name: Create directory
+  win_file:
+    path: C:\tmp
+    state: directory
+
 - name: Download GOAD img in C:\tmp
   win_copy:
     src: GOAD.png
