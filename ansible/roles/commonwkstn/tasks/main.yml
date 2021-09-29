@@ -31,6 +31,8 @@
 
 - name: Reboot if needed
   win_reboot:
+    reboot_timeout: 600
+    post_reboot_delay: 300
   when: win_hostname.reboot_required
 
 - name: "Add workstation to {{domain_name}}"
@@ -43,6 +45,8 @@
   register: domain_state
 
 - name: Reboot if needed
-  win_reboot:
+  win_reboot:    
+    reboot_timeout: 600
+    post_reboot_delay: 300
   when: domain_state.reboot_required
 

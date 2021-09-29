@@ -6,6 +6,8 @@
 
 - name: Reboot if needed
   win_reboot:
+    reboot_timeout: 600
+    post_reboot_delay: 300
   when: win_defender_install.reboot_required
 
 - name: Disable windows defender sending sample

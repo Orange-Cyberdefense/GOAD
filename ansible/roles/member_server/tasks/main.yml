@@ -32,6 +32,8 @@
 
 - name: Reboot if needed
   win_reboot:
+    reboot_timeout: 600
+    post_reboot_delay: 300
   when: win_hostname.reboot_required
 
 - name: Set configure dns
@@ -85,6 +87,8 @@
 
 #- name: reboot if installing web server feature requires it
 #  win_reboot:
+#   reboot_timeout: 600
+#   post_reboot_delay: 300
 #  when: win_feature.reboot_required
 
 - name: "Add member server to {{domain_name}}"
