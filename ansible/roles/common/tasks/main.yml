@@ -5,6 +5,12 @@
       https: "{{ad_https_proxy}}"
   when: http_proxy == "yes"
 
+- name: Configure IE to use a specific proxy per protocol
+  community.windows.win_inet_proxy:
+    http: "{{ad_http_proxy}}"
+    https: "{{ad_https_proxy}}"
+  when: http_proxy == "yes"
+  
 - name: Windows | Check for ComputerManagementDsc Powershell module
   win_psmodule:
     name: ComputerManagementDsc
