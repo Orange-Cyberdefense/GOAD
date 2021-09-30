@@ -279,6 +279,25 @@ failed: [192.168.56.10] (item={u'key': u'lord.varys', u'value': {u'city': u"King
 ```
  solution : re-run Ansible script
 
-## Thanks to
+## Special Thanks to
 
-This repo is based on the work of [jckhmr](https://github.com/jckhmr/adlab) and [kkolk](https://github.com/kkolk/mssql)
+- Thomas Rollain (tests & some vulns writing)
+- Quentin Galliou (tests)
+
+## Links
+- https://unicornsec.com/home/siem-home-lab-series-part-1
+- https://github.com/jckhmr/adlab
+- https://www.jonathanmedd.net/2019/09/ansible-windows-and-powershell-the-basics-introduction.html
+- https://www.secframe.com/badblood/
+- https://josehelps.com/blog/2019-08-06_building-a-windows-2016-dc/
+- https://medium.com/@vartaisecurity/lab-building-guide-virtual-active-directory-5f0d0c8eb907
+- https://www.ansible.com/blog/an-introduction-to-windows-security-with-ansible
+- https://github.com/rgl/windows-domain-controller-vagrant
+- https://www.sconstantinou.com/powershell-active-directory-delegation-part-1/
+- https://www.shellandco.net/playing-acl-active-directory-objects/
+- https://github.com/clong/DetectionLab
+- https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/abusing-active-directory-acls-aces
+- ...
+
+## Note
+- This repo is based on the work of [jckhmr](https://github.com/jckhmr/adlab) and [kkolk](https://github.com/kkolk/mssql)
