@@ -1,7 +1,7 @@
 .vagrant/
 .idea/
 docs/scenarios/
-docs/misc.md
+docs/notes.md
 temp/
 ansible/.venv/
 ansible/collections/
