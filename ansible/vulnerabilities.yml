@@ -1,0 +1,57 @@
+---
+# Load datas
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+
+# sevenkingdoms.local
+- name: "Setup vulnerabilities dc01"
+  hosts: dc01
+  roles:
+#    - { role: 'ps', tags: 'acl', ps_script: "{{script_path}}/acl.ps1"} # converted to json config and roles
+  vars:
+    script_path: "../ad/{{domain_name}}/scripts"
+
+- name: "Setup vulnerabilities srv01"
+  hosts: srv01
+  roles:
+  vars:
+    script_path: "../ad/{{domain_name}}/scripts"
+
+# north.sevenkingdoms.local
+- name: "Setup vulnerabilities dc02"
+  hosts: dc02
+  roles:
+    - { role: 'ps', tags: 'asrep_roasting', ps_script: "{{script_path}}/asrep_roasting.ps1"}
+    - { role: 'ps', tags: 'constrained_delegation', ps_script: "{{script_path}}/constrained_delegation_use_any.ps1"}
+    - { role: 'ps', tags: 'ntlm_relay', ps_script: "{{script_path}}/ntlm_relay.ps1"}
+    - { role: 'ps', tags: 'responder', ps_script: "{{script_path}}/responder.ps1"}
+#    - { role: 'ps', tags: 'anonymous_ldap', ps_script: "{{script_path}}/anonymous_ldap.ps1"} # done with acl
+#    - { role: 'ps', tags: 'kerberoasting', ps_script: "{{script_path}}/kerberoasting.ps1"} # done by setting spn on user creation
+#    - { role: 'ps', tags: 'unconstrained_delegation', ps_script: "{{script_path}}/unconstrained_delegation.ps1"} # done with dc on forest to forest
+#    - { role: 'ps', tags: 'gpo_abuse', ps_script: "{{script_path}}/gpo_abuse.ps1"}
+  vars:
+    script_path: "../ad/{{domain_name}}/scripts"
+
+- name: "Setup vulnerabilities srv02"
+  hosts: srv02
+  roles:
+    - { role: "vulns/openshares", tags: 'openshares'}
+    - { role: 'ps', tags: 'responder', ps_script: "{{script_path}}/responder.ps1"}
+  vars:
+    script_path: "../ad/{{domain_name}}/scripts"
+
+
+# essos.local
+- name: "Setup vulnerabilities dc03"
+  hosts: dc03
+  roles:
+  vars:
+    script_path: "../ad/{{domain_name}}/scripts"
+
+- name: "Setup vulnerabilities srv03"
+  hosts: srv03
+  roles:
+    - { role: "vulns/openshares", tags: 'openshares'}
+  vars:
+    script_path: "../ad/{{domain_name}}/scripts"

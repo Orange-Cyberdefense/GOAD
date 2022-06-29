@@ -1,2 +1,0 @@
-- name: Windows | Change the keyboard layout to FR
-  win_shell: Set-WinUserLanguageList -LanguageList fr-FR -Force

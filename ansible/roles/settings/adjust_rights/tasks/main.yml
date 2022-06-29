@@ -1,5 +1,5 @@
 ---
-- name: Add domain users to local administrators
+- name: Add domain users to local groups
   win_group_membership:
     name: "{{item.key}}"
     members: "{{ item.value }}"

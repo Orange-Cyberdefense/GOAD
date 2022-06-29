@@ -1,0 +1,33 @@
+- name: Sync the contents of one directory to another - hack to get Requires -Module Ansible.ModuleUtils.Legacy loaded
+  community.windows.win_robocopy:
+    src: C:\windows\temp
+    dest: C:\windows\temp
+
+- name: "Create users"
+  win_domain_user:
+    name: "{{ item.key }}"
+    firstname: "{{item.value.firstname}}"
+    surname: "{{ item.value.surname }}"
+    password: "{{ item.value.password }}"
+    password_never_expires: yes
+    state: present
+    path: "{{item.value.path}}"
+    description: "{{item.value.description}}"
+    groups: "{{ item.value.groups}}"
+    city: "{{item.value.city}}"
+    domain_username: "{{domain_username}}"
+    domain_password: "{{domain_password}}"
+  with_dict: "{{ ad_users }}"
+  register: usercreate
+  until: "usercreate is not failed"
+  retries: 3
+  delay: 30
+
+- name: "Set users SPN lists"
+  win_domain_user:
+    name: "{{ item.key }}"
+    spn: "{{item.value.spns}}"
+    domain_username: "{{domain_username}}"
+    domain_password: "{{domain_password}}"
+  with_dict: "{{ ad_users }}"
+  when: item.value.spns is defined

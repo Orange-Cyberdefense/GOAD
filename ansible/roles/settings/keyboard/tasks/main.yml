@@ -1,0 +1,2 @@
+- name: Windows | Add the fr keyboard layout
+  win_shell: $langList = Get-WinUserLanguageList; $langList.Add("{{layout}}"); Set-WinUserLanguageList -LanguageList $langList -Force

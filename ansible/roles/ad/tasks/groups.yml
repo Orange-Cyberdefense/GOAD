@@ -1,0 +1,25 @@
+# https://clintboessen.blogspot.com/2010/04/group-scopes.html
+# https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc755692(v=ws.10)
+- name: Create Groups Universal
+  win_domain_group:
+    name: "{{ item.key }}"
+    scope: universal
+    path: "{{item.value.path}}"
+    state: present
+  with_dict: "{{ ad_groups['universal'] }}"
+
+- name: Create Groups Global
+  win_domain_group:
+    name: "{{ item.key }}"
+    scope: global
+    path: "{{item.value.path}}"
+    state: present
+  with_dict: "{{ ad_groups['global'] }}"
+
+- name: Create Groups domainlocal
+  win_domain_group:
+    name: "{{ item.key }}"
+    scope: domainlocal
+    path: "{{item.value.path}}"
+    state: present
+  with_dict: "{{ ad_groups['domainlocal'] }}"

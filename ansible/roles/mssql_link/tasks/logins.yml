@@ -1,0 +1,11 @@
+- name: Create logins mapping to specific users
+  win_shell: |
+    SqlCmd -E -Q "EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'{{linked_server}}', @locallogin = N'{{user_mapping.local_login}}', @useself = N'False', @rmtuser = N'{{user_mapping.remote_login}}', @rmtpassword = N'{{user_mapping.remote_password}}'"
+  become: yes
+  become_method: runas
+  become_user: "{{SQLSVCACCOUNT}}"
+  vars:
+    ansible_become_pass: "{{SQLSVCPASSWORD}}"
+  loop: "{{users_mapping}}"
+  loop_control:
+    loop_var: user_mapping

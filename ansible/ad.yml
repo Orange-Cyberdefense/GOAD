@@ -1,37 +1,12 @@
----
-# Load datas
-- import_playbook: data.yml
-  vars:
-    data_path: "../ad/{{domain_name}}/data/"
-
-# set AD datas ==================================================================================================
-- name: DC01
-  hosts: dc01
-  roles:
-    - { role: 'domain_controller', tags: 'dc' }
-    - { role: 'settings/copy_files', tags: 'download_files' }
-    - { role: "settings/adjust_rights", tags: 'adjust_rights_dc01', local_groups: "{{lab.hosts['dc01'].local_groups}}"}
-  vars:
-    hostname: "{{lab.hosts['dc01'].hostname}}"
-    ad_users: "{{lab.domains[domain_name].users}}"
-    ad_ou: "{{lab.domains[domain_name].organisation_units}}"
-    ad_groups: "{{lab.domains[domain_name].groups}}"
-
-- name: DC02
-  hosts: dc02
-  roles:
-  - { role: 'domain_controller_slave', tags: 'dc_slave' }
-  - { role: 'settings/copy_files', tags: 'download_files' }
-  - { role: "settings/adjust_rights", tags: 'adjust_rights_dc02', local_groups: "{{lab.hosts['dc02'].local_groups}}"}
-  vars:
-    hostname: "{{lab.hosts['dc02'].hostname}}"
-
-- name: "play server 01 configuration"
-  hosts: srv01
-  roles:
-    - { role: 'member_server', tags: 'server'}
-    - { role: 'settings/copy_files', tags: 'download_files' }
-    - { role: "settings/adjust_rights", tags: 'adjust_rights_srv01', local_groups: "{{lab.hosts['srv01'].local_groups}}"}
-  vars:
-    hostname: "{{lab.hosts['srv01'].hostname}}"
-    domain_ou_path: "{{lab.hosts['srv01'].path}}"
+# create main domains, child domain and enroll servers
+- import_playbook: ad-servers.yml
+# create the trust relationships
+- import_playbook: ad-trusts.yml
+# import the ad datas : users/groups...
+- import_playbook: ad-data.yml
+# set the rights and the group domains relations
+- import_playbook: ad-relations.yml
+# Add adcs
+- import_playbook: adcs.yml
+# set the ACL
+- import_playbook: ad-acl.yml

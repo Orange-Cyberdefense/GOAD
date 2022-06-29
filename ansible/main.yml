@@ -2,12 +2,33 @@
 # Prepare servers
 - import_playbook: build.yml
 # Add monitoring
-- import_playbook: elk.yml
+#- import_playbook: elk.yml
 # --------------------------------------------------------------------
 # VM ready - start insert specific scenario
 # --------------------------------------------------------------------
 # Turn server into DC and load active directory data (users/groups/ou)
-- import_playbook: ad.yml
+#- import_playbook: ad.yml
+# create main domains, child domain and enroll servers
+
+## AD ----------
+- import_playbook: ad-servers.yml
+# create the trust relationships
+- import_playbook: ad-trusts.yml
+# import the ad datas : users/groups...
+- import_playbook: ad-data.yml
+## MSSQL + IIS  ----------
+# configure servers vulns (done in the midle of ad install to let time before install relations and acl)
+- import_playbook: servers.yml
+## AD - servers localgroup + rdp + inter domain relations & acl
+# set the rights and the group domains relations
+- import_playbook: ad-relations.yml
+# set adcs
+- import_playbook: adcs.yml
+# set the ACL
+- import_playbook: ad-acl.yml
+# --------------------------------------------------------------------
+# specifics security linked to the scenario are here
+- import_playbook: security.yml
 # --------------------------------------------------------------------
 # specifics vulns linked to the scenario are here
-- import_playbook: vulns.yml
+- import_playbook: vulnerabilities.yml

@@ -1,0 +1,66 @@
+- name: Install ADCS
+  win_feature:
+    name: AD-Certificate
+    state: present
+    include_sub_features: yes
+    include_management_tools: yes
+  register: win_feature
+
+- name: Install-WindowsFeature ADCS-Cert-Authority
+  ansible.windows.win_feature:
+    name: ADCS-Cert-Authority
+    state: present
+    include_management_tools: yes
+
+- name: Install-WindowsFeature ADCS-Web-Enrollment
+  ansible.windows.win_feature:
+    name: ADCS-Web-Enrollment
+    state: present
+
+- name: Install-ADCSCertificationAuthority-PS
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $domain_username,
+
+          [String]
+          $domain_password,
+
+          [String]
+          $ca_common_name
+      )
+      $pass = ConvertTo-SecureString $domain_password -AsPlainText -Force
+      $Cred = New-Object System.Management.Automation.PSCredential ($domain_username, $pass)
+      try {
+        Install-AdcsCertificationAuthority -Credential $Cred -CAType EnterpriseRootCA -CryptoProviderName "RSA#Microsoft Software Key Storage Provider" -KeyLength 2048 -HashAlgorithmName SHA256 -ValidityPeriod Years -ValidityPeriodUnits 5 -CACommonName $ca_common_name -Force
+        $Ansible.Changed = $true
+      } catch {
+        $Ansible.Changed = $false
+      }
+    error_action: stop
+    parameters:
+      domain_username: "{{domain_username}}"
+      domain_password: "{{domain_password}}"
+      ca_common_name: "{{ca_common_name}}"
+
+# ESC 8
+# ignore error if already installed
+- name: Enable Web enrollement
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param ()
+      try {
+        Install-AdcsWebEnrollment -Force
+        $Ansible.Changed = $true
+      } catch {
+        $Ansible.Changed = $false
+      }
+
+
+# - name: Reboot after ADCS installation
+#   win_reboot:
+#   when: win_feature.reboot_required
+

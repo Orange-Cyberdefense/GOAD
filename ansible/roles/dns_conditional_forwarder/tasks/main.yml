@@ -1,0 +1,28 @@
+#- name: Add dns server zone
+#  ansible.windows.win_powershell:
+#    script: |
+#      [CmdletBinding()]
+#      param (
+#          [String]
+#          $ZoneName,
+#
+#          [String]
+#          $MasterServer
+#      )
+#      try { 
+#        Get-DnsServerZone -Name $ZoneName 
+#      } catch { 
+#        Add-DnsServerConditionalForwarderZone -Name $ZoneName -MasterServers $MasterServer
+#      }
+#    error_action: stop
+#    parameters:
+#      ZoneName: "{{zone_name}}"
+#      MasterServer: "{{master_server}}"
+
+- name: Add dns server zone
+  community.windows.win_dns_zone:
+    name: "{{zone_name}}"
+    type: forwarder
+    replication: none
+    dns_servers:
+      - "{{master_server}}"

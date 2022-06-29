@@ -1,0 +1,29 @@
+- name: organisation units
+  import_tasks: ou.yml
+
+- name: groups
+  import_tasks: groups.yml
+
+- name: users
+  import_tasks: users.yml
+
+- name: Assign managed_by domainlocal groups
+  win_domain_group:
+    name: "{{ item.key }}"
+    managed_by: "{{ item.value.managed_by }}"
+  with_dict: "{{ ad_groups['domainlocal'] }}"
+  when: item.value.managed_by is defined
+
+- name: Assign managed_by universal groups
+  win_domain_group:
+    name: "{{ item.key }}"
+    managed_by: "{{ item.value.managed_by }}"
+  with_dict: "{{ ad_groups['universal'] }}"
+  when: item.value.managed_by is defined
+
+- name: Assign managed_by global groups
+  win_domain_group:
+    name: "{{ item.key }}"
+    managed_by: "{{ item.value.managed_by }}"
+  with_dict: "{{ ad_groups['global'] }}"
+  when: item.value.managed_by is defined

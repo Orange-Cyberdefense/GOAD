@@ -1,0 +1,15 @@
+- name: "Create users"
+  community.windows.win_domain_user:
+    name: "{{ item.key }}"
+    firstname: "{{item.value.firstname}}"
+    surname: "{{ item.value.surname }}"
+    password: "{{ item.value.password }}"
+    password_never_expires: yes
+    state: present
+    path: "{{item.value.path}}"
+    description: "{{item.value.description}}"
+    groups: "{{ item.value.groups}}"
+    city: "{{item.value.city}}"
+    domain_username: "{{domain_username}}"
+    domain_password: "{{domain_password}}"
+  with_dict: "{{ ad_users }}"

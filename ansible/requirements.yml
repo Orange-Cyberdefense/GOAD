@@ -1,0 +1,9 @@
+---
+collections:
+  # Install a collection from Ansible Galaxy.
+  - ansible.windows
+  - community.general
+  - community.windows
+  - name: goad.windows
+    type: dir
+    source: ./collections/goad/windows

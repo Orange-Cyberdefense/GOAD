@@ -1,1 +1,1 @@
-Get-ADComputer -Identity "kingslanding" | Set-ADAccountControl -TrustedForDelegation $true
+Get-ADComputer -Identity "bravoos" | Set-ADAccountControl -TrustedForDelegation $true
