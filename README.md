@@ -129,6 +129,8 @@ ansible-playbook main.yml --limit=dc02
 
 ## LAB Content - sevenkingdoms.local
 
+![v2_overview.png](./docs/img/v2_overview.png)
+
 ### Servers
 This lab is actually composed of five virtual machines:
 - **kingslanding** : DC01  running on Windows Server 2019 (with windefender enabled by default)

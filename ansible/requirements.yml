@@ -4,6 +4,6 @@ collections:
   - ansible.windows
   - community.general
   - community.windows
-  - name: goad.windows
-    type: dir
-    source: ./collections/goad/windows
+# - name: goad.windows
+#   type: dir
+#   source: ./collections/goad/windows
