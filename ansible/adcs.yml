@@ -6,7 +6,7 @@
 # set AD datas ==================================================================================================
 
 - name: ADCS
-  hosts: srv03
+  hosts: srv03,dc01
   roles:
   - { role: 'adcs', tags: 'adcs'}
   vars:
