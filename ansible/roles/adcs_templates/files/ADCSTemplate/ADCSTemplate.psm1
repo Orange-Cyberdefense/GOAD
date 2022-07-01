@@ -327,7 +327,8 @@ param(
             { $_ -in 'msPKI-Certificate-Application-Policy',
                     'pKICriticalExtensions',
                     'pKIDefaultCSPs',
-                    'pKIExtendedKeyUsage'
+                    'pKIExtendedKeyUsage',
+                    'msPKI-RA-Application-Policies'
             } { $oa.Add($_,[Microsoft.ActiveDirectory.Management.ADPropertyValueCollection]$import.$_); break }
 
             { $_ -in 'pKIExpirationPeriod',
