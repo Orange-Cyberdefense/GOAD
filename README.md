@@ -155,7 +155,8 @@ This lab is actually composed of five virtual machines:
 The lab setup is automated using vagrant and ansible automation tools.
 You can change the vm version in the Vagrantfile according to Stefan Scherer vagrant repository : https://app.vagrantup.com/StefanScherer
 
-## Blueteam / ELK
+## Blueteam / ELK
+
 - **elk** a kibana is configured on http://192.168.56.50:5601 to follow the lab events
 - infos : log encyclopedia : https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/
 - the elk is not installed installed by default due to ressources reasons. 
@@ -268,32 +269,44 @@ ESSOS.LOCAL
 
 
 ## ROAD MAP
-- [X] smbshare anonymous
-- [X] smb not signed
-- [X] responder
-- [X] zerologon
-- [X] windows defender
+- [X] Password reuse between computer (PTH)
+- [X] Spray User = Password
+- [X] Password in description
+- [X] SMB share anonymous
+- [X] SMB not signed
+- [X] Responder
+- [X] Zerologon
+- [X] Windows defender
 - [X] ASREPRoast
-- [X] kerberoasting
+- [X] Kerberoasting
 - [X] AD Acl abuse 
 - [X] Unconstraint delegation
 - [X] Ntlm relay
 - [X] Constrained delegation
-- [X] Install MSSQL + trusted link
-- [X] Install IIS + ASP app
+- [X] Install MSSQL
+- [X] MSSQL trusted link
+- [X] MSSQL impersonate
+- [X] Install IIS
+- [X] Upload asp app
 - [X] Multiples forest
 - [X] Anonymous RPC user listing
 - [X] Child parent domain
 - [X] Generate certificate and enable ldaps
-- [X] ADCS
+- [X] ADCS - ESC 1/2/3/8
+- [X] Certifry
+- [X] Samaccountname/nopac
+- [X] Petitpotam unauthent
+- [X] Printerbug
+- [X] Drop the mic
+- [X] Shadow credentials
 - [ ] Add LAPS
 - [ ] Add Applocker
-- [ ] zone transfert
+- [ ] Zone transfert
 - [ ] GPO abuse
-- [ ] mitm6
-- [ ] wsus
-- [ ] sccm
-- [ ] exchange
+- [ ] Mitm6
+- [ ] Wsus
+- [ ] Sccm
+- [ ] Exchange
 
 ## MISC commands
 
