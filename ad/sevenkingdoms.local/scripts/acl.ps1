@@ -78,7 +78,7 @@ SetAcl (Get-ADUser "lord.varys") (Get-ADGroup "Domain Admins") "GenericAll" "Non
 
 # genericall-genericwrite-write-on-computer
 # https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/abusing-active-directory-acls-aces#genericall-genericwrite-write-on-computer
-SetAcl (Get-ADUser "stannis.baratheon") (Get-ADComputer "dragonstone") "GenericAll" "None"
+SetAcl (Get-ADUser "stannis.baratheon") (Get-ADComputer "kingslanding") "GenericAll" "None"
 
 # writeproperty-on-group
 # https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/abusing-active-directory-acls-aces#writeproperty-on-group
@@ -90,12 +90,12 @@ SetAclExtended (Get-ADUser "tyron.lannister") (Get-ADGroup "Domain Admins") "Sel
 
 # writeproperty-self-membership
 # https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/abusing-active-directory-acls-aces#writeproperty-self-membership
-SetAclExtended (Get-ADUser "sansa.stark") (Get-ADGroup "Domain Admins") "WriteProperty" "bf9679c0-0de6-11d0-a285-00aa003049e2" "All"
+SetAclExtended (Get-ADUser "stannis.baratheon") (Get-ADGroup "Domain Admins") "WriteProperty" "bf9679c0-0de6-11d0-a285-00aa003049e2" "All"
 
 # forcechangepassword
 # https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/abusing-active-directory-acls-aces#forcechangepassword
 # https://docs.microsoft.com/fr-fr/windows/win32/adschema/r-user-change-password
-SetAclExtended (Get-ADUser "catelyn.stark") (Get-ADUser "eddard.stark") "ExtendedRight" "00299570-246d-11d0-a768-00aa006e0529" "None"
+SetAclExtended (Get-ADUser "tywin.lannister") (Get-ADUser "jaime.lannister") "ExtendedRight" "00299570-246d-11d0-a768-00aa006e0529" "None"
 
 # write owner on group
 # https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/abusing-active-directory-acls-aces#writeowner-on-group
@@ -107,4 +107,4 @@ SetAcl (Get-ADUser "jaime.lannister") (Get-ADUser "cersei.lannister") "GenericWr
 
 # writedacl-writeowner
 # https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/abusing-active-directory-acls-aces#writedacl-writeowner
-SetAcl (Get-ADUser "jeor.mormont") (Get-ADGroup "Night Watch") "WriteDacl" "None"
+SetAcl (Get-ADUser "tywin.lannister") (Get-ADGroup "Small Council") "WriteDacl" "None"

@@ -1,0 +1,20 @@
+---
+# Load datas
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+# set AD trusts ==================================================================================================
+
+- name: Trusts configuration
+  hosts: dc01,dc03
+  roles:
+  - { role: 'dns_conditional_forwarder', tags: 'dns_conditional_forwarder' }
+  - { role: 'trusts', tags: 'trust' }
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    remote_forest: "{{lab.domains[domain].trust}}"
+    remote_admin: "Administrator@{{remote_forest}}"
+    remote_admin_password: "{{lab.domains[remote_forest].domain_password}}"
+    zone_name: "{{remote_forest}}"
+    remote_dc: "{{lab.domains[remote_forest].dc}}"
+    master_server: "{{groups[remote_dc][0]}}"

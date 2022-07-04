@@ -1,0 +1,10 @@
+- name: "Change the hostname"
+  win_hostname:
+    name: "{{hostname}}"
+  register: win_hostname
+
+- name: Reboot if needed
+  win_reboot:
+    reboot_timeout: 600
+    post_reboot_delay: 30
+  when: win_hostname.reboot_required

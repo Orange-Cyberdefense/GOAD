@@ -1,0 +1,29 @@
+- name: set password policy
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $LockoutThreshold,
+
+          [String]
+          $MinPasswordLength,
+
+          [String]
+          $LockoutDuration,
+
+          [String]
+          $LockoutObservationWindow,
+
+          [Boolean]
+          $ComplexityEnabled
+      )
+      $Domain = (gwmi WIN32_ComputerSystem).Domain
+      Set-ADDefaultDomainPasswordPolicy -Identity $Domain -AuthType Negotiate -LockoutDuration $LockoutDuration -LockoutObservationWindow $LockoutObservationWindow -LockoutThreshold $LockoutThreshold -ComplexityEnabled $ComplexityEnabled -ReversibleEncryptionEnabled $False -MinPasswordLength $MinPasswordLength -MaxPasswordAge "10675199.00:00:00"
+    error_action: stop
+    parameters:
+      LockoutThreshold: "{{try_before_lock}}"
+      MinPasswordLength: "{{pass_length}}"
+      LockoutDuration: "{{lock_duration}}"
+      LockoutObservationWindow: "{{lock_observation}}"
+      ComplexityEnabled: "{{complexity}}"

@@ -1,0 +1,48 @@
+- name: Install ADCSTemplate Module
+  win_copy:
+    src: files/ADCSTemplate
+    dest: "C:\\Program Files\\WindowsPowerShell\\Modules"
+
+- name: create a directory for templates
+  win_file: 
+    path: c:\setup
+    state: directory
+
+- name: Copy templates json
+  win_copy:
+    src: "files/{{item}}.json"
+    dest: "C:\\setup\\{{item}}.json"
+  with_items:
+    - ESC1
+    - ESC2
+    - ESC3
+    - ESC3-CRA
+    - ESC4
+
+- name: Install templates
+  win_shell: |
+    if (-not(Get-ADCSTemplate -DisplayName "{{item}}")) { New-ADCSTemplate -DisplayName "{{item}}" -JSON (Get-Content c:\setup\{{item}}.json -Raw) -Identity "{{domain_name}}\Domain Users" -Publish }
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    domain_name: "{{domain}}"
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+  with_items:
+    - ESC1
+    - ESC2
+    - ESC3
+    - ESC3-CRA
+    - ESC4
+
+- name: "Configure ATTRIBUTESUBJECTALTNAME2 on CA - ESC6"
+  win_shell: |
+    certutil -config "{{cauthority_server}}\{{cauthority_common_name}}" -setreg policy\Editflags +EDITF_ATTRIBUTESUBJECTALTNAME2
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+    cauthority_server: "{{ca_host}}"
+    cauthority_common_name: "{{ca_common_name}}"
+

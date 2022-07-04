@@ -8,6 +8,7 @@
     - name: save the Json data to a Variable as a Fact
       set_fact:
         lab: "{{lab}}"
+#      when: lab is not defined
 
 #     - name: Read hostnames from CSV file and return a dictionary
 #       community.general.read_csv:

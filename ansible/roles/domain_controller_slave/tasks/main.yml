@@ -1,28 +1,16 @@
-- name: "Change the hostname to {{ hostname }}"
-  win_hostname:
-    name: "{{hostname}}"
-  register: win_hostname
-
-- name: Reboot if needed
-  win_reboot:
-    reboot_timeout: 600
-    post_reboot_delay: 300
-  when: win_hostname.reboot_required
-
 - name: Set configure dns
   win_dns_client:
     adapter_names: '*'
     ipv4_addresses:
-    - 192.168.56.10
-    - 192.168.56.11
+    - "{{dns_domain}}"
     log_path: C:\dns_log.txt
 
 - name: Promote the server to aditionnal DC
   win_domain_controller:
     dns_domain_name: "{{domain_name}}"
     domain_admin_user: "Administrator@{{domain_name}}"
-    domain_admin_password: "{{password}}"
-    safe_mode_password: "{{password}}"
+    domain_admin_password: "{{domain_password}}"
+    safe_mode_password: "{{domain_password}}"
     state: domain_controller
     log_path: C:\ansible_win_domain_controller.txt
   register: check_domain_controller
@@ -30,5 +18,5 @@
 - name: Reboot to complete domain controller setup
   win_reboot:
     reboot_timeout: 600
-    post_reboot_delay: 300
+    post_reboot_delay: 30
   when: check_domain_controller.changed

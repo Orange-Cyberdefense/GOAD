@@ -1,47 +1,8 @@
-- name: Ensure chocolatey is installed
-  win_chocolatey:
-    name:
-    - chocolatey
-    - chocolatey-core.extension
-    state: present
-
-- name: disable enhanced exit codes
-  win_chocolatey_feature:
-    name: useEnhancedExitCodes
-    state: disabled
-
-- name: Install multiple packages sequentially
-  win_chocolatey:
-    name: '{{ item }}'
-    state: present
-  with_items:
-  - notepadplusplus
-  - putty
-  - python
-  - git
-  - 7zip
-  - sysinternals
-  - wget
-  - pstools
-  ignore_errors: yes
-
-- name: "Change the hostname to {{hostname}}"
-  win_hostname:
-    name: "{{hostname}}"
-  register: win_hostname
-
-- name: Reboot if needed
-  win_reboot:
-    reboot_timeout: 600
-    post_reboot_delay: 300
-  when: win_hostname.reboot_required
-
-- name: Set configure dns
+- name: "Set configure dns to {{dns_domain}}"
   win_dns_client:
     adapter_names: '*'
     ipv4_addresses:
-    - 192.168.56.10
-    - 192.168.56.11
+    - "{{dns_domain}}"
     log_path: C:\dns_log.txt
 
 - name: Verify File Server Role is installed.
@@ -50,53 +11,12 @@
     state: present
     include_management_tools: True
 
-# - name: Install IIS Management Features
-#   win_feature:
-#     name: Web-Mgmt-Tools, 
-#           Web-Mgmt-Console, 
-#           Web-Scripting-Tools, 
-#           Web-Mgmt-Service
-#     state: present
-# 
-# - name: Add SYSTEM allow rights to machine keys (required for installation of IIS 6 components)
-#   win_acl:
-#     path: C:\ProgramData\Microsoft\Crypto\RSA\MachineKeys\
-#     user: SYSTEM
-#     rights: FullControl
-#     type: allow
-#     state: present
-#     inherit: ContainerInherit, ObjectInherit
-#     propagation: 'InheritOnly'
-# 
-# - name: Install IIS 6 Compatibility Features 
-#   win_feature:
-#     name: Web-Mgmt-Compat,
-#           Web-Metabase,
-#           Web-Lgcy-Mgmt-Console,
-#           Web-Lgcy-Scripting,
-#           Web-WMI
-#     state: present
-# 
-#- name: Install IIS Web-Server with sub features and management tools
-#  win_feature:
-#    name: Web-Server
-#    state: present
-#    include_sub_features: yes
-#    include_management_tools: yes
-#  register: win_feature
-
-#- name: reboot if installing web server feature requires it
-#  win_reboot:
-#   reboot_timeout: 600
-#   post_reboot_delay: 300
-#  when: win_feature.reboot_required
-
-- name: "Add member server to {{domain_name}}"
+- name: "Add member server"
   win_domain_membership:
-    dns_domain_name: "{{domain_name}}"
-    domain_admin_user: "Administrator@{{domain_name}}"
-    domain_admin_password: "{{password}}"
-    domain_ou_path: "{{domain_ou_path}}"
+    dns_domain_name: "{{member_domain}}"
+    domain_admin_user: "Administrator@{{member_domain}}"
+    domain_admin_password: "{{domain_password}}"
+#    domain_ou_path: "{{member_domain_ou_path}}"
     state: domain
   register: domain_state
 
@@ -104,9 +24,3 @@
   win_reboot:
   when: domain_state.reboot_required
 
-- name: Install chocolatey
-  win_chocolatey:
-    name: 
-       - chocolatey
-       - chocolatey-core.extension
-    state: present

@@ -1,0 +1,41 @@
+---
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+
+#- name: "Read data files"
+#  hosts: srv02,srv03
+#  tasks:
+#    - name: show variable
+#      set_fact:
+#        test: "{{groups}}"
+#      vars:
+#        domain: "{{lab.hosts[dict_key].domain}}"
+#        domain_server: "{{lab.hosts[dict_key].hostname}}.{{domain}}"
+#        groups: "{{lab.domains[domain].multi_domain_groups_member}}"
+
+- name: Fix trust relationship between this workstation and the primary domain failed
+  hosts: srv02,srv03
+  tasks:
+    - name: reset machine password
+      ansible.windows.win_powershell:
+        script: |
+          [CmdletBinding()]
+          param (
+              [String]
+              $domain_username,
+
+              [String]
+              $domain_password
+          )
+          $pass = ConvertTo-SecureString $domain_password -AsPlainText -Force
+          $Cred = New-Object System.Management.Automation.PSCredential ($domain_username, $pass)
+          Reset-ComputerMachinePassword -Credential $Cred
+        error_action: stop
+        parameters:
+          domain_username: "{{lab.hosts[dict_key].domain}}\\Administrator"
+          domain_password: "{{lab.domains[lab.hosts[dict_key].domain].domain_password}}"
+
+    - name: "Reboot and wait for the AD system to restart"
+      win_reboot:
+        test_command: "Get-ADUser -Identity Administrator -Properties *"

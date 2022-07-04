@@ -6,9 +6,6 @@
     - { role: 'elk', tags: 'elk' }
 
 - name: Install log agent on windows vms
-  hosts: 
-    - srv01
-    - dc01
-    - dc02
+  hosts: dc01,dc02,dc03,srv01,srv02,srv03
   roles:
     - { role: 'logs_windows', tags: 'agent' }

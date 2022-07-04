@@ -1,0 +1,199 @@
+- name: Reboot before install
+  win_reboot:
+    reboot_timeout: 600
+
+- name: create a directory for installer download
+  win_file: 
+    path: c:\setup
+    state: directory
+
+- name: create a directory for installer extraction
+  win_file: 
+    path: c:\setup\mssql
+    state: directory
+
+- name: create a directory for media extraction
+  win_file: 
+    path: c:\setup\mssql\media
+    state: directory
+
+- name: create the configuration file
+  win_template: 
+    src: files/sql_conf.ini.j2
+    dest: c:\setup\mssql\sql_conf.ini
+
+- name: check downloaded file exists
+  win_stat:
+    path: c:\setup\mssql\sql_installer.exe
+  register: installer_file
+
+- name: get the installer
+  win_get_url:
+      url: "{{download_url}}"
+      dest: 'c:\setup\mssql\sql_installer.exe'
+  when: not installer_file.stat.exists
+
+- name: Add service account to Log on as a service
+  win_user_right:
+    name: SeServiceLogonRight
+    users:
+    - '{{ SQLSVCACCOUNT }}'
+    action: add
+
+# - name: Setup service account
+# Set-ADUser -Identity "{{SQLSVCACCOUNT}}" -ServicePrincipalNames @{Add='MSSQLSvc/castelblack.north.sevenkingdoms.local'}
+# Get-ADUser -Identity "{{SQLSVCACCOUNT}}" | Set-ADAccountControl -TrustedToAuthForDelegation $true
+# Set-ADUser -Identity "{{SQLSVCACCOUNT}}" -Add @{'msDS-AllowedToDelegateTo'=@('CIFS/winterfell.north.sevenkingdoms.local','CIFS/winterfell')}
+
+- name: check install already done
+  win_stat:
+    path: "C:\\Program Files\\Microsoft SQL Server\\MSSQL15.{{sql_instance_name}}"
+  register: mssql_install_already_done
+
+# Install the database with a domain admin user
+- name: Install the database
+  win_command: c:\setup\mssql\sql_installer.exe /configurationfile=c:\setup\mssql\sql_conf.ini /IACCEPTSQLSERVERLICENSETERMS /MEDIAPATH=c:\setup\mssql\media /QUIET /HIDEPROGRESSBAR
+  args:
+    chdir: c:\setup
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_admin}}"
+    ansible_become_password: "{{domain_admin_password}}"
+    ansible_become_flags: logon_type=new_credentials logon_flags=netcredentials_only
+  register: mssqlinstall
+  until: "mssqlinstall is not failed"
+  retries: 3
+  delay: 120
+  when: not mssql_install_already_done.stat.exists
+
+- name: Add or update registry for ip port
+  win_regedit:
+    path: 'HKLM:\Software\Microsoft\Microsoft SQL Server\MSSQL15.{{ sql_instance_name }}\MSSQLServer\SuperSocketNetLib\Tcp\IPAll'
+    name: TcpPort
+    data: 1433
+  register: win_reg
+
+# - name: Add or update registry for named pipe
+#   win_regedit:
+#     path: 'HKLM:\Software\Microsoft\Microsoft SQL Server\MSSQL15.{{ sql_instance_name }}\MSSQLServer\SuperSocketNetLib\Np'
+#     name: Enabled
+#     data: 0x00000001
+#     type: dword
+#   register: win_reg
+
+- name: Restart a service
+  win_service:
+    name: 'MSSQL${{ sql_instance_name }}'
+    force_dependent_services: yes
+    state: restarted
+  when: win_reg.changed
+
+- name: check SQL Server Manager Studio installer exists
+  win_stat:
+    path: c:\setup\mssql\SSMS_installer.exe
+  register: ssms_installer_file
+
+- name: get the installer
+  win_get_url:
+      url: 'https://aka.ms/ssmsfullsetup'
+      dest: 'c:\setup\mssql\SSMS_installer.exe'
+  when: not ssms_installer_file.stat.exists
+
+- name: check SSMS installation already done
+  win_stat:
+    path: "C:\\Program Files (x86)\\Microsoft SQL Server Management Studio 18"
+  register: ssms_installation
+
+- name: Install SSMS
+  win_command: c:\setup\mssql\SSMS_installer.exe /install /quiet /norestart
+  register: install_ssmss
+  when: not ssms_installation.stat.exists
+
+- name: Reboot after install
+  win_reboot:
+    reboot_timeout: 600
+  when: not ssms_installation.stat.exists
+
+- name: Add MSSQL admin
+  win_shell: |
+    SqlCmd -E -Q "CREATE LOGIN [{{item}}] FROM WINDOWS"
+    SqlCmd -E -Q "SP_ADDSRVROLEMEMBER '{{item}}','SYSADMIN'"
+  become: yes
+  become_method: runas
+  become_user: "{{SQLSVCACCOUNT}}"
+  vars:
+    ansible_become_pass: "{{SQLSVCPASSWORD}}"
+  loop: "{{sql_sysadmins}}"
+
+- name: Add IMPERSONATE on login
+  win_shell: |
+    SqlCmd -E -Q "CREATE LOGIN [{{item.key}}] FROM WINDOWS"
+    SqlCmd -E -Q "GRANT IMPERSONATE ON LOGIN::[{{item.value}}] TO [{{item.key}}]"
+  become: yes
+  become_method: runas
+  become_user: "{{SQLSVCACCOUNT}}"
+  vars:
+    ansible_become_pass: "{{SQLSVCPASSWORD}}"
+  with_dict: "{{executeaslogin}}"
+
+- name: Add IMPERSONATE on user
+  win_shell: |
+    SqlCmd -E -Q "CREATE LOGIN [{{item.key}}] FROM WINDOWS"
+    SqlCmd -E -Q "CREATE USER [{{item.key}}] FOR LOGIN [{{item.key}}]"
+    SqlCmd -E -Q "GRANT IMPERSONATE ON USER::[{{item.value}}] TO [{{item.key}}]"
+  become: yes
+  become_method: runas
+  become_user: "{{SQLSVCACCOUNT}}"
+  vars:
+    ansible_become_pass: "{{SQLSVCPASSWORD}}"
+  with_dict: "{{executeasuser}}"
+
+- name: Enable sa account
+  win_shell: |
+    SqlCmd -E -Q "ALTER LOGIN sa ENABLE"
+    SqlCmd -E -Q "ALTER LOGIN sa WITH PASSWORD = '{{sa_password}}' , CHECK_POLICY=OFF"
+  become: yes
+  become_method: runas
+  become_user: "{{SQLSVCACCOUNT}}"
+  vars:
+    ansible_become_pass: "{{SQLSVCPASSWORD}}"
+
+- name: enable MSSQL authentication and windows authent
+  win_shell: |
+    SqlCmd -E -Q "EXEC xp_instance_regwrite N'HKEY_LOCAL_MACHINE', N'Software\Microsoft\MSSQLServer\MSSQLServer', N'LoginMode', REG_DWORD, 2"
+  become: yes
+  become_method: runas
+  become_user: "{{SQLSVCACCOUNT}}"
+  vars:
+    ansible_become_pass: "{{SQLSVCPASSWORD}}"
+
+- name: Restart service
+  win_service:
+    name: 'MSSQL${{ sql_instance_name }}'
+    force_dependent_services: yes
+    state: restarted
+
+- name: Firewall | Allow MSSQL through Firewall
+  win_dsc:
+    resource_name: xFirewall
+    Name: "Access for MSSQL (TCP-In)"
+    Ensure: present
+    Enabled: True
+    Profile: "Domain"
+    Direction: "Inbound"
+    Localport: "1433"
+    Protocol: "TCP"
+    Description: "Opens the listener port for MSSQL"
+
+- name: Firewall | Allow MSSQL discover through Firewall
+  win_dsc:
+    resource_name: xFirewall
+    Name: "Access for MSSQL (UDP-In)"
+    Ensure: present
+    Enabled: True
+    Profile: "Domain"
+    Direction: "Inbound"
+    Localport: "1434"
+    Protocol: "UDP"
+    Description: "Opens the discover port for MSSQL"

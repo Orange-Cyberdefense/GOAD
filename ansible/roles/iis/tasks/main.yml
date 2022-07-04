@@ -1,0 +1,84 @@
+- name: Install IIS Management Features
+  win_feature:
+    name: Web-Mgmt-Tools, 
+          Web-Mgmt-Console, 
+          Web-Scripting-Tools, 
+          Web-Mgmt-Service
+    state: present
+
+- name: Add SYSTEM allow rights to machine keys (required for installation of IIS 6 components)
+  win_acl:
+    path: C:\ProgramData\Microsoft\Crypto\RSA\MachineKeys\
+    user: SYSTEM
+    rights: FullControl
+    type: allow
+    state: present
+    inherit: ContainerInherit, ObjectInherit
+    propagation: 'InheritOnly'
+
+- name: Install IIS 6 Compatibility Features 
+  win_feature:
+    name: Web-Mgmt-Compat,
+          Web-Metabase,
+          Web-Lgcy-Mgmt-Console,
+          Web-Lgcy-Scripting,
+          Web-WMI
+    state: present
+
+- name: Install IIS Web-Server with sub features and management tools
+  win_feature:
+    name: Web-Server
+    state: present
+    include_sub_features: yes
+    include_management_tools: yes
+  register: win_feature
+
+- name: Create directory
+  win_file:
+    path: C:\\inetpub
+    state: directory
+
+- name: Create directory
+  win_file:
+    path: C:\\inetpub\\wwwroot
+    state: directory
+
+- name: default-website-index
+  win_copy:
+    src: files/index.html
+    dest: "C:\\inetpub\\wwwroot\\index.html"
+
+- name: Copy uploader website Default.aspx
+  win_copy:
+    src: files/uploader/Default.aspx
+    dest: "C:\\inetpub\\wwwroot\\"
+
+- name: Copy uploader website Web.config
+  win_copy:
+    src: files/uploader/Web.config
+    dest: "C:\\inetpub\\wwwroot\\"
+
+- name: Copy uploader website bin
+  win_copy:
+    src: files/uploader/bin
+    dest: "C:\\inetpub\\wwwroot\\"
+
+- name: Create directory
+  win_file:
+    path: "C:\\inetpub\\wwwroot\\upload"
+    state: directory
+
+- name: Add IIS_IUSRS allow rights
+  ansible.windows.win_acl:
+    path: "C:\\inetpub\\wwwroot\\upload"
+    user: IIS_IUSRS
+    rights: FullControl
+    type: allow
+    state: present
+    inherit: ContainerInherit, ObjectInherit
+    propagation: 'None'
+
+- name: Reboot if installing Web-Server feature requires it
+  ansible.windows.win_reboot:
+  when: win_feature.reboot_required
+

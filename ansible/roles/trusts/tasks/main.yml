@@ -1,0 +1,37 @@
+# source : https://social.technet.microsoft.com/wiki/contents/articles/11911.active-directory-powershell-how-to-create-forest-trust.aspx
+- name: Add trusts between domain
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $RemoteForest,
+
+          [String]
+          $RemoteAdmin,
+
+          [String]
+          $RemoteAdminPassword
+      )
+      $localforest=[System.DirectoryServices.ActiveDirectory.Forest]::getCurrentForest()
+      try {
+        $localForest.GetTrustRelationship($RemoteForest)
+        $Ansible.Changed = $false
+      } catch [System.DirectoryServices.ActiveDirectory.ActiveDirectoryObjectNotFoundException] {
+        $Ansible.Changed = $true
+        $remoteContext = New-Object -TypeName "System.DirectoryServices.ActiveDirectory.DirectoryContext" -ArgumentList @( "Forest", $RemoteForest, $RemoteAdmin, $RemoteAdminPassword)
+        $distantForest = [System.DirectoryServices.ActiveDirectory.Forest]::getForest($remoteContext)
+        $localForest.CreateTrustRelationship($distantForest,"Bidirectional")
+      }
+    error_action: stop
+    parameters:
+      RemoteForest: "{{remote_forest}}"
+      RemoteAdmin: "{{remote_admin}}"
+      RemoteAdminPassword: "{{remote_admin_password}}"
+  register:
+    trust_result
+
+- name: "Reboot and wait for the AD system to restart"
+  win_reboot:
+    test_command: "Get-ADUser -Identity Administrator -Properties *"
+  when: trust_result.changed
