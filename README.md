@@ -1,4 +1,4 @@
-# GOAD (Game Of Active Directory) - version 2 (beta)
+# GOAD (Game Of Active Directory) - version 2
 
 ![goad.png](./docs/img/GOAD.png)
 
@@ -67,8 +67,8 @@ ansible-galaxy install -r requirements.yml
 - Wintefell is now a domain controler for the subdomain north of the sevenkingdoms.local domain
 
 ### Space use
-- the lab take environ 60GB (but you have to get the space for the vms vagrant images windows server 2016 (6.15GB) / windows server 2019 (6.52GB) / ubuntu 18.04 (502M))
-- the total space needed for the lab is ~80-100 GB (and more if you take snapshots)
+- the lab take environ 77GB (but you have to get the space for the vms vagrant images windows server 2016 (22GB) / windows server 2019 (14GB) / ubuntu 18.04 (502M))
+- the total space needed for the lab is ~115 GB (and more if you take snapshots)
 
 ### Start / Setup
 The default domain will be **sevenkingdoms.local**, on the subnet 192.168.56.1/24 and each machine has only been allocated with 1CPU and 1024MB of memory. If you want to change some of these performance settings you can modify the Vagrantfile.
@@ -118,16 +118,12 @@ vagrant halt # will stop all the vm
 vagrant up   # will start the lab
 ```
 
-- if you got some errors see the troobleshooting section at the end of the document
-
-### Limit to one host
-- Limit to one host with --limit
-
+- if you got some errors see the troobleshooting section at the end of the document, but in most case if you get errors during install, don't think and just replay the main playbook (most of the errors which could came up are due to windows latency during installation, wait few minutes and replay the main.yml playbook)
 ```
-ansible-playbook main.yml --limit=dc02
+ansible-playbook main.yml
 ```
 
-## LAB Content - sevenkingdoms.local
+## LAB Content - sevenkingdoms.local / north.sevenkingdoms.local / essos.local
 
 ![v2_overview.png](./docs/img/v2_overview.png)
 
@@ -365,7 +361,6 @@ ansible-playbook -l dc2 domain_controller.yml
 ```
 ansible-playbook vulns.yml
 ```
-
 
 ## Troubleshooting
 
