@@ -44,7 +44,7 @@ boxes = [
   end
 
   config.vm.provider "vmware_desktop" do |v|
-    v.vmx["memsize"] = "2048"
+    v.vmx["memsize"] = "3000"
     v.vmx["numvcpus"] = "2"
   end
 
