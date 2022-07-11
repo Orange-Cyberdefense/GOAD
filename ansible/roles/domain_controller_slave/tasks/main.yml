@@ -1,6 +1,6 @@
 - name: Set configure dns
   win_dns_client:
-    adapter_names: '*'
+    adapter_names: 'Ethernet 2'
     ipv4_addresses:
     - "{{dns_domain}}"
     log_path: C:\dns_log.txt
