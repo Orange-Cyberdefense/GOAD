@@ -367,7 +367,7 @@ ansible-playbook -l dc2 domain_controller.yml
 
 #### Add some vulns
 ```
-ansible-playbook vulns.yml
+ansible-playbook vulnerabilities.yml
 ```
 
 ## Troubleshooting
