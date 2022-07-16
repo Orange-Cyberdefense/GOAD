@@ -179,7 +179,12 @@ You can change the vm version in the Vagrantfile according to Stefan Scherer vag
 sudo apt install sshpass
 ```
 
-  3. play the elk.yml playbook to install and run elk:
+  3. Chocolatey is needed to use elk. To install it run:
+```
+ansible-galaxy collection install chocolatey.chocolatey 
+```
+
+  4. play the elk.yml playbook to install and run elk:
 ```
 ansible-playbook elk.yml
 ```
