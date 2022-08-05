@@ -295,11 +295,12 @@ ESSOS.LOCAL
 - [X] Printerbug
 - [X] Drop the mic
 - [X] Shadow credentials
-- [ ] Add LAPS
+- [X] Mitm6
+- [ ] Add Webdav
 - [ ] Add Applocker
+- [ ] Add LAPS
 - [ ] Zone transfert
 - [ ] GPO abuse
-- [ ] Mitm6
 - [ ] Wsus
 - [ ] Sccm
 - [ ] Exchange
@@ -349,7 +350,7 @@ vagrant snapshot pop
 #### Play only an ansible part
 - only play shares of member_server.yml :
 ```
-ansible-playbook member_server.yml --tags "shares"
+ansible-playbook member_server.yml --tags "data,shares"
 ```
 
 #### Play only on some server

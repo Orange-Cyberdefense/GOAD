@@ -6,3 +6,4 @@ temp/
 ansible/.venv/
 ansible/collections/
 ansible/test.yml
+*VBoxHeadless*.log
