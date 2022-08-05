@@ -1,6 +1,6 @@
 - name: Create SQL Linked server and enable RPC
   win_shell: |
-    SqlCmd -E -Q "EXEC master.dbo.sp_addlinkedserver @server = N'{{item.key}}', @srvproduct=N'', @provider=N'SQLOLEDB'"
+    SqlCmd -E -Q "EXEC master.dbo.sp_addlinkedserver @server = N'{{item.key}}', @srvproduct=N'', @provider=N'SQLOLEDB', @datasrc=N'{{item.value.data_src}}'"
     SqlCmd -E -Q "EXEC master.dbo.sp_serveroption @server=N'{{item.key}}', @optname=N'rpc', @optvalue=N'true'"
     SqlCmd -E -Q "EXEC master.dbo.sp_serveroption @server=N'{{item.key}}', @optname=N'rpc out', @optvalue=N'true'"
   become: yes
