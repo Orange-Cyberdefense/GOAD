@@ -27,12 +27,20 @@ For the setup to work properly you need to install:
 - **vagrant** from their official site [vagrant](https://www.vagrantup.com/downloads). The version you can install through your favourite package manager (apt, yum, ...) is probably not the latest one.
 - Install vagrant plugin vbguest: `vagrant plugin install vagrant-vbguest` (not needed anymore)
 
+```bash
+wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install vagrant=2.2.19
+```
+
 #### Ansible
 - *Create a python >= 3.8 virtualenv*
 
 ```bash
+sudo apt install git
+git clone git@github.com:Orange-Cyberdefense/GOAD.git
+cd GOAD/ansible
 sudo apt install python3.8-venv
-cd ansible
 python3.8 -m virtualenv .venv
 source .venv/bin/activate
 ```
@@ -78,8 +86,8 @@ To have the lab up and running this is the commands you should do:
 - VMs creation
 
 ```bash
-git clone git@github.com:Orange-Cyberdefense/GOAD.git
-cd GOAD/
+pwd
+/opt/GOAD
 vagrant up # this will create the vms
 ```
 
@@ -171,7 +179,12 @@ You can change the vm version in the Vagrantfile according to Stefan Scherer vag
 sudo apt install sshpass
 ```
 
-  3. play the elk.yml playbook to install and run elk:
+  3. Chocolatey is needed to use elk. To install it run:
+```
+ansible-galaxy collection install chocolatey.chocolatey 
+```
+
+  4. play the elk.yml playbook to install and run elk:
 ```
 ansible-playbook elk.yml
 ```
@@ -360,7 +373,7 @@ ansible-playbook -l dc2 domain_controller.yml
 
 #### Add some vulns
 ```
-ansible-playbook vulns.yml
+ansible-playbook vulnerabilities.yml
 ```
 
 ## Troubleshooting
