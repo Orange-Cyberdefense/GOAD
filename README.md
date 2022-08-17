@@ -27,6 +27,8 @@ For the setup to work properly you need to install:
 - **vagrant** from their official site [vagrant](https://www.vagrantup.com/downloads). The version you can install through your favourite package manager (apt, yum, ...) is probably not the latest one.
 - Install vagrant plugin vbguest: `vagrant plugin install vagrant-vbguest` (not needed anymore)
 
+- Vagrant install with hashicorp repository example :
+
 ```bash
 wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
@@ -87,8 +89,8 @@ To have the lab up and running this is the commands you should do:
 
 ```bash
 pwd
-/opt/GOAD
-vagrant up # this will create the vms
+/opt/GOAD  # place yourself in the GOAD folder (where you cloned the project)
+vagrant up # this will create the vms (this command must be run in the folder where the Vagrantfile is present)
 ```
 
 - VMs provisionning
