@@ -27,6 +27,8 @@ For the setup to work properly you need to install:
 - **vagrant** from their official site [vagrant](https://www.vagrantup.com/downloads). The version you can install through your favourite package manager (apt, yum, ...) is probably not the latest one.
 - Install vagrant plugin vbguest: `vagrant plugin install vagrant-vbguest` (not needed anymore)
 
+- Vagrant install with hashicorp repository example :
+
 ```bash
 wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
@@ -87,8 +89,8 @@ To have the lab up and running this is the commands you should do:
 
 ```bash
 pwd
-/opt/GOAD
-vagrant up # this will create the vms
+/opt/GOAD  # place yourself in the GOAD folder (where you cloned the project)
+vagrant up # this will create the vms (this command must be run in the folder where the Vagrantfile is present)
 ```
 
 - VMs provisionning
@@ -308,11 +310,12 @@ ESSOS.LOCAL
 - [X] Printerbug
 - [X] Drop the mic
 - [X] Shadow credentials
-- [ ] Add LAPS
+- [X] Mitm6
+- [ ] Add Webdav
 - [ ] Add Applocker
+- [ ] Add LAPS
 - [ ] Zone transfert
 - [ ] GPO abuse
-- [ ] Mitm6
 - [ ] Wsus
 - [ ] Sccm
 - [ ] Exchange
@@ -362,7 +365,7 @@ vagrant snapshot pop
 #### Play only an ansible part
 - only play shares of member_server.yml :
 ```
-ansible-playbook member_server.yml --tags "shares"
+ansible-playbook member_server.yml --tags "data,shares"
 ```
 
 #### Play only on some server
@@ -450,6 +453,14 @@ failed: [192.168.56.10] (item={u'key': u'lord.varys', u'value': {u'city': u"King
 
 ```
  solution : re-run Ansible script
+
+### mssql : Unable to install SQL Server
+```
+TASK [mssql : Install the database]
+fatal: [192.168.56.22]: FAILED! => {"attempts": 3, "changed": true, "cmd": "c:\\setup\\mssql\\sql_installer.exe /configurationfile=c:\\setup\\mssql\\sql_conf.ini /IACCEPTSQLSERVERLICENSETERMS /MEDIAPATH=c:\\setup\\mssql\\media /QUIET /HIDEPROGRESSBAR", "delta": "0:00:34.891185", "end": "2022-08-17 21:26:53.976793", "msg": "non-zero return code", "rc": 2226323458, "start": "2022-08-17 21:26:19.085608", "stderr": "", "stderr_lines": [], "stdout": "Microsoft (R) SQL Server Installer\r\nCopyright (c) 2019 Microsoft.  All rights reserved.\r\n\r\nDownloading install package...\r\n\r\n\r\nOperation finished with result: Failure\r\n\r\nOops...\r\n\r\nUnable to install SQL Server (setup.exe).\r\n\r\n      Exit code (Decimal): -2068643838\r\n      Exit message: No features were installed during the setup execution. The requested features may already be installed. Please review the summary.txt log for further details.\r\n\r\n  SQL SERVER INSTALL LOG FOLDER\r\n      c:\\Program Files\\Microsoft SQL Server\\150\\Setup Bootstrap\\Log\\20220817_142624\r\n\r\n", "stdout_lines": ["Microsoft (R) SQL Server Installer", "Copyright (c) 2019 Microsoft.  All rights reserved.", "", "Downloading install package...", "", "", "Operation finished with result: Failure", "", "Oops...", "", "Unable to install SQL Server (setup.exe).", "", "      Exit code (Decimal): -2068643838", "      Exit message: No features were installed during the setup execution. The requested features may already be installed. Please review the summary.txt log for further details.", "", "  SQL SERVER INSTALL LOG FOLDER", "      c:\\Program Files\\Microsoft SQL Server\\150\\Setup Bootstrap\\Log\\20220817_142624", ""]}
+```
+
+solution : re-run Ansible server script: `ansible-playbook servers.yml`
 
 ## Special Thanks to
 

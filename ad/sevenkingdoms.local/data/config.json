@@ -79,7 +79,8 @@
                     "NORTH\\arya.stark" : "dbo"
                 },
                 "linked_servers": {
-                    "braavos.essos.local" : {
+                    "BRAAVOS" : {
+                        "data_src": "braavos.essos.local",
                         "users_mapping": [
                             {"local_login": "NORTH\\jon.snow","remote_login": "sa", "remote_password": "sa_P@ssw0rd!Ess0s"}
                         ]
@@ -127,9 +128,10 @@
                 },
                 "executeasuser" : {},
                 "linked_servers": {
-                    "castelblack.north.sevenkingdoms.local" : {
+                    "CASTELBLACK" : {
+                        "data_src": "castelblack.north.sevenkingdoms.local",
                         "users_mapping": [
-                            {"local_login": "north\\jorah.mormont","remote_login": "sa", "remote_password": "Sup1_sa_P@ssw0rd!"}
+                            {"local_login": "ESSOS\\khal.drogo","remote_login": "sa", "remote_password": "Sup1_sa_P@ssw0rd!"}
                         ]
                     }
                 }
