@@ -33,6 +33,7 @@
 # https://sensepost.com/blog/2020/ace-to-rce/
 # https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/abusing-active-directory-acls-aces
 # https://adsecurity.org/?p=3658
+# https://docs.microsoft.com/en-us/previous-versions/tn-archive/ff405676(v=msdn.10)
 
 - name: set acl 
   ansible.windows.win_powershell:
@@ -102,7 +103,7 @@
       }
       if ($ace) {
         $objAcl.AddAccessRule($ace)
-        Set-Acl -AclObject $objAcl -path "$objOU"  
+        Set-Acl -AclObject $objAcl -path "$objOU"
         $Ansible.Changed = $true
       }
     parameters:
@@ -110,4 +111,9 @@
       to: "{{item.value.to}}"
       right: "{{item.value.right}}"
       inheritance: "{{item.value.inheritance}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
   with_dict: "{{ ad_acls }}"
