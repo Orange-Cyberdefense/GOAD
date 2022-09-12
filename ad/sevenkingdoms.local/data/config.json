@@ -73,10 +73,20 @@
                     "NORTH\\jon.snow"
                 ],
                 "executeaslogin" : {
-                    "NORTH\\samwell.tarly" : "sa"
+                    "NORTH\\samwell.tarly" : "sa",
+                    "NORTH\\brandon.stark" :  "NORTH\\jon.snow"
                 },
                 "executeasuser" : {
-                    "NORTH\\arya.stark" : "dbo"
+                    "arya_master_dbo": {
+                        "user": "NORTH\\arya.stark",
+                        "db"  : "master",
+                        "impersonate" : "dbo"
+                    },
+                    "arya_dbms_dbo": {
+                        "user": "NORTH\\arya.stark",
+                        "db"  : "msdb",
+                        "impersonate" : "dbo"
+                    }
                 },
                 "linked_servers": {
                     "BRAAVOS" : {
