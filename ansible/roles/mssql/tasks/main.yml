@@ -140,8 +140,8 @@
 - name: Add IMPERSONATE on user
   win_shell: |
     SqlCmd -E -Q "CREATE LOGIN [{{item.key}}] FROM WINDOWS"
-    SqlCmd -E -Q "CREATE USER [{{item.key}}] FOR LOGIN [{{item.key}}]"
-    SqlCmd -E -Q "GRANT IMPERSONATE ON USER::[{{item.value}}] TO [{{item.key}}]"
+    SqlCmd -E -Q "USE {{item.value.db}};CREATE USER [{{item.value.user}}] FOR LOGIN [{{item.value.user}}]"
+    SqlCmd -E -Q "USE {{item.value.db}};GRANT IMPERSONATE ON USER::[{{item.value.impersonate}}] TO [{{item.value.user}}]"
   become: yes
   become_method: runas
   become_user: "{{SQLSVCACCOUNT}}"
