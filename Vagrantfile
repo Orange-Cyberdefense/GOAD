@@ -61,6 +61,10 @@ boxes = [
   boxes.each do |box|
     config.vm.define box[:name] do |target|
       # BOX
+      target.vm.provider "virtualbox" do |v|
+        v.name = box[:name]
+      end
+      target.vm.box_download_insecure = box[:box]
       target.vm.box = box[:box]
       if box.has_key?(:box_version)
         target.vm.box_version = box[:box_version]
