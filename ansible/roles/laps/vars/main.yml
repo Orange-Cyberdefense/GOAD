@@ -1,0 +1,13 @@
+---
+# converts opt_laps_password_policy_complexity to the value expected by GPO
+pri_laps_password_policy_complexity:
+  uppercase: 1
+  uppercase,lowercase: 2
+  uppercase,lowercase,digits: 3
+  uppercase,lowercase,digits,symbols: 4
+
+# GPO variables
+opt_laps_gpo_name: ansible-laps
+opt_laps_password_policy_complexity: uppercase,lowercase,digits,symbols
+opt_laps_password_policy_length: 14
+opt_laps_password_policy_age: 30

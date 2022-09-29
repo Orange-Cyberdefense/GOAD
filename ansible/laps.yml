@@ -1,0 +1,61 @@
+---
+# Load datas
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+- name: configure laps
+  hosts: dc02
+  roles:
+    - { role: 'laps', move_computer: dc02 }
+
+- name: configure laps
+  hosts: dc03
+  roles:
+    - { role: 'laps', move_computer: dc03 }
+
+- name: configure laps
+  hosts: dc01, dc02, dc03
+  roles:
+    - { role: 'laps', prep_servers: True }
+
+- name: configure laps
+  hosts: dc02
+  roles:
+    - { role: 'laps', apply_dacl: dc02 }
+
+- name: configure laps
+  hosts: dc03
+  roles:
+    - { role: 'laps', apply_dacl: dc03 }
+
+- name: configure laps
+  hosts: dc01, dc02, dc03
+  roles:
+    - { role: 'laps', create_gpo: True }
+
+- name: configure laps
+  hosts: dc02
+  roles:
+    - { role: 'laps', gpo_linked: dc02 }
+
+- name: configure laps
+  hosts: dc03
+  roles:
+    - { role: 'laps', gpo_linked: dc03 }
+
+- name: configure laps
+  hosts: srv02, srv03
+  roles:
+    - { role: 'laps', install_servers: True }
+
+- name: configure laps
+  hosts: dc02
+  roles:
+    - { role: 'laps', test_deployment: dc02 }
+
+- name: configure laps
+  hosts: dc03
+  roles:
+    - { role: 'laps', test_deployment: dc03 }
