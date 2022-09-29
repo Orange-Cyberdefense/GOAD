@@ -8,7 +8,7 @@
 # set AD datas ==================================================================================================
 
 - name: "Adjust rights configuration"
-  hosts: dc01,dc02,dc03,srv01,srv02,srv03
+  hosts: dc01,dc02,dc03,srv02,srv03
   roles:
     - { role: "settings/adjust_rights", tags: 'adjust_rights'}
   vars:
