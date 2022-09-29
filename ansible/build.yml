@@ -1,6 +1,6 @@
 ---
 - name: build all
-  hosts: dc01,dc02,dc03,srv01,srv02,srv03
+  hosts: dc01,dc02,dc03,srv02,srv03
   roles:
     - { role: 'common', tags: 'common', http_proxy: "{{enable_http_proxy}}"}
     - { role: 'settings/keyboard', tags: 'keyboard', layout: "fr-FR" }

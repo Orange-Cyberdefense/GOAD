@@ -8,7 +8,7 @@
 # set AD datas ==================================================================================================
 
 - name: Prepare servers set admin password, set hostname
-  hosts: dc01,dc02,dc03,srv01,srv02,srv03
+  hosts: dc01,dc02,dc03,srv02,srv03
   roles:
   - { role: 'settings/admin_password', tags: 'admin_password' }
   - { role: 'settings/hostname', tags: 'hostname' }
@@ -41,7 +41,7 @@
     source_dc: "{{lab.hosts[lab.domains[parent_domain].dc].hostname}}.{{parent_domain}}"
 
 - name: "play servers AD configuration"
-  hosts: srv01,srv02,srv03
+  hosts: srv02,srv03
   roles:
     - { role: 'member_server', tags: 'server'}
   vars:

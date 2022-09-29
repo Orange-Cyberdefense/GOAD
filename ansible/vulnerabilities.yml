@@ -12,11 +12,11 @@
   vars:
     script_path: "../ad/{{domain_name}}/scripts"
 
-- name: "Setup vulnerabilities srv01"
-  hosts: srv01
-  roles:
-  vars:
-    script_path: "../ad/{{domain_name}}/scripts"
+# - name: "Setup vulnerabilities srv01"
+#   hosts: srv01
+#   roles:
+#   vars:
+#     script_path: "../ad/{{domain_name}}/scripts"
 
 # north.sevenkingdoms.local
 - name: "Setup vulnerabilities dc02"

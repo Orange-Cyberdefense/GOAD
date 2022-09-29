@@ -6,7 +6,7 @@
   tags: 'data'
 
 - name: "Setup enable defender"
-  hosts: dc01,dc02,dc03,srv01,srv03
+  hosts: dc01,dc02,dc03,srv03
   roles:
     - { role: 'settings/windows_defender', tags: 'windows_defender', windows_defender_status: 'on' }
   vars:
