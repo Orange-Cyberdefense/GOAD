@@ -4,16 +4,36 @@
 
 ## Description
 GOAD is a pentest active directory LAB project.
-The purpose of this lab is to give pentesters a vulnerable Active directory environement ready to use to practice usual attack techniques.
+The purpose of this lab is to give pentesters a vulnerable Active directory environment ready to use to practice usual attack techniques.
 
 ## warning
-This lab is extremly vulnerable, do not reuse receipe to build your environement and do not deploy this environment on internet (this is a recommendation, use it as your own risk)
+This lab is extremely vulnerable, do not reuse recipe to build your environment and do not deploy this environment on internet (this is a recommendation, use it as your own risk)
 This repository is for pentest practice only.
 
-## licences
-This lab use free windows VM only (180 days). After that delay enter a licence on each server or rebuild all the lab (may be it's time for an update ;))
+## licenses
+This lab use free windows VM only (180 days). After that delay enter a license on each server or rebuild all the lab (may be it's time for an update ;))
 
 ## Installation
+
+- Installation is in two part :
+
+1. providing : it is made with vagrant, it download and run empty windows box.
+2. provisioning : it is made with ansible, it will install all the stuff to make the lab running like an active directory network
+
+### tldr;
+
+- You are on linux, you already got virtualbox, vagrant and docker installed on your host and you know what you are doing, just run :
+
+```bash
+# providing
+vagrant up
+# provisioning
+sudo docker build -t goadansible .
+sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook main.yml
+```
+
+- Now you can grab a coffee it will take time :)
+
 ### Requirements
 So far the lab has only been tested on a linux machine, but it should work as well on macOS. Ansible has some problems with Windows hosts so I don't know about that.
 
@@ -21,10 +41,10 @@ For the setup to work properly you need to install:
 
 #### Virtualbox
 
-- **virtualbox** actually the vms are provided to be run on virtualbox so you need a working virtualbox environement on your computer
+- **virtualbox** actually the vms are provided to be run on virtualbox so you need a working virtualbox environment on your computer
 
 #### Vagrant
-- **vagrant** from their official site [vagrant](https://www.vagrantup.com/downloads). The version you can install through your favourite package manager (apt, yum, ...) is probably not the latest one.
+- **vagrant** from their official site [vagrant](https://www.vagrantup.com/downloads). The version you can install through your favorite package manager (apt, yum, ...) is probably not the latest one.
 - Install vagrant plugin vbguest: `vagrant plugin install vagrant-vbguest` (not needed anymore)
 
 - Vagrant install with hashicorp repository example :
@@ -35,7 +55,18 @@ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://
 sudo apt update && sudo apt install vagrant=2.2.19
 ```
 
-#### Ansible
+#### Ansible with docker
+
+- If you want to do the provisioning from a docker container you could launch the following command to prepare the container
+
+```bash
+sudo docker build -t goadansible .
+```
+
+#### Ansible on your host
+
+- If you want to play ansible from your host you should launch the following commands :
+
 - *Create a python >= 3.8 virtualenv*
 
 ```bash
@@ -71,10 +102,10 @@ ansible-galaxy install -r requirements.yml
 
 ### V2 breaking changes
 - If you previously install the v1 do not try to update as a lot of things have changed. Just drop your old lab and build the new one (you will not regret it)
-- Chocolatey is no more used and basic tools like git or notepad++ are no more installed by default (as chocolatey regulary crash the install due to hiting rate on multiples builds)
-- ELK is no more installed by default to save ressources but you still can install it separately (see the blueteam/elk part)
-- Dragonstone vm as disapear and there is no more DC replication in the lab to save resources
-- Wintefell is now a domain controler for the subdomain north of the sevenkingdoms.local domain
+- Chocolatey is no more used and basic tools like git or notepad++ are no more installed by default (as chocolatey regularly crash the install due to hitting rate on multiples builds)
+- ELK is no more installed by default to save resources but you still can install it separately (see the blueteam/elk part)
+- Dragonstone vm as disappear and there is no more DC replication in the lab to save resources
+- Wintefell is now a domain controller for the subdomain north of the sevenkingdoms.local domain
 
 ### Space use
 - the lab take environ 77GB (but you have to get the space for the vms vagrant images windows server 2016 (22GB) / windows server 2019 (14GB) / ubuntu 18.04 (502M))
@@ -93,14 +124,20 @@ pwd
 vagrant up # this will create the vms (this command must be run in the folder where the Vagrantfile is present)
 ```
 
-- VMs provisionning
+- VMs provisioning
   - in one command just play :
 
 ```bash
 ansible-playbook main.yml # this will configure the vms in order to play ansible when the vms are ready
 ```
 
-- Or you can run playbooks one by one (mostely for debug or if you get trouble during install)
+- To run the provisioning from the docker container run (you should be in the same folder as the Dockerfile):
+
+```bash
+sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook main.yml
+```
+
+- Or you can run playbooks one by one (mostly for debug or if you get trouble during install)
   - The main.yml playbook is build in multiples parts. each parts can be re-run independently but the play order must be keep in cas you want to play one by one :
 
 ```
@@ -128,7 +165,7 @@ vagrant halt # will stop all the vm
 vagrant up   # will start the lab
 ```
 
-- if you got some errors see the troobleshooting section at the end of the document, but in most case if you get errors during install, don't think and just replay the main playbook (most of the errors which could came up are due to windows latency during installation, wait few minutes and replay the main.yml playbook)
+- if you got some errors see the troubleshooting section at the end of the document, but in most case if you get errors during install, don't think and just replay the main playbook (most of the errors which could came up are due to windows latency during installation, wait few minutes and replay the main.yml playbook)
 ```
 ansible-playbook main.yml
 ```
@@ -386,6 +423,46 @@ ansible-playbook main.yml
 ```
 
 ### Ansible-playbook
+
+#### Groups domain error
+
+- something go wrong with the trust, all the links are not fully establish
+- wait several minutes and relaunch the playbook
+- i really don't know why this append time to time on installation, if you want to investigate and resolve the issue please tell me how.
+
+```bash
+An exception occurred during task execution. To see the full traceback, use -vvv. The error was:    at Microsoft.ActiveDirectory.Management.Commands.ADCmdletBase`1.BeginProcessing()
+failed: [192.168.56.xx] (item={'key': 'DragonsFriends', 'value': ['sevenkingdoms.local\\tyron.lannister', 'essos.local\\daenerys.targaryen']}) => {"ansible_loop_var": "item", "attempts": 3, "changed": false, "item": {"key": "DragonsFriends", "value": ["north.sevenkingdoms.local\\jon.snow", "sevenkingdoms.local\\tyron.lannister", "essos.local\\daenerys.targaryen"]}, "msg": "Unhandled exception while executing module: Either the target name is incorrect or the server has rejected the client credentials."}
+```
+
+#### Error Add-Warning
+
+- You got an "Add-Warning" error during the user installation.
+- Upgrade to community.windows galaxy >= 1.11.0
+- relaunch the ansible playbooks.
+
+```bash
+An exception occurred during task execution. To see the full traceback, use -vvv. The error was: at , : line 475
+failed: [192.168.56.11] (item={'key': 'arya.stark', 'value': {'firstname': 'Arya', 'surname': 'Stark',
+...
+"msg": "Unhandled exception while executing module: The term 'Add-Warning' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again."}+
+```
+
+#### A parameter cannot be found that matches parameter name 'AcceptLicense'
+
+- If you got this kind of error you got an ansible.windows version >=  1.11.0
+- This version add the parameter AcceptLicense but it is accepted only for PowerShellGet module >= 1.6.0 and this one is not embededded in the vms.
+- Please keep version 1.11.0 and update the lab to get the fix for the PowerShellGet Module version.
+
+```bash
+fatal: [xxx]: FAILED! => {
+    "changed": false,
+    "msg": "Problems installing XXXX module: A parameter cannot be found that matches parameter name 'AcceptLicense'.",
+    "nuget_changed": false,
+    "output": "",
+    "repository_changed": false
+}
+```
 
 #### old Ansible version
 

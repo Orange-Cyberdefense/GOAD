@@ -11,7 +11,13 @@
       http: "{{ad_http_proxy}}"
       https: "{{ad_https_proxy}}"
   when: http_proxy == "yes"
-  
+
+- name: Upgrade module PowerShellGet to fix accept license issue on last windows ansible version
+  win_shell: |
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Install-PackageProvider -Name NuGet -Force
+    Install-Module PowerShellGet -Force
+
 - name: Windows | Check for ComputerManagementDsc Powershell module
   win_psmodule:
     name: ComputerManagementDsc
