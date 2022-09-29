@@ -155,7 +155,9 @@
             "netbios_name": "ESSOS",
             "ca_server": "Braavos",
             "trust" : "sevenkingdoms.local",
-            "organisation_units" : {},
+            "organisation_units" : {
+                "Workstations" : { "path" : "DC=essos,DC=local" }
+            },
             "groups" : {
                 "universal" : {},
                 "global" : {
@@ -247,7 +249,9 @@
             "domain_password" : "NgtI75cKV+Pu",
             "netbios_name": "NORTH",
             "trust" : "",
-            "organisation_units" : {},
+            "organisation_units" : {
+                "Workstations" : { "path" : "DC=north,DC=sevenkingdoms,DC=local" }
+            },
             "groups" : {
                 "universal" : {},
                 "global" : {

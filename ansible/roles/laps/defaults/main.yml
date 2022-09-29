@@ -1,0 +1,8 @@
+---
+move_computer: False
+prep_servers: False
+apply_dacl: False
+create_gpo: False
+gpo_linked: False
+install_servers: False
+test_deployment: False
