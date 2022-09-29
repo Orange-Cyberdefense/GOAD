@@ -1,10 +1,19 @@
 - name: "Reboot and wait for the AD system to restart"
   win_reboot:
     test_command: "Get-ADUser -Identity Administrator -Properties *"
+    post_reboot_delay: 100
+
+- name: "synchronizes all domains"
+  win_shell: repadmin /syncall /Ade
+  become: yes
+  become_method: runas
+  become_user: "{{domain_username}}"
+  vars:
+    ansible_become_pass: "{{domain_password}}"
 
 - name: "Add a domain user/group from another Domain in the multi-domain forest to a domain group : {{domain_server}}"
   community.windows.win_domain_group_membership:
-    # domain_server: "{{domain_server}}"
+    #domain_server: "{{domain_server}}"
     domain_username: "{{domain_username}}"
     domain_password: "{{domain_password}}"
     name: "{{item.key}}"
@@ -14,4 +23,4 @@
   register: group_membership
   until: "group_membership is not failed"
   retries: 3
-  delay: 120
+  delay: 60

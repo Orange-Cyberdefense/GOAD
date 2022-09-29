@@ -180,7 +180,6 @@
             },
             "multi_domain_groups_member" : {
                 "DragonsFriends" : [
-                    "north.sevenkingdoms.local\\jon.snow",
                     "sevenkingdoms.local\\tyron.lannister",
                     "essos.local\\daenerys.targaryen"
                 ],
@@ -424,9 +423,15 @@
                     }
                 },
                 "domainlocal" : {
+                    "AcrossTheNarrowSea" : {
+                        "path" : "CN=Users,DC=sevenkingdoms,DC=local"
+                    }
                 }
             },
             "multi_domain_groups_member" : {
+                "AcrossTheNarrowSea" : [
+                    "essos.local\\daenerys.targaryen"
+                ]
             },
             "acls" : {
                 "GenericAll_tywin_cersei" : {"for": "tywin.lannister", "to": "cersei.lannister", "right": "GenericAll", "inheritance": "None"},
@@ -437,6 +442,7 @@
                 "writeproperty-self-membership_stanis_stannis" : {"for": "stannis.baratheon", "to": "Domain Admins", "right": "Ext-Write-Self-Membership", "inheritance": "All"},
                 "forcechangepassword_tywin_jaime" : {"for": "tywin.lannister", "to": "jaime.lannister", "right": "Ext-User-Force-Change-Password", "inheritance": "None"},
                 "write_on_group_pycelle_domadmin" : {"for": "maester.pycelle", "to": "Domain Admins", "right": "WriteOwner", "inheritance": "None"},
+                "GenericAll_group_acrrosdom_domadmin" : {"for": "AcrossTheNarrowSea", "to": "Domain Admins", "right": "GenericAll", "inheritance": "None"},
                 "GenericWrite_on_user_jaimie_cersei" : {"for": "jaime.lannister", "to": "cersei.lannister", "right": "GenericWrite", "inheritance": "None"},
                 "Writedacl_tywin_council" : {"for": "tywin.lannister", "to": "Small Council", "right": "WriteDacl", "inheritance": "None"}
             },
