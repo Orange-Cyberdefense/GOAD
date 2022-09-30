@@ -13,6 +13,10 @@ This repository is for pentest practice only.
 ## licenses
 This lab use free windows VM only (180 days). After that delay enter a license on each server or rebuild all the lab (may be it's time for an update ;))
 
+## Want to discuss about ad and the GOAD project
+
+- Discord : https://discord.gg/NYy7rsMf3u
+
 ## Installation
 
 - Installation is in two part :
