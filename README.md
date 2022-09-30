@@ -13,10 +13,6 @@ This repository is for pentest practice only.
 ## licenses
 This lab use free windows VM only (180 days). After that delay enter a license on each server or rebuild all the lab (may be it's time for an update ;))
 
-## Want to discuss about ad and the GOAD project
-
-- Discord : https://discord.gg/NYy7rsMf3u
-
 ## Installation
 
 - Installation is in two part :
@@ -173,6 +169,10 @@ vagrant up   # will start the lab
 ```
 ansible-playbook main.yml
 ```
+
+## If you want to discuss about Active Directory and the GOAD project
+
+- Join us on Discord : https://discord.gg/NYy7rsMf3u
 
 ## LAB Content - sevenkingdoms.local / north.sevenkingdoms.local / essos.local
 
@@ -426,9 +426,7 @@ ansible-playbook vulnerabilities.yml
 ansible-playbook main.yml
 ```
 
-### Ansible-playbook
-
-#### Groups domain error
+### Groups domain error
 
 - something go wrong with the trust, all the links are not fully establish
 - wait several minutes and relaunch the playbook
@@ -439,7 +437,7 @@ An exception occurred during task execution. To see the full traceback, use -vvv
 failed: [192.168.56.xx] (item={'key': 'DragonsFriends', 'value': ['sevenkingdoms.local\\tyron.lannister', 'essos.local\\daenerys.targaryen']}) => {"ansible_loop_var": "item", "attempts": 3, "changed": false, "item": {"key": "DragonsFriends", "value": ["north.sevenkingdoms.local\\jon.snow", "sevenkingdoms.local\\tyron.lannister", "essos.local\\daenerys.targaryen"]}, "msg": "Unhandled exception while executing module: Either the target name is incorrect or the server has rejected the client credentials."}
 ```
 
-#### Error Add-Warning
+### Error Add-Warning
 
 - You got an "Add-Warning" error during the user installation.
 - Upgrade to community.windows galaxy >= 1.11.0
@@ -452,7 +450,7 @@ failed: [192.168.56.11] (item={'key': 'arya.stark', 'value': {'firstname': 'Arya
 "msg": "Unhandled exception while executing module: The term 'Add-Warning' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again."}+
 ```
 
-#### A parameter cannot be found that matches parameter name 'AcceptLicense'
+### A parameter cannot be found that matches parameter name 'AcceptLicense'
 
 - If you got this kind of error you got an ansible.windows version >=  1.11.0
 - This version add the parameter AcceptLicense but it is accepted only for PowerShellGet module >= 1.6.0 and this one is not embededded in the vms.
@@ -468,7 +466,7 @@ fatal: [xxx]: FAILED! => {
 }
 ```
 
-#### old Ansible version
+### old Ansible version
 
 ```bash
 ERROR! no action detected in task. This often indicates a misspelled module name, or incorrect module path.
@@ -483,7 +481,7 @@ The offending line appears to be:
 
 solution : upgrade Ansible
 
-##### old ansible.windows version
+#### old ansible.windows version
 ```bash
 ERROR! couldn't resolve module/action 'win_powershell'. This often indicates a misspelling, missing collection, or incorrect module path.
 ```
