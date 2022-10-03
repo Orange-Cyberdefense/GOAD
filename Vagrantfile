@@ -48,6 +48,9 @@ boxes = [
     v.vmx["numvcpus"] = "2"
   end
 
+  # disable rdp forwarded port inherited from StefanScherer box
+  config.vm.network :forwarded_port, guest: 3389, host: 3389, id: "rdp", auto_correct: true, disabled: true
+
   # no autoupdate if vagrant-vbguest is installed
   if Vagrant.has_plugin?("vagrant-vbguest") then
     config.vbguest.auto_update = false
@@ -70,6 +73,9 @@ boxes = [
         target.vm.box_version = box[:box_version]
       end
 
+      # issues/49
+      target.vm.synced_folder '.', '/vagrant', disabled: true
+
       # IP
       target.vm.network :private_network, ip: box[:ip]
 
@@ -83,10 +89,10 @@ boxes = [
         target.vm.communicator = "ssh"
       end
 
-      # forwarded port
       if box.has_key?(:forwarded_port)
+        # forwarded port explicit
         box[:forwarded_port] do |forwarded_port|
-          target.vm.network :forwarded_port, guest: forwarded_port[:guest], host: forwarded_port[:host], id: forwarded_port[:id]
+          target.vm.network :forwarded_port, guest: forwarded_port[:guest], host: forwarded_port[:host], host_ip: "127.0.0.1", id: forwarded_port[:id]
         end
       end
 
