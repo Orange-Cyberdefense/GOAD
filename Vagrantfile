@@ -38,6 +38,8 @@ boxes = [
 #   { :name => "SRV03", :ip => "192.168.56.23", :box => "jborean93/WindowsServer2016", :os => "windows"}
 # ]
 
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+
   config.vm.provider "virtualbox" do |v|
     v.memory = 3000
     v.cpus = 2
