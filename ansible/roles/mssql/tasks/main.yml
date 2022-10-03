@@ -1,6 +1,6 @@
-- name: Reboot before install
+- name: Reboot before install (long timeout in case of update)
   win_reboot:
-    reboot_timeout: 600
+    reboot_timeout: 1200
 
 - name: create a directory for installer download
   win_file: 
