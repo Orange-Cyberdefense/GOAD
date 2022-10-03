@@ -1,3 +1,8 @@
+- name: "Prepare to trust flush and renew dns"
+  win_shell: |
+    ipconfig /flushdns
+    ipconfig /renew
+
 # source : https://social.technet.microsoft.com/wiki/contents/articles/11911.active-directory-powershell-how-to-create-forest-trust.aspx
 - name: Add trusts between domain
   ansible.windows.win_powershell:
@@ -28,6 +33,11 @@
       RemoteForest: "{{remote_forest}}"
       RemoteAdmin: "{{remote_admin}}"
       RemoteAdminPassword: "{{remote_admin_password}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
   register:
     trust_result
 
@@ -35,3 +45,23 @@
   win_reboot:
     test_command: "Get-ADUser -Identity Administrator -Properties *"
   when: trust_result.changed
+
+
+#      $localforest=[System.DirectoryServices.ActiveDirectory.Forest]::getCurrentForest()
+#      try {
+#        $trustPassword = "TrustP@$$w0rd12"
+#        $localForest.CreateLocalSideOfTrustRelationship($RemoteForest,"Bidirectional",$trustPassword)
+#        $Ansible.Changed = $true
+#      } catch [System.DirectoryServices.ActiveDirectory.ActiveDirectoryObjectExistsException] {
+#        $Ansible.Changed = $false
+
+- name: Show trust result
+  win_shell: |
+    $obj = Get-CimInstance -Class Microsoft_DomainTrustStatus -Namespace root\microsoftactivedirectory
+    Write-Output -InputObject $obj
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    domain_name: "{{domain}}"
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"

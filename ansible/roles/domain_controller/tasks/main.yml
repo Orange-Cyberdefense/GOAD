@@ -1,3 +1,6 @@
+- name: "disable interface {{nat_adapter}} before join domain"
+  win_shell: netsh interface set interface "{{nat_adapter}}" disable
+
 - name: Ensure that domain exists
   win_domain:
     domain_netbios_name : "{{netbios_name}}"
@@ -25,6 +28,9 @@
     reboot_timeout: 900
     post_reboot_delay: 100
   when: check_domain_controller.changed
+
+- name: "enable interface {{nat_adapter}} after domain joined"
+  win_shell: netsh interface set interface "{{nat_adapter}}" enable
 
 - name: Check for xDnsServer Powershell module
   win_psmodule:

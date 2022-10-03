@@ -1,6 +1,9 @@
 [all:vars]
 ; domain_name : folder inside ad/
 domain_name=sevenkingdoms.local
+; adapter created by vagrant and vbox
+nat_adapter=Ethernet
+domain_adapter=Ethernet 2
 ansible_user=vagrant
 ansible_password=vagrant
 password=Str0nGPassw0rd123_
