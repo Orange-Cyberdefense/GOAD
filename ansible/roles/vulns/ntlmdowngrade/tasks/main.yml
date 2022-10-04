@@ -1,0 +1,7 @@
+# values : https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/network-security-lan-manager-authentication-level
+- name: Enable LmCompatibilityLevel
+  win_regedit:
+    path: HKLM:\System\CurrentControlSet\Control\Lsa
+    name: LmCompatibilityLevel
+    data: 0x3
+    type: dword
