@@ -9,7 +9,7 @@ RUN pip install pywinrm
 
 RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    sshpass
+    sshpass lftp rsync openssh-client
 
 COPY ./ansible/requirements.yml .
 

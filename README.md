@@ -206,9 +206,9 @@ You can change the vm version in the Vagrantfile according to Stefan Scherer vag
 
 - **elk** a kibana is configured on http://192.168.56.50:5601 to follow the lab events
 - infos : log encyclopedia : https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/
-- the elk is not installed installed by default due to ressources reasons. 
+- the elk is not installed by default due to resources reasons. 
 - to install and start the elk play the following commands :
-  1. uncomment the elk vm in vagrant and provision with `vagrant up elk`
+  1. uncomment the elk vm in vagrant and provision with `vagrant up elk` (do not forget to add a coma on the box before)
 ```
 # { :name => "elk", :ip => "192.168.56.50", :box => "bento/ubuntu-18.04", :os => "linux",
 #   :forwarded_port => [
@@ -217,18 +217,36 @@ You can change the vm version in the Vagrantfile according to Stefan Scherer vag
 # }
 ```
 
-  2. you need `sshpass` for the elk installation
+  2. uncomment the elk part in ansible/hosts file
 ```
+[elk:vars]
+ansible_connection=ssh
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=./.vagrant/machines/elk/virtualbox/private_key
+ansible_ssh_port=22
+host_key_checking = false
+
+[elk]
+192.168.56.50
+```
+
+  3. install with docker
+```bash
+sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook elk.yml
+```
+
+  3. or install on hand : 
+
+- you need `sshpass` for the elk installation
+```bash
 sudo apt install sshpass
 ```
-
-  3. Chocolatey is needed to use elk. To install it run:
-```
+- Chocolatey is needed to use elk. To install it run:
+```bash
 ansible-galaxy collection install chocolatey.chocolatey 
 ```
-
-  4. play the elk.yml playbook to install and run elk:
-```
+- play the elk.yml playbook to install and run elk:
+```bash
 ansible-playbook elk.yml
 ```
 
