@@ -1,14 +1,5 @@
-- name: Ensure chocolatey is installed
-  win_chocolatey:
-    name:
-    - chocolatey
-    - chocolatey-core.extension
-    state: present
-
 - name: Install winlogbeat
-  win_chocolatey:
-    name: winlogbeat
-    state: present
+  import_tasks: winlogbeat.yml
 
 - name: Set winlogbeat config file
   win_copy:
@@ -59,11 +50,17 @@
   failed_when: resultwlb is not defined
   ignore_errors: yes
 
+- name: Reboot before launch setup
+  win_reboot:
+    reboot_timeout: 600
+    post_reboot_delay: 100
+  when: resultwlb.state is defined and resultwlb.state != 'running'
+
 - name: Run winlogbeat setup
   win_command: "winlogbeat setup -e"
   args:
-    chdir: C:\ProgramData\chocolatey\lib\winlogbeat\tools\
-  when: resultwlb.state is not defined or resultwlb.name is not defined
+    chdir: "{{ winlogbeat_service.install_path_64 }}\\winlogbeat-{{ winlogbeat_service.version }}-windows-x86_64\\"
+  when: resultwlb.state is defined and resultwlb.state != 'running'
 
 # RUN winlogbeat
 - name: check winlogbeat service
