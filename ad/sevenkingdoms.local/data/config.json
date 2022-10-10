@@ -56,6 +56,7 @@
             "local_admin_password": "NgtI75cKV+Pu",
             "domain" : "north.sevenkingdoms.local",
             "path" : "DC=north,DC=sevenkingdoms,DC=local",
+            "use_laps": false,
             "local_groups" : {
                 "Administrators" : [
                     "north\\jeor.mormont"
@@ -119,6 +120,7 @@
             "local_admin_password": "978i2pF43UJ-",
             "domain" : "essos.local",
             "path" : "DC=essos,DC=local",
+            "use_laps": true,
             "local_groups" : {
                 "Administrators" : [
                     "essos\\khal.drogo"
@@ -155,7 +157,13 @@
             "netbios_name": "ESSOS",
             "ca_server": "Braavos",
             "trust" : "sevenkingdoms.local",
-            "organisation_units" : {},
+            "laps_path": "OU=Laps,DC=essos,DC=local",
+            "organisation_units" : {
+            },
+            "laps_readers": [
+                "jorah.mormont",
+                "Spys"
+            ],
             "groups" : {
                 "universal" : {},
                 "global" : {
@@ -247,7 +255,9 @@
             "domain_password" : "NgtI75cKV+Pu",
             "netbios_name": "NORTH",
             "trust" : "",
-            "organisation_units" : {},
+            "laps_path": "OU=Laps,DC=north,DC=sevenkingdoms,DC=local",
+            "organisation_units" : {
+            },
             "groups" : {
                 "universal" : {},
                 "global" : {
@@ -397,6 +407,7 @@
             "domain_password" : "8dCT-DJjgScp",
             "netbios_name": "SEVENKINGDOMS",
             "trust" : "essos.local",
+            "laps_path": "OU=Laps,DC=sevenkingdoms,DC=local",
             "organisation_units" : {
                 "Vale"        : { "path" : "DC=sevenkingdoms,DC=local"},
                 "IronIslands" : { "path" : "DC=sevenkingdoms,DC=local"},

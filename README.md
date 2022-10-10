@@ -370,9 +370,9 @@ ESSOS.LOCAL
 - [X] Drop the mic
 - [X] Shadow credentials
 - [X] Mitm6
+- [X] Add LAPS
 - [ ] Add Webdav
 - [ ] Add Applocker
-- [ ] Add LAPS
 - [ ] Zone transfert
 - [ ] GPO abuse
 - [ ] Wsus

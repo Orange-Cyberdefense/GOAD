@@ -1,0 +1,42 @@
+---
+# Load datas
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+- name: configure laps on DCs
+  hosts: dc01, dc02, dc03
+  roles:
+    - { role: 'laps/dc', tags: 'laps-dc' }
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    laps_path: "{{lab.domains[domain].laps_path}}"
+    hosts_dict: "{{lab.hosts}}"
+
+- name: configure laps on servers
+  hosts: srv02,srv03
+  roles:
+    - { role: 'laps/server', tags: 'laps-server'}
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    laps_path: "{{lab.domains[domain].laps_path}}"
+    use_laps: "{{lab.hosts[dict_key].use_laps if lab.hosts[dict_key].use_laps is defined else false}}"
+
+- name: verify and show laps passwords
+  hosts: dc01, dc02, dc03
+  roles:
+    - { role: 'laps/verify', tags: 'laps-verify' }
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    laps_path: "{{lab.domains[domain].laps_path}}"
+    hosts_dict: "{{lab.hosts}}"
+
+- name: set laps users and groups permission
+  hosts: dc01, dc02, dc03
+  roles:
+    - { role: 'laps/permissions', tags: 'laps-permissions', when:  }
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    laps_path: "{{lab.domains[domain].laps_path}}"
+    laps_readers: "{{lab.domains[domain].laps_readers if lab.domains[domain].laps_readers is defined else [] }}"

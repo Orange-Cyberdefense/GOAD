@@ -1,0 +1,3 @@
+- name: laps server install
+  import_tasks: install.yml
+  when: laps_path is defined and use_laps == true

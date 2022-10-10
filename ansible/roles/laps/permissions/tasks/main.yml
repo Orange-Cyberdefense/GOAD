@@ -1,0 +1,5 @@
+- name: Add user or group permission to read Laps
+  win_shell: |
+    Set-AdmPwdReadPasswordPermission -OrgUnit "{{laps_path}}" -AllowedPrincipals "{{item}}"
+  with_items: "{{laps_readers}}"
+  when: laps_readers is defined
