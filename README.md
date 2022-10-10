@@ -170,6 +170,10 @@ vagrant up   # will start the lab
 ansible-playbook main.yml
 ```
 
+## If you want to discuss about Active Directory and the GOAD project
+
+- Join us on Discord : https://discord.gg/NYy7rsMf3u
+
 ## LAB Content - sevenkingdoms.local / north.sevenkingdoms.local / essos.local
 
 ![v2_overview.png](./docs/img/v2_overview.png)
@@ -202,9 +206,9 @@ You can change the vm version in the Vagrantfile according to Stefan Scherer vag
 
 - **elk** a kibana is configured on http://192.168.56.50:5601 to follow the lab events
 - infos : log encyclopedia : https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/
-- the elk is not installed installed by default due to ressources reasons. 
+- the elk is not installed by default due to resources reasons. 
 - to install and start the elk play the following commands :
-  1. uncomment the elk vm in vagrant and provision with `vagrant up elk`
+  1. uncomment the elk vm in vagrant and provision with `vagrant up elk` (do not forget to add a coma on the box before)
 ```
 # { :name => "elk", :ip => "192.168.56.50", :box => "bento/ubuntu-18.04", :os => "linux",
 #   :forwarded_port => [
@@ -213,18 +217,36 @@ You can change the vm version in the Vagrantfile according to Stefan Scherer vag
 # }
 ```
 
-  2. you need `sshpass` for the elk installation
+  2. uncomment the elk part in ansible/hosts file
 ```
+[elk:vars]
+ansible_connection=ssh
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=./.vagrant/machines/elk/virtualbox/private_key
+ansible_ssh_port=22
+host_key_checking = false
+
+[elk]
+192.168.56.50
+```
+
+  3. install with docker
+```bash
+sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook elk.yml
+```
+
+  3. or install on hand : 
+
+- you need `sshpass` for the elk installation
+```bash
 sudo apt install sshpass
 ```
-
-  3. Chocolatey is needed to use elk. To install it run:
-```
+- Chocolatey is needed to use elk. To install it run:
+```bash
 ansible-galaxy collection install chocolatey.chocolatey 
 ```
-
-  4. play the elk.yml playbook to install and run elk:
-```
+- play the elk.yml playbook to install and run elk:
+```bash
 ansible-playbook elk.yml
 ```
 
@@ -422,9 +444,7 @@ ansible-playbook vulnerabilities.yml
 ansible-playbook main.yml
 ```
 
-### Ansible-playbook
-
-#### Groups domain error
+### Groups domain error
 
 - something go wrong with the trust, all the links are not fully establish
 - wait several minutes and relaunch the playbook
@@ -435,7 +455,7 @@ An exception occurred during task execution. To see the full traceback, use -vvv
 failed: [192.168.56.xx] (item={'key': 'DragonsFriends', 'value': ['sevenkingdoms.local\\tyron.lannister', 'essos.local\\daenerys.targaryen']}) => {"ansible_loop_var": "item", "attempts": 3, "changed": false, "item": {"key": "DragonsFriends", "value": ["north.sevenkingdoms.local\\jon.snow", "sevenkingdoms.local\\tyron.lannister", "essos.local\\daenerys.targaryen"]}, "msg": "Unhandled exception while executing module: Either the target name is incorrect or the server has rejected the client credentials."}
 ```
 
-#### Error Add-Warning
+### Error Add-Warning
 
 - You got an "Add-Warning" error during the user installation.
 - Upgrade to community.windows galaxy >= 1.11.0
@@ -448,7 +468,7 @@ failed: [192.168.56.11] (item={'key': 'arya.stark', 'value': {'firstname': 'Arya
 "msg": "Unhandled exception while executing module: The term 'Add-Warning' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again."}+
 ```
 
-#### A parameter cannot be found that matches parameter name 'AcceptLicense'
+### A parameter cannot be found that matches parameter name 'AcceptLicense'
 
 - If you got this kind of error you got an ansible.windows version >=  1.11.0
 - This version add the parameter AcceptLicense but it is accepted only for PowerShellGet module >= 1.6.0 and this one is not embededded in the vms.
@@ -464,7 +484,7 @@ fatal: [xxx]: FAILED! => {
 }
 ```
 
-#### old Ansible version
+### old Ansible version
 
 ```bash
 ERROR! no action detected in task. This often indicates a misspelled module name, or incorrect module path.
@@ -479,7 +499,7 @@ The offending line appears to be:
 
 solution : upgrade Ansible
 
-##### old ansible.windows version
+#### old ansible.windows version
 ```bash
 ERROR! couldn't resolve module/action 'win_powershell'. This often indicates a misspelling, missing collection, or incorrect module path.
 ```

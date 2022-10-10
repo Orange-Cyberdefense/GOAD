@@ -1,0 +1,8 @@
+# values : https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/network-security-lan-manager-authentication-level
+# NTLMv1 downgrade attacks are possible with LmCompatibilityLevel 2 and below
+- name: Enable LmCompatibilityLevel
+  win_regedit:
+    path: HKLM:\System\CurrentControlSet\Control\Lsa
+    name: LmCompatibilityLevel
+    data: 0x2
+    type: dword

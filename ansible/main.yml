@@ -28,6 +28,13 @@
 - import_playbook: adcs.yml
 # set the ACL
 - import_playbook: ad-acl.yml
+
+## SERVERS ---------
+### MSSQL + IIS  ----------
+# configure servers vulns (done in the midle of ad install to let time before install relations and acl)
+- import_playbook: servers.yml
+
+## SECURITY -----
 # --------------------------------------------------------------------
 # specifics security linked to the scenario are here
 - import_playbook: security.yml

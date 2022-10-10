@@ -46,6 +46,7 @@
 - name: "Setup vulnerabilities dc03"
   hosts: dc03
   roles:
+    - { role: "vulns/ntlmdowngrade", tags: 'openshares'}
   vars:
     script_path: "../ad/{{domain_name}}/scripts"
 

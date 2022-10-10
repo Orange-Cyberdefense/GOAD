@@ -1,6 +1,6 @@
 - name: "Set configure dns to {{dns_domain}}"
   win_dns_client:
-    adapter_names: 'Ethernet 2'
+    adapter_names: "{{domain_adapter}}"
     ipv4_addresses:
     - "{{dns_domain}}"
     log_path: C:\dns_log.txt
@@ -54,8 +54,8 @@
 #    ansible_become_pass: "{{password}}"
 #  when: not domain_child_log.stat.exists
 
-- name: disable interface Ethernet before join domain
-  win_shell: netsh interface set interface "Ethernet" disable
+- name: "disable interface {{nat_adapter}} before join domain"
+  win_shell: netsh interface set interface "{{nat_adapter}}" disable
 
 - name: add child domain to parent domain
   ansible.windows.win_powershell:
@@ -113,8 +113,8 @@
   win_reboot:
   when: child_result.changed
 
-- name: enable interface Ethernet after domain joined
-  win_shell: netsh interface set interface "Ethernet" enable
+- name: "enable interface {{nat_adapter}} after domain joined"
+  win_shell: netsh interface set interface "{{nat_adapter}}" enable
 
 - name: "Install XactiveDirectory"
   win_psmodule:
