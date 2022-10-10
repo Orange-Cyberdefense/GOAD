@@ -1,0 +1,18 @@
+---
+- name: Install to Servers
+  ansible.windows.win_package:
+    arguments: "ADDLOCAL=CSE"
+    path: https://download.microsoft.com/download/C/7/A/C7AAD914-A8A6-4904-88A1-29E657445D03/LAPS.x64.msi
+    state: present
+    creates_path: "%ProgramFiles%\\LAPS"
+  register: pri_laps_install
+  until: pri_laps_install is success
+  retries: 3  # Try 3 times just in case it failed to download the URL
+  delay: 1
+
+- name: reboot after installing LAPS if required
+  ansible.windows.win_reboot:
+  when: pri_laps_install.reboot_required
+
+- name: Refresh GPO on the Clients
+  ansible.windows.win_command: gpupdate /force

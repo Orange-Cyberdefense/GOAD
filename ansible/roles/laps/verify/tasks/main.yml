@@ -1,0 +1,15 @@
+- name: Retrieve LAPS Password on server
+  win_shell: |
+    $server=Get-AdComputer -Identity "{{hostname}}"
+    $obj = Get-ADObject -Identity $server.DistinguishedName -Properties ms-Mcs-AdmPwd
+    Write-Output "{{hostname}}" $obj."ms-Mcs-AdmPwd"
+  register: powershell_password
+  vars:
+    hostname: "{{item.value.hostname}}"
+  when: item.value.use_laps is defined and item.value.use_laps == true and item.value.domain == domain
+  with_dict: "{{hosts_dict}}"
+
+- name: Show new laps password
+  debug: msg="{{item.stdout_lines}}"
+  when: item.stdout_lines is defined
+  with_items: "{{powershell_password.results}}"

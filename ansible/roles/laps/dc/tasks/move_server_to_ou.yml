@@ -1,0 +1,14 @@
+- name: Move server to Laps OU
+  win_shell: |
+    try {
+      Get-ADOrganizationalUnit -Identity "{{laps_path}}" > $null
+      $server=Get-AdComputer -Identity "{{hostname}}"
+      Move-ADObject -Identity $server.DistinguishedName -TargetPath "{{laps_path}}"
+      $true
+    } catch [Microsoft.ActiveDirectory.Management.ADIdentityNotFoundException] {
+      $false
+    }
+  vars:
+    hostname: "{{item.value.hostname}}"
+  when: item.value.use_laps is defined and item.value.use_laps == true and item.value.domain == domain
+  with_dict: "{{hosts_dict}}"

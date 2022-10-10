@@ -1,29 +1,13 @@
 ---
-- name: Move SRV02 to Workstations OU
-  win_shell: |
-    try {
-      Get-ADOrganizationalUnit -Identity "OU=Workstations,DC=north,DC=sevenkingdoms,DC=local" > $null
-      Move-ADObject -Identity "CN=CASTELBLACK,CN=Computers,DC=north,DC=sevenkingdoms,DC=local" -TargetPath "OU=Workstations,DC=north,DC=sevenkingdoms,DC=local"
-      $true
-    } catch [Microsoft.ActiveDirectory.Management.ADIdentityNotFoundException] {
-      $false
-    }
-  when: move_computer == 'dc02'
-
-- name: Move SRV03 to Workstations OU
-  win_shell: |
-    try {
-      Get-ADOrganizationalUnit -Identity "OU=Workstations,DC=essos,DC=local" > $null
-      Move-ADObject -Identity "CN=BRAAVOS,CN=Computers,DC=essos,DC=local" -TargetPath "OU=Workstations,DC=essos,DC=local"
-      $true
-    } catch [Microsoft.ActiveDirectory.Management.ADIdentityNotFoundException] {
-      $false
-    }
-  when: move_computer == 'dc03'
+- name: "Create Laps OU if not exist"
+  win_dsc:
+    resource_name: ADOrganizationalUnit
+    name: "{{ laps_path.split(',')[0].split('=')[1] }}"
+    path:  "{{ ','.join(laps_path.split(',')[1:]) }}"
 
 - name: Install LAPS Package on Servers
   ansible.windows.win_package:
-    arguments: "ADDLOCAL=Management.ADMX"
+    arguments: "ADDLOCAL=Management.PS,Management.ADMX ALLUSERS=1 /qn"
     path: https://download.microsoft.com/download/C/7/A/C7AAD914-A8A6-4904-88A1-29E657445D03/LAPS.x64.msi
     state: present
     creates_path: "%ProgramFiles%\\LAPS"
@@ -31,11 +15,10 @@
   until: pri_laps_install is success
   retries: 3  # Try 3 times just in case it failed to download the URL
   delay: 1
-  when: prep_servers | bool
 
 - name: Reboot After Installing LAPS on Servers
   ansible.windows.win_reboot:
-  when: prep_servers | bool and pri_laps_install.reboot_required
+  when: pri_laps_install.reboot_required
 
 - name: Configure Password Properties
   win_ad_object:
@@ -59,7 +42,6 @@
   become: yes
   become_method: runas
   become_user: SYSTEM
-  when: prep_servers | bool
 
 - name: Configure Password Expiry Time
   win_ad_object:
@@ -82,7 +64,6 @@
   become: yes
   become_method: runas
   become_user: SYSTEM
-  when: prep_servers | bool
 
 - name: Add LAPS attributes to the Computer Attribute
   win_ad_object:
@@ -95,11 +76,10 @@
   become: yes
   become_method: runas
   become_user: SYSTEM
-  when: prep_servers | bool
 
-- name: Apply DACL to OU Containers (north.sevenkingdoms.local)
+- name: "Apply DACL to OU Containers"
   win_ad_dacl:
-    path: 'OU=Workstations,DC=north,DC=sevenkingdoms,DC=local'
+    path: "{{laps_path}}"
     state: present
     aces:
     - rights:
@@ -116,28 +96,6 @@
       object_type: ms-Mcs-AdmPwd
       access: allow
       account: S-1-5-10
-  when: apply_dacl == 'dc02'
-
-- name: Apply DACL to OU Containers (essos.local)
-  win_ad_dacl:
-    path: 'OU=Workstations,DC=essos,DC=local'
-    state: present
-    aces:
-    - rights:
-      - ReadProperty
-      - WriteProperty
-      inheritance_type: Descendents
-      inherited_object_type: Computer
-      object_type: ms-Mcs-AdmPwdExpirationTime
-      access: allow
-      account: S-1-5-10  # NT AUTHORITY\SELF
-    - rights: WriteProperty
-      inheritance_type: Descendents
-      inherited_object_type: Computer
-      object_type: ms-Mcs-AdmPwd
-      access: allow
-      account: S-1-5-10
-  when: apply_dacl == 'dc03'
 
 - name: Create LAPS GPO
   win_gpo:
@@ -145,7 +103,6 @@
     description: Setup by Ansible for LAPS
     state: present
   register: pri_laps_gpo
-  when: create_gpo | bool
 
 - name: Add LAPS extension to GPO
   win_ad_object:
@@ -154,7 +111,6 @@
       # [Registry:Admin Tool][AdmPwd:Admin Tool]
       gPCMachineExtensionNames: "[{35378EAC-683F-11D2-A89A-00C04FBBCFA2}{D02B1F72-3407-48AE-BA88-E8213C6761F1}]\
         [{D76B9641-3288-4F75-942D-087DE603E3EA}{D02B1F72-3407-48AE-BA88-E8213C6761F1}]"
-  when: create_gpo | bool
 
 - name: Configure Password Policy Settings on GPO
   win_gpo_reg:
@@ -171,7 +127,6 @@
     value: 14
   - name: PasswordAgeDays
     value: 30
-  when: create_gpo | bool
 
 - name: Configure Expiration Protection on GPO
   win_gpo_reg:
@@ -181,7 +136,6 @@
     state: present
     type: dword
     value: 1
-  when: create_gpo | bool
 
 - name: Remove Configuration for Expiration Protection on GPO
   win_gpo_reg:
@@ -189,7 +143,6 @@
     name: PwdExpirationProtectionEnabled
     path: 'HKLM\Software\Policies\Microsoft Services\AdmPwd'
     state: absent
-  when: create_gpo | bool
 
 - name: Configure Custom Admin Username Policy on GPO
   win_gpo_reg:
@@ -198,7 +151,6 @@
     path: 'HKLM\Software\Policies\Microsoft Services\AdmPwd'
     state: present
     type: string
-  when: create_gpo | bool
 
 - name: Enable the GPO
   win_gpo_reg:
@@ -208,64 +160,16 @@
     state: present
     type: dword
     value: 1
-  when: create_gpo | bool
 
 - name: Create Comment File for GPO
   ansible.windows.win_copy:
     src: ../files/comment.cmtx
     dest: C:\Windows\SYSVOL\domain\Policies\{{ '{' }}{{ pri_laps_gpo.id }}{{ '}' }}\Machine\comment.cmtx
-  when: create_gpo | bool
 
 - name: Ensure GPO is Linked
   win_gpo_link:
     name: '{{ opt_laps_gpo_name }}'
-    target: 'OU=Workstations,DC=north,DC=sevenkingdoms,DC=local'
+    target: '{{laps_path}}'
     state: present
     enforced: True
     enabled: True
-  when: gpo_linked == 'dc02'
-
-- name: Ensure GPO is Linked
-  win_gpo_link:
-    name: '{{ opt_laps_gpo_name }}'
-    target: 'OU=Workstations,DC=essos,DC=local'
-    state: present
-    enforced: True
-    enabled: True
-  when: gpo_linked == 'dc03'
-
-- name: Install to Servers
-  ansible.windows.win_package:
-    arguments: "ADDLOCAL=CSE"
-    path: https://download.microsoft.com/download/C/7/A/C7AAD914-A8A6-4904-88A1-29E657445D03/LAPS.x64.msi
-    state: present
-    creates_path: "%ProgramFiles%\\LAPS"
-  register: pri_laps_install
-  until: pri_laps_install is success
-  retries: 3  # Try 3 times just in case it failed to download the URL
-  delay: 1
-  when: install_servers | bool
-
-- name: reboot after installing LAPS if required
-  ansible.windows.win_reboot:
-  when: install_servers | bool and pri_laps_install.reboot_required
-
-- name: Refresh GPO on the Clients
-  ansible.windows.win_command: gpupdate /force
-  when: install_servers | bool
-
-- name: Retrieve LAPS Password on DC02
-  win_shell: |
-    $obj = Get-ADObject -Identity "CN=CASTELBLACK,OU=Workstations,DC=north,DC=sevenkingdoms,DC=local" -Properties ms-Mcs-AdmPwd
-    Write-Output -InputObject $obj."ms-Mcs-AdmPwd"
-  register: powershell_password
-  changed_when: False
-  when: test_deployment == 'dc02'
-
-- name: Retrieve LAPS Password on DC03
-  win_shell: |
-    $obj = Get-ADObject -Identity "CN=BRAAVOS,OU=Workstations,DC=essos,DC=local" -Properties ms-Mcs-AdmPwd
-    Write-Output -InputObject $obj."ms-Mcs-AdmPwd"
-  register: powershell_password
-  changed_when: False
-  when: test_deployment == 'dc03'
