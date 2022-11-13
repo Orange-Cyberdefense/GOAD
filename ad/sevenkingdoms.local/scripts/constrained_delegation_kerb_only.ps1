@@ -1,3 +1,4 @@
 # https://www.thehacker.recipes/ad/movement/kerberos/delegations/constrained#without-protocol-transition
-Set-ADUser -Identity "svc_file_kerb" -ServicePrincipalNames @{Add='CIFS/DB01.bs.corp'}
-Set-ADUser -Identity "svc_file_kerb" -Add @{'msDS-AllowedToDelegateTo'=@('CIFS/DB01.bs.corp')}
+Set-ADComputer -Identity "castelblack$" -ServicePrincipalNames @{Add='HTTP/winterfell.north.sevenkingdoms.local'}
+Set-ADComputer -Identity "castelblack$" -Add @{'msDS-AllowedToDelegateTo'=@('HTTP/winterfell.north.sevenkingdoms.local','HTTP/winterfell')}
+# Set-ADComputer -Identity "castelblack$" -Add @{'msDS-AllowedToDelegateTo'=@('CIFS/winterfell.north.sevenkingdoms.local','CIFS/winterfell')}

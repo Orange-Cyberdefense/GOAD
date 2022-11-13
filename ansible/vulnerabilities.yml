@@ -24,6 +24,7 @@
   roles:
     - { role: 'ps', tags: 'asrep_roasting', ps_script: "{{script_path}}/asrep_roasting.ps1"}
     - { role: 'ps', tags: 'constrained_delegation', ps_script: "{{script_path}}/constrained_delegation_use_any.ps1"}
+    - { role: 'ps', tags: 'constrained_delegation_kerb', ps_script: "{{script_path}}/constrained_delegation_kerb_only.ps1"}
     - { role: 'ps', tags: 'ntlm_relay', ps_script: "{{script_path}}/ntlm_relay.ps1"}
     - { role: 'ps', tags: 'responder', ps_script: "{{script_path}}/responder.ps1"}
 #    - { role: 'ps', tags: 'anonymous_ldap', ps_script: "{{script_path}}/anonymous_ldap.ps1"} # done with acl
