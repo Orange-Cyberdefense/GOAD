@@ -11,6 +11,7 @@
   hosts: dc01,dc02,dc03,srv02,srv03
   roles:
     - { role: "settings/adjust_rights", tags: 'adjust_rights'}
+    - { role: "settings/user_rights", tags: 'adjust_rights'}
   vars:
     local_groups: "{{lab.hosts[dict_key].local_groups}}"
 

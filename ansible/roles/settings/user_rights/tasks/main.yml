@@ -1,0 +1,10 @@
+# https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment
+# SeRemoteInteractiveLogonRight
+
+- name: Add remote desktop and administrators group to rdp
+  ansible.windows.win_user_right:
+    name: SeRemoteInteractiveLogonRight
+    users:
+    - Administrators
+    - Remote Desktop Users
+    action: set
