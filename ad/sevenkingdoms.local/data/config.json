@@ -350,7 +350,7 @@
                 "sansa.stark" : {
                     "firstname"   : "Sansa",
                     "surname"     : "Stark",
-                    "password"    : "awomannocry",
+                    "password"    : "=_)(*&^%$#@!qazaq",
                     "city"        : "Winterfell",
                     "description" : "Sansa Stark",
                     "groups"      : ["Stark"],
@@ -368,7 +368,7 @@
                 "rickon.stark" : {
                     "firstname"   : "Rickon",
                     "surname"     : "Stark",
-                    "password"    : "snowball",
+                    "password"    : "Winter2022",
                     "city"        : "Winterfell",
                     "description" : "Rickon Stark",
                     "groups"      : ["Stark"],
