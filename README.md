@@ -112,7 +112,7 @@ ansible-galaxy install -r requirements.yml
 - the total space needed for the lab is ~115 GB (and more if you take snapshots)
 
 ### Start / Setup
-The default domain will be **sevenkingdoms.local**, on the subnet 192.168.56.1/24 and each machine has only been allocated with 1CPU and 1024MB of memory. If you want to change some of these performance settings you can modify the Vagrantfile.
+The default domain will be **sevenkingdoms.local**, on the subnet 192.168.56.1/24 and each machine has only been allocated with 2CPUs and 3000MB of memory. If you want to change some of these performance settings you can modify the Vagrantfile.
 
 To have the lab up and running this is the commands you should do:
 
