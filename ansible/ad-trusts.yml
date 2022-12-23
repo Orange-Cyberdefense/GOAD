@@ -22,4 +22,4 @@
     remote_admin_password: "{{lab.domains[remote_forest].domain_password}}"
     zone_name: "{{remote_forest}}"
     remote_dc: "{{lab.domains[remote_forest].dc}}"
-    master_server: "{{groups[remote_dc][0]}}"
+    master_server: "{{hostvars[remote_dc].ansible_host}}"
