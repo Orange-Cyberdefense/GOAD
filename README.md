@@ -15,7 +15,7 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 
 ## Installation
 
-- Installation is in two part :
+- Installation is in two parts :
 
 1. providing : it is made with vagrant, it download and run empty windows box.
 2. provisioning : it is made with ansible, it will install all the stuff to make the lab running like an active directory network
@@ -25,47 +25,163 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 - You are on linux, you already got virtualbox, vagrant and docker installed on your host and you know what you are doing, just run :
 
 ```bash
-# providing
+# providing (create and start the vms)
 vagrant up
-# provisioning
+# provisioning (setup the goad config and install inside the vms)
 sudo docker build -t goadansible .
 sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook main.yml
 ```
 
 - Now you can grab a coffee it will take time :)
 
-### Requirements
-So far the lab has only been tested on a linux machine, but it should work as well on macOS. Ansible has some problems with Windows hosts so I don't know about that.
+### Windows users warning
 
-For the setup to work properly you need to install:
+- The lab intend to be installed from a **Linux host** and was tested only on this.
+- Some people have successfully installed the lab on a windows OS, to do that they create the VMs with vagrant and have done the ansible provisioning part from a linux machine.
+- In this case the linux machine used to do the provisioning must be setup with one adapter on NAT and one adapter on the same virtual private network as the lab.
 
-#### Virtualbox
+### 1. - Create the VMs with Vagrant
 
-- **virtualbox** actually the vms are provided to be run on virtualbox so you need a working virtualbox environment on your computer
+> Vagrant+virtualbox or Vagrant+vmware are used to provide the virtual machines and Ansible is use to automate the configuration and vulnerabilities setup.
 
-#### Vagrant
-- **vagrant** from their official site [vagrant](https://www.vagrantup.com/downloads). The version you can install through your favorite package manager (apt, yum, ...) is probably not the latest one.
-- Install vagrant plugin vbguest: `vagrant plugin install vagrant-vbguest` (not needed anymore)
+- The first step of the installation is to create the VMs.
+- To do that vagrant will be in charge of the creation on the provider you choose.
 
-- Vagrant install with hashicorp repository example :
+#### 1.1 - Choose the provider between virtualbox and vmware-workstation and install it
+
+- This is up to you, the lab is by default setup on virtualbox (because it is free) but you can choose vmware-workstation if you want (just follow this guide to do the rights changes)
+
+##### Install Virtualbox
+
+- **virtualbox** actually the vms are provided to be run on virtualbox so you need a working virtualbox environment on your computer.
+- This is obvious but yes you need to first install it on your hosts if you want to use it. (on ubuntu `sudo apt install virtualbox` will to the work)
+- If you choose virtualbox, nothing to change on the files, this is the default environment.
+
+#### OR install Vmware workstation
+
+- Download and install vmware workstation and set your license key (or use the 30 days trial) [workstation-pro-evaluation](https://www.vmware.com/products/workstation-pro/workstation-pro-evaluation.html)
+- __Note that workstation-player can't manage clone and snapshot and will not work with vagrant you need to use the pro version__
+- You will also need to install VMware Utility driver (https://developer.hashicorp.com/vagrant/downloads/vmware)
+(an install guide can be found here : https://developer.hashicorp.com/vagrant/docs/providers/vmware/vagrant-vmware-utility)
+
+```bash
+cd /tmp
+wget https://releases.hashicorp.com/vagrant-vmware-utility/1.0.21/vagrant-vmware-utility_1.0.21_linux_amd64.zip
+sudo mkdir -p /opt/vagrant-vmware-desktop/bin
+sudo unzip -d /opt/vagrant-vmware-desktop/bin vagrant-vmware-utility_1.0.21_linux_amd64.zip
+sudo /opt/vagrant-vmware-desktop/bin/vagrant-vmware-utility certificate generate
+sudo /opt/vagrant-vmware-desktop/bin/vagrant-vmware-utility service install
+```
+
+- Note that you will need to install the vmware-desktop plugin after the vagrant installation : 
+```
+vagrant plugin install vagrant-vmware-desktop
+```
+
+- **For vmware you need to make changes to the Vagrantfile and the hosts file**
+
+- `Vagrantfile`:
+  - Change the following lines from this :
+```
+# Uncomment this depending on the provider you want to use
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
+# ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vmware_desktop'
+```
+
+  - To this :
+```
+# Uncomment this depending on the provider you want to use
+# ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vmware_desktop'
+```
+
+- `ansible/hosts`:
+  - Change the following lines from this :
+```
+; adapter created by vagrant and virtualbox
+nat_adapter=Ethernet
+domain_adapter=Ethernet 2
+
+; adapter created by vagrant and vmware
+; nat_adapter=Ethernet0
+; domain_adapter=Ethernet1
+```
+ - To this:
+```
+; adapter created by vagrant and virtualbox
+; nat_adapter=Ethernet
+; domain_adapter=Ethernet 2
+
+; adapter created by vagrant and vmware
+nat_adapter=Ethernet0
+domain_adapter=Ethernet1
+```
+
+#### 1.2 - Install Vagrant
+
+- **vagrant** from their official site [vagrant](https://developer.hashicorp.com/vagrant/downloads). __The version you can install through your favorite package manager (apt, yum, ...) is probably not the latest one__.
+- Install vagrant plugin vbguest if you want the guest addition: `vagrant plugin install vagrant-vbguest` (not mandatory)
+- Vagrant installation is well describe in [the official vagrant page](https://developer.hashicorp.com/vagrant/downloads) (tests are ok on 2.3.4)
 
 ```bash
 wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-sudo apt update && sudo apt install vagrant=2.2.19
+sudo apt update && sudo apt install vagrant
 ```
 
-#### Ansible with docker
+#### 1.3 - Create the vms
+
+- To create the VMs just run 
+
+```bash
+vagrant up
+```
+
+- For each vm, it will download the box and than install it on your provider.
+- If you get an issue on this, this is certainly due to vagrant or your provider (but in this case just take a look to at the github issue and on discord maybe someone got the same issue)
+
+- At the end of the vagrantup you should have the vms created and running, like this :
+
+- Virtualbox :
+
+  ![virtualbox](/docs/img/vbox.png)
+  - Adapter 1 is set up as NAT (used to internet access during the provisioning)
+  - Adapter 2 is set up as host only adapter on the network 192.168.56.1/24
+
+#### 2.0 Run ansible 
+
+- Now you got the 5 VMS created, great!
+- The next step is the provisioning with ansible.
+- You can run ansible from :
+  - a docker container
+  - OR your linux host
+  - OR a linux VM with an host only adapter on the same network as the lab's vms.
+
+##### Run ansible with docker
 
 - If you want to do the provisioning from a docker container you could launch the following command to prepare the container
 
 ```bash
+cd /opt/goad
 sudo docker build -t goadansible .
 ```
 
-#### Ansible on your host
+- And launch the provisioning with :
 
-- If you want to play ansible from your host you should launch the following commands :
+```bash
+sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook main.yml
+```
+
+- This will launch ansible on the docker container.
+- The --network host option will launch it on your host network so the vms should be accessible by docker for 192.168.56.1/24
+- The -v mount the local repository containing goad in the folder /goad of the docker container
+- And than the playbook main.yml is launched
+- Please note that the vms must be in a running state, so vagrant up must have been done and finished before launching the ansible playbook.
+
+
+#### Run ansible on your host (or from a linux vm in the same network as the lab)
+
+- If you want to play ansible from your host or a linux vm you should launch the following commands :
 
 - *Create a python >= 3.8 virtualenv*
 
@@ -98,7 +214,11 @@ python3 -m pip install pywinrm
 ansible-galaxy install -r requirements.yml
 ```
 
-> Vagrant and virtualbox are used to provide the virtual machines and Ansible is use to automate the configuration and vulnerabilites setup.
+- And than you can launch the ansible provisioning with (note that the vms must be in a running state, so vagrant up must have been done before that)
+
+```bash
+ansible-playbook main.yml # this will configure the vms in order to play ansible when the vms are ready
+```
 
 ### V2 breaking changes
 - If you previously install the v1 do not try to update as a lot of things have changed. Just drop your old lab and build the new one (you will not regret it)
@@ -111,12 +231,12 @@ ansible-galaxy install -r requirements.yml
 - the lab take environ 77GB (but you have to get the space for the vms vagrant images windows server 2016 (22GB) / windows server 2019 (14GB) / ubuntu 18.04 (502M))
 - the total space needed for the lab is ~115 GB (and more if you take snapshots)
 
-### Start / Setup
-The default domain will be **sevenkingdoms.local**, on the subnet 192.168.56.1/24 and each machine has only been allocated with 1CPU and 1024MB of memory. If you want to change some of these performance settings you can modify the Vagrantfile.
+### Start / Setup / Run
+The default domain will be **sevenkingdoms.local**, on the subnet 192.168.56.1/24 and each machine has been allocated with 2CPU and 4GB of memory. If you want to change some of these performance settings you can modify the Vagrantfile (please note that with less RAM the install process sometimes crash, if it append just relaunch the ansible playbook).
 
 To have the lab up and running this is the commands you should do:
 
-- VMs creation
+- VMs start/creation if not exist
 
 ```bash
 pwd
@@ -153,19 +273,19 @@ ansible-playbook security.yml     # Configure some securities (adjust av enable/
 ansible-playbook vulns.yml        # Configure some vulnerabilities
 ```
 
-- when you finish playing you could do :
+- When you finish playing you could do :
 
 ```bash
 vagrant halt # will stop all the vm
 ```
 
-- to just relaunch the lab (no need to replay ansible as you already do that in the first place)
+- To just relaunch the lab (no need to replay ansible as you already do that in the first place)
 
 ```bash
 vagrant up   # will start the lab
 ```
 
-- if you got some errors see the troubleshooting section at the end of the document, but in most case if you get errors during install, don't think and just replay the main playbook (most of the errors which could came up are due to windows latency during installation, wait few minutes and replay the main.yml playbook)
+- If you got some errors see the troubleshooting section at the end of the document, but in most case if you get errors during install, don't think and just replay the main playbook (most of the errors which could came up are due to windows latency during installation, wait few minutes and replay the main.yml playbook)
 ```
 ansible-playbook main.yml
 ```
@@ -252,51 +372,57 @@ ansible-playbook elk.yml
 
 ### Users/Groups and associated vulnerabilites/scenarios
 
+- You can find a lot of the available scenarios on [https://mayfly277.github.io/categories/ad/](https://mayfly277.github.io/categories/ad/)
+
 NORTH.SEVENKINGDOMS.LOCAL
-- STARKS
+- STARKS:              RDP on WINTERFELL AND CASTELBLACK
   - arya.stark:        Execute as user on mssql
   - eddard.stark:      DOMAIN ADMIN NORTH/ (bot 5min) LLMRN request to do NTLM relay with responder
   - catelyn.stark:     
   - robb.stark:        bot (3min) RESPONDER LLMR
   - sansa.stark:       
   - brandon.stark:     ASREP_ROASTING
-  - rickon.stark:      GPO abuse (Edit Settings on "ChangeWallpaperInBlue" GPO)
+  - rickon.stark:      
   - theon.greyjoy:
   - jon.snow:          mssql admin / KERBEROASTING / group cross domain / mssql trusted link
   - hodor:             PASSWORD SPRAY (user=password)
-- NIGHT WATCH
+- NIGHT WATCH:         RDP on CASTELBLACK
   - samwell.tarly:     Password in ldap description / mssql execute as login
+                       GPO abuse (Edit Settings on "STARKWALLPAPER" GPO)
   - jon.snow:          (see starks)
   - jeor.mormont:      (see mormont)
-- MORMONT
+- MORMONT:             RDP on CASTELBLACK
   - jeor.mormont:      ACL writedacl-writeowner on group Night Watch
 - AcrossTheSea :       cross forest group
 
 SEVENKINGDOMS.LOCAL
 - LANISTERS
-  - tywin.lannister:   ACL genericall-on-user cersei.lannister / ACL forcechangepassword on jaime.lanister
-  - jaime.lannister:   ACL genericwrite-on-user cersei.lannister
-  - tyron.lannister:   ACL self-self-membership-on-group Domain Admins
+  - tywin.lannister:   ACL forcechangepassword on jaime.lanister
+  - jaime.lannister:   ACL genericwrite-on-user joffrey.baratheon
+  - tyron.lannister:   ACL self-self-membership-on-group Small Council
   - cersei.lannister:  DOMAIN ADMIN SEVENKINGDOMS
-- BARATHEON
+- BARATHEON:           RDP on KINGSLANDING
   - robert.baratheon:  DOMAIN ADMIN SEVENKINGDOMS
-  - joffrey.baratheon: 
+  - joffrey.baratheon: ACL Write DACL on tyron.lannister
   - renly.baratheon:
   - stannis.baratheon: ACL genericall-on-computer kingslanding / ACL writeproperty-self-membership Domain Admins
-- SMALL COUNCIL
+- SMALL COUNCIL :      ACL add Member to group dragon stone / RDP on KINGSLANDING
   - petyer.baelish:    ACL writeproperty-on-group Domain Admins
-  - lord.varys:        ACL genericall-on-group Domain Admins
+  - lord.varys:        ACL genericall-on-group Domain Admins / Acrossthenarrossea
   - maester.pycelle:   ACL write owner on group Domain Admins
+- DRAGONSTONE :        ACL Write Owner on KINGSGUARD
+- KINGSGUARD :         ACL generic all on user stannis.baratheon
+- AccorsTheNarrowSea:       cross forest group
 
 ESSOS.LOCAL
 - TARGERYEN
   - daenerys.targaryen: DOMAIN ADMIN ESSOS
   - viserys.targaryen:  
-  - jorah.mormont:      mssql trusted link
+  - jorah.mormont:      mssql execute as login / mssql trusted link / Read LAPS Password
 - DOTHRAKI
   - khal.drogo:         mssql admin / GenericAll on viserys (shadow credentials) / GenericAll on ECS4
 - DragonsFriends:       cross forest group
-- Spys:                 cross forest group
+- Spys:                 cross forest group / Read LAPS password  / ACL generic all jorah.mormont
 
 ### Computers Users and group permissions
 

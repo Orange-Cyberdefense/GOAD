@@ -1,5 +1,9 @@
 Vagrant.configure("2") do |config|
 
+# Uncomment this depending on the provider you want to use
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
+# ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vmware_desktop'
+
 boxes = [
   # windows server 2022 : don't work for now
   #{ :name => "DC01",  :ip => "192.168.56.10", :box => "StefanScherer/windows_2022", :box_version => "2021.08.23", :os => "windows"},
@@ -39,12 +43,12 @@ boxes = [
 # ]
 
   config.vm.provider "virtualbox" do |v|
-    v.memory = 3000
+    v.memory = 4000
     v.cpus = 2
   end
 
   config.vm.provider "vmware_desktop" do |v|
-    v.vmx["memsize"] = "3000"
+    v.vmx["memsize"] = "4000"
     v.vmx["numvcpus"] = "2"
   end
 
@@ -85,6 +89,12 @@ boxes = [
         target.vm.communicator = "winrm"
         target.vm.provision :shell, :path => "vagrant/Install-WMF3Hotfix.ps1", privileged: false
         target.vm.provision :shell, :path => "vagrant/ConfigureRemotingForAnsible.ps1", privileged: false
+
+        # fix ip for vmware
+        if ENV['VAGRANT_DEFAULT_PROVIDER'] == "vmware_desktop"
+          target.vm.provision :shell, :path => "vagrant/fix_ip.ps1", privileged: false, args: box[:ip]
+        end
+
       else
         target.vm.communicator = "ssh"
       end

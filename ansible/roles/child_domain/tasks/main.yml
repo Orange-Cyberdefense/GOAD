@@ -111,10 +111,16 @@
 
 - name: Reboot
   win_reboot:
+    reboot_timeout: 900
+    post_reboot_delay: 100
   when: child_result.changed
 
 - name: "enable interface {{nat_adapter}} after domain joined"
   win_shell: netsh interface set interface "{{nat_adapter}}" enable
+  register: enable_interface
+  until: "enable_interface is not failed"
+  retries: 3
+  delay: 120
 
 - name: "Install XactiveDirectory"
   win_psmodule:

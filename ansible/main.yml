@@ -19,8 +19,8 @@
 # install LAPS
 - import_playbook: laps.yml
 ## MSSQL + IIS  ----------
-# configure servers vulns (done in the midle of ad install to let time before install relations and acl)
-- import_playbook: servers.yml
+# configure servers vulns (done in the middle of ad install to let time before install relations and acl)
+#- import_playbook: servers.yml
 ## AD - servers localgroup + rdp + inter domain relations & acl
 # set the rights and the group domains relations
 - import_playbook: ad-relations.yml

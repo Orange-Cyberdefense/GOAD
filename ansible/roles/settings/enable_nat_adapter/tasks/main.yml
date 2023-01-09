@@ -1,2 +1,6 @@
 - name: "enable interface {{nat_adapter}}"
   win_shell: netsh interface set interface "{{nat_adapter}}" enable
+  register: enable_adpter_interface
+  until: "enable_adpter_interface is not failed"
+  retries: 3
+  delay: 120

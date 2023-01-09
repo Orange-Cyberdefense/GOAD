@@ -39,6 +39,10 @@
     type: attribute
     update_schema: True
   # privileges required to update the schema attributes
+  register: passwordprop
+  until: "passwordprop is not failed"
+  retries: 3
+  delay: 120
   become: yes
   become_method: runas
   become_user: SYSTEM
@@ -61,6 +65,10 @@
     context: schema
     type: attribute
     update_schema: True
+  register: password_expire_time
+  until: "password_expire_time is not failed"
+  retries: 3
+  delay: 120
   become: yes
   become_method: runas
   become_user: SYSTEM
@@ -73,6 +81,10 @@
     - ms-Mcs-AdmPwdExpirationTime
     context: schema
     update_schema: True
+  register: add_laps_attribute
+  until: "add_laps_attribute is not failed"
+  retries: 3
+  delay: 120
   become: yes
   become_method: runas
   become_user: SYSTEM
