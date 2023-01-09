@@ -51,13 +51,13 @@ sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/
 
 - This is up to you, the lab is by default setup on virtualbox (because it is free) but you can choose vmware-workstation if you want (just follow this guide to do the rights changes)
 
-##### Install Virtualbox
+#### Install with Virtualbox
 
 - **virtualbox** actually the vms are provided to be run on virtualbox so you need a working virtualbox environment on your computer.
 - This is obvious but yes you need to first install it on your hosts if you want to use it. (on ubuntu `sudo apt install virtualbox` will to the work)
 - If you choose virtualbox, nothing to change on the files, this is the default environment.
 
-#### OR install Vmware workstation
+#### OR install with Vmware workstation (aka "Virtualbox c'est no way")
 
 - Download and install vmware workstation and set your license key (or use the 30 days trial) [workstation-pro-evaluation](https://www.vmware.com/products/workstation-pro/workstation-pro-evaluation.html)
 - __Note that workstation-player can't manage clone and snapshot and will not work with vagrant you need to use the pro version__
