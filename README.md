@@ -352,7 +352,7 @@ host_key_checking = false
 
   3. install with docker
 ```bash
-sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook elk.yml
+sudo docker run -ti --rm --network host -e ANSIBLE_CONFIG=/goad/ansible -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook elk.yml
 ```
 
   3. or install on hand : 
