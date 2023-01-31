@@ -29,3 +29,7 @@
     sa_password: "{{lab.hosts[dict_key].mssql.sa_password}}"
     linked_servers: "{{lab.hosts[dict_key].mssql.linked_servers}}"
 
+- name: "Install SQL Server Management Studio"
+  hosts: srv02
+  roles:
+    - { role: 'mssql_ssms', tags: 'mssql_ssms'}
