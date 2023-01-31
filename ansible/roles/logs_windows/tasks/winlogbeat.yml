@@ -48,8 +48,8 @@
   when: not winlogbeat_folder.stat.exists
 
 - name: Configure winlogbeat
-  win_copy:
-    src: winlogbeat.yml
+  win_template:
+    src: winlogbeat.yml.j2
     dest: "{{ winlogbeat_service.install_path_64 }}\\winlogbeat-{{ winlogbeat_service.version }}-windows-x86_64\\winlogbeat.yml"
   notify: restart-winlogbeat
 
