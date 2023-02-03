@@ -28,6 +28,8 @@
 - import_playbook: adcs.yml
 # set the ACL
 - import_playbook: ad-acl.yml
+# store DPAPI secrets
+- import_playbook: dpapi.yml
 
 ## SERVERS ---------
 ### MSSQL + IIS  ----------

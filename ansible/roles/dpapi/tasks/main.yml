@@ -1,0 +1,15 @@
+- name: Store a password in Credential Manager
+  community.windows.win_credential:
+    name: sevenkingdoms.local
+    type: domain_password
+    alias: server
+    username: tyron.lannister@SEVENKINGDOMS
+    secret: Alc00L&S3x
+    comment: Credential for tyron.lannister
+    persistence: enterprise
+    state: present
+  vars:
+      ansible_become: yes
+      ansible_become_method: runas
+      ansible_become_user: "{{domain_username}}"
+      ansible_become_pass: "{{domain_password}}"
