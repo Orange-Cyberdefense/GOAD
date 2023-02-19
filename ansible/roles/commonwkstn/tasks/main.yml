@@ -1,26 +1,22 @@
-- name: "Change the hostname to {{hostname}}"
-  win_hostname:
-    name: "{{hostname}}"
-  register: win_hostname
+- name: "Set configure dns to {{dns_domain}}"
+  win_dns_client:
+    adapter_names: "{{domain_adapter}}"
+    ipv4_addresses:
+    - "{{hostvars[dns_domain].ansible_host}}"
+    log_path: C:\dns_log.txt
 
-- name: Reboot if needed
-  win_reboot:
-    reboot_timeout: 600
-    post_reboot_delay: 100
-  when: win_hostname.reboot_required
-
-- name: "Add workstation to {{domain_name}}"
+- name: "Add workstation to {{member_domain}}"
   win_domain_membership:
-    dns_domain_name: "{{domain_name}}"
-    domain_admin_user: "Administrator@{{domain_name}}"
-    domain_admin_password: "{{password}}"
-    domain_ou_path: "{{domain_ou_path}}"
+    dns_domain_name: "{{member_domain}}"
+    domain_admin_user: "Administrator@{{member_domain}}"
+    domain_admin_password: "{{domain_password}}"
+#    domain_ou_path: "{{member_domain_ou_path}}"
     state: domain
   register: domain_state
 
 - name: Reboot if needed
   win_reboot:    
-    reboot_timeout: 600
+    reboot_timeout: 1500
     post_reboot_delay: 100
   when: domain_state.reboot_required
 

@@ -8,7 +8,7 @@
 # set AD datas ==================================================================================================
 
 - name: Prepare servers set admin password, set hostname
-  hosts: dc01,dc02,dc03,srv02,srv03
+  hosts: domain
   roles:
   - { role: 'settings/admin_password', tags: 'admin_password' }
   - { role: 'settings/hostname', tags: 'hostname' }
@@ -19,7 +19,7 @@
 
 # parent controlers
 - name: Main DC AD configuration
-  hosts: dc01,dc03
+  hosts: parent_dc
   roles:
   - { role: 'domain_controller', tags: 'dc_main_domains' }
   vars:
@@ -29,7 +29,7 @@
 
 # child
 - name: Child DC AD configuration
-  hosts: dc02
+  hosts: child_dc
   roles:
     - { role: 'child_domain', tags: 'child_domain'}
   vars:
@@ -41,7 +41,7 @@
     source_dc: "{{lab.hosts[lab.domains[parent_domain].dc].hostname}}.{{parent_domain}}"
 
 - name: "play servers AD configuration"
-  hosts: srv02,srv03
+  hosts: server
   roles:
     - { role: 'member_server', tags: 'server'}
   vars:

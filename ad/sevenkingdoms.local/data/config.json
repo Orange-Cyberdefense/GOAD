@@ -61,9 +61,35 @@
                 "constrained_delegation_kerb_only.ps1",
                 "ntlm_relay.ps1",
                 "responder.ps1",
-                "gpo_abuse.ps1"
+                "gpo_abuse.ps1",
+                "rdp_scheduler.ps1"
             ],
-            "vulns" : []
+            "vulns" : ["directory", "credentials", "autologon", "files"],
+            "vulns_vars" : {
+                "directory": {
+                    "setup": "c:\\setup"
+                },
+                "credentials" : {
+                    "TERMSRV/castelblack": {
+                        "username" : "north\\robb.stark",
+                        "secret"   : "sexywolfy",
+                        "runas"    : "north\\robb.stark",
+                        "runas_password" : "sexywolfy"
+                    }
+                },
+                "autologon" : {
+                    "robb.stark" : {
+                        "username" : "north\\robb.stark",
+                        "password" : "sexywolfy"
+                    }
+                },
+                "files" : {
+                    "rdp" : {
+                        "src" : "dc02/bot_rdp.ps1",
+                        "dest" : "c:\\setup\\bot_rdp.ps1"
+                    }
+                }
+            }
         },
         "srv02" : {
             "hostname" : "castelblack",

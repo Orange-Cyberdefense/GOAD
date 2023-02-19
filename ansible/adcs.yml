@@ -7,7 +7,7 @@
 # set AD datas ==================================================================================================
 
 - name: ADCS
-  hosts: srv03,dc01
+  hosts: adcs
   roles:
   - { role: 'adcs', tags: 'adcs'}
   vars:
@@ -17,7 +17,7 @@
     ca_common_name: "{{lab.domains[domain].netbios_name}}-CA"
 
 - name: ADCS
-  hosts: dc03
+  hosts: adcs_customtemplates
   roles:
   - { role: 'adcs_templates', tags: 'adcs_templates'}
   vars:
@@ -26,3 +26,9 @@
     domain_password: "{{lab.domains[domain].domain_password}}"
     ca_common_name: "{{lab.domains[domain].netbios_name}}-CA"
     ca_host: "{{lab.domains[domain].ca_server}}"
+
+
+# FIX
+# certutil -addstore root \\braavos\CertEnroll\braavos.essos.local_ESSOS-CA.crt
+# certutil -addstore CA \\braavos\CertEnroll\ESSOS-CA.crl
+# certutil -addstore CA \\braavos\CertEnroll\ESSOS-CA+.crl

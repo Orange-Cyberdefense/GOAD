@@ -7,14 +7,14 @@
   win_domain_user:
     name: "{{ item.key }}"
     firstname: "{{item.value.firstname}}"
-    surname: "{{ item.value.surname }}"
+    surname: "{{ item.value.surname | default(item.value.firstname) }}"
     password: "{{ item.value.password }}"
     password_never_expires: yes
     state: present
     path: "{{item.value.path}}"
-    description: "{{item.value.description}}"
+    description: "{{item.value.description | default('-')}}"
     groups: "{{ item.value.groups}}"
-    city: "{{item.value.city}}"
+    city: "{{item.value.city | default('-')}}"
     domain_username: "{{domain_username}}"
     domain_password: "{{domain_password}}"
   with_dict: "{{ ad_users }}"

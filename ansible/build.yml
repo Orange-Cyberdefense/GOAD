@@ -1,18 +1,18 @@
 ---
 - name: build all
-  hosts: dc01,dc02,dc03,srv02,srv03
+  hosts: domain
   roles:
     - { role: 'common', tags: 'common', http_proxy: "{{enable_http_proxy}}"}
     - { role: 'settings/keyboard', tags: 'keyboard', layout: "fr-FR" }
 
 # do not add srv with no update -> generate error on iis install
 - name: build all no update
-  hosts: dc01,dc02,dc03
+  hosts: no_update
   roles:
     - { role: 'settings/no_updates', tags: 'no_updates' }
 
 
 - name: "Launch windows updates before continue"
-  hosts: srv02,srv03
+  hosts: update
   roles:
     - { role: 'settings/updates', tags: 'updates'}

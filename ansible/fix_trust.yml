@@ -3,17 +3,6 @@
   vars:
     data_path: "../ad/{{domain_name}}/data/"
 
-#- name: "Read data files"
-#  hosts: srv02,srv03
-#  tasks:
-#    - name: show variable
-#      set_fact:
-#        test: "{{groups}}"
-#      vars:
-#        domain: "{{lab.hosts[dict_key].domain}}"
-#        domain_server: "{{lab.hosts[dict_key].hostname}}.{{domain}}"
-#        groups: "{{lab.domains[domain].multi_domain_groups_member}}"
-
 - name: Fix trust relationship between this workstation and the primary domain failed
   hosts: srv02,srv03
   tasks:

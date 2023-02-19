@@ -6,14 +6,22 @@
   tags: 'data'
 
 - name: "Setup vulnerabilities with tasks"
-  hosts: dc01,dc02,dc03,srv02,srv03
+  hosts: domain
   tasks:
     - include_role:
-        name: "vulns/{{item}}"
-      loop: "{{lab.hosts[dict_key].vulns}}"
+        name: "vulns/{{vuln}}"
+      vars:
+        vulns_vars : "{{ lab.hosts[dict_key].vulns_vars[vuln] | default({}) }}"
+        domain: "{{lab.hosts[dict_key].domain}}"
+        domain_username: "{{domain}}\\Administrator"
+        domain_password: "{{lab.domains[domain].domain_password}}"
+      loop: "{{lab.hosts[dict_key].vulns | default([]) }}"
+      loop_control:
+        loop_var: vuln
+
     - include_role:
         name: "ps"
       vars:
         script_path: "../ad/{{domain_name}}/scripts"
         ps_script: "{{script_path}}/{{item}}"
-      loop: "{{lab.hosts[dict_key].scripts}}"
+      loop: "{{lab.hosts[dict_key].scripts | default([]) }}"

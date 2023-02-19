@@ -6,11 +6,11 @@
 GOAD is a pentest active directory LAB project.
 The purpose of this lab is to give pentesters a vulnerable Active directory environment ready to use to practice usual attack techniques.
 
-## warning
+## Warning
 This lab is extremely vulnerable, do not reuse recipe to build your environment and do not deploy this environment on internet (this is a recommendation, use it as your own risk)
 This repository is for pentest practice only.
 
-## licenses
+## Licenses
 This lab use free windows VM only (180 days). After that delay enter a license on each server or rebuild all the lab (may be it's time for an update ;))
 
 ## Installation
@@ -29,7 +29,7 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 vagrant up
 # provisioning (setup the goad config and install inside the vms)
 sudo docker build -t goadansible .
-sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook main.yml
+sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook -i ../ad/sevenkingdoms.local/inventory main.yml
 ```
 
 - Now you can grab a coffee it will take time :)
@@ -78,7 +78,7 @@ sudo /opt/vagrant-vmware-desktop/bin/vagrant-vmware-utility service install
 vagrant plugin install vagrant-vmware-desktop
 ```
 
-- **For vmware you need to make changes to the Vagrantfile and the hosts file**
+- **For vmware you need to make changes to the Vagrantfile and the inventory file**
 
 - `Vagrantfile`:
   - Change the following lines from this :
@@ -95,7 +95,7 @@ ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vmware_desktop'
 ```
 
-- `ansible/hosts`:
+- `ad/sevenkingdoms.local/inventory`:
   - Change the following lines from this :
 ```
 ; adapter created by vagrant and virtualbox
@@ -169,12 +169,13 @@ sudo docker build -t goadansible .
 - And launch the provisioning with :
 
 ```bash
-sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook main.yml
+sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook -i ../ad/sevenkingdoms.local/inventory main.yml
 ```
 
 - This will launch ansible on the docker container.
 - The --network host option will launch it on your host network so the vms should be accessible by docker for 192.168.56.1/24
 - The -v mount the local repository containing goad in the folder /goad of the docker container
+- The -i indicate the inventory to use with ansible
 - And than the playbook main.yml is launched
 - Please note that the vms must be in a running state, so vagrant up must have been done and finished before launching the ansible playbook.
 
@@ -217,7 +218,7 @@ ansible-galaxy install -r requirements.yml
 - And than you can launch the ansible provisioning with (note that the vms must be in a running state, so vagrant up must have been done before that)
 
 ```bash
-ansible-playbook main.yml # this will configure the vms in order to play ansible when the vms are ready
+ansible-playbook -i ../ad/sevenkingdoms.local/inventory main.yml # this will configure the vms in order to play ansible when the vms are ready
 ```
 
 ### V2 breaking changes
@@ -248,7 +249,7 @@ vagrant up # this will create the vms (this command must be run in the folder wh
   - in one command just play :
 
 ```bash
-ansible-playbook main.yml # this will configure the vms in order to play ansible when the vms are ready
+ansible-playbook -i ../ad/sevenkingdoms.local/inventory main.yml # this will configure the vms in order to play ansible when the vms are ready
 ```
 
 - To run the provisioning from the docker container run (you should be in the same folder as the Dockerfile):
@@ -287,7 +288,7 @@ vagrant up   # will start the lab
 
 - If you got some errors see the troubleshooting section at the end of the document, but in most case if you get errors during install, don't think and just replay the main playbook (most of the errors which could came up are due to windows latency during installation, wait few minutes and replay the main.yml playbook)
 ```
-ansible-playbook main.yml
+ansible-playbook -i ../ad/sevenkingdoms.local/inventory main.yml
 ```
 
 ## If you want to discuss about Active Directory and the GOAD project
@@ -337,7 +338,7 @@ You can change the vm version in the Vagrantfile according to Stefan Scherer vag
 # }
 ```
 
-  2. uncomment the elk part in ansible/hosts file
+  2. uncomment the elk part in the inventory (ad/sevenkingdoms.local/inventory) file
 ```
 [elk:vars]
 ansible_connection=ssh
@@ -352,7 +353,7 @@ host_key_checking = false
 
   3. install with docker
 ```bash
-sudo docker run -ti --rm --network host -e ANSIBLE_CONFIG=/goad/ansible -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook elk.yml
+sudo docker run -ti --rm --network host -e ANSIBLE_CONFIG=/goad/ansible -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook -i ../ad/sevenkingdoms.local/inventory elk.yml
 ```
 
   3. or install on hand : 
@@ -497,13 +498,28 @@ ESSOS.LOCAL
 - [X] Shadow credentials
 - [X] Mitm6
 - [X] Add LAPS
-- [ ] Add Webdav
+- [X] GPO abuse
+- [X] Add Webdav
+- [X] Add RDP bot
 - [ ] Add Applocker
 - [ ] Zone transfert
-- [ ] GPO abuse
 - [ ] Wsus
 - [ ] Sccm
 - [ ] Exchange
+
+## Lab organisation
+- The lab configuration is located on the ad/ folder
+- Ad folder contains the following files :
+
+```
+ad/
+  labname/            # The lab name must be the same as the variable : domain_name from the inventory
+    data/config.json  # The json file containing all the variables and configuration of the lab
+    files/            # This folder contains files you want to copy on your vms
+    scripts/          # This folder contains some ps1 scripts you want to play on your vm (Must be added in the "scripts" entries of your vms)
+    Vagrantfile       # The vagrantfile corresponding to the lab (the vagrantfile of goad is also present in the / of goad repository)
+    inventory         # The lab inventory file, this contains the roles to play and the ip/vm mapping
+```
 
 ## MISC commands
 

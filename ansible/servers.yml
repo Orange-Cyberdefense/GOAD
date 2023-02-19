@@ -6,12 +6,12 @@
   tags: 'data'
 
 - name: "Install IIS"
-  hosts: srv02
+  hosts: iis
   roles:
     - { role: 'iis', tags: 'iis'}
 
 - name: "Install MSSQL Express"
-  hosts: srv02, srv03
+  hosts: mssql
   roles:
     - { role: 'mssql', tags: 'mssql'}
     - { role: 'mssql_link', tags: 'mssql, mssql_link'}
@@ -23,13 +23,18 @@
     SQLYSADMIN: "{{SQLSVCACCOUNT}}"
     domain_admin: "{{domain}}\\Administrator"
     domain_admin_password: "{{lab.domains[domain].domain_password}}"
-    sql_sysadmins: "{{lab.hosts[dict_key].mssql.sysadmins}}"
-    executeaslogin: "{{lab.hosts[dict_key].mssql.executeaslogin}}"
-    executeasuser:  "{{lab.hosts[dict_key].mssql.executeasuser}}"
+    sql_sysadmins: "{{lab.hosts[dict_key].mssql.sysadmins | default([]) }}"
+    executeaslogin: "{{lab.hosts[dict_key].mssql.executeaslogin  | default({}) }}"
+    executeasuser:  "{{lab.hosts[dict_key].mssql.executeasuser | default({}) }}"
     sa_password: "{{lab.hosts[dict_key].mssql.sa_password}}"
-    linked_servers: "{{lab.hosts[dict_key].mssql.linked_servers}}"
+    linked_servers: "{{lab.hosts[dict_key].mssql.linked_servers | default({}) }}"
 
 - name: "Install SQL Server Management Studio"
-  hosts: srv02
+  hosts: mssql_ssms
   roles:
     - { role: 'mssql_ssms', tags: 'mssql_ssms'}
+
+- name: "Install Webdav"
+  hosts: webdav
+  roles:
+    - { role: 'webdav', tags: 'webdav'}

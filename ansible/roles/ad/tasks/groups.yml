@@ -7,6 +7,7 @@
     path: "{{item.value.path}}"
     state: present
   with_dict: "{{ ad_groups['universal'] }}"
+  when: ad_groups['universal'] is defined
 
 - name: Create Groups Global
   win_domain_group:
@@ -15,6 +16,7 @@
     path: "{{item.value.path}}"
     state: present
   with_dict: "{{ ad_groups['global'] }}"
+  when: ad_groups['global'] is defined
 
 - name: Create Groups domainlocal
   win_domain_group:
@@ -23,3 +25,4 @@
     path: "{{item.value.path}}"
     state: present
   with_dict: "{{ ad_groups['domainlocal'] }}"
+  when: ad_groups['domainlocal'] is defined

@@ -8,7 +8,7 @@
 # set AD datas ==================================================================================================
 
 - name: ACL inside AD
-  hosts: dc01,dc02,dc03
+  hosts: dc
   roles:
   - { role: 'acl', tags: 'acl'}
   vars:

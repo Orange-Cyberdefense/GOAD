@@ -1,0 +1,5 @@
+- name: Create directory
+  ansible.windows.win_file:
+    path: "{{item.value}}"
+    state: directory
+  with_dict: "{{ vulns_vars }}"

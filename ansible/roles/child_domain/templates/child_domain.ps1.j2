@@ -1,3 +1,0 @@
-$password = ConvertTo-SecureString "{{password}}" -AsPlainText -Force
-$Cred = New-Object System.Management.Automation.PSCredential ("SEVENKINGDOMS\Administrator", $password)
-Install-ADDSDomain -SkipPreChecks -Credential $Cred -NewDomainName {{domain.split('.')[0]}} -ParentDomainName "{{parent_domain}}" -InstallDNS -CreateDNSDelegation -ReplicationSourceDC "kingslanding.sevenkingdoms.local"-DatabasePath "C:\windows\NTDS" -SYSVOLPath "C:\windows\SYSVOL" -LogPath "C:\windows\NTDS" -SafeModeAdministratorPassword $password -Force -NoRebootOnCompletion

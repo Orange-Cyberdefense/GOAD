@@ -5,18 +5,6 @@
     - "{{hostvars[dns_domain].ansible_host}}"
     log_path: C:\dns_log.txt
 
-# - name: "Add member server to {{parent_domain}}"
-#   win_domain_membership:
-#     dns_domain_name: "{{parent_domain}}"
-#     domain_admin_user: "Administrator@{{parent_domain}}"
-#     domain_admin_password: "{{password}}"
-#     state: domain
-#   register: domain_state
-# 
-# - name: Reboot if needed
-#   win_reboot:
-#   when: domain_state.reboot_required
-
 - name: Install windows features - AD Domain Services
   win_feature:
     name: AD-Domain-Services
@@ -30,29 +18,6 @@
     state: present
     include_management_tools: yes
   register: features
-
-#- name: Create directory
-#  win_file:
-#    path: "C:\\ansible"
-#    state: directory
-#
-#- name: template file to remote host
-#  template:
-#    src: "child_domain.ps1.j2"
-#    dest: "c:\\ansible\\child_domain.ps1"
-#
-#- name: get file stat to be able to perform a check in the following task
-#  local_action: stat path=c:\\ansible\\child_domain.log
-#  register: domain_child_log
-
-#- name: Add child domain to parent domain
-#  win_shell: c:\\ansible\\child_domain.ps1 > c:\\ansible\\child_domain.log
-#  become: yes
-#  become_method: runas
-#  become_user: "SEVENKINGDOMS\\Administrator"
-#  vars:
-#    ansible_become_pass: "{{password}}"
-#  when: not domain_child_log.stat.exists
 
 - name: "disable interface {{nat_adapter}} before join domain"
   win_shell: netsh interface set interface "{{nat_adapter}}" disable

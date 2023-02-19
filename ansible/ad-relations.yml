@@ -8,18 +8,18 @@
 # set AD datas ==================================================================================================
 
 - name: "Adjust rights configuration"
-  hosts: dc01,dc02,dc03,srv02,srv03
+  hosts: domain
   roles:
     - { role: "settings/adjust_rights", tags: 'adjust_rights'}
     - { role: "settings/user_rights", tags: 'adjust_rights'}
   vars:
-    local_groups: "{{lab.hosts[dict_key].local_groups}}"
+    local_groups: "{{lab.hosts[dict_key].local_groups  | default({}) }}"
 
 
 # doesen't work see : https://github.com/ansible-collections/community.windows/blob/main/plugins/modules/win_domain_group_membership.ps1
 # ligne 62 : use the given credentials to distant domain -> wrong
 - name: cross domain groups
-  hosts: dc01,dc02,dc03
+  hosts: dc
   roles:
   - { role: 'groups_domains', tags: 'groups_domains'}
   vars:
@@ -27,4 +27,4 @@
     #domain_server: "{{lab.hosts[dict_key].hostname}}.{{domain}}"
     domain_username: "{{domain}}\\Administrator"
     domain_password: "{{lab.domains[domain].domain_password}}"
-    domain_groups_members: "{{lab.domains[domain].multi_domain_groups_member}}"
+    domain_groups_members: "{{lab.domains[domain].multi_domain_groups_member | default({}) }}"

@@ -1,0 +1,5 @@
+- name: Copy a single file
+  ansible.windows.win_copy:
+    src: "../ad/{{domain_name}}/files/{{item.value.src}}"
+    dest: "{{item.value.dest}}"
+  with_dict: "{{ vulns_vars }}"

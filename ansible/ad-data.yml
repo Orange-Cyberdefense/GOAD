@@ -7,7 +7,7 @@
 
 # set AD datas ==================================================================================================
 - name: DCs AD data configuration
-  hosts: dc01,dc02,dc03
+  hosts: dc
   roles:
     - { role: 'password_policy', tags: 'policy', try_before_lock: "5", pass_length: "5", lock_duration: "00:05:00", lock_observation: "00:05:00", complexity: false}
     - { role: 'ad', tags: 'ad_domain_data' }
@@ -18,11 +18,11 @@
     domain_password: "{{lab.domains[domain].domain_password}}"
     domain_server: "{{lab.hosts[dict_key].hostname}}.{{domain}}"
     ad_users: "{{lab.domains[lab.hosts[dict_key].domain].users}}"
-    ad_ou: "{{lab.domains[lab.hosts[dict_key].domain].organisation_units}}"
+    ad_ou: "{{lab.domains[lab.hosts[dict_key].domain].organisation_units  | default({}) }}"
     ad_groups: "{{lab.domains[lab.hosts[dict_key].domain].groups}}"
 
 - name: "Servers AD data configuration"
-  hosts: srv02,srv03
+  hosts: server
   roles:
     - { role: 'settings/copy_files', tags: 'download_files' }
   vars:
