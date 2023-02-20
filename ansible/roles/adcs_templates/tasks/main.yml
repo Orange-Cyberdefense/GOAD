@@ -1,3 +1,6 @@
+- name: Refresh
+  ansible.windows.win_command: gpupdate /force
+
 - name: Install ADCSTemplate Module
   win_copy:
     src: files/ADCSTemplate
@@ -46,3 +49,5 @@
     cauthority_server: "{{ca_host}}"
     cauthority_common_name: "{{ca_common_name}}"
 
+- name: Refresh
+  ansible.windows.win_command: gpupdate /force

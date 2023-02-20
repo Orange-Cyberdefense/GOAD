@@ -59,8 +59,9 @@
         $Ansible.Changed = $false
       }
 
+- name: Refresh
+  ansible.windows.win_command: gpupdate /force
 
 # - name: Reboot after ADCS installation
 #   win_reboot:
 #   when: win_feature.reboot_required
-

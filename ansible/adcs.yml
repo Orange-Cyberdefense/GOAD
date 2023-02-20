@@ -28,7 +28,8 @@
     ca_host: "{{lab.domains[domain].ca_server}}"
 
 
-# FIX
+# Force certificate enrollment on DC
 # certutil -addstore root \\braavos\CertEnroll\braavos.essos.local_ESSOS-CA.crt
 # certutil -addstore CA \\braavos\CertEnroll\ESSOS-CA.crl
 # certutil -addstore CA \\braavos\CertEnroll\ESSOS-CA+.crl
+# and do gpupdate /force on dc03 and srv03
