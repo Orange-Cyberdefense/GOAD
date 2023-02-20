@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<unattend xmlns="urn:schemas-microsoft-com:unattend">
+  <settings pass="generalize">
+    <component name="Microsoft-Windows-Security-SPP" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <SkipRearm>0</SkipRearm>
+    </component>
+  </settings>
+  <settings pass="oobeSystem">
+    <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+      <OOBE>
+            <HideEULAPage>true</HideEULAPage>
+            <ProtectYourPC>3</ProtectYourPC>
+            <NetworkLocation>Work</NetworkLocation>
+            <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+            <SkipUserOOBE>true</SkipUserOOBE>
+            <SkipMachineOOBE>true</SkipMachineOOBE>
+      </OOBE>
+      <UserAccounts>
+            <AdministratorPassword>
+                <Value>vagrant</Value>
+                <PlainText>true</PlainText>
+            </AdministratorPassword>
+            <LocalAccounts>
+                <LocalAccount wcm:action="add">
+                    <Password>
+                        <Value>vagrant</Value>
+                        <PlainText>true</PlainText>
+                    </Password>
+                    <Group>administrators</Group>
+                    <DisplayName>Vagrant</DisplayName>
+                    <Name>vagrant</Name>
+                    <Description>Vagrant User</Description>
+                </LocalAccount>
+            </LocalAccounts>
+        </UserAccounts>
+    </component>
+  </settings>
+  <settings pass="specialize">
+    <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <RunSynchronous>
+        <RunSynchronousCommand wcm:action="add">
+            <Order>1</Order>
+            <Path>sc config cloudbase-init start= auto</Path>
+            <Description>Re-enable auto start of cloudbase-init</Description>
+            <WillReboot>Never</WillReboot>
+        </RunSynchronousCommand>
+      </RunSynchronous>
+    </component>
+  </settings>
+</unattend>

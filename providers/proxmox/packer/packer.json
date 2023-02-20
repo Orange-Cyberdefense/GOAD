@@ -1,0 +1,84 @@
+{
+  "builders": [
+    {
+      "type":"proxmox",
+      "node": "{{user `proxmox_node`}}",
+      "pool" : "{{user `proxmox_pool`}}",
+      "proxmox_url":  "{{user `proxmox_url`}}",
+      "insecure_skip_tls_verify": "{{ user `proxmox_skip_tls_verify` }}",
+      "username": "{{ user `proxmox_username` }}",
+      "password": "{{ user `proxmox_password` }}",
+      "vm_name": "{{ user `vm_name` }}",
+      "template_name" : "{{ user `vm_name` }}",
+      "template_description": "{{ user `template_description` }}",
+      "iso_file": "{{ user `iso_file` }}",
+      "memory": "{{ user `vm_memory` }}",
+      "cores": "{{ user `vm_cpu_cores` }}",
+      "sockets": "{{ user `vm_sockets` }}",
+      "os": "{{ user `os` }}",
+      "cloud_init": true,
+      "cloud_init_storage_pool" : "{{ user `proxmox_storage`}}", 
+      "network_adapters": [
+        {
+          "model": "e1000",
+          "bridge": "vmbr1"
+        }
+      ],
+      "disks": [
+        {
+          "type": "sata",
+          "disk_size": "{{ user `vm_disk_size` }}",
+          "storage_pool": "{{ user `proxmox_storage`}}",
+          "storage_pool_type" : "lvm-thin",
+          "format" : "raw"
+        }
+      ],
+      "additional_iso_files": [
+        {
+          "device": "sata3",
+          "iso_url": "{{ user `autounattend_iso` }}",
+          "iso_checksum": "{{ user `autounattend_checksum` }}",
+          "iso_storage_pool": "local",
+          "unmount": true
+        },
+        {
+          "device": "sata4",
+          "iso_file": "local:iso/virtio-win-0.1.185.iso",
+          "unmount": true
+        },
+        {
+          "device": "sata5",
+          "iso_file": "local:iso/scripts_withcloudinit.iso",
+          "unmount": true
+        }
+      ],
+      "communicator": "winrm",
+      "winrm_username": "{{ user `winrm_username` }}",
+      "winrm_password": "{{ user `winrm_password` }}",
+      "winrm_insecure": true,
+      "winrm_use_ssl": true,
+      "winrm_no_proxy": true,
+      "winrm_timeout" : "30m"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "powershell",
+      "scripts": [
+        "{{template_dir}}/scripts/set-proxy.ps1",
+        "{{template_dir}}/scripts/sysprep/cloudbase-init.ps1"
+      ],
+      "elevated_user": "vagrant",
+      "elevated_password": "vagrant"
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "{{template_dir}}/scripts/sysprep/cloudbase-init-p2.ps1"
+      ],
+      "elevated_user": "vagrant",
+      "elevated_password": "vagrant",
+      "pause_before" : "1m"
+    }
+  ]
+}

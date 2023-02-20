@@ -1,0 +1,14 @@
+{
+  "winrm_username": "vagrant",
+  "winrm_password": "vagrant",
+  "vm_name": "WinServer2016x64-cloudinit",
+  "template_description": "Windows Server 2016 64-bit - build 14393 - template built with Packer - cloudinit - {{isotime \"2006-01-02 03:04:05\"}}",
+  "iso_file": "local:iso/Windows-Server-2016-eval-x64-en-us-14393.iso",
+  "autounattend_iso": "./iso/Autounattend_winserver2016_cloudinit.iso",
+  "autounattend_checksum": "sha256:056e0c30934c8d0ecc645eb7505d0b1c23c06eaa9b13f594a386afd1d6ff2efc",
+  "vm_cpu_cores": "2",
+  "vm_memory": "2048",
+  "vm_disk_size": "60G",
+  "vm_sockets": "1",
+  "os" : "win10"
+}
