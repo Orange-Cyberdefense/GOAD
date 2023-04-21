@@ -1,3 +1,8 @@
+- name: "disable the registration of the {{nat_adapter}} interface (NAT address) in DNS"
+  ansible.windows.win_shell:
+    Get-NetAdapter {{nat_adapter}} | Set-DNSClient -RegisterThisConnectionsAddress $False
+  when: two_adapters == "yes"
+
 - name: "Set configure dns to {{dns_domain}}"
   win_dns_client:
     adapter_names: "{{domain_adapter}}"
@@ -19,8 +24,9 @@
     include_management_tools: yes
   register: features
 
-- name: "disable interface {{nat_adapter}} before join domain"
-  win_shell: netsh interface set interface "{{nat_adapter}}" disable
+# DNSCHANGE
+# - name: "disable interface {{nat_adapter}} before join domain"
+#   win_shell: netsh interface set interface "{{nat_adapter}}" disable
 
 - name: add child domain to parent domain
   ansible.windows.win_powershell:
@@ -80,12 +86,17 @@
     post_reboot_delay: 100
   when: child_result.changed
 
-- name: "enable interface {{nat_adapter}} after domain joined"
-  win_shell: netsh interface set interface "{{nat_adapter}}" enable
-  register: enable_interface
-  until: "enable_interface is not failed"
-  retries: 3
-  delay: 120
+#- name: "enable interface {{nat_adapter}} after domain joined"
+#  win_shell: netsh interface set interface "{{nat_adapter}}" enable
+#  register: enable_interface
+#  until: "enable_interface is not failed"
+#  retries: 3
+#  delay: 120
+
+- name: enable the {{domain_adapter}} interface (local) for DNS client requests
+  ansible.windows.win_shell:
+    dnscmd . /resetlistenaddresses {{ hostvars[dict_key].ansible_host }}
+  when: two_adapters == "yes"
 
 - name: "Install XactiveDirectory"
   win_psmodule:

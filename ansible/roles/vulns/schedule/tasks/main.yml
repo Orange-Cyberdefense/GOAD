@@ -1,0 +1,12 @@
+- name: Create a task that will be repeated every minute for five minutes
+  community.windows.win_scheduled_task:
+    name: "{{item.value.name}}"
+    description: ansible schedule task
+    actions:
+    - path: cmd.exe
+      arguments: "/c {{item.value.cmd}}"
+    triggers:
+    - type: registration
+      repetition:
+        interval: "{{item.value.interval}}"
+  with_dict: "{{ vulns_vars }}"

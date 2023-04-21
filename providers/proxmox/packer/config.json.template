@@ -1,9 +1,0 @@
-{
-    "proxmox_url": "https://X.X.X.X:8006/api2/json",
-    "proxmox_username": "xxx@pve",
-    "proxmox_password": "xxx",
-    "proxmox_skip_tls_verify": "true",
-    "proxmox_node": "mynode",
-    "proxmox_pool": "mypool",
-    "proxmox_storage": "mystorage"
-}

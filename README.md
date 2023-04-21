@@ -501,6 +501,10 @@ ESSOS.LOCAL
 - [X] GPO abuse
 - [X] Add Webdav
 - [X] Add RDP bot
+- [X] Add full proxmox integration
+- [ ] Add Gmsa
+- [ ] Add PPL
+- [ ] Add Credential Guard
 - [ ] Add Applocker
 - [ ] Zone transfert
 - [ ] Wsus

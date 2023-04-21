@@ -4,3 +4,4 @@
   until: "enable_adpter_interface is not failed"
   retries: 3
   delay: 120
+  when: two_adapters == "yes"

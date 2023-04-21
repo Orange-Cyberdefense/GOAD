@@ -1,0 +1,7 @@
+proxmox_url             = "https://192.168.1.1:8006/api2/json"
+proxmox_username        = "infra_as_code@pve"
+proxmox_password        = "CHANGEME"
+proxmox_skip_tls_verify = "true"
+proxmox_node            = "proxmox-goad"
+proxmox_pool            = "Templates"
+proxmox_storage         = "local"

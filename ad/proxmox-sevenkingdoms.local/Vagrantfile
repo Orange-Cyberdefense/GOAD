@@ -9,20 +9,16 @@ boxes = [
   #{ :name => "DC01",  :ip => "192.168.56.10", :box => "StefanScherer/windows_2022", :box_version => "2021.08.23", :os => "windows"},
   # windows server 2019
   { :name => "DC01",  :ip => "192.168.56.10", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows"},
-#https://software-download.microsoft.com/download/pr/17763.737.190906-2324.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us_1.iso
   # windows server 2019
   { :name => "DC02",  :ip => "192.168.56.11", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows"},
   # windows server 2016
   { :name => "DC03",  :ip => "192.168.56.12", :box => "StefanScherer/windows_2016", :box_version => "2017.12.14", :os => "windows"},
-# http://care.dlservice.microsoft.com/dl/download/1/4/9/149D5452-9B29-4274-B6B3-5361DBDA30BC/14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO
   # windows server 2019
   #{ :name => "SRV01", :ip => "192.168.56.21", :box => "StefanScherer/windows_2019", :box_version => "2020.07.17", :os => "windows"},
   # windows server 2019
   { :name => "SRV02", :ip => "192.168.56.22", :box => "StefanScherer/windows_2019", :box_version => "2020.07.17", :os => "windows"},
-# https://software-download.microsoft.com/download/pr/17763.737.190906-2324.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us_1.iso
   # windows server 2016
   { :name => "SRV03", :ip => "192.168.56.23", :box => "StefanScherer/windows_2016", :box_version => "2019.02.14", :os => "windows"}
-# https://software-download.microsoft.com/download/pr/Windows_Server_2016_Datacenter_EVAL_en-us_14393_refresh.ISO
   # ELK
 # { :name => "elk", :ip => "192.168.56.50", :box => "bento/ubuntu-18.04", :os => "linux",
 #   :forwarded_port => [
@@ -91,12 +87,12 @@ boxes = [
       if box[:os] == "windows"
         target.vm.guest = :windows
         target.vm.communicator = "winrm"
-        target.vm.provision :shell, :path => "vagrant/Install-WMF3Hotfix.ps1", privileged: false
-        target.vm.provision :shell, :path => "vagrant/ConfigureRemotingForAnsible.ps1", privileged: false
+        target.vm.provision :shell, :path => "../../vagrant/Install-WMF3Hotfix.ps1", privileged: false
+        target.vm.provision :shell, :path => "../../vagrant/ConfigureRemotingForAnsible.ps1", privileged: false
 
         # fix ip for vmware
         if ENV['VAGRANT_DEFAULT_PROVIDER'] == "vmware_desktop"
-          target.vm.provision :shell, :path => "vagrant/fix_ip.ps1", privileged: false, args: box[:ip]
+          target.vm.provision :shell, :path => "../../vagrant/fix_ip.ps1", privileged: false, args: box[:ip]
         end
 
       else

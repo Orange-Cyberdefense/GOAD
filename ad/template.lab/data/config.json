@@ -47,7 +47,7 @@
             "netbios_name": "TEMPLATE",
             "groups" : {
                 "global" : {
-                    "admins" : {
+                    "dcadmins" : {
                         "managed_by" : "alice",
                         "path" : "CN=Users,DC=template,DC=lab"
                     },

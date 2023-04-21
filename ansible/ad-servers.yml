@@ -47,3 +47,11 @@
   vars:
     member_domain: "{{lab.hosts[dict_key].domain}}"
     domain_password: "{{lab.domains[member_domain].domain_password}}"
+
+- name: "play workstations AD configuration"
+  hosts: workstation
+  roles:
+    - { role: 'commonwkstn', tags: 'workstation'}
+  vars:
+    member_domain: "{{lab.hosts[dict_key].domain}}"
+    domain_password: "{{lab.domains[member_domain].domain_password}}"

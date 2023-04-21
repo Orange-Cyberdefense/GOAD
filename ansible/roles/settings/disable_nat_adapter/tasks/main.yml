@@ -1,2 +1,3 @@
 - name: "disable interface {{nat_adapter}}"
   win_shell: netsh interface set interface "{{nat_adapter}}" disable
+  when: two_adapters == "yes"
