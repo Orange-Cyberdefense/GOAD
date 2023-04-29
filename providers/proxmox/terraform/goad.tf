@@ -10,6 +10,7 @@ resource "proxmox_vm_qemu" "dc01" {
     memory = 4096
     agent = 1
     clone = "WinServer2019x64-cloudinit-qcow2"
+    full_clone = var.pm_full_clone
 
    network {
      bridge    = "vmbr3"
@@ -36,6 +37,8 @@ resource "proxmox_vm_qemu" "dc02" {
     memory = 4096
     agent = 1
     clone = "WinServer2019x64-cloudinit-qcow2"
+    full_clone = var.pm_full_clone
+
     network {
       bridge    = "vmbr3"
       model     = "e1000"
@@ -63,6 +66,7 @@ resource "proxmox_vm_qemu" "DC03" {
     memory = 4096
     agent = 1
     clone = "WinServer2016x64-cloudinit-qcow2"
+    full_clone = var.pm_full_clone
 
     network {
       bridge    = "vmbr3"
@@ -89,6 +93,7 @@ resource "proxmox_vm_qemu" "srv02" {
     memory = 4096
     agent = 1
     clone = "WinServer2019x64-cloudinit-qcow2"
+    full_clone = var.pm_full_clone
 
     network {
       bridge    = "vmbr3"
@@ -115,6 +120,7 @@ resource "proxmox_vm_qemu" "srv03" {
     memory = 4096
     agent = 1
     clone = "WinServer2016x64-cloudinit-qcow2"
+    full_clone = var.pm_full_clone
 
     network {
       bridge    = "vmbr3"
