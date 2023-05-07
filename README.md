@@ -136,6 +136,13 @@ sudo apt update && sudo apt install vagrant
 ```bash
 vagrant up
 ```
+*note: For some distributions, you may need to run additional commands to install WinRM gems* this can be done via the following commands:
+
+```bash
+vagrant plugin install winrm
+vagrant plugin install winrm-fs
+vagrant plugin install winrm-elevated
+```
 
 - For each vm, it will download the box and than install it on your provider.
 - If you get an issue on this, this is certainly due to vagrant or your provider (but in this case just take a look to at the github issue and on discord maybe someone got the same issue)
