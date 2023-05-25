@@ -74,6 +74,7 @@ boxes = [
       # BOX
       target.vm.provider "virtualbox" do |v|
         v.name = box[:name]
+        v.customize ["modifyvm", :id, "--groups", "/GOAD"]
       end
       target.vm.box_download_insecure = box[:box]
       target.vm.box = box[:box]
