@@ -18,10 +18,7 @@
                     "sevenkingdoms\\Baratheon"
                 ]
             },
-            "scripts" : [
-		"sidhistory.ps1",
-		"EnableASR.ps1"
-	],
+            "scripts" : ["sidhistory.ps1"],
             "vulns" : ["disable_firewall"]
         },
         "srv01" : {
