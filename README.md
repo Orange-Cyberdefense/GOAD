@@ -3,20 +3,22 @@
 ![goad.png](./docs/img/GOAD.png)
 
 ## Description
+
 GOAD is a pentest active directory LAB project.
 The purpose of this lab is to give pentesters a vulnerable Active directory environment ready to use to practice usual attack techniques.
 
 ## Warning
+
 This lab is extremely vulnerable, do not reuse recipe to build your environment and do not deploy this environment on internet (this is a recommendation, use it as your own risk)
 This repository is for pentest practice only.
 
 ## Licenses
+
 This lab use free windows VM only (180 days). After that delay enter a license on each server or rebuild all the lab (may be it's time for an update ;))
 
 ## Installation
 
 - Installation is in two parts :
-
 1. providing : it is made with vagrant, it download and run empty windows box.
 2. provisioning : it is made with ansible, it will install all the stuff to make the lab running like an active directory network
 
@@ -62,7 +64,7 @@ sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/
 - Download and install vmware workstation and set your license key (or use the 30 days trial) [workstation-pro-evaluation](https://www.vmware.com/products/workstation-pro/workstation-pro-evaluation.html)
 - __Note that workstation-player can't manage clone and snapshot and will not work with vagrant you need to use the pro version__
 - You will also need to install VMware Utility driver (https://developer.hashicorp.com/vagrant/downloads/vmware)
-(an install guide can be found here : https://developer.hashicorp.com/vagrant/docs/providers/vmware/vagrant-vmware-utility)
+  (an install guide can be found here : https://developer.hashicorp.com/vagrant/docs/providers/vmware/vagrant-vmware-utility)
 
 ```bash
 cd /tmp
@@ -74,40 +76,49 @@ sudo /opt/vagrant-vmware-desktop/bin/vagrant-vmware-utility service install
 ```
 
 - Note that you will need to install the vmware-desktop plugin after the vagrant installation : 
-```
-vagrant plugin install vagrant-vmware-desktop
-```
+  
+  ```
+  vagrant plugin install vagrant-vmware-desktop
+  ```
 
 - **For vmware you need to make changes to the Vagrantfile and the inventory file**
 
 - `Vagrantfile`:
+  
   - Change the following lines from this :
-```
-# Uncomment this depending on the provider you want to use
-ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
-# ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vmware_desktop'
-```
-
+    
+    ```
+    # Uncomment this depending on the provider you want to use
+    ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
+    # ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vmware_desktop'
+    ```
+  
   - To this :
-```
-# Uncomment this depending on the provider you want to use
-# ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
-ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vmware_desktop'
-```
+    
+    ```
+    # Uncomment this depending on the provider you want to use
+    # ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
+    ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vmware_desktop'
+    ```
 
 - `ad/sevenkingdoms.local/inventory`:
+  
   - Change the following lines from this :
-```
-; adapter created by vagrant and virtualbox
-nat_adapter=Ethernet
-domain_adapter=Ethernet 2
+    
+    ```
+    ; adapter created by vagrant and virtualbox
+    nat_adapter=Ethernet
+    domain_adapter=Ethernet 2
+    ```
 
 ; adapter created by vagrant and vmware
 ; nat_adapter=Ethernet0
 ; domain_adapter=Ethernet1
+
 ```
  - To this:
 ```
+
 ; adapter created by vagrant and virtualbox
 ; nat_adapter=Ethernet
 ; domain_adapter=Ethernet 2
@@ -115,8 +126,8 @@ domain_adapter=Ethernet 2
 ; adapter created by vagrant and vmware
 nat_adapter=Ethernet0
 domain_adapter=Ethernet1
-```
 
+```
 #### 1.2 - Install Vagrant
 
 - **vagrant** from their official site [vagrant](https://developer.hashicorp.com/vagrant/downloads). __The version you can install through your favorite package manager (apt, yum, ...) is probably not the latest one__.
@@ -138,17 +149,19 @@ vagrant up
 ```
 
 - For each vm, it will download the box and than install it on your provider.
+
 - If you get an issue on this, this is certainly due to vagrant or your provider (but in this case just take a look to at the github issue and on discord maybe someone got the same issue)
 
 - At the end of the vagrantup you should have the vms created and running, like this :
 
 - Virtualbox :
-
+  
   ![virtualbox](/docs/img/vbox.png)
+  
   - Adapter 1 is set up as NAT (used to internet access during the provisioning)
   - Adapter 2 is set up as host only adapter on the network 192.168.56.1/24
 
-#### 2.0 Run ansible 
+#### 2.0 Run ansible
 
 - Now you got the 5 VMS created, great!
 - The next step is the provisioning with ansible.
@@ -179,7 +192,6 @@ sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/
 - And than the playbook main.yml is launched
 - Please note that the vms must be in a running state, so vagrant up must have been done and finished before launching the ansible playbook.
 
-
 #### Run ansible on your host (or from a linux vm in the same network as the lab)
 
 - If you want to play ansible from your host or a linux vm you should launch the following commands :
@@ -207,13 +219,15 @@ python3 -m pip install pywinrm
 ```
 
 - Install all the ansible-galaxy requirements
+  
   - **ansible windows**
   - **ansible community.windows**
   - **ansible chocolatey** (not needed anymore)
   - **ansible community.general**
-```
-ansible-galaxy install -r requirements.yml
-```
+    
+    ```
+    ansible-galaxy install -r requirements.yml
+    ```
 
 - And than you can launch the ansible provisioning with (note that the vms must be in a running state, so vagrant up must have been done before that)
 
@@ -222,6 +236,7 @@ ansible-playbook -i ../ad/sevenkingdoms.local/inventory main.yml # this will con
 ```
 
 ### V2 breaking changes
+
 - If you previously install the v1 do not try to update as a lot of things have changed. Just drop your old lab and build the new one (you will not regret it)
 - Chocolatey is no more used and basic tools like git or notepad++ are no more installed by default (as chocolatey regularly crash the install due to hitting rate on multiples builds)
 - ELK is no more installed by default to save resources but you still can install it separately (see the blueteam/elk part)
@@ -229,10 +244,12 @@ ansible-playbook -i ../ad/sevenkingdoms.local/inventory main.yml # this will con
 - Wintefell is now a domain controller for the subdomain north of the sevenkingdoms.local domain
 
 ### Space use
+
 - the lab take environ 77GB (but you have to get the space for the vms vagrant images windows server 2016 (22GB) / windows server 2019 (14GB) / ubuntu 18.04 (502M))
 - the total space needed for the lab is ~115 GB (and more if you take snapshots)
 
 ### Start / Setup / Run
+
 The default domain will be **sevenkingdoms.local**, on the subnet 192.168.56.1/24 and each machine has been allocated with 2CPU and 4GB of memory. If you want to change some of these performance settings you can modify the Vagrantfile (please note that with less RAM the install process sometimes crash, if it append just relaunch the ansible playbook).
 
 To have the lab up and running this is the commands you should do:
@@ -287,9 +304,10 @@ vagrant up   # will start the lab
 ```
 
 - If you got some errors see the troubleshooting section at the end of the document, but in most case if you get errors during install, don't think and just replay the main playbook (most of the errors which could came up are due to windows latency during installation, wait few minutes and replay the main.yml playbook)
-```
-ansible-playbook -i ../ad/sevenkingdoms.local/inventory main.yml
-```
+  
+  ```
+  ansible-playbook -i ../ad/sevenkingdoms.local/inventory main.yml
+  ```
 
 ## If you want to discuss about Active Directory and the GOAD project
 
@@ -300,7 +318,9 @@ ansible-playbook -i ../ad/sevenkingdoms.local/inventory main.yml
 ![v2_overview.png](./docs/img/v2_overview.png)
 
 ### Servers
+
 This lab is actually composed of five virtual machines:
+
 - **kingslanding** : DC01  running on Windows Server 2019 (with windefender enabled by default)
 - **winterfell**   : DC02  running on Windows Server 2019 (with windefender enabled by default)
 - **castelblack**  : SRV02 running on Windows Server 2019 (with windefender **disabled** by default)
@@ -308,17 +328,19 @@ This lab is actually composed of five virtual machines:
 - **braavos**      : SRV03 running on Windows Server 2016 (with windefender enabled by default)
 
 #### domain : north.sevenkingdoms.local
+
 - **winterfell**     : DC01
 - **castelblack**    : SRV02 : MSSQL / IIS
 
 #### domain : sevenkingdoms.local
+
 - **kingslanding**   : DC02
 - **castelrock**     : SRV01 (disabled due to resources reasons)
 
 #### domain : essos.local
+
 - **braavos**        : DC03
 - **meeren**         : SRV03 : MSSQL / ADCS
-
 
 The lab setup is automated using vagrant and ansible automation tools.
 You can change the vm version in the Vagrantfile according to Stefan Scherer vagrant repository : https://app.vagrantup.com/StefanScherer
@@ -326,56 +348,66 @@ You can change the vm version in the Vagrantfile according to Stefan Scherer vag
 ## Blueteam / ELK
 
 - **elk** a kibana is configured on http://192.168.56.50:5601 to follow the lab events
-- infos : log encyclopedia : https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/
-- the elk is not installed by default due to resources reasons. 
-- to install and start the elk play the following commands :
-  1. uncomment the elk vm in vagrant and provision with `vagrant up elk` (do not forget to add a coma on the box before)
-```
-# { :name => "elk", :ip => "192.168.56.50", :box => "bento/ubuntu-18.04", :os => "linux",
-#   :forwarded_port => [
-#     {:guest => 22, :host => 2210, :id => "ssh"}
-#   ]
-# }
-```
 
+- infos : log encyclopedia : https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/
+
+- the elk is not installed by default due to resources reasons. 
+
+- to install and start the elk play the following commands :
+  
+  1. uncomment the elk vm in vagrant and provision with `vagrant up elk` (do not forget to add a coma on the box before)
+     
+     ```
+     # { :name => "elk", :ip => "192.168.56.50", :box => "bento/ubuntu-18.04", :os => "linux",
+     #   :forwarded_port => [
+     #     {:guest => 22, :host => 2210, :id => "ssh"}
+     #   ]
+     # }
+     ```
+  
   2. uncomment the elk part in the inventory (ad/sevenkingdoms.local/inventory) file
-```
-[elk:vars]
-ansible_connection=ssh
-ansible_ssh_user=vagrant
-ansible_ssh_private_key_file=./.vagrant/machines/elk/virtualbox/private_key
-ansible_ssh_port=22
-host_key_checking = false
+     
+     ```
+     [elk:vars]
+     ansible_connection=ssh
+     ansible_ssh_user=vagrant
+     ansible_ssh_private_key_file=./.vagrant/machines/elk/virtualbox/private_key
+     ansible_ssh_port=22
+     host_key_checking = false
+     ```
 
 [elk]
 192.168.56.50
-```
 
+```
   3. install with docker
 ```bash
 sudo docker run -ti --rm --network host -e ANSIBLE_CONFIG=/goad/ansible -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook -i ../ad/sevenkingdoms.local/inventory elk.yml
 ```
 
-  3. or install on hand : 
-
+3. or install on hand : 
 - you need `sshpass` for the elk installation
-```bash
-sudo apt install sshpass
-```
+  
+  ```bash
+  sudo apt install sshpass
+  ```
 - Chocolatey is needed to use elk. To install it run:
-```bash
-ansible-galaxy collection install chocolatey.chocolatey 
-```
+  
+  ```bash
+  ansible-galaxy collection install chocolatey.chocolatey 
+  ```
 - play the elk.yml playbook to install and run elk:
-```bash
-ansible-playbook elk.yml
-```
+  
+  ```bash
+  ansible-playbook elk.yml
+  ```
 
 ### Users/Groups and associated vulnerabilites/scenarios
 
 - You can find a lot of the available scenarios on [https://mayfly277.github.io/categories/ad/](https://mayfly277.github.io/categories/ad/)
 
 NORTH.SEVENKINGDOMS.LOCAL
+
 - STARKS:              RDP on WINTERFELL AND CASTELBLACK
   - arya.stark:        Execute as user on mssql
   - eddard.stark:      DOMAIN ADMIN NORTH/ (bot 5min) LLMRN request to do NTLM relay with responder
@@ -389,6 +421,7 @@ NORTH.SEVENKINGDOMS.LOCAL
   - hodor:             PASSWORD SPRAY (user=password)
 - NIGHT WATCH:         RDP on CASTELBLACK
   - samwell.tarly:     Password in ldap description / mssql execute as login
+    
                        GPO abuse (Edit Settings on "STARKWALLPAPER" GPO)
   - jon.snow:          (see starks)
   - jeor.mormont:      (see mormont)
@@ -397,6 +430,7 @@ NORTH.SEVENKINGDOMS.LOCAL
 - AcrossTheSea :       cross forest group
 
 SEVENKINGDOMS.LOCAL
+
 - LANISTERS
   - tywin.lannister:   ACL forcechangepassword on jaime.lanister
   - jaime.lannister:   ACL genericwrite-on-user joffrey.baratheon
@@ -416,6 +450,7 @@ SEVENKINGDOMS.LOCAL
 - AccorsTheNarrowSea:       cross forest group
 
 ESSOS.LOCAL
+
 - TARGERYEN
   - daenerys.targaryen: DOMAIN ADMIN ESSOS
   - viserys.targaryen:  
@@ -428,16 +463,20 @@ ESSOS.LOCAL
 ### Computers Users and group permissions
 
 - SEVENKINGDOMS
+  
   - DC01 : kingslanding.sevenkingdoms.local (Windows Server 2019) (SEVENKINGDOMS DC)
     - Admins : robert.baratheon (U), cersei.lannister (U)
     - RDP: Small Council (G)
 
 - NORTH
+  
   - DC02 : winterfell.north.sevenkingdoms.local (Windows Server 2019) (NORTH DC)
+    
     - Admins : eddard.stark (U), catelyn.stark (U), robb.stark (U)
     - RDP: Stark(G)
-
+  
   - SRV02 : castelblack.essos.local (Windows Server 2019) (IIS, MSSQL, SMB share)
+    
     - Admins: jeor.mormont (U)
     - RDP: Night Watch (G), Mormont (G), Stark (G)
     - IIS : allow asp upload, run as NT Authority/network
@@ -450,11 +489,14 @@ ESSOS.LOCAL
         - to braavos : jon.snow -> sa
 
 - ESSOS
+  
   - DC03  : meereen.essos.local (Windows Server 2016) (ESSOS DC)
+    
     - Admins: daenerys.targaryen (U)
     - RDP: Targaryen (G)
-
+  
   - SRV03 : braavos.essos.local (Windows Server 2016) (MSSQL, SMB share)
+    
     - Admins: khal.drogo (U)
     - RDP: Dothraki (G)
     - MSSQL :
@@ -464,44 +506,44 @@ ESSOS.LOCAL
       - link:
         - to castelblack: jorah.mormont -> sa
 
-
 ## ROAD MAP
-- [X] Password reuse between computer (PTH)
-- [X] Spray User = Password
-- [X] Password in description
-- [X] SMB share anonymous
-- [X] SMB not signed
-- [X] Responder
-- [X] Zerologon
-- [X] Windows defender
-- [X] ASREPRoast
-- [X] Kerberoasting
-- [X] AD Acl abuse 
-- [X] Unconstraint delegation
-- [X] Ntlm relay
-- [X] Constrained delegation
-- [X] Install MSSQL
-- [X] MSSQL trusted link
-- [X] MSSQL impersonate
-- [X] Install IIS
-- [X] Upload asp app
-- [X] Multiples forest
-- [X] Anonymous RPC user listing
-- [X] Child parent domain
-- [X] Generate certificate and enable ldaps
-- [X] ADCS - ESC 1/2/3/8
-- [X] Certifry
-- [X] Samaccountname/nopac
-- [X] Petitpotam unauthent
-- [X] Printerbug
-- [X] Drop the mic
-- [X] Shadow credentials
-- [X] Mitm6
-- [X] Add LAPS
-- [X] GPO abuse
-- [X] Add Webdav
-- [X] Add RDP bot
-- [X] Add full proxmox integration
+
+- [x] Password reuse between computer (PTH)
+- [x] Spray User = Password
+- [x] Password in description
+- [x] SMB share anonymous
+- [x] SMB not signed
+- [x] Responder
+- [x] Zerologon
+- [x] Windows defender
+- [x] ASREPRoast
+- [x] Kerberoasting
+- [x] AD Acl abuse 
+- [x] Unconstraint delegation
+- [x] Ntlm relay
+- [x] Constrained delegation
+- [x] Install MSSQL
+- [x] MSSQL trusted link
+- [x] MSSQL impersonate
+- [x] Install IIS
+- [x] Upload asp app
+- [x] Multiples forest
+- [x] Anonymous RPC user listing
+- [x] Child parent domain
+- [x] Generate certificate and enable ldaps
+- [x] ADCS - ESC 1/2/3/8
+- [x] Certifry
+- [x] Samaccountname/nopac
+- [x] Petitpotam unauthent
+- [x] Printerbug
+- [x] Drop the mic
+- [x] Shadow credentials
+- [x] Mitm6
+- [x] Add LAPS
+- [x] GPO abuse
+- [x] Add Webdav
+- [x] Add RDP bot
+- [x] Add full proxmox integration
 - [ ] Add Gmsa
 - [ ] Add PPL
 - [ ] Add Credential Guard
@@ -510,8 +552,12 @@ ESSOS.LOCAL
 - [ ] Wsus
 - [ ] Sccm
 - [ ] Exchange
+- [ ] Restricted Admin mode
+- [ ] add EDR
+- [ ] 
 
 ## Lab organisation
+
 - The lab configuration is located on the ad/ folder
 - Ad folder contains the following files :
 
@@ -530,55 +576,67 @@ ad/
 ### Force replication (no more used)
 
 - On dragonstone play as domain admin user :
-```
-repadmin /replicate kingslanding.sevenkingdoms.local dragonstone.sevenkingdoms.local dc=sevenkingdoms,dc=local /full
-```
+  
+  ```
+  repadmin /replicate kingslanding.sevenkingdoms.local dragonstone.sevenkingdoms.local dc=sevenkingdoms,dc=local /full
+  ```
 
 ### vagrant usefull commands (vm management)
 
 - start all lab vms :
-```
-vagrant up
-```
+  
+  ```
+  vagrant up
+  ```
 
 - start only one vm :
-```
-vagrant up <vmname>
-```
+  
+  ```
+  vagrant up <vmname>
+  ```
 
 - stop all the lab vm :
-```
-vagrant halt
-```
+  
+  ```
+  vagrant halt
+  ```
 
 - drop all the lab vm (because you want to recreate all) (carrefull : this will erase all your lab instance)
-```
-vagrant destroy
-```
+  
+  ```
+  vagrant destroy
+  ```
 
 - snapshot the lab (https://www.vagrantup.com/docs/cli/snapshot)
-```
-vagrant snapshot push
-```
+  
+  ```
+  vagrant snapshot push
+  ```
 
 - restore the lab snapshot (this could break servers relationship, reset servers passwords with fix_trust.yml playbook)
-```
-vagrant snapshot pop
-```
+  
+  ```
+  vagrant snapshot pop
+  ```
 
 ### ansible commands (provisionning management)
+
 #### Play only an ansible part
+
 - only play shares of member_server.yml :
-```
-ansible-playbook member_server.yml --tags "data,shares"
-```
+  
+  ```
+  ansible-playbook member_server.yml --tags "data,shares"
+  ```
 
 #### Play only on some server
+
 ```
 ansible-playbook -l dc2 domain_controller.yml
 ```
 
 #### Add some vulns
+
 ```
 ansible-playbook vulnerabilities.yml
 ```
@@ -586,11 +644,12 @@ ansible-playbook vulnerabilities.yml
 ## Troubleshooting
 
 - In most case if you get errors during install, don't think and just replay the main playbook (most of the errors which could came up are due to windows latency during installation, wait few minutes and replay the main.yml playbook)
-```
-ansible-playbook main.yml
-```
+  
+  ```
+  ansible-playbook main.yml
+  ```
 
-### Groups domain error
+### Groups domain error
 
 - something go wrong with the trust, all the links are not fully establish
 - wait several minutes and relaunch the playbook
@@ -634,11 +693,11 @@ fatal: [xxx]: FAILED! => {
 
 ```bash
 ERROR! no action detected in task. This often indicates a misspelled module name, or incorrect module path.
- 
+
 The error appears to have been in '/home/hrrb0032/Documents/mission/GOAD/roles/domain_controller/tasks/main.yml': line 8, column 3, but maybe elsewhere in the file depending on the exact syntax problem.
- 
+
 The offending line appears to be:
- 
+
 - name: disable enhanced exit codes
 ^ here
 ```
@@ -646,34 +705,34 @@ The offending line appears to be:
 solution : upgrade Ansible
 
 #### old ansible.windows version
+
 ```bash
 ERROR! couldn't resolve module/action 'win_powershell'. This often indicates a misspelling, missing collection, or incorrect module path.
 ```
 
 - solution: reinstall ansible.windows module :
-```bash
-ansible-galaxy collection install ansible.windows --force
-```
+  
+  ```bash
+  ansible-galaxy collection install ansible.windows --force
+  ```
 
 ### winrm
 
 ```bash
 PLAY [DC01 - kingslanding] *******************************************************
 
- 
+
 
 TASK [Gathering Facts] ***********************************************************
 fatal: [192.168.56.10]: FAILED! => {"msg": "winrm or requests is not installed: No module named winrm"}
 
- 
+
 
 PLAY RECAP ***********************************************************************
 192.168.56.10              : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
 ```
 
 solution : pip install pywinrm
-
-
 
 ### winrm send input timeout
 
@@ -685,19 +744,18 @@ ok: [192.168.56.11]
 
 solution : wait or if crashed then re-run Ansible script
 
-
-
-### Domain controller : ensure Users are present 
+### Domain controller : ensure Users are present
 
 ```bash
 TASK [domain_controller : Ensure that Users presents in ou=<kingdom>,dc=SEVENKINGDOMS,dc=local] ***************************************************************************
 An exception occurred during task execution. To see the full traceback, use -vvv. The error was:    at Microsoft.ActiveDirectory.Management.Commands.ADCmdletBase`1.ProcessRecord()
 failed: [192.168.56.10] (item={u'key': u'lord.varys', u'value': {u'city': u"King's Landing", u'password': u'_W1sper_$', u'name': u'Lord Varys', u'groups': u'Small Council', u'path': u'OU=Users,OU=Crownlands,OU=kingdoms,DC=SEVENKINGDOMS,DC=local'}}) => {"ansible_loop_var": "item", "changed": false, "item": {"key": "lord.varys", "value": {"city": "King's Landing", "groups": "Small Council", "name": "Lord Varys", "password": "_W1sper_$", "path": "OU=Users,OU=Crownlands,OU=kingdoms,DC=SEVENKINGDOMS,DC=local"}}, "msg": "Unhandled exception while executing module: An unspecified error has occurred"}
-
 ```
+
  solution : re-run Ansible script
 
 ### mssql : Unable to install SQL Server
+
 ```
 TASK [mssql : Install the database]
 fatal: [192.168.56.22]: FAILED! => {"attempts": 3, "changed": true, "cmd": "c:\\setup\\mssql\\sql_installer.exe /configurationfile=c:\\setup\\mssql\\sql_conf.ini /IACCEPTSQLSERVERLICENSETERMS /MEDIAPATH=c:\\setup\\mssql\\media /QUIET /HIDEPROGRESSBAR", "delta": "0:00:34.891185", "end": "2022-08-17 21:26:53.976793", "msg": "non-zero return code", "rc": 2226323458, "start": "2022-08-17 21:26:19.085608", "stderr": "", "stderr_lines": [], "stdout": "Microsoft (R) SQL Server Installer\r\nCopyright (c) 2019 Microsoft.  All rights reserved.\r\n\r\nDownloading install package...\r\n\r\n\r\nOperation finished with result: Failure\r\n\r\nOops...\r\n\r\nUnable to install SQL Server (setup.exe).\r\n\r\n      Exit code (Decimal): -2068643838\r\n      Exit message: No features were installed during the setup execution. The requested features may already be installed. Please review the summary.txt log for further details.\r\n\r\n  SQL SERVER INSTALL LOG FOLDER\r\n      c:\\Program Files\\Microsoft SQL Server\\150\\Setup Bootstrap\\Log\\20220817_142624\r\n\r\n", "stdout_lines": ["Microsoft (R) SQL Server Installer", "Copyright (c) 2019 Microsoft.  All rights reserved.", "", "Downloading install package...", "", "", "Operation finished with result: Failure", "", "Oops...", "", "Unable to install SQL Server (setup.exe).", "", "      Exit code (Decimal): -2068643838", "      Exit message: No features were installed during the setup execution. The requested features may already be installed. Please review the summary.txt log for further details.", "", "  SQL SERVER INSTALL LOG FOLDER", "      c:\\Program Files\\Microsoft SQL Server\\150\\Setup Bootstrap\\Log\\20220817_142624", ""]}
@@ -711,6 +769,7 @@ solution : re-run Ansible server script: `ansible-playbook servers.yml`
 - Quentin Galliou (tests)
 
 ## Links
+
 - https://unicornsec.com/home/siem-home-lab-series-part-1
 - https://github.com/jckhmr/adlab
 - https://www.jonathanmedd.net/2019/09/ansible-windows-and-powershell-the-basics-introduction.html
@@ -726,4 +785,5 @@ solution : re-run Ansible server script: `ansible-playbook servers.yml`
 - ...
 
 ## Note
+
 - This repo is based on the work of [jckhmr](https://github.com/jckhmr/adlab) and [kkolk](https://github.com/kkolk/mssql)
