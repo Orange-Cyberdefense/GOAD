@@ -1,0 +1,29 @@
+dev {{vpn_dev_type}}
+mode server
+server {{ vpn_srv_network }} {{ vpn_srv_mask }}
+push "dhcp-option DNS 8.8.8.8"
+proto {{ vpn_proto }}
+port {{ vpn_port }}
+
+ca {{ vpn_path_ca_cert }}
+cert {{vpn_path_server_cert}}
+key {{ vpn_path_server_key }}
+dh {{ vpn_path_dh }}
+crl-verify {{ vpn_path_crl }}
+push "redirect-gateway def1"
+
+# Fix for the Windows 10 DNS leak described here:
+# https://community.openvpn.net/openvpn/ticket/605
+push block-outside-dns
+
+remote-cert-tls client
+keepalive 10 120
+tls-auth {{ vpn_path_ta_key }} 0
+{# cipher {{ openvpn_cipher }}
+tls-cipher {{ openvpn_tls_cipher }}
+auth {{ openvpn_auth_digest }} #}
+tls-version-min 1.2
+comp-lzo
+persist-key
+persist-tun
+verb 0

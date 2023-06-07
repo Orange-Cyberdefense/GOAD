@@ -2,10 +2,10 @@
 # - name: "disable interface {{nat_adapter}} before join domain"
 #   win_shell: netsh interface set interface "{{nat_adapter}}" disable
 
-- name: "disable the registration of the {{nat_adapter}} interface (NAT address) in DNS"
-  ansible.windows.win_shell:
-    Get-NetAdapter {{nat_adapter}} | Set-DNSClient -RegisterThisConnectionsAddress $False
-  when: two_adapters == "yes"
+# - name: "disable the registration of the {{nat_adapter}} interface (NAT address) in DNS"
+#   ansible.windows.win_shell:
+#     Get-NetAdapter {{nat_adapter}} | Set-DNSClient -RegisterThisConnectionsAddress $False
+#   when: two_adapters == "yes"
 
 - name: Ensure that domain exists
   win_domain:
@@ -50,7 +50,7 @@
 
 - name: enable only the {{domain_adapter}} interface (local) for DNS client requests
   ansible.windows.win_shell:
-    dnscmd . /resetlistenaddresses {{ hostvars[dict_key].ansible_host }}
+    dnscmd . /resetlistenaddresses {{ hostvars[dict_key].internalipv4 }}
   when: two_adapters == "yes"
 
 - name: Configure DNS Forwarders
@@ -68,4 +68,19 @@
 - name: "Install XactiveDirectory"
   win_psmodule:
     name: ActiveDirectoryDSC
+    state: present
+
+
+- name: Ensure Administrator is part of Enterprise Admins
+  win_domain_group_membership:
+    name: "Enterprise Admins"
+    members:
+      - Administrator
+    state: present
+
+- name: Ensure Administrator is part of Domain Admins
+  win_domain_group_membership:
+    name: "Domain Admins"
+    members:
+      - Administrator
     state: present

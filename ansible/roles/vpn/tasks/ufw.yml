@@ -1,0 +1,30 @@
+- name: Allow OpenVPN port from Redteam IPs
+  ufw:
+    rule: allow
+    proto: "{{ vpn_proto }}"
+    port: "{{ vpn_port }}"
+    from_ip: "{{ item }}"
+    log: no
+  with_items:
+    - "{{ hostvars.values() | list | json_query(\"[?type=='monitoring'].ips.keys(@)[]\") }}"
+    - "{{ redteam_ips }}"
+
+- name: Allow MASQUERADE for OpenVPN traffic
+  blockinfile:
+    path: /etc/ufw/before.rules
+    backup: yes
+    block: |
+      *nat
+      :POSTROUTING ACCEPT [0:0]
+      -A POSTROUTING -s {{ vpn_srv_network }}/{{ vpn_srv_mask }} -o {{ vpn_gw_iface }} -j MASQUERADE
+      COMMIT
+
+- name: Allow OpenVPN traffic to be forwarded to the internet
+  ufw:
+    rule: allow
+    route: yes
+    src: "{{ vpn_srv_network }}/{{ vpn_srv_mask }}"
+    dest: 0.0.0.0/0
+    log: no
+
+## TODO: reload ufw if MASQUERADE added

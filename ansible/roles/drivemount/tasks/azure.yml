@@ -1,0 +1,66 @@
+# Only create a partition on the second disk (if exists), and mount to {{optsec_dir}}
+# Encryption is managed directly on Azure for both OS and data disks (c2 and monitoring only)
+# - name: Install depencies packages (apt)
+#   apt:
+#     name:
+#       - cryptsetup
+#     state: present
+#     update_cache: yes
+#   tags:
+#     - packages
+
+- name: Checking the disk name
+  shell: "fdisk -l | grep '{{ hostvars[inventory_hostname].disk_size }} GiB' | awk '{print $2}' | cut -d ':' -f 1"
+  register: disk
+
+- name: debug
+  debug:
+    msg: "{{ hostvars[inventory_hostname].disk_size }} GiB"
+
+- name: Read device information "{{ disk.stdout }}"
+  parted:
+    device: "{{ disk.stdout }}"
+    unit: KiB
+  register: device_info
+  tags:
+    - encryption
+
+- name: Create new partition
+  parted:
+    device: "{{ disk.stdout }}"
+    state: present
+    part_type: primary
+    number: 1
+    part_end: "100%"
+    unit: KiB
+    part_start: "0%"
+  when: device_info['partitions']|length < 1
+  register: datapartition
+  tags:
+    - encryption
+
+- name: Read device information "{{ disk.stdout }}"
+  parted:
+    device: "{{ disk.stdout }}"
+    unit: KiB
+  register: partitions
+  tags:
+    - encryption
+
+- name: Creating filesystem
+  filesystem:
+    fstype: ext4
+    dev: "{{ disk.stdout }}1"
+  when: datapartition.changed
+  tags:
+    - encryption
+
+- name: Mounting filesystem to /opt
+  mount:
+    src: "{{ disk.stdout }}1"
+    path: "{{optsec_dir}}"
+    state: mounted
+    fstype: ext4
+    opts: auto,rw
+  tags:
+    - encryption

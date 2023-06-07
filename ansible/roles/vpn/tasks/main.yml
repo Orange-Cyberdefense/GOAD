@@ -1,0 +1,66 @@
+# OpenVPN (redirect GW)
+- include_tasks: ufw.yml
+  tags:
+    - firewall
+
+- name: Install depencies packages (apt)
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - openssl
+    - openvpn
+    - easy-rsa
+    - python-pexpect
+  tags:
+    - packages
+
+- import_tasks: pki.yml
+  tags:
+    - pki
+
+- name: Enable IPv4 traffic forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+
+- name: Copy OpenVPN server configuration file to the host
+  template:
+    src: etc/openvpn/server.conf.j2
+    dest: "{{ vpn_dir }}/{{ vpn_srv_hostname }}.conf"
+  register: openvpncfg
+  tags:
+    - config
+
+- name: Copy OpenVPN default init file to the host
+  template:
+    src: etc/default/openvpn.j2
+    dest: "/etc/default/openvpn"
+  tags:
+    - config
+
+- name: Restarting OpenVPN service
+  systemd:
+    name: openvpn
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  when: openvpncfg.changed
+  tags:
+    - service
+
+# Clients
+- import_tasks: client-cert.yml
+  tags:
+    - pki
+    - vpn-client
+
+- name: Fetch pki folder from remote host
+  synchronize:
+    src: "{{ vpn_dir_pki }}/"
+    dest: "{{ certificates_path }}/{{ ansible_hostname }}/"
+    mode: pull
+  tags:
+    - pki
+    - vpn-client

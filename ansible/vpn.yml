@@ -1,0 +1,8 @@
+---
+
+- hosts: vpn
+  become: true
+  roles:
+    # - rtoperator
+    # - drivemount
+    - vpn

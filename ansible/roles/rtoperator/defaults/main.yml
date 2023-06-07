@@ -1,0 +1,9 @@
+---
+
+users : []
+
+# example:
+# users:
+#   - name: test
+#     groups: sudo
+#     ssh_pubkey: "<ssh_pubkey>"

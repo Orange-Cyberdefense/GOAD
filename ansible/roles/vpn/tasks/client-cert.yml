@@ -1,0 +1,54 @@
+- name: Create clients certs
+  expect:
+    command: ./easyrsa build-client-full {{ item }}@{{ vpn_srv_hostname }} --req-cn {{ item }}@{{ vpn_srv_hostname }} nopass
+    responses:
+      'Enter pass phrase for .*?:$': "{{ vpn_ca_password }}"
+    chdir: "{{ vpn_dir_easyrsa }}"
+    creates: "{{ vpn_dir_keys }}/{{ item }}@{{ vpn_srv_hostname }}.key"
+  with_items:
+    - "{{ vpn_clients }}"
+
+- name: Create clients configuration directory
+  file:
+    path: "{{ vpn_dir_clients_cfg }}"
+    mode: 0700
+    state: directory
+
+- name: Register CA certificate contents
+  command: cat {{ vpn_path_ca_cert }}
+  no_log: true
+  register: openvpn_ca_contents
+  changed_when: false
+
+- name: Register HMAC TA key contents
+  command: cat {{ vpn_path_ta_key }}
+  no_log: true
+  register: openvpn_hmac_ta_key_contents
+  changed_when: false
+
+- name: Register client key contents
+  command: cat {{ vpn_dir_keys }}/{{ item }}@{{ vpn_srv_hostname }}.key
+  with_items:
+    - "{{ vpn_clients }}"
+  no_log: true
+  register: openvpn_client_keys
+  changed_when: false
+
+- name: Register client certificate contents
+  command: cat {{ vpn_dir_certs }}/{{ item }}@{{ vpn_srv_hostname }}.crt
+  with_items:
+    - "{{ vpn_clients }}"
+  no_log: true
+  register: openvpn_client_certs
+  changed_when: false
+
+- name: Build client configs (.ovpn files; pki embedded)
+  template:
+    src: client.ovpn.j2
+    dest: "{{ vpn_dir_clients_cfg }}/{{ item[0] }}@{{ vpn_srv_hostname }}.ovpn"
+    mode: 0400
+  no_log: true
+  with_together:
+    - "{{ vpn_clients }}"
+    - "{{ openvpn_client_certs.results }}"
+    - "{{ openvpn_client_keys.results }}"

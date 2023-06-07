@@ -1,0 +1,34 @@
+# {{ansible_managed}}
+client
+dev {{vpn_dev_type}}
+proto {{ vpn_proto }}
+remote {{ansible_host}} {{ vpn_port }}
+comp-lzo
+resolv-retry infinite
+auth-retry none
+nobind
+persist-key
+persist-tun
+mute-replay-warnings
+ns-cert-type server
+remote-cert-tls server
+tls-version-min 1.2
+verb 3
+key-direction 1
+mute 20
+
+<tls-auth>
+{{openvpn_hmac_ta_key_contents.stdout}}
+</tls-auth>
+
+<ca>
+{{openvpn_ca_contents.stdout}}
+</ca>
+
+<cert>
+{{item[1].stdout}}
+</cert>
+
+<key>
+{{item[2].stdout}}
+</key>

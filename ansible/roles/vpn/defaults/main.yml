@@ -1,0 +1,24 @@
+---
+# defaults file for vpn
+
+vpn_port: 8445
+vpn_proto: udp
+vpn_dev_type: tun
+vpn_srv_hostname: "{{ ansible_hostname }}"
+vpn_rsa_bits: 2048
+vpn_dir: /etc/openvpn
+vpn_gw_iface: eth0
+vpn_dir_easyrsa: "{{ vpn_dir }}/keys"
+vpn_dir_pki: "{{ vpn_dir_easyrsa }}/pki"
+vpn_dir_keys: "{{ vpn_dir_pki }}/private"
+vpn_dir_certs: "{{ vpn_dir_pki }}/issued"
+vpn_dir_reqs: "{{ vpn_dir_pki }}/reqs"
+vpn_dir_clients_cfg: "{{ vpn_dir_pki }}/ovpn"
+vpn_path_ca_cert: "{{ vpn_dir_pki }}/ca.crt"
+vpn_path_crl: "{{ vpn_dir_pki }}/crl.pem"
+vpn_path_ta_key: "{{ vpn_dir_pki }}/ta.key"
+vpn_path_dh: "{{ vpn_dir_pki }}/dh.pem"
+vpn_redirect_gateway: true
+vpn_srv_network: 192.2.0.0
+vpn_srv_mask: 255.255.255.0
+vpn_ca_password: "$uper$ecureVPNC@P@$$w0rd"

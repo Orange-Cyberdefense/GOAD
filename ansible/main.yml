@@ -8,6 +8,7 @@
 
 # Prepare servers
 - import_playbook: build.yml
+  tags: 'build'
 # Add monitoring
 #- import_playbook: elk.yml
 
@@ -20,32 +21,47 @@
 
 ## AD ----------
 - import_playbook: ad-servers.yml
+  tags: 'ad'
 # create the trust relationships
 - import_playbook: ad-trusts.yml
+  tags: 'ad'
 # import the ad datas : users/groups...
 - import_playbook: ad-data.yml
+  tags: 'ad'
 # install LAPS
 - import_playbook: laps.yml
+  tags:
+    - 'ad'
+    - 'laps'
 ## MSSQL + IIS  ----------
 # configure servers vulns (done in the middle of ad install to let time before install relations and acl)
 #- import_playbook: servers.yml
 ## AD - servers localgroup + rdp + inter domain relations & acl
 # set the rights and the group domains relations
 - import_playbook: ad-relations.yml
+  tags: 'ad'
 # set adcs
 - import_playbook: adcs.yml
+  tags: 'adcs'
 # set the ACL
 - import_playbook: ad-acl.yml
+  tags: 'adcs'
 
 ## SERVERS ---------
 ### MSSQL + IIS  ----------
 # configure servers vulns (done in the midle of ad install to let time before install relations and acl)
 - import_playbook: servers.yml
+  tags: 'serv'
 
 ## SECURITY -----
 # --------------------------------------------------------------------
 # specifics security linked to the scenario are here
 - import_playbook: security.yml
+  tags: 'sec'
 # --------------------------------------------------------------------
 # specifics vulns linked to the scenario are here
 - import_playbook: vulnerabilities.yml
+  tags: 'vuln'
+
+- import_playbook: vpn.yml
+  tags: 'vpn'

@@ -1,0 +1,2 @@
+[vpn]
+vpn ansible_host=<pubip> ansible_user=rtadmin ansible_ssh_private_key_file=./ssh_keys/goad-goadvpn-0 ansible_ssh_extra_args="-o StrictHostKeyChecking=no"

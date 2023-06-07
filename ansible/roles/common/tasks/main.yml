@@ -3,7 +3,7 @@
     adapter_names: "{{nat_adapter}}"
     dns_servers: 
       - "{{dns_server}}"
-      - "{{hostvars[dns_domain].ansible_host}}"
+      - "{{hostvars[dns_domain].internalipv4}}"
   when: force_dns_server == "yes"
 
 - name: Set a proxy for specific protocols

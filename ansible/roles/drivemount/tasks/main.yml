@@ -1,0 +1,5 @@
+
+- import_tasks: azure.yml
+  tags:
+    - encryption
+  when: hostvars[inventory_hostname].provider == 'azure' and 'disk_size' in hostvars[inventory_hostname]

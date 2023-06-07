@@ -1,13 +1,13 @@
-- name: "disable the registration of the {{nat_adapter}} interface (NAT address) in DNS"
-  ansible.windows.win_shell:
-    Get-NetAdapter {{nat_adapter}} | Set-DNSClient -RegisterThisConnectionsAddress $False
-  when: two_adapters == "yes"
+# - name: "disable the registration of the {{nat_adapter}} interface (NAT address) in DNS"
+#   ansible.windows.win_shell:
+#     Get-NetAdapter {{nat_adapter}} | Set-DNSClient -RegisterThisConnectionsAddress $False
+#   when: two_adapters == "yes"
 
 - name: "Set configure dns to {{dns_domain}}"
   win_dns_client:
     adapter_names: "{{domain_adapter}}"
     ipv4_addresses:
-    - "{{hostvars[dns_domain].ansible_host}}"
+    - "{{hostvars[dns_domain].internalipv4}}"
     log_path: C:\dns_log.txt
 
 - name: Install windows features - AD Domain Services
@@ -73,6 +73,7 @@
       Password: "{{parent_domain_password}}"
       DomSafePassword: "{{domain_password}}"
       DomainAdmin: "Administrator@{{parent_domain}}"
+      # DomainAdmin: "{{parent_domain}}\Administrator"
       ParentDomainName: "{{parent_domain}}"
       ReplicationSourceDC: "{{source_dc}}" 
       NewDomainNetbiosName: "{{netbios_name}}"
@@ -95,10 +96,13 @@
 
 - name: enable the {{domain_adapter}} interface (local) for DNS client requests
   ansible.windows.win_shell:
-    dnscmd . /resetlistenaddresses {{ hostvars[dict_key].ansible_host }}
+    dnscmd . /resetlistenaddresses {{ hostvars[dict_key].internalipv4 }}
   when: two_adapters == "yes"
 
 - name: "Install XactiveDirectory"
   win_psmodule:
     name: ActiveDirectoryDSC
     state: present
+
+
+

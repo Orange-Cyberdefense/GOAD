@@ -3,6 +3,12 @@
     test_command: "Get-ADUser -Identity Administrator -Properties *"
     post_reboot_delay: 100
 
+# Should help fix dc02 issue
+- name: "prioritize the {{domain_adapter}} interface (local) as the default for routing"
+  ansible.windows.win_shell:
+    Set-NetIPInterface -InterfaceAlias "{{domain_adapter}}" -InterfaceMetric 10
+  when: two_adapters == "yes"
+
 - name: "synchronizes all domains"
   win_shell: repadmin /syncall /Ade
   become: yes
@@ -13,7 +19,7 @@
 
 - name: "Add a domain user/group from another Domain in the multi-domain forest to a domain group : {{domain_server}}"
   community.windows.win_domain_group_membership:
-    #domain_server: "{{domain_server}}"
+    domain_server: "{{domain_server}}"
     domain_username: "{{domain_username}}"
     domain_password: "{{domain_password}}"
     name: "{{item.key}}"

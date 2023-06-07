@@ -1,0 +1,66 @@
+- name: Copy easyRSA to "{{ vpn_dir_easyrsa }}"
+  copy:
+    src: easy-rsa/
+    dest: "{{ vpn_dir_easyrsa }}/"
+    owner: root
+    group: root
+
+- name: Fix easyRSA permissions
+  file:
+    path: "{{ vpn_dir_easyrsa }}/easyrsa"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy easyRSA vars file to "{{ vpn_dir_easyrsa }}"
+  template:
+    src: vars.j2
+    dest: "{{ vpn_dir_easyrsa }}/vars"
+
+- name: Set server key and cert path variables
+  set_fact:
+    vpn_path_server_key: "{{ vpn_dir_keys }}/server@{{ vpn_srv_hostname }}.key"
+    vpn_path_server_cert: "{{ vpn_dir_certs }}/server@{{ vpn_srv_hostname }}.crt"
+
+- name: Intialize PKI
+  shell: echo 'yes' | ./easyrsa init-pki
+  args:
+    chdir: "{{ vpn_dir_easyrsa }}"
+    creates: "{{ vpn_dir_pki }}"
+
+- name: Build CA
+  expect:
+    command: ./easyrsa build-ca --req-cn ca@{{ vpn_srv_hostname }}
+    responses:
+      'Enter PEM pass phrase:$': "{{ vpn_ca_password }}"
+      'Verifying - Enter PEM pass phrase:$': "{{ vpn_ca_password }}"
+    chdir: "{{ vpn_dir_easyrsa }}"
+    creates: "{{ vpn_dir_keys }}/ca.key"
+
+- name: Build CRL
+  expect:
+    command: ./easyrsa gen-crl
+    responses:
+      'Enter pass phrase for .*?:$': "{{ vpn_ca_password }}"
+    chdir: "{{ vpn_dir_easyrsa }}"
+    creates: "{{ vpn_path_crl }}"
+
+- name: Build server key
+  expect:
+    command: ./easyrsa build-server-full server@{{ vpn_srv_hostname }} nopass --req-cn server@{{ vpn_srv_hostname }}
+    responses:
+      'Enter pass phrase for .*?:$': "{{ vpn_ca_password }}"
+    chdir: "{{ vpn_dir_easyrsa }}"
+    creates: "{{ vpn_path_server_key }}"
+
+- name: Build ta.key
+  shell: openvpn --genkey --secret ta.key
+  args:
+    chdir: "{{ vpn_dir_pki }}"
+    creates: "{{ vpn_path_ta_key }}"
+
+- name: Build dh.pem
+  shell: ./easyrsa gen-dh
+  args:
+    chdir: "{{ vpn_dir_easyrsa }}"
+    creates: "{{ vpn_path_dh }}"

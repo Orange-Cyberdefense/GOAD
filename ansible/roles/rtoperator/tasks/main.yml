@@ -1,0 +1,27 @@
+# roles/rtoperator/tasks
+---
+
+- name: Add operators
+  user:
+    name: "{{ item.name }}"
+    groups: "{{ item.groups }}"
+    password: "{{ item.pw_hash }}"
+    shell: "/bin/bash"
+    create_home: true
+    update_password: always
+    state: present
+  with_items: "{{ users }}"
+  # no_log: true
+  tags:
+    - users
+
+- name: Add pub keys to operators
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.ssh_pubkey }}"
+    state: present
+  with_items: "{{ users }}"
+  no_log: true
+  tags:
+    - users
+    - sshkeys

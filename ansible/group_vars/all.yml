@@ -1,0 +1,21 @@
+# group_vars/all.yml
+---
+
+optsec_dir: '/opt'
+
+provider: 'azure'
+disk_size: '32'
+
+redteam_ips:
+  - 0.0.0.0
+
+certificates_path: ./certs
+
+vpn_clients:
+  - fpkmatthi
+
+users:
+  - name: "fpkmatthi"
+    groups: "sudo"
+    pw_hash: "{{ vault_fpkmatthi_pw_hash }}"
+    ssh_pubkey: "{{ vault_fpkmatthi_ssh_pubkey }}"

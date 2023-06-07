@@ -9,10 +9,10 @@
 - name: Trusts configuration
   hosts: trust
   roles:
-  - { role: 'settings/disable_nat_adapter' , tags: 'disable_nat_adapter'}
+  # - { role: 'settings/disable_nat_adapter' , tags: 'disable_nat_adapter'}
   - { role: 'dns_conditional_forwarder', tags: 'dns_conditional_forwarder' }
   - { role: 'trusts', tags: 'trust' }
-  - { role: 'settings/enable_nat_adapter', tags: 'enable_nat_adapter'}
+  # - { role: 'settings/enable_nat_adapter', tags: 'enable_nat_adapter'}
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
     domain_username: "{{domain}}\\Administrator"
@@ -22,4 +22,4 @@
     remote_admin_password: "{{lab.domains[remote_forest].domain_password}}"
     zone_name: "{{remote_forest}}"
     remote_dc: "{{lab.domains[remote_forest].dc}}"
-    master_server: "{{hostvars[remote_dc].ansible_host}}"
+    master_server: "{{hostvars[remote_dc].internalipv4}}"
