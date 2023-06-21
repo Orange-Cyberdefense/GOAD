@@ -33,6 +33,7 @@ sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/
 ```
 
 - Now you can grab a coffee it will take time :)
+- "If you encounter an error in communicating with WinRM over HTTPS, follow these steps to fix it." : https://github.com/Orange-Cyberdefense/GOAD/issues/101#issuecomment-1598005158
 
 ### Windows users warning
 
