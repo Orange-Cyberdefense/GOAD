@@ -9,19 +9,13 @@ cd terraform
 terraform init
 ```
 
-2. Generate a password for the windows vm
+2. Generate a password for the Windows VM
 
 ```bash
 cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 30
 ```
 
-3. Put the generated password in the inventory file
-
-```bash
-...
-ansible_password=<password>
-...
-```
+> Note: Keep the password, it will be used later
 
 4. Generate the terraform plan with the password
 
@@ -39,9 +33,19 @@ terraform apply tfplan
 
 > Note: The terraform apply will take a few minutes to complete
 
-At the end of the terraform apply, the output will show the public ip of the ubuntu vm. This vm will be used to run the ansible playbook to provision the windows vm. To connect to the ubuntu vm, use the following command:
+At the end of the terraform apply, the output will show the public ip of the Ubuntu VM. This VM will be used to run the ansible playbook to provision the Windows VM.
+
+## Provision the Windows VM with Ansible
+
+1. Run the setup.sh script to install Ansible and download GOAD on the Ubuntu VM
 
 ```bash
 cd ..
-ssh -i ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu_public_ip>
+ssh -i ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu_public_ip> 'bash -s' < setup.sh
+```
+
+2. Put the generated password in the inventory file
+
+```bash
+nano GOAD/ad/azure-sevenkingdoms.local/inventory
 ```

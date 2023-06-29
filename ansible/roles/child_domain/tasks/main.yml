@@ -72,7 +72,7 @@
     parameters:
       Password: "{{ ansible_password if env_name == 'azure' else parent_domain_password }}"
       DomSafePassword: "{{domain_password}}"
-      DomainAdmin: "{{ ansible_user if env_name == 'azure' else 'Administrator@' + parent_domain }}"
+      DomainAdmin: "{{ ansible_user + '@' if env_name == 'azure' else 'Administrator@' }}{{parent_domain}}"
       ParentDomainName: "{{parent_domain}}"
       ReplicationSourceDC: "{{source_dc}}" 
       NewDomainNetbiosName: "{{netbios_name}}"
