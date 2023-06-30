@@ -13,40 +13,68 @@ provider "azurerm" {
   features {}
 }
 
-variable "vm_names" {
-  type    = list(string)
-  default = ["dc01", "dc02", "dc03", "srv02", "srv03"]
-}
+variable "vm_config" {
+  type = map(object({
+    name               = string
+    windows_version    = string
+    private_ip_address = string
+  }))
 
-variable "vm_private_ip_addresses" {
-  type    = list(string)
-  default = ["192.168.56.10", "192.168.56.11", "192.168.56.12", "192.168.56.22", "192.168.56.23"]
+  default = {
+    "dc01" = {
+      name               = "dc01"
+      windows_version    = "2019-Datacenter"
+      private_ip_address = "192.168.56.10"
+    }
+    "dc02" = {
+      name               = "dc02"
+      windows_version    = "2019-Datacenter"
+      private_ip_address = "192.168.56.11"
+    }
+    "dc03" = {
+      name               = "dc03"
+      windows_version    = "2016-Datacenter"
+      private_ip_address = "192.168.56.12"
+    }
+    "srv02" = {
+      name               = "srv02"
+      windows_version    = "2019-Datacenter"
+      private_ip_address = "192.168.56.22"
+    }
+    "srv03" = {
+      name               = "srv03"
+      windows_version    = "2016-Datacenter"
+      private_ip_address = "192.168.56.23"
+    }
+  }
 }
 
 resource "azurerm_network_interface" "goad-vm-nic" {
-  count               = length(var.vm_names)
-  name                = "goad-vm-${var.vm_names[count.index]}-nic"
+  for_each = var.vm_config
+
+  name                = "goad-vm-${each.value.name}-nic"
   location            = azurerm_resource_group.resource_group.location
   resource_group_name = azurerm_resource_group.resource_group.name
 
   ip_configuration {
-    name                          = "goad-vm-${var.vm_names[count.index]}-nic-ipconfig"
+    name                          = "goad-vm-${each.value.name}-nic-ipconfig"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Static"
-    private_ip_address            = element(var.vm_private_ip_addresses, count.index)
+    private_ip_address            = each.value.private_ip_address
   }
 }
 
 resource "azurerm_windows_virtual_machine" "goad-vm" {
-  count               = length(var.vm_names)
-  name                = var.vm_names[count.index]
+  for_each = var.vm_config
+
+  name                = "goad-vm-${each.value.name}"
   location            = azurerm_resource_group.resource_group.location
   resource_group_name = azurerm_resource_group.resource_group.name
   size                = var.size
   admin_username      = var.username
   admin_password      = var.password
   network_interface_ids = [
-    azurerm_network_interface.goad-vm-nic[count.index].id,
+    azurerm_network_interface.goad-vm-nic[each.key].id,
   ]
 
   os_disk {
@@ -57,15 +85,16 @@ resource "azurerm_windows_virtual_machine" "goad-vm" {
   source_image_reference {
     publisher = "MicrosoftWindowsServer"
     offer     = "WindowsServer"
-    sku       = "2019-Datacenter"
+    sku       = each.value.windows_version
     version   = "latest"
   }
 }
 
 resource "azurerm_virtual_machine_extension" "goad-vm-ext" {
-  count                = length(var.vm_names)
-  name                 = "${var.vm_names[count.index]}-ansible-prep"
-  virtual_machine_id   = azurerm_windows_virtual_machine.goad-vm[count.index].id
+  for_each = var.vm_config
+
+  name                 = "${each.value.name}-ansible-prep"
+  virtual_machine_id   = azurerm_windows_virtual_machine.goad-vm[each.key].id
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"
   type_handler_version = "1.9"
