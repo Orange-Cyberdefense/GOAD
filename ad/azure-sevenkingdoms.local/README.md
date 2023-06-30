@@ -44,6 +44,8 @@ cd ..
 ssh -i ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu_public_ip> 'bash -s' < setup.sh
 ```
 
+> Note: To get the public ip of the Ubuntu VM, you can run `terraform output` in the terraform directory
+
 2. Put the generated password in the inventory file
 
 ```bash
@@ -57,3 +59,14 @@ cd GOAD/ansible
 source ./venv/bin/activate
 ansible-playbook -i ../ad/azure-sevenkingdoms.local/inventory main.yml
 ```
+
+## Tips
+
+- To connect to the Windows VM, you can use proxychains and xfreerdp through the Ubuntu VM
+
+```bash
+ssh -i ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu_public_ip> -D 1080
+proxychains xfreerdp /u:goadmin /p:<password> /v:<windows_private_ip> +clipboard /dynamic-resolution /cert-ignore
+```
+
+> Note: The password is the one generated at step 2 of the terraform section
