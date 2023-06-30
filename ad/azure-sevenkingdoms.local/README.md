@@ -49,3 +49,11 @@ ssh -i ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu_public_ip> 'bash -s' < setup.sh
 ```bash
 nano GOAD/ad/azure-sevenkingdoms.local/inventory
 ```
+
+3. Run the playbook to provision the Windows VM
+
+```bash
+cd GOAD/ansible
+source ./venv/bin/activate
+ansible-playbook -i ../ad/azure-sevenkingdoms.local/inventory main.yml
+```
