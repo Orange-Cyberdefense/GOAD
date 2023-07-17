@@ -50,7 +50,7 @@
 
 - name: enable only the {{domain_adapter}} interface (local) for DNS client requests
   ansible.windows.win_shell: dnscmd . /resetlistenaddresses {{ hostvars[dict_key].ansible_host }}
-  when: two_adapters == "yes"
+  when: two_adapters == "yes" or env_name == "azure"
 
 - name: Configure DNS Forwarders
   win_dsc:

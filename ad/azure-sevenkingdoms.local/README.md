@@ -1,6 +1,25 @@
 # Azure setup
 
-## Build the infrastructure with Terraform.
+## Prerequisites
+
+- [Terraform](https://www.terraform.io/downloads.html)
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+
+## Azure configuration
+
+You need to login to Azure with the CLI.
+
+```bash
+az login
+```
+
+## Automatic installation
+
+Run the `build.sh` script to build the infrastructure and provision the Windows VM.
+
+## Manual installation
+
+### Build the infrastructure with Terraform.
 
 1. Initialize Terraform
 
@@ -35,7 +54,7 @@ terraform apply tfplan
 
 At the end of the terraform apply, the output will show the public ip of the Ubuntu VM. This VM will be used to run the ansible playbook to provision the Windows VM.
 
-## Windows VM provisionning with Ansible
+### Windows VM provisionning with Ansible
 
 1. Run the setup.sh script to install Ansible and download GOAD on the Ubuntu VM
 
