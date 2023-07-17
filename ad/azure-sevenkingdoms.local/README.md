@@ -31,32 +31,38 @@ terraform plan -out tfplan -var 'password=<password>'
 terraform apply tfplan
 ```
 
-> Note: The terraform apply will take a few minutes to complete
+> Note: The terraform apply command will take a few minutes to complete
 
 At the end of the terraform apply, the output will show the public ip of the Ubuntu VM. This VM will be used to run the ansible playbook to provision the Windows VM.
 
-## Provision the Windows VM with Ansible
+## Windows VM provisionning with Ansible
 
 1. Run the setup.sh script to install Ansible and download GOAD on the Ubuntu VM
 
 ```bash
 cd ..
-ssh -i ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu_public_ip> 'bash -s' < setup.sh
+ssh -i ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu-jumpbox-ip> 'bash -s' < setup.sh
 ```
 
 > Note: To get the public ip of the Ubuntu VM, you can run `terraform output` in the terraform directory
 
-2. Put the generated password in the inventory file
+2. Connect to the Ubuntu VM
+
+```bash
+ssh -i ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu-jumpbox-ip>
+```
+
+3. Replace the `ansible_password` variable in the inventory file with the generated password
 
 ```bash
 nano GOAD/ad/azure-sevenkingdoms.local/inventory
 ```
 
-3. Run the playbook to provision the Windows VM
+4. Run the playbook to provision the Windows VM
 
 ```bash
 cd GOAD/ansible
-source ./venv/bin/activate
+source .venv/bin/activate
 ansible-playbook -i ../ad/azure-sevenkingdoms.local/inventory main.yml
 ```
 
@@ -70,3 +76,9 @@ proxychains xfreerdp /u:goadmin /p:<password> /v:<windows_private_ip> +clipboard
 ```
 
 > Note: The password is the one generated at step 2 of the terraform section
+
+- If the command `terraform destroy` fails, you can delete the resource group using the CLI
+
+```bash
+az group delete --name GOAD
+```

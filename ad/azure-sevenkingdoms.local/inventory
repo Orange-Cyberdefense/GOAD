@@ -30,10 +30,10 @@ domain_name=sevenkingdoms.local
 force_dns_server=no
 dns_server=9.9.9.9
 
-two_adapters=yes
+two_adapters=no
 
 ; adapter created by vagrant and virtualbox (comment if you use vmware)
-; nat_adapter=Ethernet
+nat_adapter=Ethernet
 domain_adapter=Ethernet
 
 ; adapter created by vagrant and vmware (uncomment if you use vmware)
