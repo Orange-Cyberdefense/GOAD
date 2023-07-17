@@ -1,3 +1,10 @@
+- name: Ensure Administrator is part of Domain Admins
+  win_domain_group_membership:
+    name: "Domain Admins"
+    members:
+      - Administrator
+    state: present
+
 - name: organisation units
   import_tasks: ou.yml
 

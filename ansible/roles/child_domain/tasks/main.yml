@@ -1,7 +1,7 @@
-- name: "disable the registration of the {{nat_adapter}} interface (NAT address) in DNS"
-  ansible.windows.win_shell:
-    Get-NetAdapter {{nat_adapter}} | Set-DNSClient -RegisterThisConnectionsAddress $False
-  when: two_adapters == "yes"
+# - name: "disable the registration of the {{nat_adapter}} interface (NAT address) in DNS"
+#   ansible.windows.win_shell:
+#     Get-NetAdapter {{nat_adapter}} | Set-DNSClient -RegisterThisConnectionsAddress $False
+#   when: two_adapters == "yes"
 
 - name: "Set configure dns to {{dns_domain}}"
   win_dns_client:
@@ -72,7 +72,8 @@
     parameters:
       Password: "{{ ansible_password if env_name == 'azure' else parent_domain_password }}"
       DomSafePassword: "{{domain_password}}"
-      DomainAdmin: "{{ ansible_user + '@' if env_name == 'azure' else 'Administrator@' }}{{parent_domain}}"
+      DomainAdmin: "Administrator@{{parent_domain}}"
+      # DomainAdmin: "{{ ansible_user + '@' if env_name == 'azure' else 'Administrator@' }}{{parent_domain}}"
       ParentDomainName: "{{parent_domain}}"
       ReplicationSourceDC: "{{source_dc}}" 
       NewDomainNetbiosName: "{{netbios_name}}"
