@@ -3,7 +3,6 @@
 # Generate a random password
 echo "Generating password..."
 password=$(cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 30)
-echo "Password: $password"
 
 # Initialize Terraform
 echo "Initializing Terraform..."
@@ -21,12 +20,11 @@ terraform apply tfplan
 # Get the public IP address of the VM
 echo "Getting jumpbox IP address..."
 public_ip=$(terraform output -raw ubuntu-jumpbox-ip)
-echo "Ubunut jumpbox IP: $public_ip"
 
 # Run setup script on the jumpbox
-# echo "Running setup script on jumpbox..."
+echo "Running setup script on jumpbox..."
 cd ..
-ssh -o "StrictHostKeyChecking no" -i ssh_keys/ubuntu-jumpbox.pem goad@$public_ip 'bash -s' < setup.sh
+ssh -o "StrictHostKeyChecking no" -i ssh_keys/ubuntu-jumpbox.pem goad@$public_ip 'bash -s' <scripts/setup.sh
 
 # Replace the password in the Ansible inventory file
 echo "Replacing password in Ansible inventory file..."
@@ -34,4 +32,10 @@ ssh -i ssh_keys/ubuntu-jumpbox.pem goad@$public_ip "sed -i 's/YourSuperSecretPas
 
 # Run the Ansible playbook
 echo "Running Ansible playbook..."
-ssh -i ssh_keys/ubuntu-jumpbox.pem goad@$public_ip "cd GOAD/ansible && source .venv/bin/activate && ansible-playbook -i ../ad/azure-sevenkingdoms.local/inventory main.yml"
+ssh -i ssh_keys/ubuntu-jumpbox.pem goad@$public_ip 'bash -s' <scripts/provisionning.sh
+
+echo "Ubuntu jumpbox IP: $public_ip"
+echo "goadmin password: $password"
+
+echo "You can now connect to the jumpbox using the following command:"
+echo "ssh -i ssh_keys/ubuntu-jumpbox.pem goad@$public_ip"
