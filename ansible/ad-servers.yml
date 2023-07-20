@@ -9,6 +9,7 @@
 
 - name: Prepare servers set admin password, set hostname
   hosts: domain
+  tags: 'prepare_servers'
   roles:
   - { role: 'settings/admin_password', tags: 'admin_password' }
   - { role: 'settings/hostname', tags: 'hostname' }
