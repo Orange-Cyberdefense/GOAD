@@ -99,20 +99,3 @@
   win_psmodule:
     name: ActiveDirectoryDSC
     state: present
-
-- name: "Wait for domain to be ready"
-  win_domain_computer:
-    domain_admin_user: "Administrator@{{domain.split('.')[0]}}"
-    domain_admin_password: "{{domain_password}}"
-    domain_name: "{{domain.split('.')[0]}}"
-    state: domain
-    restart: yes
-    wait: yes
-    wait_timeout: 600
-    wait_retries: 10
-    wait_delay: 60
-  register: domain_ready
-  until: "domain_ready is not failed"
-  retries: 3
-  delay: 120
-  when: env_name == "azure"
