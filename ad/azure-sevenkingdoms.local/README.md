@@ -1,5 +1,7 @@
 # Azure setup
 
+![Architecture](images/azure_architecture.png)
+
 ## Prerequisites
 
 - [Terraform](https://www.terraform.io/downloads.html)
