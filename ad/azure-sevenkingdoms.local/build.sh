@@ -1,5 +1,15 @@
 #!/bin/bash
 
+function print_info {
+    echo -e "\n\n"
+    echo "Ubuntu jumpbox IP: $public_ip"
+    echo "goadmin password: $password"
+
+    echo "You can now connect to the jumpbox using the following command:"
+    echo "ssh -i ssh_keys/ubuntu-jumpbox.pem goad@$public_ip"
+    echo -e "\n\n"
+}
+
 # Generate a random password
 echo "Generating password..."
 password=$(cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 30)
@@ -9,17 +19,15 @@ echo "Initializing Terraform..."
 cd terraform
 terraform init
 
-# Plan Terraform
-echo "Planning Terraform..."
-terraform plan -out tfplan -var "password=$password"
-
 # Apply Terraform
 echo "Applying Terraform..."
-terraform apply tfplan
+terraform apply -var "password=$password"
 
 # Get the public IP address of the VM
 echo "Getting jumpbox IP address..."
 public_ip=$(terraform output -raw ubuntu-jumpbox-ip)
+
+print_info
 
 # Run setup script on the jumpbox
 echo "Running setup script on jumpbox..."
@@ -34,8 +42,4 @@ ssh -i ssh_keys/ubuntu-jumpbox.pem goad@$public_ip "sed -i 's/YourSuperSecretPas
 echo "Running Ansible playbook..."
 ssh -i ssh_keys/ubuntu-jumpbox.pem goad@$public_ip 'bash -s' <scripts/provisionning.sh
 
-echo "Ubuntu jumpbox IP: $public_ip"
-echo "goadmin password: $password"
-
-echo "You can now connect to the jumpbox using the following command:"
-echo "ssh -i ssh_keys/ubuntu-jumpbox.pem goad@$public_ip"
+print_info

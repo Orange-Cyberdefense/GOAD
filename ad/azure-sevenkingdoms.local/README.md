@@ -85,6 +85,8 @@ source .venv/bin/activate
 ansible-playbook -i ../ad/azure-sevenkingdoms.local/inventory main.yml
 ```
 
+> Note: LAPS feature have been disabled in the playbook because of error
+
 ## Tips
 
 - To connect to the Windows VM, you can use proxychains and xfreerdp through the Ubuntu VM
