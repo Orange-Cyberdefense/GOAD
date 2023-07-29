@@ -1,13 +1,12 @@
 - name: "disable the registration of the {{nat_adapter}} interface (NAT address) in DNS"
-  ansible.windows.win_shell:
-    Get-NetAdapter {{nat_adapter}} | Set-DNSClient -RegisterThisConnectionsAddress $False
+  ansible.windows.win_shell: Get-NetAdapter {{nat_adapter}} | Set-DNSClient -RegisterThisConnectionsAddress $False
   when: two_adapters == "yes"
 
 - name: "Set configure dns to {{dns_domain}}"
   win_dns_client:
     adapter_names: "{{domain_adapter}}"
     ipv4_addresses:
-    - "{{hostvars[dns_domain].ansible_host}}"
+      - "{{hostvars[dns_domain].ansible_host}}"
     log_path: C:\dns_log.txt
 
 - name: Install windows features - AD Domain Services
@@ -74,11 +73,10 @@
       DomSafePassword: "{{domain_password}}"
       DomainAdmin: "Administrator@{{parent_domain}}"
       ParentDomainName: "{{parent_domain}}"
-      ReplicationSourceDC: "{{source_dc}}" 
+      ReplicationSourceDC: "{{source_dc}}"
       NewDomainNetbiosName: "{{netbios_name}}"
       NewDomainName: "{{domain.split('.')[0]}}"
-  register:
-    child_result
+  register: child_result
 
 - name: Reboot
   win_reboot:
@@ -86,16 +84,15 @@
     post_reboot_delay: 100
   when: child_result.changed
 
-#- name: "enable interface {{nat_adapter}} after domain joined"
-#  win_shell: netsh interface set interface "{{nat_adapter}}" enable
-#  register: enable_interface
-#  until: "enable_interface is not failed"
-#  retries: 3
-#  delay: 120
+# - name: "enable interface {{nat_adapter}} after domain joined"
+#   win_shell: netsh interface set interface "{{nat_adapter}}" enable
+#   register: enable_interface
+#   until: "enable_interface is not failed"
+#   retries: 3
+#   delay: 120
 
 - name: enable the {{domain_adapter}} interface (local) for DNS client requests
-  ansible.windows.win_shell:
-    dnscmd . /resetlistenaddresses {{ hostvars[dict_key].ansible_host }}
+  ansible.windows.win_shell: dnscmd . /resetlistenaddresses {{ hostvars[dict_key].ansible_host }}
   when: two_adapters == "yes"
 
 - name: "Install XactiveDirectory"
