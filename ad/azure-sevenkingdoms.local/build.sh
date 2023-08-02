@@ -12,7 +12,12 @@ function print_info {
 
 # Generate a random password
 echo "Generating password..."
-password=$(cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 30)
+# Check if MacOS
+OS=`uname`
+if [ "$OS" = 'Darwin' ]; then
+    export LC_CTYPE=C
+fi
+password=$(cat /dev/urandom | $LC_CTYPE tr -dc A-Za-z0-9 | head -c 30)
 
 # Initialize Terraform
 echo "Initializing Terraform..."
