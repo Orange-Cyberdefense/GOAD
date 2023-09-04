@@ -278,7 +278,7 @@ ansible-playbook ad-relations.yml # set the rights and the group domains relatio
 ansible-playbook adcs.yml         # Install ADCS on essos
 ansible-playbook ad-acl.yml       # set the ACE/ACL
 ansible-playbook security.yml     # Configure some securities (adjust av enable/disable)
-ansible-playbook vulns.yml        # Configure some vulnerabilities
+ansible-playbook vulnerabilities.yml        # Configure some vulnerabilities
 ```
 
 - When you finish playing you could do :
