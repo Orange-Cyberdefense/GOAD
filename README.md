@@ -236,7 +236,7 @@ ansible-playbook -i ../ad/sevenkingdoms.local/inventory main.yml # this will con
 - Wintefell is now a domain controller for the subdomain north of the sevenkingdoms.local domain
 
 ### Space use
-- the lab take environ 77GB (but you have to get the space for the vms vagrant images windows server 2016 (22GB) / windows server 2019 (14GB) / ubuntu 18.04 (502M))
+- the lab takes about 77GB (but you have to get the space for the vms vagrant images windows server 2016 (22GB) / windows server 2019 (14GB) / ubuntu 18.04 (502M))
 - the total space needed for the lab is ~115 GB (and more if you take snapshots)
 
 ### Start / Setup / Run
