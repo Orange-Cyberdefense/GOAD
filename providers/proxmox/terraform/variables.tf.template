@@ -17,3 +17,7 @@ variable "pm_node" {
 variable "pm_pool" {
   default = "GOAD"
 }
+
+variable "pm_full_clone" {
+  default = false
+}
