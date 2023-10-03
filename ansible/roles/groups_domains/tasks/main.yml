@@ -13,7 +13,7 @@
 
 - name: "Add a domain user/group from another Domain in the multi-domain forest to a domain group : {{domain_server}}"
   community.windows.win_domain_group_membership:
-    #domain_server: "{{domain_server}}"
+    domain_server: "{{domain_server}}"
     domain_username: "{{domain_username}}"
     domain_password: "{{domain_password}}"
     name: "{{item.key}}"
