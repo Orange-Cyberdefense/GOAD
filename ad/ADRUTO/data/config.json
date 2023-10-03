@@ -1,0 +1,560 @@
+{
+"lab" : {
+    "hosts" : {
+        "dc01" : {
+            "hostname" : "dc-vil",
+            "type" : "dc",
+            "local_admin_password": "8dCT-6546541qsdDJjgScp",
+            "domain" : "konoha.leaf",
+            "path" : "DC=konoha,DC=leaf",
+            "local_groups" : {
+                "Administrators" : [
+                    "konoha\\hokage"
+                ]
+            },
+            "vulns" : ["directory","files","adcs_templates","acls"],
+            "vulns_vars" : {
+                "directory": {
+                    "setup": "c:\\setup"
+                },
+                "files" : {
+                    "template" : {
+                        "src" : "templates/SignatureValidation.json",
+                        "dest" : "C:\\setup\\SignatureValidation.json"
+                    },
+                    "flag":{
+                        "src" : "flags/dc_final.txt",
+                        "dest": "c:\\users\\administrator\\desktop\\flag.txt"
+                    }
+                },
+                "adcs_templates": {
+                    "SignatureValidation": {
+                        "template_name" : "SignatureValidation",
+                        "template_file" : "C:\\setup\\SignatureValidation.json"
+                    }
+                },
+                "acls": {
+                    "GenericAll_Jonin_signature" : {
+                        "for": "Jonin", 
+                        "to": "CN=SignatureValidation,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=konoha,DC=leaf", 
+                        "right": "GenericAll", 
+                        "inheritance": "None"
+                    }
+                }
+            }
+        },
+        "dc02" : {
+            "hostname" : "dc-ac",
+            "type" : "dc",
+            "local_admin_password": "Ufe-qsdaz789bVXSx9rk",
+            "domain" : "academy.konoha.fire",
+            "path" : "DC=academy,DC=konoha,DC=fire",
+            "local_groups" : {
+                "Administrators" : [
+                    "academy\\Sensei"
+                ]
+            },
+            "scripts" : [
+                "constrained_delegation_use_any.ps1"
+            ],
+            "vulns" : ["files"],
+            "vulns_vars" : {
+                "files" : {
+                    "flag":{
+                        "src" : "flags/dc_academy.txt",
+                        "dest": "c:\\users\\administrator\\desktop\\flag.txt"
+                    }
+                }
+            }
+        },
+        "srv01" : {
+            "hostname" : "web",
+            "type" : "server",
+            "local_admin_password": "EaqsdP+xh7sdfzaRk6j90",
+            "domain" : "academy.konoha.fire",
+            "use_laps": false,
+            "path" : "DC=academy,DC=konoha,DC=fire",
+            "local_groups" : {
+                "Administrators" : [
+                    "academy\\Sensei",
+                    "academy\\Teacher"
+                ]
+            },
+            "vulns" : ["files", "enable_credssp_server"],
+            "vulns_vars" : {
+                "files" : {
+                    "website" : {
+                        "src" : "wwwroot",
+                        "dest" : "C:\\inetpub\\"
+                    },
+                    "flag":{
+                        "src" : "flags/web.txt",
+                        "dest": "c:\\users\\administrator\\desktop\\flag.txt"
+                    }
+                }
+            }
+        },
+        "srv02" : {
+            "hostname" : "sql",
+            "type" : "server",
+            "local_admin_password": "978i2pF43UqsdqsdJ-qsd",
+            "domain" : "academy.konoha.fire",
+            "path" : "DC=academy,DC=konoha,DC=fire",
+            "use_laps": false,
+            "local_groups" : {
+                "Administrators" : [
+                    "academy\\Sensei",
+                    "academy\\Teacher"
+                ]
+            },
+            "mssql":{
+                "sa_password": "sa_P@ssw0rd!N1nJ4hackaDemy",
+                "sysadmins" : [
+                    "academy\\iruka"
+                ],
+                "executeaslogin" : {},
+                "executeasuser" : {},
+                "linked_servers": {}
+            },
+            "vulns" : ["files", "mssql"],
+            "vulns_vars" : {
+                "files" : {
+                    "sql" : {
+                        "src" : "SQL/academy_dump.sql",
+                        "dest" : "c:\\setup\\academy_dump.sql"
+                    },
+                    "flag_low":{
+                        "src" : "flags/sql_low.txt",
+                        "dest": "c:\\flag.txt"
+                    },
+                    "flag_high":{
+                        "src" : "flags/sql_high.txt",
+                        "dest": "c:\\users\\administrator\\desktop\\flag.txt"
+                    }
+                },
+                "mssql": {
+                    "init" : {
+                        "cmd" : "-i c:\\setup\\academy_dump.sql"
+                    }
+                }
+            }
+        },
+        "srv03" : {
+            "hostname" : "share",
+            "type" : "server",
+            "local_admin_password": "EalwxkfhqsdP+xh7sdfzaRk6j90",
+            "domain" : "academy.konoha.fire",
+            "use_laps": false,
+            "path" : "OU=share_servers,DC=academy,DC=konoha,DC=fire",
+            "local_groups" : {
+                "Administrators" : [
+                    "academy\\Sensei"
+                ]
+            },
+            "vulns" : ["files", "enable_credssp_client", "schedule"],
+            "vulns_vars" : {
+                "files" : {
+                    "csp" : {
+                        "src" : "bot.ps1",
+                        "dest" : "c:\\bot.ps1"
+                    },
+                    "flag":{
+                        "src" : "flags/share.txt",
+                        "dest": "c:\\users\\administrator\\desktop\\flag.txt"
+                    }
+                },
+                "schedule": {
+                    "bot": {
+                        "name": "connect_bot",
+                        "cmd" : "powershell c:\\bot.ps1",
+                        "interval" : "PT1M"
+                    }
+                }
+            }
+        }
+    },
+    "domains" : {
+        "konoha.leaf" : {
+            "dc": "dc01",
+            "domain_password" : "8dCT-6546541qsdDJjgScp",
+            "netbios_name": "KONOHA",
+            "trust" : "academy.konoha.fire",
+            "ca_web_enrollment": false,
+            "organisation_units" : {},
+            "groups" : {
+                "universal" : {},
+                "global" : {
+                    "Jonin" : {
+                        "managed_by" : "k.hatake",
+                        "path" : "CN=Users,DC=konoha,DC=leaf"
+                    },
+                    "Academy_Teacher" : {
+                        "managed_by" : "i.umino",
+                        "path" : "CN=Users,DC=konoha,DC=leaf"
+                    },
+                    "Hokage" : {
+                        "managed_by" : "h.sarutobi",
+                        "path" : "CN=Users,DC=konoha,DC=leaf"
+                    }
+                },
+                "domainlocal" : {
+                    "Sanin" : {
+                        "managed_by" : "jiraya",
+                        "path" : "CN=Users,DC=konoha,DC=leaf"
+                    }
+                }
+            },
+            "multi_domain_groups_member" : {},
+            "acls" : {
+                "GenericAll_sanin_jonin" : {"for": "Sanin", "to": "Jonin", "right": "GenericAll", "inheritance": "None"},
+                "WriteDacl_ebizu_jiraya" : {"for": "ebisu", "to": "jiraya", "right": "WriteDacl", "inheritance": "None"},
+                "GenericAll_hokage_domadmin" : {"for": "hokage", "to": "Domain Admins", "right": "GenericAll", "inheritance": "None"},
+                "GenericAll_hokage_domadmin_holder" : {"for": "hokage", "to": "CN=AdminSDHolder,CN=System,DC=konoha,DC=leaf", "right": "GenericAll", "inheritance": "None"}
+            },
+            "users" : {
+                "h.sarutobi" : {
+                    "firstname"   : "hiruzen",
+                    "surname"     : "sarutobi",
+                    "password"    : "Ih@teD4nzoo", 
+                    "city"        : "konoha",
+                    "description" : "3rd hokage",
+                    "groups"      : ["Hokage", "Domain Admins"],
+                    "path"        : "CN=Users,DC=konoha,DC=leaf"
+                },
+                "k.hatake" : {
+                    "firstname"   : "kakashi",
+                    "surname"     : "hatake",
+                    "password"    : "Sh@r1ngAnnFTW",
+                    "city"        : "konoha",
+                    "description" : "Team 7 captain",
+                    "groups"      : ["Jonin"],
+                    "path"        : "CN=Users,DC=konoha,DC=leaf"
+                },
+                "k.yuhi" : {
+                    "firstname"   : "kurenai",
+                    "surname"     : "yuhi",
+                    "password"    : "IgotR3dEyes",
+                    "city"        : "konoha",
+                    "description" : "Team 8 captain",
+                    "groups"      : ["Jonin"],
+                    "path"        : "CN=Users,DC=konoha,DC=leaf"
+                },
+                "g.maito" : {
+                    "firstname"   : "gai",
+                    "surname"     : "maito",
+                    "password"    : "StrongOfTheYoung!!",
+                    "city"        : "konoha",
+                    "description" : "Team 9 captain",
+                    "groups"      : ["Jonin"],
+                    "path"        : "CN=Users,DC=konoha,DC=leaf"
+                },
+                "a.sarutobi" : {
+                    "firstname"   : "asuma",
+                    "surname"     : "sarutobi",
+                    "password"    : "Il0veSmOOking",
+                    "city"        : "konoha",
+                    "description" : "Team 10 captain",
+                    "groups"      : ["Jonin"],
+                    "path"        : "CN=Users,DC=konoha,DC=leaf"
+                },
+                "i.umino" : {
+                    "firstname"   : "iruka",
+                    "surname"     : "umino",
+                    "password"    : "Il0ve!R4men_",
+                    "city"        : "konoha",
+                    "description" : "Academy teacher",
+                    "groups"      : ["Academy_Teacher"],
+                    "path"        : "CN=Users,DC=konoha,DC=leaf"
+                },
+                "ebisu" : {
+                    "firstname"   : "ebisu",
+                    "surname"     : "-",
+                    "password"    : "Il0veY0ungLadies",
+                    "city"        : "konoha",
+                    "description" : "Academy teacher",
+                    "groups"      : ["Academy_Teacher"],
+                    "path"        : "CN=Users,DC=konoha,DC=leaf"
+                },
+                "jiraya" : {
+                    "firstname"   : "jiraya",
+                    "surname"     : "-",
+                    "password"    : "Il0veY0ng_Ladies",
+                    "city"        : "konoha",
+                    "description" : "Sanin",
+                    "groups"      : ["Sanin"],
+                    "path"        : "CN=Users,DC=konoha,DC=leaf"
+                },
+                "tsunade" : {
+                    "firstname"   : "tsunade",
+                    "surname"     : "-",
+                    "password"    : "Il0v3Pl@yingGamesss",
+                    "city"        : "konoha",
+                    "description" : "Sanin",
+                    "groups"      : ["Sanin"],
+                    "path"        : "CN=Users,DC=konoha,DC=leaf"
+                },
+                "orochimaru" : {
+                    "firstname"   : "orochimaru",
+                    "surname"     : "-",
+                    "password"    : "ForbidenExperiencesAreGreat",
+                    "city"        : "konoha",
+                    "description" : "Sanin",
+                    "groups"      : ["Sanin"],
+                    "path"        : "CN=Users,DC=konoha,DC=leaf"
+                }
+            }
+        },
+        "academy.konoha.fire" : {
+            "dc": "dc02",
+            "domain_password" : "Ufe-qsdaz789bVXSx9rk",
+            "netbios_name": "ACADEMY",
+            "trust" : "konoha.leaf",
+            "organisation_units" : {
+                "share_servers" : { "path" : "DC=academy,DC=konoha,DC=fire"}
+            },
+            "groups" : {
+                "universal" : {},
+                "global" : {
+                    "Teacher" : {
+                        "managed_by" : "iruka",
+                        "path" : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                    },
+                    "Sensei" : {
+                        "managed_by" : "sarutobi",
+                        "path" : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                    },
+                    "Genin" : {
+                        "managed_by" : "iruka",
+                        "path" : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                    },
+                    "Team7" : {
+                        "managed_by" : "kakashi",
+                        "path" : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                    },
+                    "Team8" : {
+                        "managed_by" : "kurenai",
+                        "path" : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                    },
+                    "Team9" : {
+                        "managed_by" : "gai",
+                        "path" : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                    },
+                    "Team10" : {
+                        "managed_by" : "asuma",
+                        "path" : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                    }
+                },
+                "domainlocal" : {}
+            },
+            "multi_domain_groups_member" : {},
+            "gmsa" : {
+                "gmsa_nfs": {
+                    "gMSA_Name" : "gmsaNFS",
+                    "gMSA_FQDN" : "gmsaNFS.academy.konoha.fire",
+                    "gMSA_SPNs" : ["NFS/share", "NFS/share.academy.konoha.fire"],
+                    "gMSA_HostNames" : ["share"]
+                }
+            },
+            "acls" : {
+                "GenericAll_sql_computers" : {"for": "SQL$", "to": "CN=Computers,DC=academy,DC=konoha,DC=fire", "right": "GenericAll", "inheritance": "None"},
+                "write_on_group_sensei" : {"for": "backup", "to": "Sensei", "right": "WriteOwner", "inheritance": "None"},
+                "write_on_group_domadmin_holder" : {"for": "backup", "to": "CN=AdminSDHolder,CN=System,DC=academy,DC=konoha,DC=fire", "right": "WriteOwner", "inheritance": "None"},
+                "forcechangepassword_gmsa_backup" : {"for": "gmsaNFS$", "to": "backup", "right": "Ext-User-Force-Change-Password", "inheritance": "None"}
+            },
+            "users" : {
+                "sarutobi" : {
+                    "firstname"   : "Hiruzen",
+                    "surname"     : "Sarutobi",
+                    "password"    : "IReallYh@teD4nzoo", 
+                    "city"        : "konoha",
+                    "description" : "3rd hokage",
+                    "groups"      : ["Sensei", "Domain Admins"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "ebisu_sensei" : {
+                    "firstname"   : "ebisu",
+                    "surname"     : "-",
+                    "password"    : "Il0veY0ungLadies",
+                    "city"        : "konoha",
+                    "description" : "Academy teacher",
+                    "groups"      : ["Teacher"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "kakashi" : {
+                    "firstname"   : "Kakashi",
+                    "surname"     : "Hatake",
+                    "password"    : "MySh@r1ngCanSeeYuu",
+                    "city"        : "konoha",
+                    "description" : "Team 7 sensei",
+                    "groups"      : ["Sensei", "Team7"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "naruto" : {
+                    "firstname"   : "Naruto",
+                    "surname"     : "Uzumaki",
+                    "password"    : "ILoveRamen",
+                    "city"        : "konoha",
+                    "description" : "Team 7",
+                    "groups"      : ["Genin", "Team7"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "sasuke" : {
+                    "firstname"   : "Sasuke",
+                    "surname"     : "Utchiwa",
+                    "password"    : "Ih@teItach1",
+                    "city"        : "konoha",
+                    "description" : "Team 7",
+                    "groups"      : ["Genin", "Team7"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "sakura" : {
+                    "firstname"   : "Sakura",
+                    "surname"     : "Haruno",
+                    "password"    : "IL0veSasuke",
+                    "city"        : "konoha",
+                    "description" : "Team 7",
+                    "groups"      : ["Genin", "Team7"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "kurenai" : {
+                    "firstname"   : "Kurenai",
+                    "surname"     : "Yuhi",
+                    "password"    : "IgotR3dEyes",
+                    "city"        : "konoha",
+                    "description" : "Team 8 sensei",
+                    "groups"      : ["Sensei", "Team8"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "hinata" : {
+                    "firstname"   : "Hinata",
+                    "surname"     : "Hyuuga",
+                    "password"    : "IL0veNaruto",
+                    "city"        : "konoha",
+                    "description" : "Team 8",
+                    "groups"      : ["Genin", "Team8"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "kiba" : {
+                    "firstname"   : "Kiba",
+                    "surname"     : "Inuzuka",
+                    "password"    : "GoAkamaru",
+                    "city"        : "konoha",
+                    "description" : "Team 8",
+                    "groups"      : ["Genin", "Team8"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "shino" : {
+                    "firstname"   : "Shino",
+                    "surname"     : "Aburame",
+                    "password"    : "BugsBugsBugs",
+                    "city"        : "konoha",
+                    "description" : "Team 8",
+                    "groups"      : ["Genin", "Team8"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "gai" : {
+                    "firstname"   : "gai",
+                    "surname"     : "maito",
+                    "password"    : "TeamLeeStrongOfTheYoung!!",
+                    "city"        : "konoha",
+                    "description" : "Team 9 sensei",
+                    "groups"      : ["Sensei", "Team9"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "neji" : {
+                    "firstname"   : "Neji",
+                    "surname"     : "Hyuuga",
+                    "password"    : "ByaKugaN!",
+                    "city"        : "konoha",
+                    "description" : "Team 9",
+                    "groups"      : ["Genin", "Team9"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "lee" : {
+                    "firstname"   : "Lee",
+                    "surname"     : "Rock",
+                    "password"    : "GaiSenseiIsTheBest",
+                    "city"        : "konoha",
+                    "description" : "Team 9",
+                    "groups"      : ["Genin", "Team9"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "tenten" : {
+                    "firstname"   : "tenten",
+                    "surname"     : "ama",
+                    "password"    : "KunaiAreMyBestFriends",
+                    "city"        : "konoha",
+                    "description" : "Team 9",
+                    "groups"      : ["Genin", "Team9"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "asuma" : {
+                    "firstname"   : "asuma",
+                    "surname"     : "sarutobi",
+                    "password"    : "SmOOkingL0v3",
+                    "city"        : "konoha",
+                    "description" : "Team 10 sensei",
+                    "groups"      : ["Sensei", "Team10"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "shikamaru" : {
+                    "firstname"   : "Shikamaru",
+                    "surname"     : "Nara",
+                    "password"    : "PffBooring",
+                    "city"        : "konoha",
+                    "description" : "Team 10",
+                    "groups"      : ["Genin", "Team10"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "choji" : {
+                    "firstname"   : "Choji",
+                    "surname"     : "Akimichi",
+                    "password"    : "imnotBigOk",
+                    "city"        : "konoha",
+                    "description" : "Team 10",
+                    "groups"      : ["Genin", "Team10"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "ino" : {
+                    "firstname"   : "Ino",
+                    "surname"     : "Yamanaka",
+                    "password"    : "SasukeIsTooCute",
+                    "city"        : "konoha",
+                    "description" : "Team 10",
+                    "groups"      : ["Genin", "Team10"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "iruka" : {
+                    "firstname"   : "iruka",
+                    "surname"     : "umino",
+                    "password"    : "Il0ve!R4men_<3",
+                    "city"        : "konoha",
+                    "description" : "Academy teacher",
+                    "groups"      : ["Teacher"],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire",
+                    "spns"        : ["HTTP/WEB.academy.konoha.fire"]
+                },
+                "backup" : {
+                    "firstname"   : "backup",
+                    "surname"     : "user",
+                    "password"    : "K0noh4_backup_U$er",
+                    "city"        : "konoha",
+                    "description" : "Backup Account",
+                    "groups"      : [],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire"
+                },
+                "sql_svc" : {
+                    "firstname"   : "sql",
+                    "surname"     : "service",
+                    "password"    : "MssqlD@tabase_On_Fire",
+                    "city"        : "-",
+                    "description" : "sql service",
+                    "groups"      : [],
+                    "path"        : "CN=Users,DC=academy,DC=konoha,DC=fire",
+                    "spns"        : ["MSSQLSvc/sql.academy.konoha.fire:1433","MSSQLSvc/sql.academy.konoha.fire"]
+                }
+            }
+        }
+    }
+}
+}

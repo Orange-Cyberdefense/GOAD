@@ -1,0 +1,54 @@
+﻿@model IEnumerable<adrutro.Models.Student>
+
+@{
+    ViewBag.Title = "Students";
+}
+
+<h2>Students</h2>
+
+<p>
+    <form asp-controller="Students" asp-action="Index">
+        <p>
+            Search by name : <input type="text" name="SearchString" />
+            Order By :
+                   <select name="orderBy">
+                       <option value="Firstname">@Html.DisplayNameFor(model => model.Firstname)</option>
+                       <option value="LastName">@Html.DisplayNameFor(model => model.LastName)</option>
+                       <option value="Team">@Html.DisplayNameFor(model => model.Team)</option>
+                   </select>
+            <input type="submit" value="Search" />
+        </p>
+    </form>
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Firstname)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LastName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Team)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Firstname)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LastName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Team)
+        </td>
+        <td>
+            @Html.ActionLink("Details", "Details", new { id=item.Id })
+        </td>
+    </tr>
+}
+
+</table>
