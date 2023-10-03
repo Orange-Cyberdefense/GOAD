@@ -8,3 +8,4 @@
     - name: save the Json data to a Variable as a Fact
       set_fact:
         lab: "{{lab}}"
+        cacheable: yes

@@ -1,0 +1,123 @@
+[all:vars]
+; domain_name : folder inside ad/
+domain_name=GOAD-Light
+
+force_dns_server=no
+dns_server=x.x.x.x
+two_adapters=yes
+
+; adapter created by vagrant and vmware (uncomment if you use vmware)
+nat_adapter=Ethernet0
+domain_adapter=Ethernet1
+
+; winrm connection (windows)
+ansible_user=vagrant
+ansible_password=vagrant
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+ansible_winrm_operation_timeout_sec=400
+ansible_winrm_read_timeout_sec=500
+
+; proxy settings (the lab need internet for some install, if you are behind a proxy you should set the proxy here)
+enable_http_proxy=no
+ad_http_proxy=http://x.x.x.x:xxxx
+ad_https_proxy=http://x.x.x.x:xxxx
+
+
+; LAB SCENARIO CONFIGURATION -----------------------------
+
+; computers inside domain (mandatory)
+; usage : build.yml, ad-relations.yml, ad-servers.yml, vulnerabilities.yml
+[domain]
+dc01
+dc02
+srv02
+
+; domain controler (mandatory)
+; usage : ad-acl.yml, ad-data.yml, ad-relations.yml, laps.yml
+[dc]
+dc01
+dc02
+
+; domain server to enroll (mandatory if you want servers)
+; usage : ad-data.yml, ad-servers.yml, laps.yml
+[server]
+srv02
+
+; workstation to enroll (mandatory if you want workstation)
+; usage : ad-servers.yml, laps.yml
+[workstation]
+
+; parent domain controler (mandatory)
+; usage : ad-servers.yml
+[parent_dc]
+dc01
+
+; child domain controler (need a fqdn child_name.parent_name)
+; usage : ad-servers.yml
+[child_dc]
+dc02
+
+; external trust, need domain trust entry in config (bidirectionnal)
+; usage : ad-trusts.yml
+[trust]
+;dc01
+
+; install adcs
+; usage : adcs.yml
+[adcs]
+dc01
+
+; install custom template (dc)
+; usage : adcs.yml
+[adcs_customtemplates]
+dc03
+
+; install iis with default website asp upload on 80
+; usage : servers.yml
+[iis]
+srv02
+
+; install mssql
+; usage : servers.yml
+[mssql]
+srv02
+
+; install mssql gui
+; usage : servers.yml
+[mssql_ssms]
+srv02
+
+; install webdav 
+[webdav]
+srv02
+
+; install elk
+; usage : elk.yml
+[elk_server]
+
+; add log agent for elk
+; usage : elk.yml
+[elk_log]
+
+; allow computer update
+; usage : update.yml
+[update]
+srv02
+
+; disable update
+; usage : update.yml
+[no_update]
+dc01
+dc02
+
+; allow defender
+; usage : security.yml
+[defender_on]
+dc01
+dc02
+
+; disable defender
+; usage : security.yml
+[defender_off]
+srv02

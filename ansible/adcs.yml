@@ -15,6 +15,7 @@
     domain_username: "{{domain}}\\Administrator"
     domain_password: "{{lab.domains[domain].domain_password}}"
     ca_common_name: "{{lab.domains[domain].netbios_name}}-CA"
+    ca_web_enrollment: "{{lab.domains[domain].ca_web_enrollment | default(true)}}"
 
 - name: ADCS
   hosts: adcs_customtemplates
@@ -26,10 +27,3 @@
     domain_password: "{{lab.domains[domain].domain_password}}"
     ca_common_name: "{{lab.domains[domain].netbios_name}}-CA"
     ca_host: "{{lab.domains[domain].ca_server}}"
-
-
-# Force certificate enrollment on DC
-# certutil -addstore root \\braavos\CertEnroll\braavos.essos.local_ESSOS-CA.crt
-# certutil -addstore CA \\braavos\CertEnroll\ESSOS-CA.crl
-# certutil -addstore CA \\braavos\CertEnroll\ESSOS-CA+.crl
-# and do gpupdate /force on dc03 and srv03

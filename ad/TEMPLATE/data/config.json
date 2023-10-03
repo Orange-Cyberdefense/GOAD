@@ -1,0 +1,81 @@
+{
+"lab" : {
+    "hosts" : {
+        "dc01" : {
+            "hostname" : "dctemplate",
+            "type" : "dc",
+            "local_admin_password": "dc_and_domain_password",
+            "domain" : "template.lab",
+            "path" : "DC=template,DC=lab",
+            "local_groups" : {
+                "Administrators" : [
+                    "template\\dcadmins"
+                ]
+            },
+            "scripts" : ["features.ps1"],
+            "vulns" : ["files"],
+            "vulns_vars" : {
+                "files" : {
+                    "rdp" : {
+                        "src" : "flag.txt",
+                        "dest" : "c:\\users\\administrators\\desktop\\flag.txt"
+                    }
+                }
+            }
+        },
+        "srv01" : {
+            "hostname" : "srvtemplate",
+            "type" : "server",
+            "local_admin_password": "srv_password",
+            "domain" : "template.lab",
+            "path" : "DC=template,DC=lab",
+            "use_laps": true,
+            "local_groups" : {
+                "Administrators" : [
+                    "template\\dcadmins",
+                    "template\\srvadmins"
+                ],
+                "Remote Desktop Users" : [
+                    "template\\srvadmins"
+                ]
+            },
+            "vulns" : ["openshares"]
+        }
+    },
+    "domains" : {
+        "template.lab" : {
+            "dc": "dc01",
+            "domain_password" : "dc_and_domain_password",
+            "netbios_name": "TEMPLATE",
+            "groups" : {
+                "global" : {
+                    "dcadmins" : {
+                        "managed_by" : "alice",
+                        "path" : "CN=Users,DC=template,DC=lab"
+                    },
+                    "srvadmins" : {
+                        "managed_by" : "bob",
+                        "path" : "CN=Users,DC=template,DC=lab"
+                    }
+                }
+            },
+            "users" : {
+                "alice" : {
+                    "firstname"   : "alice", "surname": "",
+                    "password"    : "aupaysdesmerveilles", 
+                    "description" : "",
+                    "groups"      : ["dcadmins","srvadmins"],
+                    "path"        : "CN=Users,DC=template,DC=lab"
+                },
+                "bob" : {
+                    "firstname"   : "bob", "surname": "",
+                    "password"    : "lebricoleur",
+                    "description" : "",
+                    "groups"      : ["srvadmins"],
+                    "path"        : "CN=Users,DC=template,DC=lab"
+                }
+            }
+        }
+    }
+}
+}

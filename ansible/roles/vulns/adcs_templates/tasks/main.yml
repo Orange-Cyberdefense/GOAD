@@ -1,0 +1,23 @@
+- name: Refresh
+  ansible.windows.win_command: gpupdate /force
+
+- name: Install ADCSTemplate Module
+  win_copy:
+    src: files/ADCSTemplate
+    dest: "C:\\Program Files\\WindowsPowerShell\\Modules"
+
+- name: create a directory for templates
+  win_file: 
+    path: c:\setup
+    state: directory
+
+- name: Install templates
+  win_shell: |
+    if (-not(Get-ADCSTemplate -DisplayName "{{item.value.template_name}}")) { New-ADCSTemplate -DisplayName "{{item.value.template_name}}" -JSON (Get-Content {{item.value.template_file}} -Raw) -Identity "{{domain_name}}\Domain Users" -Publish }
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    domain_name: "{{domain}}"
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+  with_dict: "{{ vulns_vars }}"

@@ -17,9 +17,10 @@
     - { role: 'mssql_link', tags: 'mssql, mssql_link'}
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
-    SQLSVCACCOUNT_NAME: "{{lab.hosts[dict_key].mssql.svcaccount}}"
-    SQLSVCACCOUNT: "{{domain}}\\{{SQLSVCACCOUNT_NAME}}"
-    SQLSVCPASSWORD: "{{lab.domains[domain].users[SQLSVCACCOUNT_NAME].password}}"
+    SQLSVCACCOUNT_NAME: "{{lab.hosts[dict_key].mssql.svcaccount| default('NT AUTHORITY\\NETWORK SERVICE')}}"
+    SQLSVCACCOUNT_NAMEDOMAIN: "{{domain}}\\{{SQLSVCACCOUNT_NAME}}"
+    SQLSVCACCOUNT: "{{SQLSVCACCOUNT_NAME if SQLSVCACCOUNT_NAME == 'NT AUTHORITY\\NETWORK SERVICE' else SQLSVCACCOUNT_NAMEDOMAIN }}"
+    SQLSVCPASSWORD: "{{lab.domains[domain].users[SQLSVCACCOUNT_NAME].password| default('')}}"
     SQLYSADMIN: "{{SQLSVCACCOUNT}}"
     domain_admin: "{{domain}}\\Administrator"
     domain_admin_password: "{{lab.domains[domain].domain_password}}"

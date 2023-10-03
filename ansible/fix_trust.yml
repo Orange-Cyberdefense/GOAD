@@ -3,6 +3,7 @@
   vars:
     data_path: "../ad/{{domain_name}}/data/"
 
+# use this to change machine password if the trust between the dc and the computer is broken
 - name: Fix trust relationship between this workstation and the primary domain failed
   hosts: srv02,srv03
   tasks:

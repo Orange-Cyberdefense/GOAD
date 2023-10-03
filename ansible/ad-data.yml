@@ -28,3 +28,12 @@
   vars:
     hostname: "{{lab.hosts[dict_key].hostname}}"
     domain_ou_path: "{{lab.hosts[dict_key].path}}"
+
+- name: "Move to OU"
+  hosts: dc
+  roles:
+    - { role: 'move_to_ou', tags: 'move_to_ou'}
+  vars:
+    hosts_dict: "{{lab.hosts}}"
+    member_domain: "{{lab.hosts[dict_key].domain}}"
+    domain_password: "{{lab.domains[member_domain].domain_password}}"

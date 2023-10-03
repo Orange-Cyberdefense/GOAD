@@ -16,6 +16,7 @@
   ansible.windows.win_feature:
     name: ADCS-Web-Enrollment
     state: present
+  when: ca_web_enrollment
 
 - name: Install-ADCSCertificationAuthority-PS
   ansible.windows.win_powershell:
@@ -58,6 +59,7 @@
       } catch {
         $Ansible.Changed = $false
       }
+  when: ca_web_enrollment
 
 - name: Refresh
   ansible.windows.win_command: gpupdate /force

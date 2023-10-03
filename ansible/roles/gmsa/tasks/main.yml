@@ -1,0 +1,38 @@
+# $gMSA_Name = 'gmsaWWW'
+# $gMSA_FQDN = 'gmsaWWW.contoso.com'
+# $gMSA_SPNs = 'http/www', 'http/www.contoso.com'
+# $gMSA_HostNames = 'webServer01', 'webServer02', 'webServer03'
+
+- name: Create GMSA Account
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $gMSA_Name,
+
+          [String]
+          $gMSA_FQDN,
+
+          [String[]]
+          $gMSA_SPNs,
+
+          [String[]]
+          $gMSA_HostNames
+      )
+      Import-Module ActiveDirectory
+      Set-Location AD:
+      Add-KDSRootKey -EffectiveTime (Get-Date).AddHours(-10)
+      $gMSA_HostsGroup = $gMSA_HostNames | ForEach-Object { Get-ADComputer -Identity $_ }
+      New-ADServiceAccount -Name $gMSA_Name -DNSHostName $gMSA_FQDN -PrincipalsAllowedToRetrieveManagedPassword $gMSA_HostsGroup -ServicePrincipalNames $gMSA_SPNs
+    parameters:
+      gMSA_Name: "{{item.value.gMSA_Name}}"
+      gMSA_FQDN: "{{item.value.gMSA_FQDN}}"
+      gMSA_SPNs: "{{item.value.gMSA_SPNs}}"
+      gMSA_HostNames: "{{item.value.gMSA_HostNames}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+  with_dict: "{{ ad_gmsa }}"

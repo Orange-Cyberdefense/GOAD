@@ -20,10 +20,15 @@
 
 ## AD ----------
 - import_playbook: ad-servers.yml
+- import_playbook: ad-parent_domain.yml
+- import_playbook: ad-child_domain.yml
+- import_playbook: ad-members.yml
 # create the trust relationships
 - import_playbook: ad-trusts.yml
 # import the ad datas : users/groups...
 - import_playbook: ad-data.yml
+# set the GMAS accounts
+- import_playbook: ad-gmsa.yml
 # install LAPS
 - import_playbook: laps.yml
 ## MSSQL + IIS  ----------
@@ -49,3 +54,5 @@
 # --------------------------------------------------------------------
 # specifics vulns linked to the scenario are here
 - import_playbook: vulnerabilities.yml
+
+- import_playbook: reboot.yml

@@ -1,0 +1,18 @@
+---
+# Load datas
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+# set AD datas ==================================================================================================
+
+# parent controlers
+- name: Main DC AD configuration
+  hosts: parent_dc
+  roles:
+  - { role: 'domain_controller', tags: 'dc_main_domains' }
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    domain_password: "{{lab.domains[domain].domain_password}}"
+    netbios_name: "{{lab.domains[domain].netbios_name}}"

@@ -1,5 +1,7 @@
 .vagrant/
 .idea/
+.venv/
+writeup/
 docs/scenarios/
 docs/notes.md
 temp/

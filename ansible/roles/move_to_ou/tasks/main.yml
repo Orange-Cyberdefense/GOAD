@@ -1,0 +1,31 @@
+# only for not laps computer as they are automatically moved during the laps OU creation
+- name: Move computer to OU
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $hostname,
+
+          [String]
+          $ou_path
+      )
+      try {
+        $Ansible.Changed = $false
+        $target_ou = Get-ADOrganizationalUnit -Identity $ou_path > $null
+        $server = Get-AdComputer -Identity $hostname
+        $actual_location = ($server.DistinguishedName.split(',')| select -Skip 1) -join ','
+        if (($actual_location -eq "CN=Computers," + $target_ou.DistinguishedName) -Or ($actual_location -eq $target_ou.DistinguishedName)) {
+          $Ansible.Changed = $false
+        } else {
+          Move-ADObject -Identity $server.DistinguishedName -TargetPath $ou_path
+          $Ansible.Changed = $true
+        }
+      } catch [Microsoft.ActiveDirectory.Management.ADIdentityNotFoundException] {
+        $Ansible.Changed = $false
+      }
+    parameters:
+      hostname: "{{item.value.hostname}}"
+      ou_path:  "{{item.value.path|default('')}}"
+  when: item.value.type != 'dc' and member_domain == item.value.domain and (item.value.use_laps is not defined or item.value.use_laps != true)
+  with_dict: "{{hosts_dict}}"

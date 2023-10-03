@@ -1,0 +1,119 @@
+# acl : $for, $to, $right, $inheritance
+## acl values :
+# AccessSystemSecurity
+# CreateChild
+# Delete
+# DeleteChild
+# DeleteTree
+# ExtendedRight
+# GenericAll
+# GenericExecute
+# GenericRead
+# GenericWrite
+# ListChildren
+# ListObject
+# ReadControl
+# ReadProperty
+# Self
+# Synchronize
+# WriteDacl
+# WriteOwner
+# WriteProperty 
+
+## extend rights
+# "00299570-246d-11d0-a768-00aa006e0529" {$right = "User-Force-Change-Password"}
+# "45ec5156-db7e-47bb-b53f-dbeb2d03c40"  {$right = "Reanimate-Tombstones"}
+# "bf9679c0-0de6-11d0-a285-00aa003049e2" {$right = "Self-Membership"}
+# "ba33815a-4f93-4c76-87f3-57574bff8109" {$right = "Manage-SID-History"}
+# "1131f6ad-9c07-11d1-f79f-00c04fc2dcd2" {$right = "DS-Replication-Get-Changes-All"}
+
+# acl extended values allowed : 
+# Ext-User-Force-Change-Password', 'Ext-Self-Self-Membership', 'Ext-Write-Self-Membership'
+# ACL abuse scenarios
+# https://sensepost.com/blog/2020/ace-to-rce/
+# https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/abusing-active-directory-acls-aces
+# https://adsecurity.org/?p=3658
+# https://docs.microsoft.com/en-us/previous-versions/tn-archive/ff405676(v=msdn.10)
+
+- name: set acl 
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $for,
+
+          [String]
+          $to,
+
+          [String]
+          $right,
+
+          [String]
+          $inheritance
+      )
+      Import-Module ActiveDirectory
+      Set-Location AD:
+      $aclValues = 'AccessSystemSecurity', 'CreateChild', 'Delete', 'DeleteChild', 'DeleteTree', 'ExtendedRight', 'GenericAll', 'GenericExecute', 'GenericRead', 'GenericWrite', 'ListChildren', 'ListObject', 'ReadControl', 'ReadProperty', 'Self', 'Synchronize', 'WriteDacl', 'WriteOwner', 'WriteProperty'
+      $aclExtendValues = 'Ext-User-Force-Change-Password', 'Ext-Self-Self-Membership', 'Ext-Write-Self-Membership'
+      if ($for.StartsWith("NT AUTHORITY")) {
+        $forSID = New-Object System.Security.Principal.NTAccount "$for"
+      } else {
+        $forSID = New-Object System.Security.Principal.SecurityIdentifier (Get-ADObject -Filter "SamAccountName -eq '$for'" -Properties objectSID).objectSID
+      }
+
+      try {
+        $objAcl = get-acl -Path "$to" -ErrorAction Stop
+        $objOU = $to
+        $objFound=$true
+      } catch [System.Management.Automation.ItemNotFoundException]{
+        $objFound=$false
+      }
+
+      if (-not $objFound) {
+        $extra_args = @{}
+        if ($to -match "\\") {
+          $extra_args.Server = $to.Split("\")[0]
+          $to = $to.Split("\")[1]
+        }
+        $toObj = Get-ADObject -Filter "SamAccountName -eq '$to'" @extra_args
+        $objOU = ($toObj).DistinguishedName
+        $objAcl = get-acl -Path "$objOU"
+      }
+
+      $type =  [System.Security.AccessControl.AccessControlType] "Allow"
+      $inheritanceType = [System.DirectoryServices.ActiveDirectorySecurityInheritance] $inheritance
+
+      $aclExtendedValueRightGUID = @{
+        "Ext-User-Force-Change-Password" = @("ExtendedRight","00299570-246d-11d0-a768-00aa006e0529")
+        "Ext-Write-Self-Membership" = @("WriteProperty","bf9679c0-0de6-11d0-a285-00aa003049e2")
+        "Ext-Self-Self-Membership" = @("Self","bf9679c0-0de6-11d0-a285-00aa003049e2")
+      }
+
+      $Ansible.Changed = $false
+      if ($aclValues.contains($right)) {
+        $adRight =  [System.DirectoryServices.ActiveDirectoryRights] $right
+        $ace = New-Object System.DirectoryServices.ActiveDirectoryAccessRule $forSID,$adRight,$type,$inheritanceType
+      }
+      if ($aclExtendValues.contains($right)) {
+        $extendedRightGUID = $aclExtendedValueRightGUID[$right][1]
+        $extright = $aclExtendedValueRightGUID[$right][0]
+        $adRight =  [System.DirectoryServices.ActiveDirectoryRights] $extright
+        $ace = New-Object System.DirectoryServices.ActiveDirectoryAccessRule $forSID,$extright,$type,$extendedRightGUID,$inheritanceType
+      }
+      if ($ace) {
+        $objAcl.AddAccessRule($ace)
+        Set-Acl -AclObject $objAcl -path "$objOU"
+        $Ansible.Changed = $true
+      }
+    parameters:
+      for: "{{item.value.for}}"
+      to: "{{item.value.to}}"
+      right: "{{item.value.right}}"
+      inheritance: "{{item.value.inheritance}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+  with_dict: "{{ vulns_vars }}"

@@ -23,6 +23,6 @@
   community.windows.win_dns_zone:
     name: "{{zone_name}}"
     type: forwarder
-    replication: none
+    replication: "forest"
     dns_servers:
       - "{{master_server}}"

@@ -1,0 +1,11 @@
+# https://docs.ansible.com/ansible/latest/collections/ansible/windows/win_acl_module.html
+- name: change folder allow rights
+  ansible.windows.win_acl:
+    path: "{{item.value.path}}"
+    user: "{{item.value.user}}"
+    rights: "{{item.value.rights}}"
+    type: allow
+    state: present
+    inherit: ContainerInherit, ObjectInherit
+    propagation: 'None'
+  with_dict: "{{ vulns_vars }}"
