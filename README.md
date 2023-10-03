@@ -136,6 +136,13 @@ sudo apt update && sudo apt install vagrant
 ```bash
 vagrant up
 ```
+*note: For some distributions, you may need to run additional commands to install WinRM gems* this can be done via the following commands:
+
+```bash
+vagrant plugin install winrm
+vagrant plugin install winrm-fs
+vagrant plugin install winrm-elevated
+```
 
 - For each vm, it will download the box and than install it on your provider.
 - If you get an issue on this, this is certainly due to vagrant or your provider (but in this case just take a look to at the github issue and on discord maybe someone got the same issue)
@@ -229,7 +236,7 @@ ansible-playbook -i ../ad/sevenkingdoms.local/inventory main.yml # this will con
 - Wintefell is now a domain controller for the subdomain north of the sevenkingdoms.local domain
 
 ### Space use
-- the lab take environ 77GB (but you have to get the space for the vms vagrant images windows server 2016 (22GB) / windows server 2019 (14GB) / ubuntu 18.04 (502M))
+- the lab takes about 77GB (but you have to get the space for the vms vagrant images windows server 2016 (22GB) / windows server 2019 (14GB) / ubuntu 18.04 (502M))
 - the total space needed for the lab is ~115 GB (and more if you take snapshots)
 
 ### Start / Setup / Run
@@ -271,7 +278,7 @@ ansible-playbook ad-relations.yml # set the rights and the group domains relatio
 ansible-playbook adcs.yml         # Install ADCS on essos
 ansible-playbook ad-acl.yml       # set the ACE/ACL
 ansible-playbook security.yml     # Configure some securities (adjust av enable/disable)
-ansible-playbook vulns.yml        # Configure some vulnerabilities
+ansible-playbook vulnerabilities.yml        # Configure some vulnerabilities
 ```
 
 - When you finish playing you could do :
