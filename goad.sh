@@ -243,6 +243,7 @@ install_provisioning(){
                   cd /home/goad/GOAD/ansible
                   export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory"
                   ../scripts/provisionning.sh
+                  exit
 EOF
                 print_azure_info
               ;;

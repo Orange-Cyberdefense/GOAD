@@ -14,3 +14,7 @@ python3 -m pip install pywinrm
 
 # Install the required ansible libraries
 /home/goad/.local/bin/ansible-galaxy install -r /home/goad/GOAD/ansible/requirements.yml
+
+# set color
+sudo sed -i '/force_color_prompt=yes/s/^#//g' /home/*/.bashrc
+sudo sed -i '/force_color_prompt=yes/s/^#//g' /root/.bashrc
