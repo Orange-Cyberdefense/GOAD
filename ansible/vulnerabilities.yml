@@ -5,12 +5,6 @@
     data_path: "../ad/{{domain_name}}/data/"
   tags: 'data'
 
-- name: "Enable LLMNR and NBT-NS"
-  hosts: dc
-  roles:
-    - { role: 'settings/enable_llmnr', tags: 'llmnr'}
-    - { role: 'settings/enable_nbt-ns', tags: 'nbt-ns'}
-
 - name: "Setup vulnerabilities with tasks"
   hosts: domain
   tasks:

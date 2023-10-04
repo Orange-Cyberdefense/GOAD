@@ -1,42 +1,3 @@
-[default]
-; Note: ansible_host *MUST* be an IPv4 address or setting things like DNS
-; servers will break.
-; ------------------------------------------------
-; sevenkingdoms.local
-; ------------------------------------------------
-dc01 ansible_host=192.168.56.10 dns_domain=dc01 dict_key=dc01
-; ------------------------------------------------
-; north.sevenkingdoms.local
-; ------------------------------------------------
-dc02 ansible_host=192.168.56.11 dns_domain=dc01 dict_key=dc02
-srv02 ansible_host=192.168.56.22 dns_domain=dc02 dict_key=srv02
-
-[all:vars]
-; domain_name : folder inside ad/
-domain_name=GOAD-Light
-
-force_dns_server=no
-dns_server=x.x.x.x
-two_adapters=yes
-
-; adapter created by vagrant and vmware (uncomment if you use vmware)
-nat_adapter=Ethernet0
-domain_adapter=Ethernet1
-
-; winrm connection (windows)
-ansible_user=vagrant
-ansible_password=vagrant
-ansible_connection=winrm
-ansible_winrm_server_cert_validation=ignore
-ansible_winrm_operation_timeout_sec=400
-ansible_winrm_read_timeout_sec=500
-
-; proxy settings (the lab need internet for some install, if you are behind a proxy you should set the proxy here)
-enable_http_proxy=no
-ad_http_proxy=http://x.x.x.x:xxxx
-ad_https_proxy=http://x.x.x.x:xxxx
-
-
 ; LAB SCENARIO CONFIGURATION -----------------------------
 
 ; computers inside domain (mandatory)
@@ -44,27 +5,34 @@ ad_https_proxy=http://x.x.x.x:xxxx
 [domain]
 dc01
 dc02
+dc03
 srv02
+srv03
+ws01
 
 ; domain controler (mandatory)
 ; usage : ad-acl.yml, ad-data.yml, ad-relations.yml, laps.yml
 [dc]
 dc01
 dc02
+dc03
 
 ; domain server to enroll (mandatory if you want servers)
 ; usage : ad-data.yml, ad-servers.yml, laps.yml
 [server]
 srv02
+srv03
 
 ; workstation to enroll (mandatory if you want workstation)
 ; usage : ad-servers.yml, laps.yml
 [workstation]
+ws01
 
 ; parent domain controler (mandatory)
 ; usage : ad-servers.yml
 [parent_dc]
 dc01
+dc03
 
 ; child domain controler (need a fqdn child_name.parent_name)
 ; usage : ad-servers.yml
@@ -74,12 +42,14 @@ dc02
 ; external trust, need domain trust entry in config (bidirectionnal)
 ; usage : ad-trusts.yml
 [trust]
-;dc01
+dc01
+dc03
 
 ; install adcs
 ; usage : adcs.yml
 [adcs]
 dc01
+srv03
 
 ; install custom template (dc)
 ; usage : adcs.yml
@@ -95,6 +65,7 @@ srv02
 ; usage : servers.yml
 [mssql]
 srv02
+srv03
 
 ; install mssql gui
 ; usage : servers.yml
@@ -104,14 +75,28 @@ srv02
 ; install webdav 
 [webdav]
 srv02
+srv03
 
 ; install elk
 ; usage : elk.yml
 [elk_server]
+elk
 
 ; add log agent for elk
 ; usage : elk.yml
 [elk_log]
+dc01
+dc02
+dc03
+srv02
+srv03
+ws01
+
+[laps_dc]
+dc03
+[laps_server]
+srv03
+[laps_workstation]
 
 ; allow computer update
 ; usage : update.yml
@@ -123,12 +108,16 @@ srv02
 [no_update]
 dc01
 dc02
+dc03
+srv03
 
 ; allow defender
 ; usage : security.yml
 [defender_on]
 dc01
 dc02
+dc03
+srv03
 
 ; disable defender
 ; usage : security.yml

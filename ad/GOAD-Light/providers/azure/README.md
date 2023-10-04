@@ -17,7 +17,9 @@ az login
 
 ## Automatic installation
 
-Run the `build.sh` script to build the infrastructure and provision the Windows VM.
+```
+./goad.sh -t install -l GOAD -p azure -m local
+```
 
 ## Manual installation
 
@@ -30,23 +32,15 @@ cd terraform
 terraform init
 ```
 
-2. Generate a password for the Windows VM
+2. Generate the terraform plan with the password
 
 ```bash
-cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 30
-```
-
-> Note: Keep the password, it will be used later
-
-4. Generate the terraform plan with the password
-
-```bash
-terraform plan -out tfplan -var 'password=<password>'
+terraform plan -out tfplan
 ```
 
 > Note: The plan is useful to check if the terraform configuration is correct
 
-5. Apply the terraform plan
+3. Apply the terraform plan
 
 ```bash
 terraform apply tfplan
@@ -57,12 +51,19 @@ terraform apply tfplan
 At the end of the terraform apply, the output will show the public ip of the Ubuntu VM. This VM will be used to run the ansible playbook to provision the Windows VM.
 
 ### Windows VM provisionning with Ansible
+0. Rsync source on Ubuntu VM
+
+```bash
+cd ../../../../../ # to the repository root folder
+CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+rsync -a --exclude-from='.gitignore' -e "ssh -i $CURRENT_DIR/ad/GOAD/providers/azure/ssh_keys/ubuntu-jumpbox.pem" "$CURRENT_DIR/" goad@$public_ip:~/GOAD/
+```
+
 
 1. Run the setup.sh script to install Ansible and download GOAD on the Ubuntu VM
 
 ```bash
-cd ..
-ssh -i ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu-jumpbox-ip> 'bash -s' < setup.sh
+ssh -i ad/GOAD/providers/azure/ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu-jumpbox-ip> 'bash -s' < scripts/setup_azure.sh
 ```
 
 > Note: To get the public ip of the Ubuntu VM, you can run `terraform output` in the terraform directory
@@ -73,18 +74,12 @@ ssh -i ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu-jumpbox-ip> 'bash -s' < setup.sh
 ssh -i ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu-jumpbox-ip>
 ```
 
-3. Replace the `ansible_password` variable in the inventory file with the generated password
+3. Run the playbook to provision the Windows VM
 
 ```bash
-nano GOAD/ad/azure-sevenkingdoms.local/inventory
-```
-
-4. Run the playbook to provision the Windows VM
-
-```bash
-cd GOAD/ansible
-source .venv/bin/activate
-ansible-playbook -i ../ad/azure-sevenkingdoms.local/inventory main.yml
+cd ansible
+export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory"
+../scripts/provisionning.sh
 ```
 
 > Note: LAPS feature have been disabled in the playbook because of error

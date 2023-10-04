@@ -64,7 +64,7 @@
                 "gpo_abuse.ps1",
                 "rdp_scheduler.ps1"
             ],
-            "vulns" : ["disable_firewall","directory", "credentials", "autologon", "files"],
+            "vulns" : ["disable_firewall","directory", "credentials", "autologon", "files", "enable_llmnr", "enable_nbt-ns"],
             "vulns_vars" : {
                 "directory": {
                     "setup": "c:\\setup"

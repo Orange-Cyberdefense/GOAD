@@ -118,6 +118,16 @@ check_azure_installed() {
   fi
 }
 
+check_rsync_path() {
+  if ! which rsync >/dev/null; then
+    (echo >&2 "${ERROR} rsync was not found in your PATH.")
+    (echo >&2 "${ERROR} Please correct this before continuing. Exiting.")
+    exit 1
+  else
+    (echo >&2 "${GOODTOGO} rsync was found in your PATH")
+  fi
+}
+
 # Returns 0 if not installed or 1 if installed
 # Check for VMWare Workstation on Linux
 check_vmware_workstation_installed() {
@@ -430,7 +440,7 @@ main() {
       (echo >&2 "[+] Enumerating azure")
       check_azure_installed
       check_terraform_path
-      check_python_env
+      check_rsync_path
       ;;
     *)
       print_usage

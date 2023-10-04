@@ -35,9 +35,10 @@ variable "username" {
 variable "password" {
   description = "Password of the windows virtual machine admin user"
   type    = string
+  default = "goadmin"
 }
 
-variable "admin_username" {
+variable "jumpbox_username" {
   type    = string
   default = "goad"
 }

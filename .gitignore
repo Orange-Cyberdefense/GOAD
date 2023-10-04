@@ -10,10 +10,9 @@ ansible/collections/
 ansible/test.yml
 *VBoxHeadless*.log
 main.tf
-
-# Azure
 .terraform/
 .terraform.lock.hcl
 *.tfstate*
 tfplan
 *.pem
+ad/GOAD-Purple
