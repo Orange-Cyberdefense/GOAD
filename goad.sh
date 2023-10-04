@@ -9,8 +9,8 @@ LAB=
 PROVIDER=
 METHOD=
 JOB=
-PROVIDERS="virtualbox vmware azure proxmox"
-LABS=$(ls -A ad/ |grep -v 'template.lab')
+PROVIDERS="virtualbox vmware azure" # TODO: proxmox
+LABS=$(ls -A ad/ |grep -v 'TEMPLATE')
 TASKS="check install start stop status restart destroy"
 METHODS="local docker"
 
