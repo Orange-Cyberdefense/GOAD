@@ -88,6 +88,13 @@ while getopts t:l:p:m: flag
       print_usage
     fi
   fi
+# check if the lab provider folder exist
+if [[ -d "ad/$LAB/providers/$PROVIDER" ]]; then
+   echo "${OK} folder ad/$LAB/providers/$PROVIDER found"
+else
+   echo "${ERROR} folder ad/$LAB/providers/$PROVIDER not found"
+   exit 1
+fi
 
 
 install_templating(){
@@ -126,7 +133,6 @@ install_providing(){
 
   case $provider in
     "virtualbox"|"vmware")
-      if [ -d "ad/$lab/providers/$provider" ]; then
         cd "ad/$lab/providers/$provider"
         echo "${OK} launch vagrant"
         vagrant up
@@ -137,10 +143,6 @@ install_providing(){
           exit 1
         fi
         cd -
-      else
-        echo "${ERROR} folder ad/$lab/providers/$provider not found"
-        exit 1
-      fi
       ;;
     "proxmox")
       ;;
@@ -191,7 +193,6 @@ install_provisioning(){
   method=$3
   case $provider in
     "virtualbox"|"vmware")
-      if [ -d "ad/$lab/providers/$provider" ]; then
         cd "ad/$lab/providers/$provider"
         echo "${OK} is vagrant up"
         vagrant status
@@ -224,16 +225,10 @@ install_provisioning(){
               $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ANSIBLE_COMMAND='ansible-playbook -i ../ad/$lab/providers/$provider/inventory' ../scripts/provisionning.sh"
             ;;
         esac
-      else
-        echo "${ERROR} folder ad/$lab/providers/$provider not found"
-        exit 1
-      fi
       ;;
     "proxmox")
       ;;
     "azure")
-      if [ -d "ad/$lab/providers/$provider" ]; then
-          cd "ad/$lab/providers/$provider"
           cd terraform
           public_ip=$(terraform output -raw ubuntu-jumpbox-ip)
           cd -
@@ -251,10 +246,6 @@ EOF
               echo "${ERROR} $method install on azure not implemented, use local"
               ;;
           esac
-      else
-        echo "${ERROR} folder ad/$lab/providers/$provider not found"
-        exit 1
-      fi
       ;;
   esac
 }
@@ -267,12 +258,6 @@ install(){
 }
 
 check(){
-  if [ -d "ad/$LAB/providers/$PROVIDER" ]; then
-    echo "${OK} $LAB provider $PROVIDER folder exist "
-  else
-    echo "${ERROR} provider $PROVIDER not implemented for this lab"
-    exit 1
-  fi
   echo "${OK} Launch check : ./scripts/check.sh $PROVIDER $METHOD"
   ./scripts/check.sh $PROVIDER $METHOD
   check_result=$?
@@ -287,15 +272,10 @@ check(){
 start(){
   case $PROVIDER in
     "virtualbox"|"vmware")
-      if [ -d "ad/$LAB/providers/$PROVIDER" ]; then
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} start vms"
           vagrant up
           cd -
-      else
-        echo "${ERROR} folder ad/$LAB/providers/$PROVIDER not found"
-        exit 1
-      fi
       ;;
     "proxmox")
       ;;
@@ -309,15 +289,10 @@ start(){
 stop(){
   case $PROVIDER in
     "virtualbox"|"vmware")
-      if [ -d "ad/$LAB/providers/$PROVIDER" ]; then
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} stop vms"
           vagrant halt
           cd -
-      else
-        echo "${ERROR} folder ad/$LAB/providers/$PROVIDER not found"
-        exit 1
-      fi
       ;;
     "proxmox")
       ;;
@@ -331,15 +306,10 @@ stop(){
 restart(){
   case $PROVIDER in
     "virtualbox"|"vmware")
-      if [ -d "ad/$LAB/providers/$PROVIDER" ]; then
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} restart start vms"
           vagrant reload
           cd -
-      else
-        echo "${ERROR} folder ad/$LAB/providers/$PROVIDER not found"
-        exit 1
-      fi
       ;;
     "proxmox")
       ;;
@@ -353,7 +323,6 @@ restart(){
 destroy(){
   case $PROVIDER in
     "virtualbox"|"vmware")
-      if [ -d "ad/$LAB/providers/$PROVIDER" ]; then
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} destroy the lab"
           read -r -p "Are you sure? [y/N] " response
@@ -366,10 +335,6 @@ destroy(){
                   ;;
           esac
           cd -
-      else
-        echo "${ERROR} folder ad/$LAB/providers/$PROVIDER not found"
-        exit 1
-      fi
       ;;
     "proxmox")
       ;;
@@ -389,13 +354,9 @@ destroy(){
 status(){
   case $PROVIDER in
     "virtualbox"|"vmware")
-      if [ -d "ad/$LAB/providers/$PROVIDER" ]; then
           cd "ad/$LAB/providers/$PROVIDER"
           vagrant status
-      else
-        echo "${ERROR} folder ad/$LAB/providers/$PROVIDER not found"
-        exit 1
-      fi
+          cd -
       ;;
     "proxmox")
       ;;
