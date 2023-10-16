@@ -1,7 +1,7 @@
 <!--![goad.png](./docs/img/GOAD.png)-->
 
 <div align="center">
-  <img alt="GOAD" width="600" src="./docs/img/GOAD.png">
+  <img alt="GOAD" width="600" src="./docs/img/logo_GOAD.png">
   <br>
   <a target="_blank" rel="noopener noreferrer" href="https://twitter.com/intent/follow?screen_name=M4yFly" title="Follow"><img src="https://img.shields.io/twitter/follow/M4yFly?label=@M4yFly&style=social" width="100"  height="30" alt="Twitter Mayfly"></a>
   <a target="_blank" rel="noopener noreferrer" href="https://discord.gg/NYy7rsMf3u" title="Join us on Discord"><img src="./docs/img/discord.png" width="100" height="30" alt="Join us on Discord"></a>
@@ -14,7 +14,7 @@ GOAD is a pentest active directory LAB project.
 The purpose of this lab is to give pentesters a vulnerable Active directory environment ready to use to practice usual attack techniques.
 
 > **Warning**
-> This lab is extremely vulnerable, do not reuse recipe to build your environment and do not deploy this environment on internet (this is a recommendation, use it as your own risk).<br>
+> This lab is extremely vulnerable, do not reuse recipe to build your environment and do not deploy this environment on internet without isolation (this is a recommendation, use it as your own risk).<br>
 > This repository was build for pentest practice.
 
 ## Licenses
