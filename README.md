@@ -192,6 +192,7 @@ ad/
 
 ## Special Thanks to
 
+- Julien Arrault (Azure recipes)
 - Thomas Rollain (tests & some vulns writing)
 - Quentin Galliou (tests)
 
