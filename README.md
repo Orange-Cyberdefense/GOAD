@@ -23,7 +23,14 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 ## Available labs
 
 - [GOAD](./ad/GOAD/README.md) : 5 vms, 2 forests, 3 domains (full goad lab)
+<div align="center">
+<img alt="GOAD" width="800" src="./docs/img/GOAD_schema.png">
+</div>
+
 - [GOAD-Light](./ad/GOAD-Light/README.md) : 3 vms, 1 forest, 2 domains (smaller goad lab for those with a smaller pc)
+<div align="center">
+<img alt="GOAD Light" width="600" src="./docs/img/GOAD-Light_schema.png">
+</div>
 
 ## Requirements
 
