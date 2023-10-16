@@ -1,6 +1,13 @@
 # Azure setup
 
-![Architecture](images/azure_architecture.png)
+
+<div align="center">
+  <img alt="terraform" width="150" height="150" src="./img/icon_terraform.png">
+  <img alt="icon_azure" width="150"  height="150" src="./img/icon_azure.png">
+  <img alt="icon_ansible" width="150"  height="150" src="./img/icon_ansible.png">
+</div>
+
+![Architecture](img/azure_architecture.png)
 
 ## Prerequisites
 
@@ -17,9 +24,14 @@ az login
 
 ## Automatic installation
 
+```bash
+# check prerequisites
+./goad.sh -t check -l GOAD -p azure
+# Install
+./goad.sh -t install -l GOAD -p azure
 ```
-./goad.sh -t install -l GOAD -p azure -m local
-```
+
+![azure check](./img/azure_check.png)
 
 ## Manual installation
 
@@ -35,6 +47,7 @@ terraform init
 2. Generate the terraform plan with the password
 
 ```bash
+cd ad/GOAD/providers/azure/terraform
 terraform plan -out tfplan
 ```
 
@@ -78,11 +91,11 @@ ssh -i ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu-jumpbox-ip>
 
 ```bash
 cd ansible
-export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory"
+export ANSIBLE_COMMAND="ansible-playbook -i ../ad/GOAD/data/inventory -i ../ad/GOAD/providers/azure/inventory"
 ../scripts/provisionning.sh
 ```
 
-> Note: LAPS feature have been disabled in the playbook because of error
+- Details on the provisioning process are here : [provisioning.md](./provisioning.md)
 
 ## Tips
 

@@ -70,7 +70,6 @@ run_ansible ad-data.yml
 
 run_ansible ad-gmsa.yml
 
-# LAPS seems to break authentication on srv03 on Azure AD, so we skip it
 run_ansible laps.yml
 
 run_ansible ad-relations.yml
