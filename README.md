@@ -1,7 +1,7 @@
 <!--![goad.png](./docs/img/GOAD.png)-->
 
 <div align="center">
-  <img alt="GOAD" width="600" src="./docs/img/logo_GOAD.png">
+  <img alt="GOAD" src="./docs/img/logo_GOAD.png">
   <br>
   <a target="_blank" rel="noopener noreferrer" href="https://twitter.com/intent/follow?screen_name=M4yFly" title="Follow"><img src="https://img.shields.io/twitter/follow/M4yFly?label=@M4yFly&style=social" width="100"  height="30" alt="Twitter Mayfly"></a>
   <a target="_blank" rel="noopener noreferrer" href="https://discord.gg/NYy7rsMf3u" title="Join us on Discord"><img src="./docs/img/discord.png" width="100" height="30" alt="Join us on Discord"></a>
