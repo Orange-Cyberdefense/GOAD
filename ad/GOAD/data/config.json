@@ -343,11 +343,7 @@
                     }
                 }
             },
-            "multi_domain_groups_member" : {
-                "AcrossTheSea" : [
-                    "essos.local\\daenerys.targaryen"
-                ]
-            },
+            "multi_domain_groups_member" : {},
             "acls" : {
                 "anonymous_rpc" : {"for": "NT AUTHORITY\\ANONYMOUS LOGON", "to": "DC=North,DC=sevenkingdoms,DC=local", "right": "ReadProperty", "inheritance": "All"},
                 "anonymous_rpc2" : {"for": "NT AUTHORITY\\ANONYMOUS LOGON", "to": "DC=North,DC=sevenkingdoms,DC=local", "right": "GenericExecute", "inheritance": "All"}

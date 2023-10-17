@@ -2,6 +2,16 @@
 
 - In most case if you get errors during install, don't think and just replay the main playbook (most of the errors which could came up are due to windows latency during installation, wait few minutes and replay the install)
 
+## The server has rejected the client credentials
+
+```
+An exception occurred during task execution. To see the full traceback, use -vvv. The error was:    at Microsoft.ActiveDirectory.Management.Commands.ADCmdletBase`1.BeginProcessing()
+failed: [dc02] (item={'key': 'AcrossTheSea', 'value': ['essos.local\\daenerys.targaryen']}) => {"ansible_loop_var": "item", "attempts": 3, "changed": false, "item": {"key": "AcrossTheSea", "value": ["essos.local\\daenerys.targaryen"]}, "msg": "Unhandled exception while executing module: The server has rejected the client credentials."}
+```
+
+- something go wrong with the trust, all the links are not fully establish
+- wait several minutes and relaunch the install
+
 ## Groups domain error
 
 - something go wrong with the trust, all the links are not fully establish
