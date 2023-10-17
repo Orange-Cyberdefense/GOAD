@@ -33,7 +33,7 @@ boxes = [
   config.vm.provider "vmware_desktop" do |v|
     v.vmx["memsize"] = "4000"
     v.vmx["numvcpus"] = "2"
-    # v.force_vmware_license = "workstation"
+    # v.force_vmware_license = "workstation"  # force the licence for fix some vagrant plugin issue
   end
 
   # disable rdp forwarded port inherited from StefanScherer box
