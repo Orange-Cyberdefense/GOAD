@@ -233,7 +233,7 @@
                 "k.yuhi" : {
                     "firstname"   : "kurenai",
                     "surname"     : "yuhi",
-                    "password"    : "IgotR3dEyes",
+                    "password"    : "IgotR3dEy3s",
                     "city"        : "konoha",
                     "description" : "Team 8 captain",
                     "groups"      : ["Jonin"],
@@ -269,7 +269,7 @@
                 "ebisu" : {
                     "firstname"   : "ebisu",
                     "surname"     : "-",
-                    "password"    : "Il0veY0ungLadies",
+                    "password"    : "Il0veSexyJuTsu",
                     "city"        : "konoha",
                     "description" : "Academy teacher",
                     "groups"      : ["Academy_Teacher"],
@@ -278,7 +278,7 @@
                 "jiraya" : {
                     "firstname"   : "jiraya",
                     "surname"     : "-",
-                    "password"    : "Il0veY0ng_Ladies",
+                    "password"    : "Il0ve_Ladies_and_sake",
                     "city"        : "konoha",
                     "description" : "Sanin",
                     "groups"      : ["Sanin"],
@@ -374,7 +374,7 @@
                 "ebisu_sensei" : {
                     "firstname"   : "ebisu",
                     "surname"     : "-",
-                    "password"    : "Il0veY0ungLadies",
+                    "password"    : "Il0veSexyJuTsu",
                     "city"        : "konoha",
                     "description" : "Academy teacher",
                     "groups"      : ["Teacher"],

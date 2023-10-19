@@ -35,11 +35,3 @@ ansible_winrm_read_timeout_sec=500
 enable_http_proxy=no
 ad_http_proxy=http://x.x.x.x:xxxx
 ad_https_proxy=http://x.x.x.x:xxxx
-
-[elk_server:vars]
-; ssh connection (linux)
-ansible_ssh_user=vagrant
-ansible_ssh_private_key_file=./.vagrant/machines/elk/virtualbox/private_key
-ansible_ssh_port=22
-host_key_checking=false
-

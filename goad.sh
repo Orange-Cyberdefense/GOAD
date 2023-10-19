@@ -203,11 +203,6 @@ install_provisioning(){
   method=$3
   case $provider in
     "virtualbox"|"vmware"|"proxmox")
-        cd "ad/$lab/providers/$provider"
-        echo "${OK} is vagrant up"
-        vagrant status
-        cd -
-
         case $method in
           "local")
               cd ansible
@@ -258,6 +253,44 @@ EOF
   esac
 }
 
+disablevagrant(){
+  lab=$1
+  provider=$2
+  method=$3
+  case $provider in
+    "virtualbox"|"vmware"|"proxmox")
+        case $method in
+          "local")
+              cd ansible
+              ansible-playbook -i ../ad/$lab/providers/$provider/inventory_disablevagrant disable_vagrant.yml
+              cd -
+            ;;
+          "docker")
+              use_sudo=""
+              if id -nG "$USER" | grep -qw "docker"; then
+                  echo $USER belongs to docker group
+              else
+                  echo $USER does not belong to docker group
+                  echo "${INFO} Root password could be asked for docker interaction"
+                  use_sudo="sudo"
+              fi
+
+              ALREADY_BUILD=$($use_sudo docker images |grep -c "goadansible")
+              if [[ $ALREADY_BUILD -eq 0 ]]; then
+                echo "[+] Build container"
+                $use_sudo docker build -t goadansible .
+                echo "${OK} Container goadansible creation complete"
+              fi
+              echo "${OK} Start provisioning from docker"
+              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$lab/providers/$provider/inventory_disablevagrant disable_vagrant.yml"
+            ;;
+        esac
+      ;;
+    "azure")
+          echo "Vagrant user not used in azure, skip."
+      ;;
+  esac
+}
 
 install(){
   echo "${OK} Launch installation for: $LAB / $PROVIDER / $METHOD"
@@ -480,6 +513,9 @@ main() {
       ;;
     snapshot)
       snapshot
+      ;;
+    disablevagrant)
+      disablevagrant
       ;;
     *)
       ;;
