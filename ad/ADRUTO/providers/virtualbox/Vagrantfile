@@ -4,11 +4,11 @@ Vagrant.configure("2") do |config|
   ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
   
   boxes = [
-    { :name => "konoha-DC01",   :ip => "192.168.58.10", :box => "jborean93/WindowsServer2019", :os => "windows"},
-    { :name => "konoha-DC02",   :ip => "192.168.58.20", :box => "jborean93/WindowsServer2019", :os => "windows"},
-    { :name => "konoha-SRV01",  :ip => "192.168.58.21", :box => "jborean93/WindowsServer2019", :os => "windows"},
-    { :name => "konoha-SRV02",  :ip => "192.168.58.22", :box => "jborean93/WindowsServer2019", :os => "windows"},
-    { :name => "konoha-SRV03",  :ip => "192.168.58.23", :box => "jborean93/WindowsServer2019", :os => "windows"}
+    { :name => "konoha-DC01",   :ip => "192.168.58.10", :box => "mayfly/windows_server2019", :os => "windows"},
+    { :name => "konoha-DC02",   :ip => "192.168.58.20", :box => "mayfly/windows_server2019", :os => "windows"},
+    { :name => "konoha-SRV01",  :ip => "192.168.58.21", :box => "mayfly/windows_server2019", :os => "windows"},
+    { :name => "konoha-SRV02",  :ip => "192.168.58.22", :box => "mayfly/windows_server2019", :os => "windows"},
+    { :name => "konoha-SRV03",  :ip => "192.168.58.23", :box => "mayfly/windows_server2019", :os => "windows"}
   ]
 
   config.vm.provider "virtualbox" do |v|
