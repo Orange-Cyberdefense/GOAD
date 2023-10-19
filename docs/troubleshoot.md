@@ -2,6 +2,17 @@
 
 - In most case if you get errors during install, don't think and just replay the main playbook (most of the errors which could came up are due to windows latency during installation, wait few minutes and replay the install)
 
+## The naming context specified for this replication operation is invalid
+
+```
+TASK [groups_domains : synchronizes all domains] *******************************************************************************************************************************************************************************************************************************
+changed: [dc03]
+changed: [dc01]
+fatal: [dc02]: FAILED! => {"changed": true, "cmd": "repadmin /syncall /Ade", "delta": "0:00:01.090773", "end": "2023-10-18 09:30:26.016579", "msg": "non-zero return code", "rc": 1, "start": "2023-10-18 09:30:24.925805", "stderr": "", "stderr_lines": [], "stdout": "Syncing all NC's held on winterfell.\r\r\nSyncing partition: DC=north,DC=sevenkingdoms,DC=local\r\r\nCALLBACK MESSAGE: Error contacting server CN=NTDS Settings,CN=WINTERFELL,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=sevenkingdoms,DC=local (network error): 1722 (0x6ba):\r\r\n    The RPC server is unavailable.\r\r\n\r\r\nSyncAll exited with fatal Win32 error: 8440 (0x20f8):\r\r\n    The naming context specified for this replication operation is invalid.\r\r\n", "stdout_lines": ["Syncing all NC's held on winterfell.", "", "Syncing partition: DC=north,DC=sevenkingdoms,DC=local", "", "CALLBACK MESSAGE: Error contacting server CN=NTDS Settings,CN=WINTERFELL,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=sevenkingdoms,DC=local (network error): 1722 (0x6ba):", "", "    The RPC server is unavailable.", "", "", "", "SyncAll exited with fatal Win32 error: 8440 (0x20f8):", "", "    The naming context specified for this replication operation is invalid.", ""]}
+```
+
+- relaunch install
+
 ## The server has rejected the client credentials
 
 ```
