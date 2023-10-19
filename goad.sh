@@ -203,11 +203,6 @@ install_provisioning(){
   method=$3
   case $provider in
     "virtualbox"|"vmware"|"proxmox")
-        cd "ad/$lab/providers/$provider"
-        echo "${OK} is vagrant up"
-        vagrant status
-        cd -
-
         case $method in
           "local")
               cd ansible
