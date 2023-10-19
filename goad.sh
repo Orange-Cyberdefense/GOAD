@@ -9,8 +9,8 @@ LAB=
 PROVIDER=
 METHOD=
 JOB=
-PROVIDERS="virtualbox vmware" # azure proxmox"
-LABS=$(ls -A ad/ |grep -v 'template.lab')
+PROVIDERS="virtualbox vmware azure proxmox"
+LABS=$(ls -A ad/ |grep -v 'TEMPLATE')
 TASKS="check install start stop status restart destroy"
 METHODS="local docker"
 
@@ -34,10 +34,10 @@ print_usage() {
     echo "   - $p";
   done
   echo "${INFO} -m : method must be one of the following (optional, default : local):"
-  echo "   - local : to use local ansible install";
+  echo "   - local : to use local ansible install (default)";
   echo "   - docker : to use docker ansible install";
   echo
-  echo "${OK} example: ./goad.sh -t check -l sevenkingdoms.local -p virtualbox -m local";
+  echo "${OK} example: ./goad.sh -t check -l GOAD -p virtualbox -m local";
   exit 0
 }
 
@@ -88,20 +88,29 @@ while getopts t:l:p:m: flag
       print_usage
     fi
   fi
+# check if the lab provider folder exist
+if [[ -d "ad/$LAB/providers/$PROVIDER" ]]; then
+   echo "${OK} folder ad/$LAB/providers/$PROVIDER found"
+else
+   echo "${ERROR} folder ad/$LAB/providers/$PROVIDER not found"
+   exit 1
+fi
 
 
-install_templating(){
-  lab=$1
-  provider=$2
-  method=$3
+print_azure_info() {
+    echo -e "\n\n"
+    echo "Ubuntu jumpbox IP: $public_ip"
 
-  case $provider in
-    "proxmox")
-      # TODO packer
-      ;;
-    *)
-      ;;
-  esac
+    echo "You can now connect to the jumpbox using the following command:"
+    echo "ssh -i ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem goad@$public_ip"
+    echo -e "\n\n"
+
+    echo "${OK} ssh/config :"
+    echo "Host goad_azure"
+    echo "    Hostname $public_ip"
+    echo "    User goad"
+    echo "    Port 22"
+    echo "    IdentityFile $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem"
 }
 
 install_providing(){
@@ -109,9 +118,8 @@ install_providing(){
   provider=$2
 
   case $provider in
-    "virtualbox")
-      if [ -d "ad/$lab/providers/virtualbox" ]; then
-        cd "ad/$lab/providers/virtualbox"
+    "virtualbox"|"vmware")
+        cd "ad/$lab/providers/$provider"
         echo "${OK} launch vagrant"
         vagrant up
         result=$?
@@ -121,16 +129,70 @@ install_providing(){
           exit 1
         fi
         cd -
+      ;;
+    "proxmox")
+      if [ -d "ad/$lab/providers/$provider/terraform" ]; then
+        cd "ad/$lab/providers/$provider/terraform"
+        echo "${OK} Initializing Terraform..."
+        terraform init
+
+        result=$?
+        if [ ! $result -eq 0 ]; then
+          echo "${ERROR} terraform init finish with error abort"
+          exit 1
+        fi
+
+        echo "${OK} Apply Terraform..."
+        terraform apply
+        result=$?
+        if [ ! $result -eq 0 ]; then
+          echo "${ERROR} terraform apply finish with error abort"
+          exit 1
+        fi
+
+        echo "${OK} Ready to launch provisioning"
       else
-        echo "${ERROR} folder ad/$lab/providers/virtualbox not found"
+        echo "${ERROR} folder ad/$lab/providers/$provider/terraform not found"
         exit 1
       fi
       ;;
-    "vmware")
-      ;;
-    "proxmox")
-      ;;
     "azure")
+      if [ -d "ad/$lab/providers/$provider/terraform" ]; then
+          cd "ad/$lab/providers/$provider/terraform"
+          echo "${OK} Initializing Terraform..."
+          terraform init
+
+          result=$?
+          if [ ! $result -eq 0 ]; then
+            echo "${ERROR} terraform init finish with error abort"
+            exit 1
+          fi
+
+          echo "${OK} Apply Terraform..."
+          terraform apply
+          result=$?
+          if [ ! $result -eq 0 ]; then
+            echo "${ERROR} terraform apply finish with error abort"
+            exit 1
+          fi
+
+          # Get the public IP address of the VM
+          echo "${OK} Getting jumpbox IP address..."
+          public_ip=$(terraform output -raw ubuntu-jumpbox-ip)
+          print_azure_info
+          cd -
+
+          echo "${OK} Rsync goad to jumpbox"
+          rsync -a --exclude-from='.gitignore' -e "ssh -o 'StrictHostKeyChecking no' -i $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" "$CURRENT_DIR/" goad@$public_ip:~/GOAD/
+
+          echo "${OK} Running setup script on jumpbox..."
+          ssh -o "StrictHostKeyChecking no" -i "ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" goad@$public_ip 'bash -s' <scripts/setup_azure.sh
+
+          echo "${OK} Ready to launch provisioning"
+      else
+        echo "${ERROR} folder ad/$lab/providers/$provider/terraform not found"
+        exit 1
+      fi
       ;;
   esac
 }
@@ -140,8 +202,7 @@ install_provisioning(){
   provider=$2
   method=$3
   case $provider in
-    "virtualbox"|"vmware")
-      if [ -d "ad/$lab/providers/$provider" ]; then
+    "virtualbox"|"vmware"|"proxmox")
         cd "ad/$lab/providers/$provider"
         echo "${OK} is vagrant up"
         vagrant status
@@ -171,17 +232,28 @@ install_provisioning(){
                 echo "${OK} Container goadansible creation complete"
               fi
               echo "${OK} Start provisioning from docker"
-              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ANSIBLE_COMMAND='ansible-playbook -i ../ad/$lab/providers/$provider/inventory' ../scripts/provisionning.sh"
+              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ANSIBLE_COMMAND='ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory' ../scripts/provisionning.sh"
             ;;
         esac
-      else
-        echo "${ERROR} folder ad/$lab/providers/$provider not found"
-        exit 1
-      fi
-      ;;
-    "proxmox")
       ;;
     "azure")
+          cd terraform
+          public_ip=$(terraform output -raw ubuntu-jumpbox-ip)
+          cd -
+           case $method in
+            "local")
+                ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" goad@$public_ip << EOF
+                  cd /home/goad/GOAD/ansible
+                  export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory"
+                  ../scripts/provisionning.sh
+                  exit
+EOF
+                print_azure_info
+              ;;
+            *)
+              echo "${ERROR} $method install on azure not implemented, use local"
+              ;;
+          esac
       ;;
   esac
 }
@@ -194,12 +266,6 @@ install(){
 }
 
 check(){
-  if [ -d "ad/$LAB/providers/$PROVIDER" ]; then
-    echo "${OK} $LAB provider $PROVIDER folder exist "
-  else
-    echo "${ERROR} provider $PROVIDER not implemented for this lab"
-    exit 1
-  fi
   echo "${OK} Launch check : ./scripts/check.sh $PROVIDER $METHOD"
   ./scripts/check.sh $PROVIDER $METHOD
   check_result=$?
@@ -214,19 +280,34 @@ check(){
 start(){
   case $PROVIDER in
     "virtualbox"|"vmware")
-      if [ -d "ad/$LAB/providers/$PROVIDER" ]; then
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} start vms"
           vagrant up
           cd -
-      else
-        echo "${ERROR} folder ad/$LAB/providers/$PROVIDER not found"
-        exit 1
-      fi
       ;;
     "proxmox")
+      if ! which qm >/dev/null; then
+        (echo >&2 "${ERROR} qm not found in your PATH")
+        exit 1
+      else
+        if [ -d "ad/$LAB/providers/$PROVIDER/terraform" ]; then
+          vms=$(cat ad/$LAB/providers/$PROVIDER/terraform/*.tf| grep -E 'name = ".*"'|cut -d '"' -f 2)
+          for vm in "${vms[@]}"
+          do
+            id=$(qm list | grep $vm  | awk '{print $1}')
+            echo "[+] VM id : $id"
+            echo "[+] Starting $vm"
+            qm start "$id"
+          done
+        else
+          echo "${ERROR} folder ad/$LAB/providers/$PROVIDER/terraform not found"
+          exit 1
+        fi
+      fi
       ;;
     "azure")
+      az vm start --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
+      status
       ;;
   esac
 }
@@ -234,19 +315,34 @@ start(){
 stop(){
   case $PROVIDER in
     "virtualbox"|"vmware")
-      if [ -d "ad/$LAB/providers/$PROVIDER" ]; then
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} stop vms"
           vagrant halt
           cd -
-      else
-        echo "${ERROR} folder ad/$LAB/providers/$PROVIDER not found"
-        exit 1
-      fi
       ;;
     "proxmox")
+      if ! which qm >/dev/null; then
+        (echo >&2 "${ERROR} qm not found in your PATH")
+        exit 1
+      else
+        if [ -d "ad/$LAB/providers/$PROVIDER/terraform" ]; then
+          vms=$(cat ad/$LAB/providers/$PROVIDER/terraform/*.tf| grep -E 'name = ".*"'|cut -d '"' -f 2)
+          for vm in "${vms[@]}"
+          do
+            id=$(qm list | grep $vm  | awk '{print $1}')
+            echo "[+] VM id : $id"
+            echo "[+] Stopping $vm"
+            qm stop "$id" && qm wait "$id"
+          done
+        else
+          echo "${ERROR} folder ad/$LAB/providers/$PROVIDER/terraform not found"
+          exit 1
+        fi
+      fi
       ;;
     "azure")
+      az vm stop --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
+      status
       ;;
   esac
 }
@@ -254,19 +350,36 @@ stop(){
 restart(){
   case $PROVIDER in
     "virtualbox"|"vmware")
-      if [ -d "ad/$LAB/providers/$PROVIDER" ]; then
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} restart start vms"
           vagrant reload
           cd -
-      else
-        echo "${ERROR} folder ad/$LAB/providers/$PROVIDER not found"
-        exit 1
-      fi
       ;;
     "proxmox")
+      if ! which qm >/dev/null; then
+        (echo >&2 "${ERROR} qm not found in your PATH")
+        exit 1
+      else
+        if [ -d "ad/$LAB/providers/$PROVIDER/terraform" ]; then
+          vms=$(cat ad/$LAB/providers/$PROVIDER/terraform/*.tf| grep -E 'name = ".*"'|cut -d '"' -f 2)
+          for vm in "${vms[@]}"
+          do
+            id=$(qm list | grep $vm  | awk '{print $1}')
+            echo "[+] VM id is : $id"
+            echo "[+] Stopping $vm"
+            qm stop "$id" && qm wait "$id"
+            echo "[+] Starting $vm"
+            qm start "$id"
+          done
+        else
+          echo "${ERROR} folder ad/$LAB/providers/$PROVIDER/terraform not found"
+          exit 1
+        fi
+      fi
       ;;
     "azure")
+      az vm restart --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
+      status
       ;;
   esac
 }
@@ -274,7 +387,6 @@ restart(){
 destroy(){
   case $PROVIDER in
     "virtualbox"|"vmware")
-      if [ -d "ad/$LAB/providers/$PROVIDER" ]; then
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} destroy the lab"
           read -r -p "Are you sure? [y/N] " response
@@ -287,14 +399,16 @@ destroy(){
                   ;;
           esac
           cd -
+      ;;
+    "proxmox"|"azure")
+      if [ -d "ad/$LAB/providers/$PROVIDER/terraform" ]; then
+        cd "ad/$LAB/providers/$PROVIDER/terraform"
+        echo "${OK} Destroy infrastructure..."
+        terraform destroy
       else
-        echo "${ERROR} folder ad/$LAB/providers/$PROVIDER not found"
+        echo "${ERROR} folder ad/$LAB/providers/$PROVIDER/terraform not found"
         exit 1
       fi
-      ;;
-    "proxmox")
-      ;;
-    "azure")
       ;;
   esac
 }
@@ -302,19 +416,41 @@ destroy(){
 status(){
   case $PROVIDER in
     "virtualbox"|"vmware")
-      if [ -d "ad/$LAB/providers/$PROVIDER" ]; then
           cd "ad/$LAB/providers/$PROVIDER"
           vagrant status
-      else
-        echo "${ERROR} folder ad/$LAB/providers/$PROVIDER not found"
-        exit 1
-      fi
+          cd -
       ;;
     "proxmox")
+      if ! which qm >/dev/null; then
+        (echo >&2 "${ERROR} qm not found in your PATH")
+        exit 1
+      else
+        if [ -d "ad/$LAB/providers/$PROVIDER/terraform" ]; then
+          vms=$(cat ad/$LAB/providers/$PROVIDER/terraform/*.tf| grep -E 'name = ".*"'|cut -d '"' -f 2)
+          for vm in "${vms[@]}"
+          do
+            qm list | grep $vm
+          done
+        else
+          echo "${ERROR} folder ad/$LAB/providers/$PROVIDER/terraform not found"
+          exit 1
+        fi
+      fi
       ;;
     "azure")
+      az vm list -g $LAB -d --output table
       ;;
   esac
+}
+
+snapshot() {
+  # TODO : snapshot
+  echo "not implemeneted"
+}
+
+reset() {
+  # TODO : reset to last snapshot
+  echo "not implemeneted"
 }
 
 main() {
@@ -341,6 +477,9 @@ main() {
       ;;
     destroy)
       destroy
+      ;;
+    snapshot)
+      snapshot
       ;;
     *)
       ;;

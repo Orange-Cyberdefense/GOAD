@@ -64,7 +64,7 @@
                 "gpo_abuse.ps1",
                 "rdp_scheduler.ps1"
             ],
-            "vulns" : ["disable_firewall","directory", "credentials", "autologon", "files"],
+            "vulns" : ["disable_firewall","directory", "credentials", "autologon", "files", "enable_llmnr", "enable_nbt-ns"],
             "vulns_vars" : {
                 "directory": {
                     "setup": "c:\\setup"
@@ -343,11 +343,7 @@
                     }
                 }
             },
-            "multi_domain_groups_member" : {
-                "AcrossTheSea" : [
-                    "essos.local\\daenerys.targaryen"
-                ]
-            },
+            "multi_domain_groups_member" : {},
             "acls" : {
                 "anonymous_rpc" : {"for": "NT AUTHORITY\\ANONYMOUS LOGON", "to": "DC=North,DC=sevenkingdoms,DC=local", "right": "ReadProperty", "inheritance": "All"},
                 "anonymous_rpc2" : {"for": "NT AUTHORITY\\ANONYMOUS LOGON", "to": "DC=North,DC=sevenkingdoms,DC=local", "right": "GenericExecute", "inheritance": "All"}

@@ -1,5 +1,5 @@
 resource "proxmox_vm_qemu" "dc01" {
-    name = "DC01"
+    name = "GOAD-DC01"
     desc = "DC01 - windows server 2019 - 192.168.10.10"
     qemu_os = "win10"
     target_node = var.pm_node
@@ -10,6 +10,7 @@ resource "proxmox_vm_qemu" "dc01" {
     memory = 3096
     agent = 1
     clone = "WinServer2019x64-cloudinit-qcow2"
+    full_clone = var.pm_full_clone
 
    network {
      bridge    = "vmbr3"
@@ -26,7 +27,7 @@ resource "proxmox_vm_qemu" "dc01" {
 }
 
 resource "proxmox_vm_qemu" "dc02" {
-    name = "DC02"
+    name = "GOAD-DC02"
     desc = "DC02 - windows server 2019 - 192.168.10.11"
     qemu_os = "win10"
     target_node = var.pm_node
@@ -36,6 +37,8 @@ resource "proxmox_vm_qemu" "dc02" {
     memory = 3096
     agent = 1
     clone = "WinServer2019x64-cloudinit-qcow2"
+    full_clone = var.pm_full_clone
+
     network {
       bridge    = "vmbr3"
       model     = "e1000"
@@ -51,7 +54,7 @@ resource "proxmox_vm_qemu" "dc02" {
 }
 
 resource "proxmox_vm_qemu" "DC03" {
-    name = "DC03"
+    name = "GOAD-DC03"
     desc = "DC03 - windows server 2016 - 192.168.10.12"
     qemu_os = "win10"
 
@@ -63,6 +66,7 @@ resource "proxmox_vm_qemu" "DC03" {
     memory = 3096
     agent = 1
     clone = "WinServer2016x64-cloudinit-qcow2"
+    full_clone = var.pm_full_clone
 
     network {
       bridge    = "vmbr3"
@@ -79,7 +83,7 @@ resource "proxmox_vm_qemu" "DC03" {
 }
 
 resource "proxmox_vm_qemu" "srv02" {
-    name = "SRV02"
+    name = "GOAD-SRV02"
     desc = "SRV02 - windows server 2019 - 192.168.10.22"
     qemu_os = "win10"
     target_node = var.pm_node
@@ -89,6 +93,7 @@ resource "proxmox_vm_qemu" "srv02" {
     memory = 4096
     agent = 1
     clone = "WinServer2019x64-cloudinit-qcow2"
+    full_clone = var.pm_full_clone
 
     network {
       bridge    = "vmbr3"
@@ -105,7 +110,7 @@ resource "proxmox_vm_qemu" "srv02" {
 }
 
 resource "proxmox_vm_qemu" "srv03" {
-    name = "SRV03"
+    name = "GOAD-SRV03"
     desc = "SRV03 - windows server 2016 - 192.168.10.23"
     qemu_os = "win10"
     target_node = var.pm_node
@@ -115,6 +120,7 @@ resource "proxmox_vm_qemu" "srv03" {
     memory = 4096
     agent = 1
     clone = "WinServer2016x64-cloudinit-qcow2"
+    full_clone = var.pm_full_clone
 
     network {
       bridge    = "vmbr3"
@@ -132,7 +138,7 @@ resource "proxmox_vm_qemu" "srv03" {
 }
 
 resource "proxmox_vm_qemu" "ws01" {
-    name = "WS01"
+    name = "GOAD-WS01"
     desc = "WS01 - windows 10 - 192.168.10.30"
     qemu_os = "win10"
     target_node = var.pm_node

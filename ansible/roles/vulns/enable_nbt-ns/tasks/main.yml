@@ -1,0 +1,5 @@
+- name: "Enable NBT-NS protocol"
+  ansible.windows.win_powershell:
+    script: |
+      $regkey = "HKLM:SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces"
+      Get-ChildItem $regkey |foreach { Set-ItemProperty -Path "$regkey\$($_.pschildname)" -Name NetbiosOptions -Value 0 -Verbose}

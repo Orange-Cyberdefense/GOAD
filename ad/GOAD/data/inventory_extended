@@ -1,0 +1,125 @@
+; LAB SCENARIO CONFIGURATION -----------------------------
+
+; computers inside domain (mandatory)
+; usage : build.yml, ad-relations.yml, ad-servers.yml, vulnerabilities.yml
+[domain]
+dc01
+dc02
+dc03
+srv02
+srv03
+ws01
+
+; domain controler (mandatory)
+; usage : ad-acl.yml, ad-data.yml, ad-relations.yml, laps.yml
+[dc]
+dc01
+dc02
+dc03
+
+; domain server to enroll (mandatory if you want servers)
+; usage : ad-data.yml, ad-servers.yml, laps.yml
+[server]
+srv02
+srv03
+
+; workstation to enroll (mandatory if you want workstation)
+; usage : ad-servers.yml, laps.yml
+[workstation]
+ws01
+
+; parent domain controler (mandatory)
+; usage : ad-servers.yml
+[parent_dc]
+dc01
+dc03
+
+; child domain controler (need a fqdn child_name.parent_name)
+; usage : ad-servers.yml
+[child_dc]
+dc02
+
+; external trust, need domain trust entry in config (bidirectionnal)
+; usage : ad-trusts.yml
+[trust]
+dc01
+dc03
+
+; install adcs
+; usage : adcs.yml
+[adcs]
+dc01
+srv03
+
+; install custom template (dc)
+; usage : adcs.yml
+[adcs_customtemplates]
+dc03
+
+; install iis with default website asp upload on 80
+; usage : servers.yml
+[iis]
+srv02
+
+; install mssql
+; usage : servers.yml
+[mssql]
+srv02
+srv03
+
+; install mssql gui
+; usage : servers.yml
+[mssql_ssms]
+srv02
+
+; install webdav 
+[webdav]
+srv02
+srv03
+
+; install elk
+; usage : elk.yml
+[elk_server]
+elk
+
+; add log agent for elk
+; usage : elk.yml
+[elk_log]
+dc01
+dc02
+dc03
+srv02
+srv03
+ws01
+
+[laps_dc]
+dc03
+[laps_server]
+srv03
+[laps_workstation]
+
+; allow computer update
+; usage : update.yml
+[update]
+srv02
+
+; disable update
+; usage : update.yml
+[no_update]
+dc01
+dc02
+dc03
+srv03
+
+; allow defender
+; usage : security.yml
+[defender_on]
+dc01
+dc02
+dc03
+srv03
+
+; disable defender
+; usage : security.yml
+[defender_off]
+srv02
