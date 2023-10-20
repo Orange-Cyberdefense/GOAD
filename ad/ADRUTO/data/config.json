@@ -116,7 +116,7 @@
                 "executeasuser" : {},
                 "linked_servers": {}
             },
-            "vulns" : ["files", "mssql"],
+            "vulns" : ["files", "mssql", "disable_firewall"],
             "vulns_vars" : {
                 "files" : {
                     "sql" : {

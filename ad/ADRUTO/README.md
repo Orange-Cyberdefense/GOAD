@@ -19,5 +19,11 @@
 - Once install finish disable vagrant user to avoid cheat :
 
 ```bash
-./goad.sh -t disable_vagrant -l ADRUTO -p virtualbox -m docker
+./goad.sh -t disablevagrant -l ADRUTO -p virtualbox -m docker
+```
+
+- If you need to re-enable vagrant
+
+```bash
+./goad.sh -t enablevagrant -l ADRUTO -p virtualbox -m docker
 ```

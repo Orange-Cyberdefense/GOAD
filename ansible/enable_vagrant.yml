@@ -1,0 +1,16 @@
+---
+# Load datas
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+- name: "Enable vagrant"
+  hosts: domain
+  roles:
+    - { role: 'enable_vagrant', tags: 'disable_vagrant'}
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    member_domain: "{{lab.hosts[dict_key].domain}}"
+    domain_username: "{{domain}}\\Administrator"
+    domain_password: "{{lab.domains[member_domain].domain_password}}"
