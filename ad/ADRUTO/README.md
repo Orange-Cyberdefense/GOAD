@@ -1,5 +1,7 @@
 # ADRUTO
 
+<img src="./data/konoha.png" width="100px"/>
+
 - ADRUTO is written as a training challenge where GOAD was written as a lab with a maximum of vulns.
 - You should find your way in to get domain admin on the 2 domains (academy.konoha.fire and konoha.leaf)
 - Starting point is on srv01 : 192.168.58.21

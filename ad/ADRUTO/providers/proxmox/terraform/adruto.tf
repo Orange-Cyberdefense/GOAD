@@ -79,7 +79,7 @@ resource "proxmox_vm_qemu" "srv01" {
     }
     nameserver = "192.168.20.1"
     ipconfig0 = "ip=192.168.20.21/24,gw=192.168.20.1"
-    ipconfig1 = "ip=172.16.0.10/24,gw=172.16.0.1"
+    #ipconfig1 = "ip=172.16.0.10/24,gw=172.16.0.1"
 }
 
 resource "proxmox_vm_qemu" "srv02" {
