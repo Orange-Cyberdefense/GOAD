@@ -22,10 +22,6 @@ two_adapters=yes
 nat_adapter=Ethernet
 domain_adapter=Ethernet 2
 
-; adapter created by vagrant and vmware (uncomment if you use vmware)
-; nat_adapter=Ethernet0
-; domain_adapter=Ethernet1
-
 ; winrm connection (windows)
 ansible_user=vagrant
 ansible_password=vagrant
