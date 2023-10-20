@@ -151,6 +151,7 @@ install_providing(){
         fi
 
         echo "${OK} Ready to launch provisioning"
+        cd -
       else
         echo "${ERROR} folder ad/$lab/providers/$provider/terraform not found"
         exit 1
@@ -232,7 +233,7 @@ install_provisioning(){
         esac
       ;;
     "azure")
-          cd terraform
+          cd "ad/$lab/providers/$provider/terraform"
           public_ip=$(terraform output -raw ubuntu-jumpbox-ip)
           cd -
            case $method in
@@ -338,7 +339,9 @@ enablevagrant(){
 
 install(){
   echo "${OK} Launch installation for: $LAB / $PROVIDER / $METHOD"
+  cd $CURRENT_DIR
   install_providing $LAB $PROVIDER
+  cd $CURRENT_DIR
   install_provisioning $LAB $PROVIDER $METHOD
 }
 
@@ -565,6 +568,7 @@ main() {
       enablevagrant
       ;;
     *)
+      echo "unknow option"
       ;;
   esac
 }

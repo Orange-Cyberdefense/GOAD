@@ -1,0 +1,26 @@
+resource "proxmox_vm_qemu" "ws01" {
+    name = "GOAD-WS01"
+    desc = "WS01 - windows 10 - 192.168.10.30"
+    qemu_os = "win10"
+    target_node = var.pm_node
+    pool = var.pm_pool
+    sockets = 1
+    cores = 2
+    memory = 4096
+    agent = 1
+    clone = "Windows10x64-22h2-cloudinit-qcow2"
+
+    network {
+      bridge    = "vmbr3"
+      model     = "e1000"
+      tag       = 10
+    }
+    
+    lifecycle {
+      ignore_changes = [
+        disk,
+      ]
+    }
+    nameserver = "192.168.10.1"
+    ipconfig0 = "ip=192.168.10.30/24,gw=192.168.10.1"
+}

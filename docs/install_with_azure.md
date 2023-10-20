@@ -9,6 +9,10 @@
 
 ![Architecture](img/azure_architecture.png)
 
+> **Warning**
+> LLMNR, NBTNS and other poisoning network attacks will not work in azure environment.
+> Only network coerce attacks will work.
+
 ## Prerequisites
 
 - [Terraform](https://www.terraform.io/downloads.html)
