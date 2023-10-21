@@ -86,4 +86,4 @@ run_ansible vulnerabilities.yml
 
 run_ansible reboot.yml
 
-echo "$OK GOAD is successfully setup !"
+echo "$OK your lab is successfully setup ! have fun ;)"
