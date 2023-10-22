@@ -242,6 +242,7 @@
                     <Description>Install-WMF3Hotfix.ps1</Description>
                     <Order>97</Order>
                 </SynchronousCommand>
+                <!-- no updates -->
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>powershell -NoProfile -ExecutionPolicy Bypass -Command "G:\ConfigureRemotingForAnsible.ps1"</CommandLine>
                     <Description>ConfigureRemotingForAnsible</Description>
@@ -252,6 +253,26 @@
                     <Description>Enable WinRM</Description>
                     <Order>99</Order>
                 </SynchronousCommand>
+                <!-- end no updates -->
+                <!-- WITH WINDOWS UPDATES 
+                <SynchronousCommand wcm:action="add">
+                    <CommandLine>cmd.exe /c G:\microsoft-updates.bat</CommandLine>
+                    <Order>98</Order>
+                    <Description>Enable Microsoft Updates</Description>
+                </SynchronousCommand>
+                <SynchronousCommand wcm:action="add">
+                    <CommandLine>cmd.exe /c C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File G:\disable-screensaver.ps1</CommandLine>
+                    <Description>Disable Screensaver</Description>
+                    <Order>99</Order>
+                    <RequiresUserInput>true</RequiresUserInput>
+                </SynchronousCommand>
+                <SynchronousCommand wcm:action="add">
+                    <CommandLine>cmd.exe /c C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File G:\win-updates.ps1</CommandLine>
+                    <Description>Install Windows Updates</Description>
+                    <Order>100</Order>
+                    <RequiresUserInput>true</RequiresUserInput>
+                </SynchronousCommand>
+                 END WITH WINDOWS UPDATES -->
             </FirstLogonCommands>
             <OOBE>
                 <HideEULAPage>true</HideEULAPage>

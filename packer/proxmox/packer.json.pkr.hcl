@@ -32,7 +32,7 @@ source "proxmox-iso" "windows" {
   cores                   = "${var.vm_cpu_cores}"
   disks {
     disk_size         = "${var.vm_disk_size}"
-    format            = "qcow2"
+    format            = "${var.vm_disk_format}"
     storage_pool      = "${var.proxmox_storage}"
     type              = "sata"
   }
@@ -57,9 +57,10 @@ source "proxmox-iso" "windows" {
   winrm_insecure       = true
   winrm_no_proxy       = true
   winrm_password       = "${var.winrm_password}"
-  winrm_timeout        = "30m"
+  winrm_timeout        = "120m"
   winrm_use_ssl        = true
   winrm_username       = "${var.winrm_username}"
+  task_timeout         = "40m"
 }
 
 build {
