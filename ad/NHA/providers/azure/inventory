@@ -1,0 +1,34 @@
+[default]
+dc01 ansible_host=192.168.58.10 dns_domain=dc01 dict_key=dc01 ansible_user=ansible ansible_password=8dCT-6546541qsdDJjgScp
+dc02 ansible_host=192.168.58.20 dns_domain=dc02 dict_key=dc02 ansible_user=ansible ansible_password=Ufe-qsdaz789bVXSx9rk
+srv01 ansible_host=192.168.58.21 dns_domain=dc02 dict_key=srv01 ansible_user=ansible ansible_password=EaqsdP+xh7sdfzaRk6j90
+srv02 ansible_host=192.168.58.22 dns_domain=dc02 dict_key=srv02 ansible_user=ansible ansible_password=978i2pF43UqsdqsdJ-qsd
+srv03 ansible_host=192.168.58.23 dns_domain=dc02 dict_key=srv03 ansible_user=ansible ansible_password=EalwxkfhqsdP+xh7sdfzaRk6j90
+
+[all:vars]
+; domain_name : folder inside ad/
+domain_name=NHA
+
+force_dns_server=no
+dns_server=9.9.9.9
+
+two_adapters=no
+
+; adapter created by vagrant and virtualbox (comment if you use vmware)
+nat_adapter=Ethernet
+domain_adapter=Ethernet
+
+; adapter created by vagrant and vmware (uncomment if you use vmware)
+; nat_adapter=Ethernet0
+; domain_adapter=Ethernet1
+
+; winrm connection (windows)
+ansible_user=goadmin
+ansible_password=******
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+ansible_winrm_operation_timeout_sec=400
+ansible_winrm_read_timeout_sec=500
+
+; proxy settings (the lab need internet for some install, if you are behind a proxy you should set the proxy here)
+enable_http_proxy=no
