@@ -177,7 +177,7 @@
         "ninja.hack" : {
             "dc": "dc01",
             "domain_password" : "8dCT-6546541qsdDJjgScp",
-            "netbios_name": "ninja",
+            "netbios_name": "NINJA",
             "trust" : "academy.ninja.lan",
             "ca_web_enrollment": false,
             "organisation_units" : {},
@@ -207,7 +207,7 @@
             "multi_domain_groups_member" : {},
             "acls" : {
                 "GenericAll_sanin_jonin" : {"for": "Sanin", "to": "Jonin", "right": "GenericAll", "inheritance": "None"},
-                "WriteDacl_ebizu_jiraya" : {"for": "olivia.davis", "to": "rachel.philips", "right": "WriteDacl", "inheritance": "None"},
+                "WriteDacl_olivia_rachel" : {"for": "olivia.davis", "to": "rachel.philips", "right": "WriteDacl", "inheritance": "None"},
                 "GenericAll_hokage_domadmin" : {"for": "hokage", "to": "Domain Admins", "right": "GenericAll", "inheritance": "None"},
                 "GenericAll_hokage_domadmin_holder" : {"for": "hokage", "to": "CN=AdminSDHolder,CN=System,DC=ninja,DC=hack", "right": "GenericAll", "inheritance": "None"}
             },
