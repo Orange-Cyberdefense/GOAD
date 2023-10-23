@@ -10,15 +10,15 @@
 
 - Flags are disposed on each machine, try to grab all. Be careful all the machines are up to date with defender enabled.
 - Some exploits needs to modify path so this lab is not very multi-players compliant (unless you do it as a team ;))
-- Obviously do not cheat by looking at the passwords in the recipe files, the lab must start without user to full compromise.
+- Obviously do not cheat by looking at the passwords and flags in the recipe files, the lab must start without user to full compromise. 
 
-- Install  :
+- Install :
 
 ```bash
 ./goad.sh -t install -l NHA -p virtualbox -m docker
 ```
 
-- Once install finish disable vagrant user to avoid cheat :
+- Once install finish disable vagrant user to avoid using it :
 
 ```bash
 ./goad.sh -t disablevagrant -l NHA -p virtualbox -m docker
@@ -29,3 +29,5 @@
 ```bash
 ./goad.sh -t enablevagrant -l NHA -p virtualbox -m docker
 ```
+
+- If you want to create a writeUp of the chall, no problem, have fun. Please ping me on X (@M4yFly) or Discord, i will be happy to read it :)
