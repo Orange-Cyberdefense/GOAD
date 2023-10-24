@@ -30,4 +30,6 @@
 ./goad.sh -t enablevagrant -l NHA -p virtualbox -m docker
 ```
 
-- If you want to create a writeUp of the chall, no problem, have fun. Please ping me on X (@M4yFly) or Discord, i will be happy to read it :)
+- If you want to create a write up of the chall, no problem, have fun. Please ping me on X (@M4yFly) or Discord, i will be happy to read it :)
+
+Hint: No bruteforce, if not in rockyou do not waste your time and your cpu/gpu cycle.
