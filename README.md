@@ -212,3 +212,4 @@ ad/
 
 ## Note
 - This repo is based on the work of [jckhmr](https://github.com/jckhmr/adlab) and [kkolk](https://github.com/kkolk/mssql)
+"MEM PRIKOL" 
