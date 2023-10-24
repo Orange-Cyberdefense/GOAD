@@ -50,7 +50,7 @@ failed: [192.168.56.11] (item={'key': 'arya.stark', 'value': {'firstname': 'Arya
 ## A parameter cannot be found that matches parameter name 'AcceptLicense'
 
 - If you got this kind of error you got an ansible.windows version >=  1.11.0
-- This version add the parameter AcceptLicense but it is accepted only for PowerShellGet module >= 1.6.0 and this one is not embededded in the vms.
+- This version add the parameter AcceptLicense but it is accepted only for PowerShellGet module >= 1.6.0 and this one is not embedded in the vms.
 - Please keep version 1.11.0 and update the lab to get the fix for the PowerShellGet Module version.
 
 ```bash
