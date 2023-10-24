@@ -6,13 +6,23 @@
   tags: 'data'
 # set AD trusts ==================================================================================================
 
-- name: Trusts configuration
+- name: Trusts configuration prepare
   hosts: trust
   roles:
   - { role: 'settings/disable_nat_adapter' , tags: 'disable_nat_adapter'}
   - { role: 'dns_conditional_forwarder', tags: 'dns_conditional_forwarder' }
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    remote_forest: "{{lab.domains[domain].trust}}"
+    zone_name: "{{remote_forest}}"
+    remote_dc: "{{lab.domains[remote_forest].dc}}"
+    master_server: "{{hostvars[remote_dc].ansible_host}}"
+
+- name: Trusts configuration
+  hosts: trust
+  serial: 1 # add one trust at a time to avoid issues
+  roles:
   - { role: 'trusts', tags: 'trust' }
-  - { role: 'settings/enable_nat_adapter', tags: 'enable_nat_adapter'}
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
     domain_username: "{{domain}}\\Administrator"
@@ -23,3 +33,8 @@
     zone_name: "{{remote_forest}}"
     remote_dc: "{{lab.domains[remote_forest].dc}}"
     master_server: "{{hostvars[remote_dc].ansible_host}}"
+
+- name: Trusts configuration end
+  hosts: trust
+  roles:
+  - { role: 'settings/enable_nat_adapter', tags: 'enable_nat_adapter'}
