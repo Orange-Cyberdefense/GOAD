@@ -10,5 +10,8 @@
     - type: registration
       repetition:
         interval: "{{item.value.interval}}"
+    - type: boot
+      repetition:
+        interval: "{{item.value.interval}}"
     username: SYSTEM
   with_dict: "{{ vulns_vars }}"
