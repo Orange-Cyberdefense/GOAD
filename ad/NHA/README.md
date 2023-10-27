@@ -24,6 +24,15 @@
 ./goad.sh -t disablevagrant -l NHA -p virtualbox -m docker
 ```
 
+- Now do a reboot of all the machine to avoid unintended secrets stored : 
+
+```bash
+./goad.sh -t stop -l NHA -p virtualbox -m docker
+./goad.sh -t start -l NHA -p virtualbox -m docker
+```
+
+And you are ready to play ! :)
+
 - If you need to re-enable vagrant
 
 ```bash
