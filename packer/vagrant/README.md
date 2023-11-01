@@ -1,1 +1,3 @@
-Recipes from https://github.com/StefanScherer/ repository
+# packer for vbox and vmware
+
+- Adapted Recipes from https://github.com/StefanScherer/ repository
