@@ -11,7 +11,7 @@ METHOD=
 JOB=
 PROVIDERS="virtualbox vmware azure proxmox"
 LABS=$(ls -A ad/ |grep -v 'TEMPLATE')
-TASKS="check install start stop status restart destroy"
+TASKS="check install start stop status restart destroy disablevagrant enablevagrant"
 METHODS="local docker"
 
 
@@ -254,6 +254,88 @@ EOF
   esac
 }
 
+disablevagrant(){
+  echo "${OK} Will disable the vagrant user (vagrant up vagrant halt will no more work, you will have to start and stop vm by hand)"
+  read -r -p "Are you sure? [y/N] " response
+  case "$response" in
+      [yY][eE][sS]|[yY]) 
+          echo "${OK} start disable vagrant user"
+          ;;
+      *)
+          echo "abort"
+          exit
+          ;;
+  esac
+  case $PROVIDER in
+    "virtualbox"|"vmware"|"proxmox")
+        case $METHOD in
+          "local")
+              cd ansible
+              ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant disable_vagrant.yml
+              cd -
+            ;;
+          "docker")
+              use_sudo=""
+              if id -nG "$USER" | grep -qw "docker"; then
+                  echo $USER belongs to docker group
+              else
+                  echo $USER does not belong to docker group
+                  echo "${INFO} Root password could be asked for docker interaction"
+                  use_sudo="sudo"
+              fi
+
+              ALREADY_BUILD=$($use_sudo docker images |grep -c "goadansible")
+              if [[ $ALREADY_BUILD -eq 0 ]]; then
+                echo "[+] Build container"
+                $use_sudo docker build -t goadansible .
+                echo "${OK} Container goadansible creation complete"
+              fi
+              echo "${OK} Start provisioning from docker"
+              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant disable_vagrant.yml"
+            ;;
+        esac
+      ;;
+    "azure")
+          echo "Vagrant user not used in azure, skip."
+      ;;
+  esac
+}
+
+enablevagrant(){
+  case $PROVIDER in
+    "virtualbox"|"vmware"|"proxmox")
+        case $METHOD in
+          "local")
+              cd ansible
+              ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant enable_vagrant.yml
+              cd -
+            ;;
+          "docker")
+              use_sudo=""
+              if id -nG "$USER" | grep -qw "docker"; then
+                  echo $USER belongs to docker group
+              else
+                  echo $USER does not belong to docker group
+                  echo "${INFO} Root password could be asked for docker interaction"
+                  use_sudo="sudo"
+              fi
+
+              ALREADY_BUILD=$($use_sudo docker images |grep -c "goadansible")
+              if [[ $ALREADY_BUILD -eq 0 ]]; then
+                echo "[+] Build container"
+                $use_sudo docker build -t goadansible .
+                echo "${OK} Container goadansible creation complete"
+              fi
+              echo "${OK} Start provisioning from docker"
+              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant enable_vagrant.yml"
+            ;;
+        esac
+      ;;
+    "azure")
+          echo "Vagrant user not used in azure, skip."
+      ;;
+  esac
+}
 
 install(){
   echo "${OK} Launch installation for: $LAB / $PROVIDER / $METHOD"
@@ -478,6 +560,12 @@ main() {
       ;;
     snapshot)
       snapshot
+      ;;
+    disablevagrant)
+      disablevagrant
+      ;;
+    enablevagrant)
+      enablevagrant
       ;;
     *)
       echo "unknow option"

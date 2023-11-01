@@ -7,7 +7,7 @@
 repadmin /replicate kingslanding.sevenkingdoms.local dragonstone.sevenkingdoms.local dc=sevenkingdoms,dc=local /full
 ```
 
-### vagrant usefull commands (vm management)
+### vagrant useful commands (vm management)
 
 - start all lab vms :
 ```

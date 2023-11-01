@@ -1,0 +1,560 @@
+{
+"lab" : {
+    "hosts" : {
+        "dc01" : {
+            "hostname" : "dc-vil",
+            "type" : "dc",
+            "local_admin_password": "8dCT-6546541qsdDJjgScp",
+            "domain" : "ninja.hack",
+            "path" : "DC=ninja,DC=hack",
+            "local_groups" : {
+                "Administrators" : [
+                    "ninja\\hokage"
+                ]
+            },
+            "vulns" : ["directory","files","adcs_templates","acls"],
+            "vulns_vars" : {
+                "directory": {
+                    "setup": "c:\\setup"
+                },
+                "files" : {
+                    "template" : {
+                        "src" : "templates/SignatureValidation.json",
+                        "dest" : "C:\\setup\\SignatureValidation.json"
+                    },
+                    "flag":{
+                        "src" : "flags/dc_final.txt",
+                        "dest": "c:\\users\\administrator\\desktop\\flag.txt"
+                    }
+                },
+                "adcs_templates": {
+                    "SignatureValidation": {
+                        "template_name" : "SignatureValidation",
+                        "template_file" : "C:\\setup\\SignatureValidation.json"
+                    }
+                },
+                "acls": {
+                    "GenericAll_Jonin_signature" : {
+                        "for": "Jonin", 
+                        "to": "CN=SignatureValidation,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=ninja,DC=hack", 
+                        "right": "GenericAll", 
+                        "inheritance": "None"
+                    }
+                }
+            }
+        },
+        "dc02" : {
+            "hostname" : "dc-ac",
+            "type" : "dc",
+            "local_admin_password": "Ufe-qsdaz789bVXSx9rk",
+            "domain" : "academy.ninja.lan",
+            "path" : "DC=academy,DC=ninja,DC=lan",
+            "local_groups" : {
+                "Administrators" : [
+                    "academy\\Sensei"
+                ]
+            },
+            "scripts" : [
+                "constrained_delegation_use_any.ps1"
+            ],
+            "vulns" : ["files"],
+            "vulns_vars" : {
+                "files" : {
+                    "flag":{
+                        "src" : "flags/dc_academy.txt",
+                        "dest": "c:\\users\\administrator\\desktop\\flag.txt"
+                    }
+                }
+            }
+        },
+        "srv01" : {
+            "hostname" : "web",
+            "type" : "server",
+            "local_admin_password": "EaqsdP+xh7sdfzaRk6j90",
+            "domain" : "academy.ninja.lan",
+            "use_laps": false,
+            "path" : "DC=academy,DC=ninja,DC=lan",
+            "local_groups" : {
+                "Administrators" : [
+                    "academy\\Sensei",
+                    "academy\\Teacher"
+                ]
+            },
+            "vulns" : ["files", "enable_credssp_server"],
+            "vulns_vars" : {
+                "files" : {
+                    "website" : {
+                        "src" : "wwwroot",
+                        "dest" : "C:\\inetpub\\"
+                    },
+                    "flag":{
+                        "src" : "flags/web.txt",
+                        "dest": "c:\\users\\administrator\\desktop\\flag.txt"
+                    }
+                }
+            }
+        },
+        "srv02" : {
+            "hostname" : "sql",
+            "type" : "server",
+            "local_admin_password": "978i2pF43UqsdqsdJ-qsd",
+            "domain" : "academy.ninja.lan",
+            "path" : "DC=academy,DC=ninja,DC=lan",
+            "use_laps": false,
+            "local_groups" : {
+                "Administrators" : [
+                    "academy\\Sensei",
+                    "academy\\Teacher"
+                ]
+            },
+            "mssql":{
+                "sa_password": "sa_P@ssw0rd!N1nJ4hackaDemy",
+                "sysadmins" : [
+                    "academy\\frank"
+                ],
+                "executeaslogin" : {},
+                "executeasuser" : {},
+                "linked_servers": {}
+            },
+            "vulns" : ["files", "mssql", "disable_firewall"],
+            "vulns_vars" : {
+                "files" : {
+                    "sql" : {
+                        "src" : "SQL/academy_dump.sql",
+                        "dest" : "c:\\setup\\academy_dump.sql"
+                    },
+                    "flag_low":{
+                        "src" : "flags/sql_low.txt",
+                        "dest": "c:\\flag.txt"
+                    },
+                    "flag_high":{
+                        "src" : "flags/sql_high.txt",
+                        "dest": "c:\\users\\administrator\\desktop\\flag.txt"
+                    }
+                },
+                "mssql": {
+                    "init" : {
+                        "cmd" : "-i c:\\setup\\academy_dump.sql"
+                    }
+                }
+            }
+        },
+        "srv03" : {
+            "hostname" : "share",
+            "type" : "server",
+            "local_admin_password": "EalwxkfhqsdP+xh7sdfzaRk6j90",
+            "domain" : "academy.ninja.lan",
+            "use_laps": false,
+            "path" : "OU=share_servers,DC=academy,DC=ninja,DC=lan",
+            "local_groups" : {
+                "Administrators" : [
+                    "academy\\Sensei"
+                ]
+            },
+            "vulns" : ["files", "enable_credssp_client", "schedule"],
+            "vulns_vars" : {
+                "files" : {
+                    "csp" : {
+                        "src" : "bot.ps1",
+                        "dest" : "c:\\bot.ps1"
+                    },
+                    "flag":{
+                        "src" : "flags/share.txt",
+                        "dest": "c:\\users\\administrator\\desktop\\flag.txt"
+                    }
+                },
+                "schedule": {
+                    "bot": {
+                        "name": "connect_bot",
+                        "cmd" : "powershell c:\\bot.ps1",
+                        "interval" : "PT1M"
+                    }
+                }
+            }
+        }
+    },
+    "domains" : {
+        "ninja.hack" : {
+            "dc": "dc01",
+            "domain_password" : "8dCT-6546541qsdDJjgScp",
+            "netbios_name": "NINJA",
+            "trust" : "academy.ninja.lan",
+            "ca_web_enrollment": false,
+            "organisation_units" : {},
+            "groups" : {
+                "universal" : {},
+                "global" : {
+                    "Jonin" : {
+                        "managed_by" : "david.wilson",
+                        "path" : "CN=Users,DC=ninja,DC=hack"
+                    },
+                    "Academy_Teacher" : {
+                        "managed_by" : "frank.umino",
+                        "path" : "CN=Users,DC=ninja,DC=hack"
+                    },
+                    "Hokage" : {
+                        "managed_by" : "alice.johnson",
+                        "path" : "CN=Users,DC=ninja,DC=hack"
+                    }
+                },
+                "domainlocal" : {
+                    "Sanin" : {
+                        "managed_by" : "rachel.philips",
+                        "path" : "CN=Users,DC=ninja,DC=hack"
+                    }
+                }
+            },
+            "multi_domain_groups_member" : {},
+            "acls" : {
+                "GenericAll_sanin_jonin" : {"for": "Sanin", "to": "Jonin", "right": "GenericAll", "inheritance": "None"},
+                "WriteDacl_olivia_rachel" : {"for": "olivia.davis", "to": "rachel.philips", "right": "WriteDacl", "inheritance": "None"},
+                "GenericAll_hokage_domadmin" : {"for": "hokage", "to": "Domain Admins", "right": "GenericAll", "inheritance": "None"},
+                "GenericAll_hokage_domadmin_holder" : {"for": "hokage", "to": "CN=AdminSDHolder,CN=System,DC=ninja,DC=hack", "right": "GenericAll", "inheritance": "None"}
+            },
+            "users" : {
+                "alice.johnson" : {
+                    "firstname"   : "Alice",
+                    "surname"     : "johnson",
+                    "password"    : "Ih@teC0mputeRs", 
+                    "city"        : "ninja",
+                    "description" : "hokage",
+                    "groups"      : ["Hokage", "Domain Admins"],
+                    "path"        : "CN=Users,DC=ninja,DC=hack"
+                },
+                "david.wilson" : {
+                    "firstname"   : "david",
+                    "surname"     : "wilson",
+                    "password"    : "Sh@r1ngAnnFTW",
+                    "city"        : "ninja",
+                    "description" : "Team 7 captain",
+                    "groups"      : ["Jonin"],
+                    "path"        : "CN=Users,DC=ninja,DC=hack"
+                },
+                "yara.yuhi" : {
+                    "firstname"   : "yara",
+                    "surname"     : "yuhi",
+                    "password"    : "IgotR3dEy3s",
+                    "city"        : "ninja",
+                    "description" : "Team 8 captain",
+                    "groups"      : ["Jonin"],
+                    "path"        : "CN=Users,DC=ninja,DC=hack"
+                },
+                "katherine.white" : {
+                    "firstname"   : "katherine",
+                    "surname"     : "white",
+                    "password"    : "StrongOfTheYoung!!",
+                    "city"        : "ninja",
+                    "description" : "Team 9 captain",
+                    "groups"      : ["Jonin"],
+                    "path"        : "CN=Users,DC=ninja,DC=hack"
+                },
+                "uma.johnson" : {
+                    "firstname"   : "Uma",
+                    "surname"     : "Johnson",
+                    "password"    : "Il0veSmOOking",
+                    "city"        : "ninja",
+                    "description" : "Team 10 captain",
+                    "groups"      : ["Jonin"],
+                    "path"        : "CN=Users,DC=ninja,DC=hack"
+                },
+                "frank.umino" : {
+                    "firstname"   : "frank",
+                    "surname"     : "umino",
+                    "password"    : "Il0ve!R4men_",
+                    "city"        : "ninja",
+                    "description" : "Academy teacher",
+                    "groups"      : ["Academy_Teacher"],
+                    "path"        : "CN=Users,DC=ninja,DC=hack"
+                },
+                "olivia.davis" : {
+                    "firstname"   : "olivia",
+                    "surname"     : "davis",
+                    "password"    : "Il0veSexyJuTsu",
+                    "city"        : "ninja",
+                    "description" : "Academy teacher",
+                    "groups"      : ["Academy_Teacher"],
+                    "path"        : "CN=Users,DC=ninja,DC=hack"
+                },
+                "rachel.philips" : {
+                    "firstname"   : "Rachel",
+                    "surname"     : "Phillips",
+                    "password"    : "Il0ve_S4keee",
+                    "city"        : "ninja",
+                    "description" : "Sanin",
+                    "groups"      : ["Sanin"],
+                    "path"        : "CN=Users,DC=ninja,DC=hack"
+                },
+                "ava.brown" : {
+                    "firstname"   : "Ava",
+                    "surname"     : "Brown",
+                    "password"    : "Il0v3Pl@yingGamesss",
+                    "city"        : "ninja",
+                    "description" : "Sanin",
+                    "groups"      : ["Sanin"],
+                    "path"        : "CN=Users,DC=ninja,DC=hack"
+                },
+                "henry.martinez" : {
+                    "firstname"   : "Henry",
+                    "surname"     : "Martinez",
+                    "password"    : "Legend4_ryS4n1nFTW",
+                    "city"        : "ninja",
+                    "description" : "Sanin",
+                    "groups"      : ["Sanin"],
+                    "path"        : "CN=Users,DC=ninja,DC=hack"
+                }
+            }
+        },
+        "academy.ninja.lan" : {
+            "dc": "dc02",
+            "domain_password" : "Ufe-qsdaz789bVXSx9rk",
+            "netbios_name": "ACADEMY",
+            "trust" : "ninja.hack",
+            "organisation_units" : {
+                "share_servers" : { "path" : "DC=academy,DC=ninja,DC=lan"}
+            },
+            "groups" : {
+                "universal" : {},
+                "global" : {
+                    "Teacher" : {
+                        "managed_by" : "frank",
+                        "path" : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                    },
+                    "Sensei" : {
+                        "managed_by" : "alice",
+                        "path" : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                    },
+                    "Genin" : {
+                        "managed_by" : "frank",
+                        "path" : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                    },
+                    "Team7" : {
+                        "managed_by" : "david",
+                        "path" : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                    },
+                    "Team8" : {
+                        "managed_by" : "yara",
+                        "path" : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                    },
+                    "Team9" : {
+                        "managed_by" : "katherine",
+                        "path" : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                    },
+                    "Team10" : {
+                        "managed_by" : "uma",
+                        "path" : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                    }
+                },
+                "domainlocal" : {}
+            },
+            "multi_domain_groups_member" : {},
+            "gmsa" : {
+                "gmsa_nfs": {
+                    "gMSA_Name" : "gmsaNFS",
+                    "gMSA_FQDN" : "gmsaNFS.academy.ninja.lan",
+                    "gMSA_SPNs" : ["NFS/share", "NFS/share.academy.ninja.lan"],
+                    "gMSA_HostNames" : ["share"]
+                }
+            },
+            "acls" : {
+                "GenericAll_sql_computers" : {"for": "SQL$", "to": "CN=Computers,DC=academy,DC=ninja,DC=lan", "right": "GenericAll", "inheritance": "None"},
+                "write_on_group_sensei" : {"for": "backup", "to": "Sensei", "right": "WriteOwner", "inheritance": "None"},
+                "write_on_group_domadmin_holder" : {"for": "backup", "to": "CN=AdminSDHolder,CN=System,DC=academy,DC=ninja,DC=lan", "right": "WriteOwner", "inheritance": "None"},
+                "forcechangepassword_gmsa_backup" : {"for": "gmsaNFS$", "to": "backup", "right": "Ext-User-Force-Change-Password", "inheritance": "None"}
+            },
+            "users" : {
+                "alice" : {
+                    "firstname"   : "alice",
+                    "surname"     : "johnson",
+                    "password"    : "C0mplexP@ssAD456", 
+                    "city"        : "ninja",
+                    "description" : "hokage",
+                    "groups"      : ["Sensei", "Domain Admins"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "david" : {
+                    "firstname"   : "david",
+                    "surname"     : "wilson",
+                    "password"    : "MySh@r1ngCanSeeYuu",
+                    "city"        : "ninja",
+                    "description" : "Team 7 sensei",
+                    "groups"      : ["Sensei", "Team7"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "noah" : {
+                    "firstname"   : "Noah",
+                    "surname"     : "Young",
+                    "password"    : "ILoveRamen",
+                    "city"        : "ninja",
+                    "description" : "Team 7",
+                    "groups"      : ["Genin", "Team7"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "samuel" : {
+                    "firstname"   : "Samuel",
+                    "surname"     : "Evans",
+                    "password"    : "Ih@teAct1veDirectory",
+                    "city"        : "ninja",
+                    "description" : "Team 7",
+                    "groups"      : ["Genin", "Team7"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "willa" : {
+                    "firstname"   : "Willa",
+                    "surname"     : "Wilson",
+                    "password"    : "IL0veW3b",
+                    "city"        : "ninja",
+                    "description" : "Team 7",
+                    "groups"      : ["Genin", "Team7"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "yara" : {
+                    "firstname"   : "Yara",
+                    "surname"     : "Yuhi",
+                    "password"    : "IgotR3dEyes",
+                    "city"        : "ninja",
+                    "description" : "Team 8 sensei",
+                    "groups"      : ["Sensei", "Team8"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "zane" : {
+                    "firstname"   : "Zane",
+                    "surname"     : "Harris",
+                    "password"    : "IL0veRaclette",
+                    "city"        : "ninja",
+                    "description" : "Team 8",
+                    "groups"      : ["Genin", "Team8"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "ethan" : {
+                    "firstname"   : "Ethan",
+                    "surname"     : "Miller",
+                    "password"    : "InTartifletteWetrust",
+                    "city"        : "ninja",
+                    "description" : "Team 8",
+                    "groups"      : ["Genin", "Team8"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "scott" : {
+                    "firstname"   : "Scott",
+                    "surname"     : "Quinn",
+                    "password"    : "BugsBugsBugs",
+                    "city"        : "ninja",
+                    "description" : "Team 8",
+                    "groups"      : ["Genin", "Team8"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "katherine" : {
+                    "firstname"   : "Katherine",
+                    "surname"     : "White",
+                    "password"    : "TeamStrongOfTheYoung!!",
+                    "city"        : "ninja",
+                    "description" : "Team 9 sensei",
+                    "groups"      : ["Sensei", "Team9"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "victor" : {
+                    "firstname"   : "Victor",
+                    "surname"     : "Gonzalez",
+                    "password"    : "ByaKugaN!",
+                    "city"        : "ninja",
+                    "description" : "Team 9",
+                    "groups"      : ["Genin", "Team9"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "lee" : {
+                    "firstname"   : "Lee",
+                    "surname"     : "Liam",
+                    "password"    : "katherineSenseiIsTheBest",
+                    "city"        : "ninja",
+                    "description" : "Team 9",
+                    "groups"      : ["Genin", "Team9"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "taylor" : {
+                    "firstname"   : "Taylor",
+                    "surname"     : "Brown",
+                    "password"    : "KunaiAreMyBestFriends",
+                    "city"        : "ninja",
+                    "description" : "Team 9",
+                    "groups"      : ["Genin", "Team9"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "uma" : {
+                    "firstname"   : "Uma",
+                    "surname"     : "Johnson",
+                    "password"    : "SmOOkingL0v3",
+                    "city"        : "ninja",
+                    "description" : "Team 10 sensei",
+                    "groups"      : ["Sensei", "Team10"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "sophia" : {
+                    "firstname"   : "Sophia",
+                    "surname"     : "Taylor",
+                    "password"    : "PffBooring",
+                    "city"        : "ninja",
+                    "description" : "Team 10",
+                    "groups"      : ["Genin", "Team10"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "charlie" : {
+                    "firstname"   : "Charlie",
+                    "surname"     : "Davis",
+                    "password"    : "imnotBigOk",
+                    "city"        : "ninja",
+                    "description" : "Team 10",
+                    "groups"      : ["Genin", "Team10"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "isabella" : {
+                    "firstname"   : "Isabella",
+                    "surname"     : "Yamanaka",
+                    "password"    : "SophiaIsTooCute",
+                    "city"        : "ninja",
+                    "description" : "Team 10",
+                    "groups"      : ["Genin", "Team10"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "frank" : {
+                    "firstname"   : "frank",
+                    "surname"     : "umino",
+                    "password"    : "Il0ve!R4men_<3",
+                    "city"        : "ninja",
+                    "description" : "Academy teacher",
+                    "groups"      : ["Teacher"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan",
+                    "spns"        : ["HTTP/WEB.academy.ninja.lan"]
+                },
+                "olivia" : {
+                    "firstname"   : "olivia",
+                    "surname"     : "davis",
+                    "password"    : "Il0veSexyJuTsu",
+                    "city"        : "ninja",
+                    "description" : "Academy teacher",
+                    "groups"      : ["Teacher"],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "backup" : {
+                    "firstname"   : "backup",
+                    "surname"     : "user",
+                    "password"    : "N1nj4_b4ckup_U$er",
+                    "city"        : "ninja",
+                    "description" : "Backup Account",
+                    "groups"      : [],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan"
+                },
+                "sql_svc" : {
+                    "firstname"   : "sql",
+                    "surname"     : "service",
+                    "password"    : "MssqlD@tabase_On_lan",
+                    "city"        : "-",
+                    "description" : "sql service",
+                    "groups"      : [],
+                    "path"        : "CN=Users,DC=academy,DC=ninja,DC=lan",
+                    "spns"        : ["MSSQLSvc/sql.academy.ninja.lan:1433","MSSQLSvc/sql.academy.ninja.lan"]
+                }
+            }
+        }
+    }
+}
+}
