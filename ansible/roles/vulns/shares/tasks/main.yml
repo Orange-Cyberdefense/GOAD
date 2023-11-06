@@ -1,0 +1,18 @@
+# SMB share users only
+- name: Create directory if not exist
+  win_file:
+    path: "{{item.value.path}}"
+    state: directory
+  with_dict: "{{ vulns_vars }}"
+
+- name: Create share
+  win_share:
+    name: "{{item.key}}"
+    description: "Share {{item.key}}" 
+    path: "{{item.value.path}}"
+    list: "{{item.value.list| default('yes')}}"
+    full: "{{item.value.full_access| default('Administrators')}}"
+    change: "{{item.value.rw_access| default('')}}"
+    read: "{{item.value.ro_access| default('')}}"
+    deny: "{{item.value.deny_access| default('')}}"
+  with_dict: "{{ vulns_vars }}"
