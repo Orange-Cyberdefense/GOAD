@@ -14,6 +14,7 @@
 - name: users
   import_tasks: users.yml
 
+# Managed BY
 - name: Assign managed_by domainlocal groups
   win_domain_group:
     name: "{{ item.key }}"
@@ -34,3 +35,25 @@
     managed_by: "{{ item.value.managed_by }}"
   with_dict: "{{ ad_groups['global'] }}"
   when: ad_groups['global'] is defined and item.value.managed_by is defined
+
+# Add members
+- name: Add members to the Universal group, preserving existing membership
+  community.windows.win_domain_group_membership:
+    name: "{{ item.key }}"
+    members: "{{ item.value.members }}"
+  with_dict: "{{ ad_groups['universal'] }}"
+  when: ad_groups['universal'] is defined and item.value.members is defined
+
+- name: Add members to the Global group, preserving existing membership
+  community.windows.win_domain_group_membership:
+    name: "{{ item.key }}"
+    members: "{{ item.value.members }}"
+  with_dict: "{{ ad_groups['global'] }}"
+  when: ad_groups['global'] is defined and item.value.members is defined
+
+- name: Add members to the Domainlocal group, preserving existing membership
+  community.windows.win_domain_group_membership:
+    name: "{{ item.key }}"
+    members: "{{ item.value.members }}"
+  with_dict: "{{ ad_groups['domainlocal'] }}"
+  when: ad_groups['domainlocal'] is defined and item.value.members is defined
