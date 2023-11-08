@@ -42,4 +42,4 @@ python3 -m pip install pywinrm
 
 ######################################################################################################
 # ANSIBLE Galaxy
-ansible-galaxy install -r ansible/requirements.yml
+ansible-galaxy install -r ../ansible/requirements.yml
