@@ -3,6 +3,21 @@
   <br>
 </div>
 
+### This is a deployment for WINDOWS environments and VMWARE provider only at the moment
+
+Install vagrant for windows
+
+```bash
+https://releases.hashicorp.com/vagrant/2.4.0/vagrant_2.4.0_windows_amd64.msi
+```
+Install the vmware-utility package
+
+NB: use the package and not the command line,I faced issues when using the cli command to install the vmware vagrant utility.
+
+```bash
+https://releases.hashicorp.com/vagrant-vmware-utility/1.0.22/vagrant-vmware-utility_1.0.22_windows_amd64.msi
+```
+
 ## Description
 GOAD is a pentest active directory LAB project.
 The purpose of this lab is to give pentesters a vulnerable Active directory environment ready to use to practice usual attack techniques.
