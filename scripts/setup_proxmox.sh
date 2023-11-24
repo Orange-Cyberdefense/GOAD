@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sudo apt update
-sudo apt install git vim tmux curl gnupg software-properties-common mkisofs
+sudo apt install git vim tmux curl gnupg software-properties-common mkisofs dd
 
 ######################################################################################################
 # PACKER
@@ -14,7 +14,7 @@ sudo apt update && sudo apt install packer
 # Install the HashiCorp GPG key.
 wget -O- https://apt.releases.hashicorp.com/gpg | \
 gpg --dearmor | \
-sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+sudo dd of=/usr/share/keyrings/hashicorp-archive-keyring.gpg
 
 # Verify the key's fingerprint.
 gpg --no-default-keyring \
