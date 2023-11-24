@@ -32,3 +32,8 @@ python3 -m pip install pywinrm
 ######################################################################################################
 # ANSIBLE Galaxy
 ansible-galaxy install -r ansible/requirements.yml
+
+echo "#################################################"
+echo "You will need to run: source .venv/bin/activate"
+echo "to get back in the python virtual environment"
+echo "#################################################"
