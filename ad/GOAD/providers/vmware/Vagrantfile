@@ -16,13 +16,10 @@ boxes = [
   # windows server 2019
   { :name => "GOAD-SRV02", :ip => "192.168.56.22", :box => "StefanScherer/windows_2019", :box_version => "2020.07.17", :os => "windows"},
   # windows server 2016
-  { :name => "GOAD-SRV03", :ip => "192.168.56.23", :box => "StefanScherer/windows_2016", :box_version => "2019.02.14", :os => "windows"}
-  # ELK
-# { :name => "GOAD-ELK", :ip => "192.168.56.50", :box => "bento/ubuntu-18.04", :os => "linux",
-#   :forwarded_port => [
-#     {:guest => 22, :host => 2210, :id => "ssh"}
-#   ]
-# }
+  { :name => "GOAD-SRV03", :ip => "192.168.56.23", :box => "StefanScherer/windows_2016", :box_version => "2019.02.14", :os => "windows"},
+  # ANSIBLE
+ { :name => "GOAD-ANSIBLE", :ip => "192.168.56.100", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [ {:guest => 22, :host => 2210, :id => "ssh"} ] }
+
 ]
 
   config.vm.provider "virtualbox" do |v|
@@ -34,6 +31,11 @@ boxes = [
     v.vmx["memsize"] = "4000"
     v.vmx["numvcpus"] = "2"
     # v.force_vmware_license = "workstation"  # force the licence for fix some vagrant plugin issue
+  end
+  
+  # make the vms appear in the GUI of vmware workstation
+  config.vm.provider "vmware_desktop" do |v|
+  v.gui = true
   end
 
   # disable rdp forwarded port inherited from StefanScherer box
@@ -67,6 +69,12 @@ boxes = [
 
       # IP
       target.vm.network :private_network, ip: box[:ip]
+	  
+	    # install ansible in the ansible-goad box
+	if box[:os] == "linux"
+		config.vm.provision "shell", path: "https://github.com/aaladha/GOADv2-Windows/blob/main/ansible-goad-vm.sh"
+	end
+       
 
       # OS specific
       if box[:os] == "windows"
@@ -74,6 +82,9 @@ boxes = [
         target.vm.communicator = "winrm"
         target.vm.provision :shell, :path => "../../../../vagrant/Install-WMF3Hotfix.ps1", privileged: false
         target.vm.provision :shell, :path => "../../../../vagrant/ConfigureRemotingForAnsible.ps1", privileged: false
+		
+		# Fix that pesky DNS issue and disable windows firewall before ansible esp for DC02
+	    target.vm.provision :shell, :path => "../../../../vagrant/disable_firewall.ps1", privileged: true
 
         # fix ip for vmware
         if ENV['VAGRANT_DEFAULT_PROVIDER'] == "vmware_desktop"
