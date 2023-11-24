@@ -27,11 +27,11 @@ https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
 sudo tee /etc/apt/sources.list.d/hashicorp.list
 
 # update apt and install terraform
-sudo apt update && sudo apt install terraform
+sudo apt update && sudo apt install -y terraform
 
 ######################################################################################################
 # ANSIBLE
-sudo apt install python3-pip python3-venv 
+sudo apt install -y python3-pip python3-venv 
 
 python3 -m venv .venv
 source .venv/bin/activate
