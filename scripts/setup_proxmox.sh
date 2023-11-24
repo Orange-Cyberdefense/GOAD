@@ -8,7 +8,7 @@ sudo apt install -y git vim tmux curl gnupg software-properties-common mkisofs
 
 # Install the HashiCorp GPG key.
 wget -O- https://apt.releases.hashicorp.com/gpg | sudo \
-gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+gpg --batch --yes --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
 
 # Add Hashicorp Source List
 echo "deb [arch=$(dpkg --print-architecture) \
