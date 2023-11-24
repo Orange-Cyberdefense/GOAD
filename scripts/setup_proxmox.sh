@@ -1,33 +1,22 @@
 #!/bin/bash
 
 sudo apt update
-sudo apt install -y git vim tmux curl gnupg software-properties-common mkisofs dd
+sudo apt install -y git vim tmux curl gnupg software-properties-common mkisofs
 
 ######################################################################################################
-# PACKER
-curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-sudo apt update && sudo apt install -y packer
+# PACKER & TERRAFORM
 
-######################################################################################################
-# TERRAFORM
 # Install the HashiCorp GPG key.
-wget -O- https://apt.releases.hashicorp.com/gpg | \
-gpg --dearmor | \
-sudo dd of=/usr/share/keyrings/hashicorp-archive-keyring.gpg
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo \
+gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
 
-# Verify the key's fingerprint.
-gpg --no-default-keyring \
---keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg \
---fingerprint
+# Add Hashicorp Source List
+echo "deb [arch=$(dpkg --print-architecture) \
+signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+| sudo tee /etc/apt/sources.list.d/hashicorp.list
 
-# add terraform sourcelist
-echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
-https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
-sudo tee /etc/apt/sources.list.d/hashicorp.list
-
-# update apt and install terraform
-sudo apt update && sudo apt install -y terraform
+sudo apt update && sudo apt install -y packer terraform
 
 ######################################################################################################
 # ANSIBLE
