@@ -34,6 +34,8 @@ boxes = [
   config.vm.graceful_halt_timeout = 600
   config.winrm.retry_limit = 30
   config.winrm.retry_delay = 10
+  config.winrm.transport = "plaintext"
+  config.winrm.basic_auth_only = true
 
   boxes.each do |box|
     config.vm.define box[:name] do |target|

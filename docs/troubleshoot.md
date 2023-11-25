@@ -2,6 +2,41 @@
 
 - In most case if you get errors during install, don't think and just replay the main playbook (most of the errors which could came up are due to windows latency during installation, wait few minutes and replay the install)
 
+## vagrant up - WinRM - digest initialization failed : Initialization Error
+
+```
+DC01: WinRM username: vagrant
+DC01: WinRM execution_time_limit: PT2H
+DC01: WinRM transport: negotiate
+An error occurred executing a remote WinRM command.
+
+Shell: Cmd
+Command: hostname
+Message: Digest initialization failed: initialization error
+```
+
+- solution 1: change vagrantfile to not use ssl (https://github.com/Orange-Cyberdefense/GOAD/issues/68)
+    - add this lines in vagrantfile to not use ssl :
+        ```
+        config.winrm.transport = "plaintext"
+        config.winrm.basic_auth_only = true
+        ```
+- solution 2: allow legacy algorithm (https://github.com/Orange-Cyberdefense/GOAD/issues/11)
+    - add to /etc/ssl/openssl.conf :
+    ```
+    [provider_sect]
+    default = default_sect
+    legacy = legacy_sect
+
+    [default_sect]
+    activate = 1
+
+    [legacy_sect]
+    activate = 1
+    ```
+
+- solution 3: downgrade the vagrant version (`sudo apt install vagrant=2.2.19`)
+
 ## vagrant up - cannot load 
 
 ```
@@ -26,6 +61,19 @@
 ```
 
 - solution : `gem install winrm-elevated`
+
+
+## ansible persistent "unreachable error"
+
+- Unreachable means ansible can't contact the vms. 
+- Maybe the vms didn't got the right ip? (try to connect with vagrant/vagrant on vm and look the ip)
+- Or you got a firewall on the vm which do provisioning which block winrm connection ?
+- or maybe it is a vagrant issue : https://github.com/Orange-Cyberdefense/GOAD/issues/12
+- You could try to switch on port 5985 to connect without ssl as suggest here : https://github.com/Orange-Cyberdefense/GOAD/issues/98 by uncomment the lines in the inventory file you use
+```
+# ansible_winrm_transport=basic
+# ansible_port=5985
+```
 
 ## The naming context specified for this replication operation is invalid
 
