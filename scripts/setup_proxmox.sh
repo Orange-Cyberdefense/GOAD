@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if ! command -v sudo &> /dev/null
+then 
+  echo "sudo not installed, please install before running this script"
+  exit 1
+fi
+
 sudo apt update
 sudo apt install git vim tmux curl gnupg software-properties-common mkisofs
 
