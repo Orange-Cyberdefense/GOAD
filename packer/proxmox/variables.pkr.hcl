@@ -16,6 +16,7 @@ variable "autounattend_checksum" {}
 variable "vm_cpu_cores" {}
 variable "vm_memory" {}
 variable "vm_disk_size" {}
+variable "vm_disk_format" {}
 variable "vm_sockets" {}
 variable "os" {}
 variable "vm_disk_format" {}
