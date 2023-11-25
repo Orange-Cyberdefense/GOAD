@@ -2,6 +2,31 @@
 
 - In most case if you get errors during install, don't think and just replay the main playbook (most of the errors which could came up are due to windows latency during installation, wait few minutes and replay the install)
 
+## vagrant up - cannot load 
+
+```
+<internal:/usr/lib/ruby/vendor_ruby/rubygems/core_ext/kernel_require.rb>:85:in `require': cannot load such file -- winrm (LoadError)
+	from <internal:/usr/lib/ruby/vendor_ruby/rubygems/core_ext/kernel_require.rb>:85:in `require'
+	from /usr/share/rubygems-integration/all/gems/vagrant-2.3.4/plugins/communicators/winrm/shell.rb:9:in `block in <top (required)>'
+	from /usr/share/rubygems-integration/all/gems/vagrant-2.3.4/lib/vagrant/util/silence_warnings.rb:8:in `silence!'
+```
+
+- solution : 
+  - `gem install winrm`
+  - `gem install winrm-fs`
+
+
+## vagrant up - cannot load such file -- winrm-elevated (LoadError)
+
+```
+<internal:/usr/lib/ruby/vendor_ruby/rubygems/core_ext/kernel_require.rb>:85:in `require': cannot load such file -- winrm-elevated (LoadError)
+        from <internal:/usr/lib/ruby/vendor_ruby/rubygems/core_ext/kernel_require.rb>:85:in `require'
+        from /usr/share/rubygems-integration/all/gems/vagrant-2.3.4/plugins/communicators/winrm/shell.rb:12:in `<top (required)>'
+        ...
+```
+
+- solution : `gem install winrm-elevated`
+
 ## The naming context specified for this replication operation is invalid
 
 ```

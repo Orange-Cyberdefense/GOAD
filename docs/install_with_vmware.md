@@ -81,6 +81,11 @@ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://
 sudo apt update && sudo apt install vagrant
 ```
 
+- on some recent versions (ubuntu 23.04), you should consider run also:
+```bash
+gem install winrm winrm-fs winrm-elevated
+```
+
 ### Install docker
 
 - If you want to run the ansible install from docker and don't install all the python dependencies just [install docker](https://docs.docker.com/engine/install/)
