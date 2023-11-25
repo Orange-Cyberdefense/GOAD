@@ -7,7 +7,7 @@
 
 
 - name: "Install Wazuh Agent"
-  hosts: all
+  hosts: dc01, dc02, dc03 ,srv02 ,srv03
   tasks:
     - name: "Download and Install Wazuh Agent"
       win_shell: |
