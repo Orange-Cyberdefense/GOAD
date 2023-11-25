@@ -3,20 +3,7 @@
   <br>
 </div>
 
-### This is a deployment for WINDOWS environments and VMWARE provider only at the moment
-
-Install vagrant for windows
-
-```bash
-https://releases.hashicorp.com/vagrant/2.4.0/vagrant_2.4.0_windows_amd64.msi
-```
-Install the vmware-utility package
-
-NB: use the package and not the command line,I faced issues when using the cli command to install the vmware vagrant utility.
-
-```bash
-https://releases.hashicorp.com/vagrant-vmware-utility/1.0.22/vagrant-vmware-utility_1.0.22_windows_amd64.msi
-```
+### This is a deployment for GOAD in a WINDOWS environment and VMWARE Workstation as your provider.
 
 ## Description
 GOAD is a pentest active directory LAB project.
@@ -25,6 +12,49 @@ The purpose of this lab is to give pentesters a vulnerable Active directory envi
 > **Warning**
 > This lab is extremely vulnerable, do not reuse recipe to build your environment and do not deploy this environment on internet without isolation (this is a recommendation, use it as your own risk).<br>
 > This repository was build for pentest practice.
+
+Install vagrant for windows
+
+```bash
+https://releases.hashicorp.com/vagrant/2.4.0/vagrant_2.4.0_windows_amd64.msi
+```
+Verify Vagrant is installed on cmd / powershell 
+
+```bash
+vagrant --version
+
+```
+Install the vmware-utility package
+
+```bash
+https://releases.hashicorp.com/vagrant-vmware-utility/1.0.22/vagrant-vmware-utility_1.0.22_windows_amd64.msi
+```
+or via CLI, make sure you execute this as administrator.
+
+```bash
+vagrant plugin install vagrant-vmware-desktop
+```
+
+Make Sure this folder is present on your windows HOST "C:\HashiCorp\VagrantVMwareUtility\bin"
+
+## Install the LAB
+Down the GOAD file 
+
+```bash
+https://github.com/aaladha/GOAD/archive/refs/heads/main.zip
+```
+Navigate to the "GOAD/tree/main/ad/GOAD/providers/vmware" folder and execute
+
+```bash
+vagrant up
+```
+Go get a coffee as this will install the entire lab with ansible and the wazuh, have fun.
+
+This is WIP, agent deployment to be added.
+
+To Learn more about Wazuh check out this Video from John: 
+
+https://t.co/Sp04EAEYYI
 
 ## Licenses
 This lab use free windows VM only (180 days). After that delay enter a license on each server or rebuild all the lab (may be it's time for an update ;))
