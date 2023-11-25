@@ -50,6 +50,8 @@ boxes = [
   config.vm.graceful_halt_timeout = 600
   config.winrm.retry_limit = 30
   config.winrm.retry_delay = 10
+  
+
 
   boxes.each do |box|
     config.vm.define box[:name] do |target|
@@ -68,13 +70,7 @@ boxes = [
       target.vm.synced_folder '.', '/vagrant', disabled: true
 
       # IP
-      target.vm.network :private_network, ip: box[:ip]
-	  
-	    # install ansible in the ansible-goad box
-	if box[:os] == "linux"
-		config.vm.provision "shell", path: "https://raw.githubusercontent.com/aaladha/GOADv2-Windows/main/ansible-goad-vm.sh"
-	end
-       
+      target.vm.network :private_network, ip: box[:ip]      
 
       # OS specific
       if box[:os] == "windows"
@@ -93,6 +89,63 @@ boxes = [
 
       else
         target.vm.communicator = "ssh"
+
+	# Install ansible and WAZUH and execute build the lab from Vagrant
+
+		if box[:name] == "GOAD-ANSIBLE"
+          target.vm.provision "shell", inline: <<-SHELL
+            # Install Wazuh manager
+            curl -sO https://packages.wazuh.com/4.3/wazuh-install.sh
+            sudo bash ./wazuh-install.sh -a -i
+
+            # Start Wazuh manager
+            sudo systemctl start wazuh-manager
+
+            # Enable Wazuh manager on boot
+            sudo systemctl enable wazuh-manager
+          SHELL
+        end
+		
+				if box[:name] == "GOAD-ANSIBLE"
+          target.vm.provision "shell", inline: <<-SHELL
+            
+			# Ensure we're root
+if [ "$(id -u)" != "0" ]; then
+  echo "This script must be run as root" 1>&2
+  exit 1
+fi
+
+# Add repositories
+add-apt-repository -y multiverse
+
+# Get list of latest packages
+apt-get update
+
+# Make sure we're running on latest versions of things installed
+apt-get -y autoupdate
+
+#Install Python PIP
+apt-get install git -y
+sudo apt install python3-pip -y
+pip3 --version
+
+# Download GOAD
+git clone https://github.com/aaladha/GOAD /opt/goad
+
+# Set up prerequisites
+pip install --upgrade pip && pip install ansible-core==2.12.6 && pip install pywinrm
+
+# Install stuff needed for Ansible
+ansible-galaxy install -r /opt/goad/ansible/requirements.yml
+
+# Launch provisioning with Ansible
+export ANSIBLE_COMMAND="ansible-playbook -i /opt/goad/ad/GOAD/data/inventory -i /opt/goad/ad/GOAD/providers/vmware/inventory"
+
+cd /opt/goad/ansible && /opt/goad/scripts/provisionning.sh
+			
+          SHELL
+        end
+		
       end
 
       if box.has_key?(:forwarded_port)
