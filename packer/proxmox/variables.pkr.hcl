@@ -4,7 +4,8 @@ variable "proxmox_password" {}
 variable "proxmox_skip_tls_verify" {}
 variable "proxmox_node" {}
 variable "proxmox_pool" {}
-variable "proxmox_storage" {}
+variable "proxmox_vm_storage" {}
+variable "proxmox_iso_storage" {}
 variable "winrm_username" {}
 variable "winrm_password" {}
 variable "vm_name" {}
