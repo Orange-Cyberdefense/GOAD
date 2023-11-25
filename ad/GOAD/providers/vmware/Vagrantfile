@@ -72,7 +72,7 @@ boxes = [
 	  
 	    # install ansible in the ansible-goad box
 	if box[:os] == "linux"
-		config.vm.provision "shell", path: "https://github.com/aaladha/GOADv2-Windows/blob/main/ansible-goad-vm.sh"
+		config.vm.provision "shell", path: "https://raw.githubusercontent.com/aaladha/GOADv2-Windows/main/ansible-goad-vm.sh"
 	end
        
 
