@@ -50,7 +50,7 @@ vagrant up
 ```
 Go get a coffee as this will install the entire lab with ansible and the wazuh, have fun.
 
-This is WIP, agent deployment to be added.
+~~ This is WIP, agent deployment to be added. ~~
 
 To Learn more about Wazuh check out this Video from John: 
 
