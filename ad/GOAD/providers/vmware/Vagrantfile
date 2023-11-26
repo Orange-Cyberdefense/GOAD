@@ -91,8 +91,7 @@ boxes = [
 		
 		#if box[:name] == "GOAD-SRV02"
           #config.vm.provision "file", source: "ExchangeServer2019-x64-CU12.iso", destination: "C:\ExchangeServer2019-x64-CU12.iso"
-
-        end
+                #end
 		
       else
         target.vm.communicator = "ssh"
