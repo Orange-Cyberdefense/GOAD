@@ -69,7 +69,7 @@ ansible-galaxy install -r requirements.yml
 - And than you can launch the ansible provisioning with (note that the vms must be in a running state, so vagrant up must have been done before that)
 
 ```bash
-ansible-playbook -i ../ad/GOAD/data/inventory ../ad/GOAD/providers/virtualbox/inventory main.yml # this will configure the vms in order to play ansible when the vms are ready (for virtualbox provider and goad lab)
+ansible-playbook -i ../ad/GOAD/data/inventory -i ../ad/GOAD/providers/virtualbox/inventory main.yml # this will configure the vms in order to play ansible when the vms are ready (for virtualbox provider and goad lab)
 ```
 
 ### Start / Setup / Run

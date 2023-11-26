@@ -27,13 +27,13 @@ source "proxmox-iso" "windows" {
     unmount  = true
   }
   cloud_init              = true
-  cloud_init_storage_pool = "${var.proxmox_storage}"
+  cloud_init_storage_pool = "${var.proxmox_iso_storage}"
   communicator            = "winrm"
   cores                   = "${var.vm_cpu_cores}"
   disks {
     disk_size         = "${var.vm_disk_size}"
     format            = "${var.vm_disk_format}"
-    storage_pool      = "${var.proxmox_storage}"
+    storage_pool      = "${var.proxmox_vm_storage}"
     type              = "sata"
   }
   insecure_skip_tls_verify = "${var.proxmox_skip_tls_verify}"

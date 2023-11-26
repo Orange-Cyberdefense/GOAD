@@ -39,6 +39,8 @@ ansible_connection=winrm
 ansible_winrm_server_cert_validation=ignore
 ansible_winrm_operation_timeout_sec=400
 ansible_winrm_read_timeout_sec=500
+# ansible_winrm_transport=basic
+# ansible_port=5985
 
 ; proxy settings (the lab need internet for some install, if you are behind a proxy you should set the proxy here)
 enable_http_proxy=no

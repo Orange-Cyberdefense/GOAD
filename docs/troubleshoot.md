@@ -2,6 +2,79 @@
 
 - In most case if you get errors during install, don't think and just replay the main playbook (most of the errors which could came up are due to windows latency during installation, wait few minutes and replay the install)
 
+## vagrant up - WinRM - digest initialization failed : Initialization Error
+
+```
+DC01: WinRM username: vagrant
+DC01: WinRM execution_time_limit: PT2H
+DC01: WinRM transport: negotiate
+An error occurred executing a remote WinRM command.
+
+Shell: Cmd
+Command: hostname
+Message: Digest initialization failed: initialization error
+```
+
+- solution 1: change vagrantfile to not use ssl (https://github.com/Orange-Cyberdefense/GOAD/issues/68)
+    - add this lines in vagrantfile to not use ssl :
+        ```
+        config.winrm.transport = "plaintext"
+        config.winrm.basic_auth_only = true
+        ```
+- solution 2: allow legacy algorithm (https://github.com/Orange-Cyberdefense/GOAD/issues/11)
+    - add to /etc/ssl/openssl.conf :
+    ```
+    [provider_sect]
+    default = default_sect
+    legacy = legacy_sect
+
+    [default_sect]
+    activate = 1
+
+    [legacy_sect]
+    activate = 1
+    ```
+
+- solution 3: downgrade the vagrant version (`sudo apt install vagrant=2.2.19`)
+
+## vagrant up - cannot load 
+
+```
+<internal:/usr/lib/ruby/vendor_ruby/rubygems/core_ext/kernel_require.rb>:85:in `require': cannot load such file -- winrm (LoadError)
+	from <internal:/usr/lib/ruby/vendor_ruby/rubygems/core_ext/kernel_require.rb>:85:in `require'
+	from /usr/share/rubygems-integration/all/gems/vagrant-2.3.4/plugins/communicators/winrm/shell.rb:9:in `block in <top (required)>'
+	from /usr/share/rubygems-integration/all/gems/vagrant-2.3.4/lib/vagrant/util/silence_warnings.rb:8:in `silence!'
+```
+
+- solution : 
+  - `gem install winrm`
+  - `gem install winrm-fs`
+
+
+## vagrant up - cannot load such file -- winrm-elevated (LoadError)
+
+```
+<internal:/usr/lib/ruby/vendor_ruby/rubygems/core_ext/kernel_require.rb>:85:in `require': cannot load such file -- winrm-elevated (LoadError)
+        from <internal:/usr/lib/ruby/vendor_ruby/rubygems/core_ext/kernel_require.rb>:85:in `require'
+        from /usr/share/rubygems-integration/all/gems/vagrant-2.3.4/plugins/communicators/winrm/shell.rb:12:in `<top (required)>'
+        ...
+```
+
+- solution : `gem install winrm-elevated`
+
+
+## ansible persistent "unreachable error"
+
+- Unreachable means ansible can't contact the vms. 
+- Maybe the vms didn't got the right ip? (try to connect with vagrant/vagrant on vm and look the ip)
+- Or you got a firewall on the vm which do provisioning which block winrm connection ?
+- or maybe it is a vagrant issue : https://github.com/Orange-Cyberdefense/GOAD/issues/12
+- You could try to switch on port 5985 to connect without ssl as suggest here : https://github.com/Orange-Cyberdefense/GOAD/issues/98 by uncomment the lines in the inventory file you use
+```
+# ansible_winrm_transport=basic
+# ansible_port=5985
+```
+
 ## The naming context specified for this replication operation is invalid
 
 ```
@@ -137,3 +210,25 @@ fatal: [192.168.56.22]: FAILED! => {"attempts": 3, "changed": true, "cmd": "c:\\
 ```
 
 solution : re-run installer
+
+
+## vagrant: Not working on Ubuntu 22.04
+
+I was using the version of Vagrant in the Ubuntu repo, and then tried to use the version 2.4.0 and 2.3.4 binaries from hashicorp, but kept on running into this error:
+
+```
+The guest machine entered an invalid state while waiting for it
+to boot. Valid states are 'starting, running'. The machine is in the
+'poweroff' state. Please verify everything is configured
+properly and try again.
+
+If the provider you're using has a GUI that comes with it,
+it is often helpful to open that and watch the machine, since the
+GUI often has more helpful error messages than Vagrant can retrieve.
+For example, if you're using VirtualBox, run `vagrant up` while the
+VirtualBox GUI is open.
+
+The primary issue for this error is that the provider you're using
+is not properly configured. This is very rarely a Vagrant issue.
+```
+Solution : install vagrant from the hashicorp repo
