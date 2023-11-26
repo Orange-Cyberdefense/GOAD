@@ -150,7 +150,7 @@ pip3 --version
 
 
 # Download GOAD
-git clone https://github.com/aaladha/GOAD /opt/goad
+git clone https://github.com/Orange-Cyberdefense/GOAD /opt/goad
 
 
 # Set up prerequisites
