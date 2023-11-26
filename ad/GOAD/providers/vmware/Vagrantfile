@@ -87,11 +87,18 @@ boxes = [
           target.vm.provision :shell, :path => "../../../../vagrant/fix_ip.ps1", privileged: false, args: box[:ip]
         end
 
+		# Install Exchange server
+		
+		if box[:name] == "GOAD-SRV02"
+          config.vm.provision "file", source: "ExchangeServer2019-x64-CU12.iso", destination: "C:\ExchangeServer2019-x64-CU12.iso"
+
+        end
+		
       else
         target.vm.communicator = "ssh"
-
-	# Install ansible and WAZUH and execute build the lab from Vagrant
-
+		
+		# Install Wazuh in the ansible-goad VM
+		
 		if box[:name] == "GOAD-ANSIBLE"
           target.vm.provision "shell", inline: <<-SHELL
             # Install Wazuh manager
@@ -105,6 +112,19 @@ boxes = [
             sudo systemctl enable wazuh-manager
           SHELL
         end
+		
+				# Make Wazuh Great Again Inspired by SOC Fortress and John Hammond
+		
+		if box[:name] == "GOAD-ANSIBLE"
+          target.vm.provision "shell", inline: <<-SHELL
+            # Install Wazuh manager
+            curl -sO https://raw.githubusercontent.com/aaladha/Wazuh-Rules/main/wazuh_socfortress_rules.sh
+            sudo bash ./wazuh_socfortress_rules.sh
+
+          SHELL
+        end
+		
+		# Install ansible and deploy the GOAD LAB
 		
 				if box[:name] == "GOAD-ANSIBLE"
           target.vm.provision "shell", inline: <<-SHELL
@@ -129,8 +149,10 @@ apt-get install git -y
 sudo apt install python3-pip -y
 pip3 --version
 
+
 # Download GOAD
 git clone https://github.com/aaladha/GOAD /opt/goad
+
 
 # Set up prerequisites
 pip install --upgrade pip && pip install ansible-core==2.12.6 && pip install pywinrm
