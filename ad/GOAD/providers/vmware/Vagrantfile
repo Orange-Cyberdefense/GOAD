@@ -87,10 +87,10 @@ boxes = [
           target.vm.provision :shell, :path => "../../../../vagrant/fix_ip.ps1", privileged: false, args: box[:ip]
         end
 
-		# Install Exchange server
+		# Exchange server things 
 		
-		if box[:name] == "GOAD-SRV02"
-          config.vm.provision "file", source: "ExchangeServer2019-x64-CU12.iso", destination: "C:\ExchangeServer2019-x64-CU12.iso"
+		#if box[:name] == "GOAD-SRV02"
+          #config.vm.provision "file", source: "ExchangeServer2019-x64-CU12.iso", destination: "C:\ExchangeServer2019-x64-CU12.iso"
 
         end
 		
