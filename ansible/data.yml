@@ -1,6 +1,6 @@
 ---
 - name: "Read data files"
-  hosts: all:!elk
+  hosts: all:!ansible-goad
   connection: local
   vars_files:
     - "{{data_path}}/config.json"

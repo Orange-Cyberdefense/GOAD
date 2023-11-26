@@ -53,6 +53,11 @@
 - import_playbook: security.yml
 # --------------------------------------------------------------------
 # specifics vulns linked to the scenario are here
+
 - import_playbook: vulnerabilities.yml
+
+- import_playbook: wazuh.yml
+
+- import_playbook: sysmon.yml
 
 - import_playbook: reboot.yml
