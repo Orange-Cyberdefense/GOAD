@@ -1,40 +1,6 @@
----
-# Load datas
-- import_playbook: data.yml
-  vars:
-    data_path: "../ad/{{domain_name}}/data/"
-  tags: 'data'
+# LOGS and Monitoring ==========================================================================================
 
-
-- name: Install Sysmon
-  hosts: all:!goad-ansible
-  tasks:
-  - name: Create Sysmon directory
-    win_file:
-      path: C:\\Sysmon
-      state: directory
-
-  - name: Download Sysmon
-    win_get_url:
-      url: https://live.sysinternals.com/Sysmon64.exe
-      dest: C:\\Sysmon\\Sysmon64.exe
-
-  - name: Download Sysmon config
-    win_get_url:
-      url: https://raw.githubusercontent.com/olafhartong/sysmon-modular/master/sysmonconfig.xml
-      dest: C:\\Sysmon\\sysmonconfig.xml
-
-  - name: Install Sysmon
-    win_shell: C:\\Sysmon\\Sysmon64.exe -accepteula -i C:\\Sysmon\\sysmonconfig.xml
-    become: yes
-    become_user: SYSTEM
-
-  - name: Check if Sysmon is running
-    win_shell: sc query sysmon64
-    register: sysmon_status
-    failed_when: "'RUNNING' not in sysmon_status.stdout"
-
-  - name: Print Sysmon status
-    debug:
-      msg: "{{ sysmon_status.stdout }}"
-...
+- name: Install sysmon on all machines
+  hosts: elk_log
+  roles:
+    - { role: 'logs_windows', tags: 'agent' }
