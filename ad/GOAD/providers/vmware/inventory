@@ -47,7 +47,7 @@ enable_http_proxy=no
 ad_http_proxy=http://x.x.x.x:xxxx
 ad_https_proxy=http://x.x.x.x:xxxx
 
-[elk_server:vars]
+[ansible_server:vars]
 ; ssh connection (linux)
 ansible_ssh_user=vagrant
 ansible_ssh_private_key_file=./.vagrant/machines/GOAD-ANSIBLE/vmware_desktop/private_key
