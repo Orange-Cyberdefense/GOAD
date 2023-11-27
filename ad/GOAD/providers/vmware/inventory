@@ -18,7 +18,7 @@ srv03 ansible_host=192.168.56.23 dns_domain=dc03 dict_key=srv03
 ; ------------------------------------------------
 ; Other
 ; ------------------------------------------------
-GOAD-ANSIBLE ansible_host=192.168.56.100 ansible_connection=ssh
+elk ansible_host=192.168.56.50 ansible_connection=ssh
 
 [all:vars]
 ; domain_name : folder inside ad/
@@ -47,10 +47,9 @@ enable_http_proxy=no
 ad_http_proxy=http://x.x.x.x:xxxx
 ad_https_proxy=http://x.x.x.x:xxxx
 
-[ansible_server:vars]
+[elk_server:vars]
 ; ssh connection (linux)
 ansible_ssh_user=vagrant
-ansible_ssh_private_key_file=./.vagrant/machines/GOAD-ANSIBLE/vmware_desktop/private_key
+ansible_ssh_private_key_file=./.vagrant/machines/elk/virtualbox/private_key
 ansible_ssh_port=22
 host_key_checking=false
-
