@@ -99,7 +99,7 @@ boxes = [
 		
 		# Install Wazuh in the ansible-goad VM
 		
-		if box[:name] == "elk"
+		if box[:name] == "GOAD-ANSIBLE"
           target.vm.provision "shell", inline: <<-SHELL
             # Install Wazuh manager
             curl -sO https://packages.wazuh.com/4.3/wazuh-install.sh
@@ -115,7 +115,7 @@ boxes = [
 		
 				# Make Wazuh Great Again Inspired by SOC Fortress and John Hammond
 		
-		if box[:name] == "elk"
+		if box[:name] == "GOAD-ANSIBLE"
           target.vm.provision "shell", inline: <<-SHELL
             # Install Wazuh manager
             curl -sO https://raw.githubusercontent.com/aaladha/Wazuh-Rules/main/wazuh_socfortress_rules.sh
@@ -126,7 +126,7 @@ boxes = [
 		
 		# Install ansible and deploy the GOAD LAB
 		
-				if box[:name] == "elk"
+				if box[:name] == "GOAD-ANSIBLE"
           target.vm.provision "shell", inline: <<-SHELL
             
 			# Ensure we're root
