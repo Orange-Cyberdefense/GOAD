@@ -99,3 +99,7 @@
   win_psmodule:
     name: ActiveDirectoryDSC
     state: present
+
+#Sometimes the ADWS webservice does not start and will fail with other modules in ad-data, this will enable it
+- name: enable the Active directory web services if not enabled, solve the issue
+  ansible.windows.win_shell: Set-Service -Name adws -StartupType Automatic
