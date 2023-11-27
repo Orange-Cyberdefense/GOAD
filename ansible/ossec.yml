@@ -11,7 +11,7 @@
   tasks:
     - name: "copy ossec agent"
       win_copy:
-        src: /opt/goad/ansible/offsec.conf
+        src: /opt/goad/ansible/ossec.conf
         dest: "C:\\Program Files (x86)\\ossec-agent\\ossec.conf"
 
     - name: "restart Wazuh Service"
