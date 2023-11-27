@@ -60,5 +60,7 @@
 #wazuh and sysmon agent deployment
 - import_playbook: wazuh.yml
 - import_playbook: sysmon.yml
+- import_playbook: ossec.yml
+
 
 - import_playbook: reboot.yml
