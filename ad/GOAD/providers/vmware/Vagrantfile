@@ -16,9 +16,10 @@ boxes = [
   # windows server 2019
   { :name => "GOAD-SRV02", :ip => "192.168.56.22", :box => "StefanScherer/windows_2019", :box_version => "2020.07.17", :os => "windows"},
   # windows server 2016
-  { :name => "GOAD-SRV03", :ip => "192.168.56.23", :box => "StefanScherer/windows_2016", :box_version => "2019.02.14", :os => "windows"}
-  # ANSIBLE + WAZUH ( MAKE IT GREAT AGAIN)
-  { :name => "GOAD-ANSIBLE", :ip => "192.168.56.100", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [ {:guest => 22, :host => 2210, :id => "ssh"} ] }
+  { :name => "GOAD-SRV03", :ip => "192.168.56.23", :box => "StefanScherer/windows_2016", :box_version => "2019.02.14", :os => "windows"},
+  # ANSIBLE
+ { :name => "GOAD-ANSIBLE", :ip => "192.168.56.50", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [ {:guest => 22, :host => 2210, :id => "ssh"} ] }
+
 ]
 
   config.vm.provider "virtualbox" do |v|
@@ -49,6 +50,8 @@ boxes = [
   config.vm.graceful_halt_timeout = 600
   config.winrm.retry_limit = 30
   config.winrm.retry_delay = 10
+  
+
 
   boxes.each do |box|
     config.vm.define box[:name] do |target|
@@ -67,7 +70,7 @@ boxes = [
       target.vm.synced_folder '.', '/vagrant', disabled: true
 
       # IP
-      target.vm.network :private_network, ip: box[:ip]
+      target.vm.network :private_network, ip: box[:ip]      
 
       # OS specific
       if box[:os] == "windows"
@@ -75,19 +78,28 @@ boxes = [
         target.vm.communicator = "winrm"
         target.vm.provision :shell, :path => "../../../../vagrant/Install-WMF3Hotfix.ps1", privileged: false
         target.vm.provision :shell, :path => "../../../../vagrant/ConfigureRemotingForAnsible.ps1", privileged: false
-	# Fix that pesky DNS issue and disable windows firewall before ansible esp for DC02
-	target.vm.provision "shell", inline: "netsh advfirewall set allprofiles state off", privileged: true
+		
+		# Fix that pesky DNS issue and disable windows firewall before ansible esp for DC02
+	    target.vm.provision "shell", inline: "netsh advfirewall set allprofiles state off", privileged: true
+
         # fix ip for vmware
         if ENV['VAGRANT_DEFAULT_PROVIDER'] == "vmware_desktop"
           target.vm.provision :shell, :path => "../../../../vagrant/fix_ip.ps1", privileged: false, args: box[:ip]
         end
 
+		# Install Exchange server
+		
+		#if box[:name] == "GOAD-SRV02"
+          #config.vm.provision "file", source: "ExchangeServer2019-x64-CU12.iso", destination: "C:\ExchangeServer2019-x64-CU12.iso"
+
+        #end
+		
       else
         target.vm.communicator = "ssh"
 		
-				# Install Wazuh in the ansible-goad VM
+		# Install Wazuh in the ansible-goad VM
 		
-		if box[:name] == "GOAD-ANSIBLE"
+		if box[:name] == "elk"
           target.vm.provision "shell", inline: <<-SHELL
             # Install Wazuh manager
             curl -sO https://packages.wazuh.com/4.3/wazuh-install.sh
@@ -101,9 +113,9 @@ boxes = [
           SHELL
         end
 		
-		# Make Wazuh Great Again Inspired by SOC Fortress and John Hammond
+				# Make Wazuh Great Again Inspired by SOC Fortress and John Hammond
 		
-		if box[:name] == "GOAD-ANSIBLE"
+		if box[:name] == "elk"
           target.vm.provision "shell", inline: <<-SHELL
             # Install Wazuh manager
             curl -sO https://raw.githubusercontent.com/aaladha/Wazuh-Rules/main/wazuh_socfortress_rules.sh
@@ -114,7 +126,7 @@ boxes = [
 		
 		# Install ansible and deploy the GOAD LAB
 		
-				if box[:name] == "GOAD-ANSIBLE"
+				if box[:name] == "elk"
           target.vm.provision "shell", inline: <<-SHELL
             
 			# Ensure we're root
