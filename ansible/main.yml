@@ -10,6 +10,8 @@
 - import_playbook: build.yml
 # Add monitoring
 #- import_playbook: elk.yml
+#- import_playbook: wazuh.yml
+#- import_playbook: sysmon.yml
 
 # --------------------------------------------------------------------
 # VM ready - start insert specific scenario
