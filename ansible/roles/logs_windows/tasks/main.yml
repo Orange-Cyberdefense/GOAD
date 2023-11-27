@@ -1,11 +1,3 @@
-- name: Install winlogbeat
-  import_tasks: winlogbeat.yml
-
-- name: Set winlogbeat config file
-  win_copy:
-    src: winlogbeat.yml
-    dest: C:\ProgramData\chocolatey\lib\winlogbeat\tools\
-
 # sysmon install (https://github.com/NVISOsecurity/ansible-sysmon)
 - name: Create directory
   win_file:
@@ -41,31 +33,3 @@
   args:
     chdir: "{{ sysmon_install_location }}"
   when: result.state is not defined or result.name is not defined
-
-# RUN winlogbeat
-- name: check winlogbeat service
-  win_service:
-    name: winlogbeat
-  register: resultwlb
-  failed_when: resultwlb is not defined
-  ignore_errors: yes
-
-- name: Reboot before launch setup
-  win_reboot:
-    reboot_timeout: 600
-    post_reboot_delay: 100
-  when: resultwlb.state is defined and resultwlb.state != 'running'
-
-- name: Run winlogbeat setup
-  win_command: "winlogbeat setup -e"
-  args:
-    chdir: "{{ winlogbeat_service.install_path_64 }}\\winlogbeat-{{ winlogbeat_service.version }}-windows-x86_64\\"
-  when: resultwlb.state is defined and resultwlb.state != 'running'
-
-# RUN winlogbeat
-- name: check winlogbeat service
-  win_service:
-    name: winlogbeat
-    start_mode: auto
-    state: started
-  when: resultwlb.state is defined and resultwlb.state != 'running'
