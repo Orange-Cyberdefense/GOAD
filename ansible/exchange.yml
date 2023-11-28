@@ -1,0 +1,27 @@
+---
+- name: Configure Domain Group Membership on the DC for exchange things
+  hosts: your_windows_host
+  gather_facts: no
+  tasks:
+    - name: Ensure vagrant is part of Enterprise Admins
+      win_domain_group_membership:
+        name: "Enterprise Admins"
+        members:
+          - Administrator
+          - vagrant
+        state: present
+
+    - name: Ensure vagrant is part of Domain Admins
+      win_domain_group_membership:
+        name: "Domain Admins"
+        members:
+          - Administrator
+          - vagrant
+        state: present
+
+    - name: Ensure vagrant has the right membership for exchange server
+      win_domain_group_membership:
+        name: "Schema Admins"
+        members:
+          - vagrant
+        state: present
