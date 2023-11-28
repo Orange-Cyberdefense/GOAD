@@ -1,6 +1,9 @@
 # LOGS and Monitoring ==========================================================================================
 
-- name: Install sysmon on all machines
+---
+- name: Install Sysmon the SOC Fortress way
   hosts: elk_log
+  become: yes
   roles:
-    - { role: 'logs_windows', tags: 'agent' }
+    - sysmon_role
+
