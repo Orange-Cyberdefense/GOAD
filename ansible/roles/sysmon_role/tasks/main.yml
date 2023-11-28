@@ -18,12 +18,12 @@
 
 - name: Copy SysinternalsSuite.zip to Windows hosts
   win_copy:
-    src: "{{ playbook_dir }}/files/SysinternalsSuite.zip"
+    src: "{{ playbook_dir }}/roles/sysmon_role/SysinternalsSuite.zip"
     dest: "{{ sysinternals_folder }}/{{ sysinternals_zip }}"
 
 - name: Copy sysmonconfig-export.xml to Windows hosts
   win_copy:
-    src: "{{ playbook_dir }}/files/sysmonconfig-export.xml"
+    src: "{{ playbook_dir }}/roles/sysmon_role/sysmonconfig-export.xml"
     dest: "{{ sysinternals_folder }}/{{ sysmonconfig_file }}"
 
 - name: Extract Sysinternals Suite
