@@ -5,6 +5,7 @@
 ; sevenkingdoms.local
 ; ------------------------------------------------
 dc01 ansible_host=192.168.56.10 dns_domain=dc01 dict_key=dc01
+ex01 ansible_host=192.168.56.15 dns_domain=dc01 dict_key=srv03
 ; ------------------------------------------------
 ; north.sevenkingdoms.local
 ; ------------------------------------------------
