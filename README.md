@@ -19,7 +19,19 @@ NB: use the package and not the command line,I faced issues when using the cli c
 ```bash
 https://releases.hashicorp.com/vagrant-vmware-utility/1.0.22/vagrant-vmware-utility_1.0.22_windows_amd64.msi
 ```
+## If you face any errors, just ssh into the GOAD-ANSIBLE BOX, make sure you are in the vmware folder
 
+```bash
+vagrant ssh GOAD-ANSIBLE
+```
+
+To to the goad folder /opt/goad/ansible
+
+```bash
+ansible-galaxy install -r /opt/goad/ansible/requirements.yml
+export ANSIBLE_COMMAND="ansible-playbook -i /opt/goad/ad/GOAD/data/inventory -i /opt/goad/ad/GOAD/providers/vmware/inventory"
+cd /opt/goad/ansible && /opt/goad/scripts/provisionning.sh
+```
 
 ## Description
 GOAD is a pentest active directory LAB project.
