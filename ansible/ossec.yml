@@ -6,13 +6,13 @@
   tags: 'data'
 
 
-- name: "Update ossec config file"
-  hosts: elk_log
-  tasks:
-    - name: "copy ossec agent"
-      win_copy:
-        src: /opt/goad/ansible/ossec.conf
-        dest: "C:\\Program Files (x86)\\ossec-agent\\ossec.conf"
+#- name: "Update ossec config file"
+#  hosts: elk_log
+#  tasks:
+#    - name: "copy ossec agent"
+#      win_copy:
+#        src: /opt/goad/ansible/ossec.conf
+#        dest: "C:\\Program Files (x86)\\ossec-agent\\ossec.conf"
 
     - name: "restart Wazuh Service"
       win_shell: Restart-Service -Name WazuhSvc
