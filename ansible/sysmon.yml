@@ -3,7 +3,6 @@
 ---
 - name: Install Sysmon the SOC Fortress way
   hosts: elk_log
-  become: yes
   roles:
     - sysmon_role
 
