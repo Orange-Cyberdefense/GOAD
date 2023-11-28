@@ -1,8 +1,8 @@
 # LOGS and Monitoring ==========================================================================================
 
 ---
-- name: Install Sysmon the SOC Fortress way
+- name: Install log agent on windows vms
   hosts: elk_log
   roles:
-    - sysmon_role
+    - { role: 'logs_windows', tags: 'agent' }
 
