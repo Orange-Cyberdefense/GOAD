@@ -8,7 +8,7 @@ dc02
 dc03
 srv02
 srv03
-ex01
+#ex01
 
 ; domain controler (mandatory)
 ; usage : ad-acl.yml, ad-data.yml, ad-relations.yml, laps.yml
@@ -22,7 +22,7 @@ dc03
 [server]
 srv02
 srv03
-ex01
+#ex01
 
 ; workstation to enroll (mandatory if you want workstation)
 ; usage : ad-servers.yml, laps.yml
@@ -120,7 +120,7 @@ dc01
 dc02
 dc03
 srv03
-ex01
+#ex01
 
 ; disable defender
 ; usage : security.yml
