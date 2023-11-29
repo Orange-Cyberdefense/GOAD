@@ -1,14 +1,18 @@
-# Aleem Ladha
-- name: Install Exchange server
-  hosts: ex01
+# Aleem Ladha, install exchange server
+- name: Combined Playbook
+  hosts: ex01:dc01
   gather_facts: no
 
   tasks:
-    - name: Install Exchange Server prerequisites
+    - name: Configure Domain Group Membership on the DC for exchange things
+      when: inventory_hostname == 'dc01'
       import_playbook: exchangemembership.yml
-      
-    - name: Install Exchange Server prerequisites
-      import_playbook: exchange_pre.yml
 
-    - name: Install Exchange Server
-      import_playbook: exchange_setup.yml
+    - name: Install Exchange Server prerequisites
+      when: inventory_hostname == 'ex01'
+      block:
+        - name: Install prerequisites for Exchange Server
+          import_playbook: exchange_pre.yml
+
+        - name: Install Exchange Server
+          import_playbook: exchange_setup.yml
