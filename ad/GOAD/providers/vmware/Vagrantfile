@@ -26,7 +26,7 @@ boxes = [
   end
   
   # copy exchange iso to the GOAD-EXC01 for installing exchange and speeding up the process
-  #vagrant upload C:\\GOAD-main\\exchangeserver2019.ISO c:\\ GOAD-EXC01
+  #vagrant upload C:\\Goad-linux-add\\GOAD-main\\exchangeserver2019.ISO c:\\ GOAD-EXC01
 
   config.vm.provider "vmware_desktop" do |v|
     v.vmx["memsize"] = "2000"
@@ -35,11 +35,11 @@ boxes = [
   end
   
   # Give Exchange server more ram and cpu cores and mount the iso
-#  config.vm.define "GOAD-DC01" do |exc01|
-#   exc01.vm.provider "vmware_desktop" do |v|
-#      v.memory = 12048  # Adjust the memory for GOAD-EXC01
-#      v.cpus = 4       # Adjust the CPU cores for GOAD-EXC01
-#   end
+  config.vm.define "GOAD-DC01" do |exc01|
+   exc01.vm.provider "vmware_desktop" do |v|
+      v.memory = 8192  # Adjust the memory for GOAD-EXC01
+      v.cpus = 4       # Adjust the CPU cores for GOAD-EXC01
+   end
     
 	#exc01.vm.provider "vmware_desktop" do |v|
 	# v.vmx["ide1:0.fileName"] = "C:\\Goad-linux-add\\GOAD-main\\exchangeserver2019.iso"
@@ -165,9 +165,9 @@ pip install --upgrade pip && pip install ansible-core==2.12.6 && pip install pyw
 ansible-galaxy install -r /opt/goad/ansible/requirements.yml
 
 # Launch provisioning with Ansible
-export ANSIBLE_COMMAND="ansible-playbook -i /opt/goad/ad/GOAD/data/inventory -i /opt/goad/ad/GOAD/providers/vmware/inventory"
+#export ANSIBLE_COMMAND="ansible-playbook -i /opt/goad/ad/GOAD/data/inventory -i /opt/goad/ad/GOAD/providers/vmware/inventory"
 
-cd /opt/goad/ansible && /opt/goad/scripts/provisionning.sh
+#cd /opt/goad/ansible && /opt/goad/scripts/provisionning.sh
 			
           SHELL
         end
