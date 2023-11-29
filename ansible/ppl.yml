@@ -1,0 +1,23 @@
+# Deploy PPL protection on srv03,this helps with mimikatz and you need to load a driver to bypass this
+#Aleem ladha
+---
+- name: Configure Registry Settings for RunAsPPL
+  hosts: srv03
+
+  tasks:
+    - name: Add DWORD value RunAsPPL and set it to 1
+      win_shell: |
+        $registryPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa"
+        $registryName = "RunAsPPL"
+        $registryValue = 1
+
+        # Create the registry key if it does not exist
+        if (-not (Test-Path $registryPath)) {
+          New-Item -Path $registryPath -Force
+        }
+
+        Set-ItemProperty -Path $registryPath -Name $registryName -Value $registryValue
+
+    - name: Reboot the system
+      win_reboot:
+        reboot_timeout: 300  # Adjust the timeout as needed
