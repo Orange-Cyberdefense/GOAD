@@ -1,18 +1,14 @@
 # Aleem Ladha, install exchange server
-- name: Combined Playbook
-  hosts: ex01:dc01
-  gather_facts: no
+---
+# Load datas
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
 
-  tasks:
-    - name: Configure Domain Group Membership on the DC for exchange things
-      when: inventory_hostname == 'dc01'
-      import_playbook: exchangemembership.yml
-
-    - name: Install Exchange Server prerequisites
-      when: inventory_hostname == 'ex01'
-      block:
-        - name: Install prerequisites for Exchange Server
-          import_playbook: exchange_pre.yml
-
-        - name: Install Exchange Server
-          import_playbook: exchange_setup.yml
+# Add users to the schema and enterprise admin group
+- import_playbook: exchangemembership.yml
+# Install Exchange Server prerequisites
+- import_playbook: exchange_pre.yml
+# Install Exchange Server
+- import_playbook: exchange_setup.yml
