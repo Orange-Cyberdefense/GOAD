@@ -86,6 +86,24 @@ fatal: [dc02]: FAILED! => {"changed": true, "cmd": "repadmin /syncall /Ade", "de
 
 - relaunch install
 
+## vagrant up - Vagrant can't use the requested machine because it is locked 
+
+```
+==> GOAD-SRV03: Configuring and enabling network interfaces...
+Vagrant can't use the requested machine because it is locked! This
+means that another Vagrant process is currently reading or modifying
+the machine. Please wait for that Vagrant process to end and try
+again. Details about the machine are shown below:
+```
+
+- solution : relaunch the provisioning on the broken computer : 
+- exemple :
+```
+cd ~/GOAD/ad/GOAD/providers/virtualbox
+vagrant reload GOAD-SRV03 --provisioning
+```
+- and than relaunch the install script
+
 ## The server has rejected the client credentials
 
 ```
