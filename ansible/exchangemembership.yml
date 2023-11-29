@@ -1,6 +1,6 @@
 ---
 - name: Configure Domain Group Membership on the DC for exchange things
-  hosts: your_windows_host
+  hosts: e
   gather_facts: no
   tasks:
     - name: Ensure vagrant is part of Enterprise Admins
