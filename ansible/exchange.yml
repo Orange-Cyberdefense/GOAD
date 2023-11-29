@@ -1,1 +1,13 @@
+- name: Install Exchange server
+  hosts: ex01
+  gather_facts: no
 
+  tasks:
+    - name: Install Exchange Server prerequisites
+      import_playbook: exchangemembership.yml
+      
+    - name: Install Exchange Server prerequisites
+      import_playbook: exchange_pre.yml
+
+    - name: Install Exchange Server
+      import_playbook: exchange_setup.yml
