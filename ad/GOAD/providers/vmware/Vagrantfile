@@ -7,7 +7,7 @@ boxes = [
   { :name => "GOAD-DC01",  :ip => "192.168.56.10", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows"},
   { :name => "GOAD-DC02",  :ip => "192.168.56.11", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows"},
   { :name => "GOAD-DC03",  :ip => "192.168.56.12", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows"},
-  { :name => "GOAD-WS01", :ip => "192.168.56.15", :box => "mayfly/windows10", :box_version => "2023.10.19", :os => "windows"}, 
+  { :name => "GOAD-WS01", :ip => "192.168.56.30", :box => "mayfly/windows10", :box_version => "2023.10.19", :os => "windows"}, 
   { :name => "GOAD-SRV02", :ip => "192.168.56.22", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows"},
   { :name => "GOAD-SRV03", :ip => "192.168.56.23", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows"},
   { :name => "GOAD-ANSIBLE", :ip => "192.168.56.100", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [ {:guest => 22, :host => 2210, :id => "ssh"} ] }
