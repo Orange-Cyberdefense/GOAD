@@ -27,6 +27,7 @@ srv03
 ; workstation to enroll (mandatory if you want workstation)
 ; usage : ad-servers.yml, laps.yml
 [workstation]
+ws01
 
 ; parent domain controler (mandatory)
 ; usage : ad-servers.yml
