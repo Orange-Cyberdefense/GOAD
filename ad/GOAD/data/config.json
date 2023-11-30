@@ -21,16 +21,21 @@
             "scripts" : ["sidhistory.ps1"],
             "vulns" : ["disable_firewall"]
         },
-        "ex01" : {
-            "hostname" : "Drogo",
-            "type" : "server",
+        "ws01" : {
+            "hostname" : "casterlyrock",
+            "type" : "workstation",
             "local_admin_password": "EP+xh7Rk6j90",
             "domain" : "sevenkingdoms.local",
             "path" : "DC=sevenkingdoms,DC=local",
             "local_groups" : {
-                "Administrators" : []
+                "Administrators" : [
+                    "sevenkingdoms\\tywin.lannister",
+                    "sevenkingdoms\\jaime.lannister"
+                ]
             },
-            "Remote Desktop Users" : [],
+            "Remote Desktop Users" : [
+                "sevenkingdoms\\Lanister"
+            ],
             "scripts" : [],
             "vulns" : ["disable_firewall"]
         },
