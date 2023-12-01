@@ -147,7 +147,7 @@ ansible-galaxy install -r ansible/requirements.yml
 - To create the VMs just run 
 
 ```bash
-cd ad/GOAD/providers/virtualbox
+cd ad/GOAD/providers/vmware
 vagrant up
 ```
 
