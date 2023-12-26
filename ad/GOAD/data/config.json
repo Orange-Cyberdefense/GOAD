@@ -65,7 +65,8 @@
                 "ntlm_relay.ps1",
                 "responder.ps1",
                 "gpo_abuse.ps1",
-                "rdp_scheduler.ps1"
+                "rdp_scheduler.ps1",
+	"EnablePPLProtect.ps1"
             ],
             "vulns" : ["disable_firewall","directory", "credentials", "autologon", "files", "enable_llmnr", "enable_nbt-ns"],
             "vulns_vars" : {
