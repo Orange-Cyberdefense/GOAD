@@ -193,7 +193,7 @@
             "Remote Desktop Users" : [
                 "essos\\Dothraki"
             ],
-            "scripts" : [],
+            "scripts" : ["EnablePowershellRestrict.ps1"],
             "vulns" : ["openshares","disable_firewall"],
             "mssql":{
                 "sa_password": "sa_P@ssw0rd!Ess0s",

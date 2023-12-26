@@ -1,0 +1,1 @@
+Set-ExecutionPolicy -Scope LocalMachine -ExecutionPolicy Restricted
