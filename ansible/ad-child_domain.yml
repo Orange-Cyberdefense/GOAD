@@ -12,6 +12,7 @@
   hosts: child_dc
   roles:
     - { role: 'child_domain', tags: 'child_domain'}
+    - { role: 'dns_conditional_forwarder', tags: 'dns_conditional_forwarder' }
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
@@ -19,3 +20,20 @@
     parent_domain: "{{'.'.join(domain.split('.')[1:])}}"
     parent_domain_password: "{{lab.domains[parent_domain].domain_password}}"
     source_dc: "{{lab.hosts[lab.domains[parent_domain].dc].hostname}}.{{parent_domain}}"
+    zone_name: "{{parent_domain}}"
+    remote_dc: "{{lab.domains[parent_domain].dc}}"
+    master_server: "{{hostvars[remote_dc].ansible_host}}"
+    replication: "none"
+
+# # add DNS conditional forwarder on child to parent
+# - name: Add conditional forwarder
+#   hosts: child_dc
+#   roles:
+#   - { role: 'dns_conditional_forwarder', tags: 'dns_conditional_forwarder' }
+#   vars:
+#     domain: "{{lab.hosts[dict_key].domain}}"
+#     parent_domain: "{{'.'.join(domain.split('.')[1:])}}"
+#     zone_name: "{{parent_domain}}"
+#     remote_dc: "{{lab.domains[parent_domain].dc}}"
+#     master_server: "{{hostvars[remote_dc].ansible_host}}"
+#     replication: "none"

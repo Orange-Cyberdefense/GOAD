@@ -17,6 +17,7 @@
     zone_name: "{{remote_forest}}"
     remote_dc: "{{lab.domains[remote_forest].dc}}"
     master_server: "{{hostvars[remote_dc].ansible_host}}"
+    replication: "forest"
 
 - name: Trusts configuration
   hosts: trust
