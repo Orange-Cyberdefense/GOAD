@@ -13,6 +13,7 @@ PROVIDERS="virtualbox vmware azure proxmox"
 LABS=$(ls -A ad/ |grep -v 'TEMPLATE')
 TASKS="check install start stop status restart destroy disablevagrant enablevagrant"
 METHODS="local docker"
+ANSIBLE_ONLY=0
 
 
 print_usage() {
@@ -36,6 +37,7 @@ print_usage() {
   echo "${INFO} -m : method must be one of the following (optional, default : local):"
   echo "   - local : to use local ansible install (default)";
   echo "   - docker : to use docker ansible install";
+  echo "${INFO} -a : to run only ansible on install (optional)";
   echo
   echo "${OK} example: ./goad.sh -t check -l GOAD -p virtualbox -m local";
   exit 0
@@ -47,13 +49,14 @@ function exists_in_list() {
     echo $LIST | tr " " '\n' | grep -F -q -x "$VALUE"
 }
 
-while getopts t:l:p:m: flag
+while getopts t:l:p:m:a flag
   do
       case "${flag}" in
           t) TASK=${OPTARG};;
           l) LAB=${OPTARG};;
           p) PROVIDER=${OPTARG};;
           m) METHOD=${OPTARG};;
+          a) ANSIBLE_ONLY=1;;
       esac
   done
 
@@ -88,6 +91,10 @@ while getopts t:l:p:m: flag
       print_usage
     fi
   fi
+  if [[ "$ANSIBLE_ONLY" -eq 1 ]]; then
+    echo "${OK} Run ansible only"
+  fi
+
 # check if the lab provider folder exist
 if [[ -d "ad/$LAB/providers/$PROVIDER" ]]; then
    echo "${OK} folder ad/$LAB/providers/$PROVIDER found"
@@ -340,7 +347,9 @@ enablevagrant(){
 install(){
   echo "${OK} Launch installation for: $LAB / $PROVIDER / $METHOD"
   cd $CURRENT_DIR
-  install_providing $LAB $PROVIDER
+  if [[ "$ANSIBLE_ONLY" -eq 0 ]]; then
+    install_providing $LAB $PROVIDER
+  fi
   cd $CURRENT_DIR
   install_provisioning $LAB $PROVIDER $METHOD
 }
