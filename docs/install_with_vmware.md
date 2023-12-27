@@ -137,7 +137,7 @@ ansible-galaxy install -r ansible/requirements.yml
 
 - If you run ansible on docker
 ```bash
-./goad.sh -t check -l GOAD -p vmware -m local
+./goad.sh -t check -l GOAD -p vmware -m docker
 ```
 
 ### Launch installation manually
@@ -147,7 +147,7 @@ ansible-galaxy install -r ansible/requirements.yml
 - To create the VMs just run 
 
 ```bash
-cd ad/GOAD/providers/virtualbox
+cd ad/GOAD/providers/vmware
 vagrant up
 ```
 
