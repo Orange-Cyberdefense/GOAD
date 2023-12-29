@@ -12,8 +12,10 @@ JOB=
 PROVIDERS="virtualbox vmware azure proxmox"
 LABS=$(ls -A ad/ |grep -v 'TEMPLATE')
 TASKS="check install start stop status restart destroy disablevagrant enablevagrant"
+ANSIBLE_PLAYBOOKS="build.yml ad-servers.yml ad-parent_domain.yml ad-child_domain.yml ad-members.yml ad-trusts.yml ad-data.yml ad-gmsa.yml laps.yml ad-relations.yml adcs.yml ad-acl.yml servers.yml security.yml vulnerabilities.yml reboot.yml"
 METHODS="local docker"
 ANSIBLE_ONLY=0
+ANSIBLE_PLAYBOOK=
 
 
 print_usage() {
@@ -38,6 +40,9 @@ print_usage() {
   echo "   - local : to use local ansible install (default)";
   echo "   - docker : to use docker ansible install";
   echo "${INFO} -a : to run only ansible on install (optional)";
+  echo "${INFO} -r : to run only one ansible playbook (optional)";
+  echo "   - example : vulnerabilities.yml";
+  echo "${INFO} -h : show this help";
   echo
   echo "${OK} example: ./goad.sh -t check -l GOAD -p virtualbox -m local";
   exit 0
@@ -49,7 +54,7 @@ function exists_in_list() {
     echo $LIST | tr " " '\n' | grep -F -q -x "$VALUE"
 }
 
-while getopts t:l:p:m:a flag
+while getopts t:l:p:m:ar:h flag
   do
       case "${flag}" in
           t) TASK=${OPTARG};;
@@ -57,6 +62,8 @@ while getopts t:l:p:m:a flag
           p) PROVIDER=${OPTARG};;
           m) METHOD=${OPTARG};;
           a) ANSIBLE_ONLY=1;;
+          r) ANSIBLE_PLAYBOOK=${OPTARG};;
+          h) print_usage; exit;
       esac
   done
 
@@ -91,6 +98,15 @@ while getopts t:l:p:m:a flag
       print_usage
     fi
   fi
+  if [[ ! -z $ANSIBLE_PLAYBOOK ]]; then
+     if exists_in_list "$ANSIBLE_PLAYBOOKS" "$ANSIBLE_PLAYBOOK"; then
+      echo "${OK} Ansible playbook: $ANSIBLE_PLAYBOOK"
+    else
+      echo "${ERROR} Ansible playbook: $ANSIBLE_PLAYBOOK not allowed"
+      print_usage
+    fi
+  fi
+
   if [[ "$ANSIBLE_ONLY" -eq 1 ]]; then
     echo "${OK} Run ansible only"
   fi
@@ -213,10 +229,16 @@ install_provisioning(){
     "virtualbox"|"vmware"|"proxmox")
         case $method in
           "local")
-              cd ansible
-              export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory"
-              ../scripts/provisionning.sh
-              cd -
+              if [ -z $ANSIBLE_PLAYBOOK ]; then
+                cd ansible
+                export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory"
+                ../scripts/provisionning.sh
+                cd -
+              else
+                cd ansible
+                ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $ANSIBLE_PLAYBOOK
+                cd -
+              fi
             ;;
           "docker")
               use_sudo=""
@@ -234,8 +256,13 @@ install_provisioning(){
                 $use_sudo docker build -t goadansible .
                 echo "${OK} Container goadansible creation complete"
               fi
+              if [ -z $ANSIBLE_PLAYBOOK ]; then
+                echo "${OK} Start provisioning from docker"
+                $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ANSIBLE_COMMAND='ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory' ../scripts/provisionning.sh"
+              else
               echo "${OK} Start provisioning from docker"
-              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ANSIBLE_COMMAND='ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory' ../scripts/provisionning.sh"
+                $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $ANSIBLE_PLAYBOOK"
+              fi
             ;;
         esac
       ;;
