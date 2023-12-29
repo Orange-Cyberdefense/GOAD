@@ -1,0 +1,4 @@
+- name: Account is sensitive
+  ansible.windows.win_shell: |
+    Set-ADUser -Identity "{{item.value.account}}" -AccountNotDelegated $true 
+  with_dict: "{{ security_vars }}"

@@ -133,7 +133,7 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 - [X] Anonymous RPC user listing
 - [X] Child parent domain
 - [X] Generate certificate and enable ldaps
-- [X] ADCS - ESC 1/2/3/8
+- [X] ADCS - ESC 1/2/3/4/6/8
 - [X] Certifry
 - [X] Samaccountname/nopac
 - [X] Petitpotam unauthent
@@ -149,13 +149,19 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 - [X] Add Gmsa (receipe created)
 - [X] Add azure support
 - [X] Refactoring lab and providers
-- [ ] Add PPL
-- [ ] Add Credential Guard
+- [X] Protected Users
+- [X] Account is sensitive
+- [X] Add PPL
+- [X] Add Gmsa
+- [X] Groups inside groups
+- [X] Shares with secrets
+- [ ] ADCS 9/10/11
 - [ ] Add Applocker
-- [ ] Zone transfert
+
+## Road Map for other labs (because these are too heavy for being embedded in goad)
+- [ ] Exchange
 - [ ] Wsus
 - [ ] Sccm
-- [ ] Exchange
 
 ## Lab organization
 

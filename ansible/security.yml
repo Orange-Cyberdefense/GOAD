@@ -18,3 +18,17 @@
     - { role: 'settings/windows_defender', tags: 'windows_defender', windows_defender_status: 'off' }
   vars:
     script_path: "../ad/{{domain_name}}/scripts"
+
+- name: "Setup security with tasks"
+  hosts: domain
+  tasks:
+    - include_role:
+        name: "security/{{secu}}"
+      vars:
+        security_vars : "{{ lab.hosts[dict_key].security_vars[secu] | default({}) }}"
+        domain: "{{lab.hosts[dict_key].domain}}"
+        domain_username: "{{domain}}\\Administrator"
+        domain_password: "{{lab.domains[domain].domain_password}}"
+      loop: "{{lab.hosts[dict_key].security | default([]) }}"
+      loop_control:
+        loop_var: secu

@@ -23,8 +23,8 @@ function run_ansible {
 
     echo "$OK Running command: $ANSIBLE_COMMAND $1"
 
-    # Run the command with a timeout of 20 minutes to avoid failure when ansible is stuck
-    timeout 20m $ANSIBLE_COMMAND $1
+    # Run the command with a timeout of 30 minutes to avoid failure when ansible is stuck
+    timeout 30m $ANSIBLE_COMMAND $1
     exit_code=$(echo $?)
 
     if [ $exit_code -eq 4 ]; then # ansible result code 4 = RUN_UNREACHABLE_HOSTS
@@ -34,7 +34,7 @@ function run_ansible {
 
     elif [ $exit_code -eq 124 ]; then # Command has timed out, relaunch the ansible playbook
         echo "$ERROR Error while running: $ANSIBLE_COMMAND $1"
-        echo "$ERROR Command has reached the timeout limit of 20 minutes, we are going to retry"
+        echo "$ERROR Command has reached the timeout limit of 30 minutes, we are going to retry"
         run_ansible $1
 
     elif [ $exit_code -eq 0 ]; then # ansible result code 0 = RUN_OK
