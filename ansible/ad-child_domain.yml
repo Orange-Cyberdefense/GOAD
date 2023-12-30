@@ -25,15 +25,12 @@
     master_server: "{{hostvars[remote_dc].ansible_host}}"
     replication: "none"
 
-# # add DNS conditional forwarder on child to parent
-# - name: Add conditional forwarder
-#   hosts: child_dc
-#   roles:
-#   - { role: 'dns_conditional_forwarder', tags: 'dns_conditional_forwarder' }
-#   vars:
-#     domain: "{{lab.hosts[dict_key].domain}}"
-#     parent_domain: "{{'.'.join(domain.split('.')[1:])}}"
-#     zone_name: "{{parent_domain}}"
-#     remote_dc: "{{lab.domains[parent_domain].dc}}"
-#     master_server: "{{hostvars[remote_dc].ansible_host}}"
-#     replication: "none"
+# parent add DNS value of child DC
+- name: Parent DC ADD DNS configuration
+  hosts: parent_dc
+  roles:
+    - { role: 'child_dns', tags: 'child_dns'}
+  vars:
+    lab: "{{lab}}"
+    domains: "{{lab.domains.keys()}}"
+    domain: "{{lab.hosts[dict_key].domain}}"

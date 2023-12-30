@@ -39,3 +39,19 @@
   hosts: trust
   roles:
   - { role: 'settings/enable_nat_adapter', tags: 'enable_nat_adapter'}
+
+
+# add DNS conditional forwarder on all trust dc for each other subdomains
+- name: Adjust DNS conditional forwarded configuration
+  hosts: trust
+  roles:
+  - { role: 'dc_dns_conditional_forwarder', tags: 'dns_conditional_forwarder' }
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    replication: "forest"
+    domain_username: "{{domain}}\\Administrator"
+    domain_password: "{{lab.domains[domain].domain_password}}"
+    parent_domain: "{{'.'.join(domain.split('.')[1:]) | default('')}}"
+    trust: "{{lab.domains[domain].trust | default('')}}"
+    lab: "{{lab}}"
+    domains: "{{lab.domains.keys()}}"

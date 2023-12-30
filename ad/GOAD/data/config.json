@@ -122,16 +122,20 @@
                 ]
             },
             "scripts" : [],
-            "vulns" : ["disable_firewall", "openshares", "files", "permissions"],
+            "vulns" : ["directory", "disable_firewall", "openshares", "files", "permissions"],
             "vulns_vars" : {
+                "directory": {
+                    "shares": "C:\\shares",
+                    "all": "C:\\shares\\all"
+                },
                 "files" : {
                     "website" : {
                         "src" : "srv02/wwwroot",
                         "dest" : "C:\\inetpub\\"
                     },
-                    "letter_in_public": {
-                        "src" : "srv02/public/arya.txt",
-                        "dest": "C:\\shares\\public\\arya.txt"
+                    "letter_in_shares": {
+                        "src" : "srv02/all/arya.txt",
+                        "dest": "C:\\shares\\all\\arya.txt"
                     }
                 },
                 "permissions" : {
