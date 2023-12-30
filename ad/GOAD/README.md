@@ -32,15 +32,18 @@ You can change the vm version in the Vagrantfile according to Stefan Scherer vag
 
 - You can find a lot of the available scenarios on [https://mayfly277.github.io/categories/ad/](https://mayfly277.github.io/categories/ad/)
 
+- Graph of some scenarios is available here :
+![diagram-GOAD_compromission_Path_dark](./../../docs/img/diagram-GOAD_compromission_Path_dark.png)
+
 NORTH.SEVENKINGDOMS.LOCAL
 - STARKS:              RDP on WINTERFELL AND CASTELBLACK
-  - arya.stark:        Execute as user on mssql
+  - arya.stark:        Execute as user on mssql, pass on all share
   - eddard.stark:      DOMAIN ADMIN NORTH/ (bot 5min) LLMRN request to do NTLM relay with responder
   - catelyn.stark:     
-  - robb.stark:        bot (3min) RESPONDER LLMR
-  - sansa.stark:       keywalking password
+  - robb.stark:        bot (3min) RESPONDER LLMR / lsass present user
+  - sansa.stark:       keywalking password / unconstrained delegation
   - brandon.stark:     ASREP_ROASTING
-  - rickon.stark:      
+  - rickon.stark:      pass spray WinterYYYY
   - jon.snow:          mssql admin / KERBEROASTING / mssql trusted link
   - hodor:             PASSWORD SPRAY (user=password)
 - NIGHT WATCH:         RDP on CASTELBLACK
@@ -49,19 +52,19 @@ NORTH.SEVENKINGDOMS.LOCAL
   - jon.snow:          (see starks)
   - jeor.mormont:      (see mormont)
 - MORMONT:             RDP on CASTELBLACK
-  - jeor.mormont:      Admin castelblack
+  - jeor.mormont:      Admin castelblack, pass in sysvol script
 - AcrossTheSea :       cross forest group
 
 SEVENKINGDOMS.LOCAL
 - LANISTERS
-  - tywin.lannister:   ACE forcechangepassword on jaime.lanister
+  - tywin.lannister:   ACE forcechangepassword on jaime.lanister, password on sysvol cyphered
   - jaime.lannister:   ACE genericwrite-on-user joffrey.baratheon
   - tyron.lannister:   ACE self membership on small council
   - cersei.lannister:  DOMAIN ADMIN SEVENKINGDOMS
 - BARATHEON:           RDP on KINGSLANDING
-  - robert.baratheon:  DOMAIN ADMIN SEVENKINGDOMS
+  - robert.baratheon:  DOMAIN ADMIN SEVENKINGDOMS, protected user
   - joffrey.baratheon: ACE Write DACL on tyron.lannister
-  - renly.baratheon:
+  - renly.baratheon:   WriteDACL on container, sensitive user
   - stannis.baratheon: ACE genericall-on-computer kingslanding 
 - SMALL COUNCIL :      ACE add Member to group dragon stone / RDP on KINGSLANDING
   - petyer.baelish:    
@@ -73,6 +76,7 @@ SEVENKINGDOMS.LOCAL
 
 ESSOS.LOCAL
 - TARGERYEN
+  - missande :          ASREP roasting, generic all on khal
   - daenerys.targaryen: DOMAIN ADMIN ESSOS
   - viserys.targaryen:  ACE write property on jorah.mormont
   - jorah.mormont:      mssql execute as login / mssql trusted link / Read LAPS Password
