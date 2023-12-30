@@ -1,0 +1,17 @@
+- name: "Add dns server zone" 
+  community.windows.win_dns_zone:
+    name: "{{item}}"
+    type: forwarder
+    replication: "{{replication}}"
+    dns_servers:
+      - "{{hostvars[dc].ansible_host}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+    dc: "{{lab.domains[item].dc}}"
+  loop: "{{ domains }}"
+  when: item != domain and item != trust and item != parent_domain and '.'.join(item.split('.')[1:]) != domain
+
+# when not same domain, not parent or child and not already direct trusted domain
