@@ -154,8 +154,8 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 - [X] Add PPL
 - [X] Add Gmsa
 - [X] Groups inside groups
-- [X] Shares with secrets
-- [ ] ADCS 9/10/11
+- [X] Shares with secrets (all, sysvol)
+- [ ] ADCS add vulns
 - [ ] Add Applocker
 
 ## Road Map for other labs (because these are too heavy for being embedded in goad)
