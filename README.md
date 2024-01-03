@@ -97,6 +97,12 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 
 - The goad install will run all the ansible playbook one by one with a failover to restart the ansible playbook if something goes wrong (sometimes vms or playbook hit timeout so this will restart the playbook automatically)
 
+### goad.sh options
+
+- `-a` : ansible only is played during install task (no vagrant or terraform). This is useful if you install and run vagrant on windows and then launch the provisioning from a different computer (example : a kali linux connected to goad network)
+- `-r <ansible_file.yml>` : run only one ansible task (useful to run elk.yml or run only one playbook)
+- `-e` : enable elk in vagrant (example to install elk and play the elk playbook once you finish goad install run : `./goad.sh -t install -l GOAD -p virtualbox -m local -e -r elk.yml`)
+
 ## Provisioning
 
 - The provisioning is always done with ansible, more detail on the ansible provisioning here : [Ansible provisioning](./docs/provisioning.md)
