@@ -129,37 +129,8 @@ ESSOS.LOCAL
 - **elk** a kibana is configured on http://192.168.56.50:5601 to follow the lab events
 - infos : log encyclopedia : https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/
 - the elk is not installed by default due to resources reasons. 
-- to install and start the elk play the following commands :
 
-  1. uncomment the elk vm in Vagrantfile (vmware or virtualbox only by now) and provision with `vagrant up elk` (do not forget to add a coma on the box before)
-```
-# { :name => "elk", :ip => "192.168.56.50", :box => "bento/ubuntu-18.04", :os => "linux",
-#   :forwarded_port => [
-#     {:guest => 22, :host => 2210, :id => "ssh"}
-#   ]
-# }
-```
-
-  2. uncomment the elk part in the inventory (ad/sevenkingdoms.local/inventory) file
-```
-[elk:vars]
-ansible_connection=ssh
-ansible_ssh_user=vagrant
-ansible_ssh_private_key_file=./.vagrant/machines/elk/virtualbox/private_key
-ansible_ssh_port=22
-host_key_checking = false
-
-[elk]
-192.168.56.50
-```
-
-  3. install with docker
-```bash
-sudo docker run -ti --rm --network host -e ANSIBLE_CONFIG=/goad/ansible -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible ansible-playbook -i ../ad/GOAD/data/inventory -i ../ad/GOAD/providers/virtualbox/inventory elk.yml
-```
-
-  3. or install by hand : 
-
+- prerequistes: 
 - you need `sshpass` for the elk installation
 ```bash
 sudo apt install sshpass
@@ -168,10 +139,23 @@ sudo apt install sshpass
 ```bash
 ansible-galaxy collection install chocolatey.chocolatey 
 ```
-- play the elk.yml playbook to install and run elk:
-```bash
-ansible-playbook elk.yml
+
+- To install and start the elk play the following commands :
 ```
+./goad.sh -t install -l GOAD -p virtualbox -m local -e -r elk.yml
+```
+
+ * -e : to add the elk in vagrantfile for the vagrant up
+ * -r : to run only the elk.yml ansible script
+
+If you want to do that by hand:
+  1. run: `GOAD_VAGRANT_OPTIONS=elk vagrant up`
+
+  2. launch the elk provisionning with the command :
+  ```
+  cd ansible
+  ansible-playbook -i ../ad/GOAD/data/inventory -i ../ad/GOAD/providers/<your_provider>/inventory elk.yml
+  ```
 
 ### V2 breaking changes
 - If you previously install the v1 do not try to update as a lot of things have changed. Just drop your old lab and build the new one (you will not regret it)

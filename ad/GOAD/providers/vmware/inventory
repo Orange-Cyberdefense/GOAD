@@ -5,6 +5,7 @@
 ; sevenkingdoms.local
 ; ------------------------------------------------
 dc01 ansible_host=192.168.56.10 dns_domain=dc01 dict_key=dc01
+ws01 ansible_host=192.168.56.30 dns_domain=dc01 dict_key=ws01
 ; ------------------------------------------------
 ; north.sevenkingdoms.local
 ; ------------------------------------------------
@@ -52,5 +53,5 @@ ad_https_proxy=http://x.x.x.x:xxxx
 ansible_ssh_user=vagrant
 ansible_ssh_private_key_file=./.vagrant/machines/elk/virtualbox/private_key
 ansible_ssh_port=22
-host_key_checking=false
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 

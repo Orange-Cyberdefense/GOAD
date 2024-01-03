@@ -12,10 +12,11 @@ JOB=
 PROVIDERS="virtualbox vmware azure proxmox"
 LABS=$(ls -A ad/ |grep -v 'TEMPLATE')
 TASKS="check install start stop status restart destroy disablevagrant enablevagrant"
-ANSIBLE_PLAYBOOKS="build.yml ad-servers.yml ad-parent_domain.yml ad-child_domain.yml ad-members.yml ad-trusts.yml ad-data.yml ad-gmsa.yml laps.yml ad-relations.yml adcs.yml ad-acl.yml servers.yml security.yml vulnerabilities.yml reboot.yml"
+ANSIBLE_PLAYBOOKS="build.yml ad-servers.yml ad-parent_domain.yml ad-child_domain.yml ad-members.yml ad-trusts.yml ad-data.yml ad-gmsa.yml laps.yml ad-relations.yml adcs.yml ad-acl.yml servers.yml security.yml vulnerabilities.yml reboot.yml elk.yml"
 METHODS="local docker"
 ANSIBLE_ONLY=0
 ANSIBLE_PLAYBOOK=
+GOAD_VAGRANT_OPTIONS=
 
 
 print_usage() {
@@ -54,7 +55,7 @@ function exists_in_list() {
     echo $LIST | tr " " '\n' | grep -F -q -x "$VALUE"
 }
 
-while getopts t:l:p:m:ar:h flag
+while getopts t:l:p:m:ar:e:h flag
   do
       case "${flag}" in
           t) TASK=${OPTARG};;
@@ -63,6 +64,7 @@ while getopts t:l:p:m:ar:h flag
           m) METHOD=${OPTARG};;
           a) ANSIBLE_ONLY=1;;
           r) ANSIBLE_PLAYBOOK=${OPTARG};;
+          e) GOAD_VAGRANT_OPTIONS="$GOAD_VAGRANT_OPTIONS,elk";;
           h) print_usage; exit;
       esac
   done
@@ -144,7 +146,7 @@ install_providing(){
     "virtualbox"|"vmware")
         cd "ad/$lab/providers/$provider"
         echo "${OK} launch vagrant"
-        vagrant up
+        GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant up
         result=$?
         if [ ! $result -eq 0 ]; then
           cd -
@@ -398,7 +400,7 @@ start(){
     "virtualbox"|"vmware")
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} start vms"
-          vagrant up
+          GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant up
           cd -
       ;;
     "proxmox")
@@ -433,7 +435,7 @@ stop(){
     "virtualbox"|"vmware")
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} stop vms"
-          vagrant halt
+          GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant halt
           cd -
       ;;
     "proxmox")
@@ -508,7 +510,7 @@ destroy(){
           read -r -p "Are you sure? [y/N] " response
           case "$response" in
               [yY][eE][sS]|[yY]) 
-                  vagrant destroy --force
+                  GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant destroy --force
                   ;;
               *)
                   echo "abort"
@@ -533,7 +535,7 @@ status(){
   case $PROVIDER in
     "virtualbox"|"vmware")
           cd "ad/$LAB/providers/$PROVIDER"
-          vagrant status
+          GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant status
           cd -
       ;;
     "proxmox")
