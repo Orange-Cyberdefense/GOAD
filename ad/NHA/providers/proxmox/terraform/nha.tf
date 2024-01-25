@@ -67,11 +67,6 @@ resource "proxmox_vm_qemu" "srv01" {
       model     = "e1000"
       tag       = 20
     }
-    network {
-      bridge    = "vmbr3"
-      model     = "e1000"
-      tag       = 30
-    }
     lifecycle {
       ignore_changes = [
         disk,
