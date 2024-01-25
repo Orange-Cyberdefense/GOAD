@@ -14,4 +14,9 @@ ansible/test.yml
 *.tfstate*
 tfplan
 *.pem
-ad/GOAD-Purple
+ad/PURPLE
+ad/REDLAB
+ad/EDRLAB
+ad/MINILAB
+#ansible/roles/edr
+#ansible/edr.yml
