@@ -21,3 +21,19 @@ variable "pm_pool" {
 variable "pm_full_clone" {
   default = false
 }
+
+variable "vm_id_win10" {
+  default = 100
+}
+
+variable "vm_id_winsrv2016" {
+  default = 101
+}
+
+variable "vm_id_winsrv2019" {
+  default = 102
+}
+
+variable "storage" {
+  default = local
+}
