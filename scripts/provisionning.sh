@@ -51,39 +51,55 @@ function run_ansible {
 
 # We run all the recipes separately to minimize faillure
 echo "[+] Running all the playbook to setup the lab"
+echo "[+] build.yml> 1/16"
 run_ansible build.yml
 
+echo "[+] ad-servers.yml> 2/16"
 run_ansible ad-servers.yml
 
+echo "[+] ad-parent_domain.yml> 3/16"
 run_ansible ad-parent_domain.yml
 
 # Wait after the child domain creation before adding servers
+echo "[+] ad-child_domain.yml> 4/16"
 run_ansible ad-child_domain.yml
 echo "$INFO Waiting 5 minutes for the child domain to be ready"
 sleep 5m
 
+echo "[+] ad-members.yml> 5/16"
 run_ansible ad-members.yml
 
+echo "[+] ad-trusts.yml> 6/16"
 run_ansible ad-trusts.yml
 
+echo "[+] ad-data.yml> 7/16"
 run_ansible ad-data.yml
 
+echo "[+] ad-gmsa.yml> 8/16"
 run_ansible ad-gmsa.yml
 
+echo "[+] laps.yml> 9/16"
 run_ansible laps.yml
 
+echo "[+] ad-relations.yml> 10/16"
 run_ansible ad-relations.yml
 
+echo "[+] adcs.yml> 11/16"
 run_ansible adcs.yml
 
+echo "[+] ad-acl.yml> 12/16"
 run_ansible ad-acl.yml
 
+echo "[+] servers.yml> 13/16"
 run_ansible servers.yml
 
+echo "[+] security.yml> 14/16"
 run_ansible security.yml
 
+echo "[+] vulnerabilities.yml> 15/16"
 run_ansible vulnerabilities.yml
 
+echo "[+] reboot.yml> 16/16"
 run_ansible reboot.yml
 
 echo "$OK your lab is successfully setup ! have fun ;)"
