@@ -1,6 +1,6 @@
 param (
   [Parameter(Mandatory,HelpMessage="Task to execute: check,install")]
-  [ValidateSet("check","install","status","start","stop","destroy","restart","snapshot","resume","suspend","validate","purge", IgnoreCase = $true)]
+  [ValidateSet("check","install","status","start","stop","destroy","restart","snapshot","resume","suspend","validate","purge","isolate","de_isolate", IgnoreCase = $true)]
   [Alias('t')]
   [string]$TASK,
   [Parameter(Mandatory,HelpMessage="Lab to use: GOAD, GOAD-light, NHA")]
@@ -57,26 +57,59 @@ function install_providing{
   }
 }
 
+# build goadansible container if required
+function build_container{
+  $ALREADY_BUILD=iex("$METHOD images | findstr ""goadansible""")
+  if (-not $ALREADY_BUILD){
+    Write-Output "$ADD Build container: $METHOD build -t goadansible ."
+    $BUILD=iex("$METHOD build -t goadansible .")
+    if ($LASTEXITCODE -ne 0){
+      Write-Output "$ERROR $METHOD build failed"
+      exit 1
+    }
+    Write-Output "$OK Container goadansible creation complete"
+  }
+}
+
+function run_ansible($command){
+  $template =
+  "$METHOD run -ti --rm --network host -h goadansible -v $($PSScriptRoot):/goad -w /goad/ansible goadansible /bin/bash -c ""$command"""
+  Write-Output "$template"
+  iex($template)
+}
+
+function isolate(){
+  switch( $PROVIDER )
+  {
+    {("virtualbox") -or ("vmware") -or ("proxmox")} {
+        Write-Output "$INFO Isolation only disables vagrant NAT interface. You have to manually disconnect the host from GOAD network. E.g. vmware: Virtual Network Editor>VMNetX (192.168.56.0)>Uncheck 'Connect a host virtual network adapter to this network'"
+        build_container
+        run_ansible("ansible-playbook -i ../ad/$LAB/data/inventory -i ../ad/$LAB/providers/$PROVIDER/inventory disable_nat.yml")
+    }
+  }
+}
+
+function de_isolate(){
+  switch( $PROVIDER )
+  {
+    {("virtualbox") -or ("vmware") -or ("proxmox")} {
+        Write-Output "$INFO De-Isolation only enables vagrant NAT interface. You have to manually connect the host to GOAD network again. E.g. vmware: Virtual Network Editor>VMNetX (192.168.56.0)>Check 'Connect a host virtual network adapter to this network'"
+        build_container
+        run_ansible("ansible-playbook -i ../ad/$LAB/data/inventory -i ../ad/$LAB/providers/$PROVIDER/inventory enable_nat.yml")
+    }
+  }
+}
+
 # configure VMs on provider
 function install_provisioning{
   switch( $PROVIDER )
   {
     {("virtualbox") -or ("vmware") -or ("proxmox")} {
       Write-Output "$INFO successful provisioning tested only for vmware. Virtualbox: hanging VMs. Proxmox: not tested. Providers are kept for testing purposed only."
-      $ALREADY_BUILD=iex("$METHOD images | findstr ""goadansible""")
-      if (-not $ALREADY_BUILD){
-        Write-Output "$ADD Build container: $METHOD build -t goadansible ."
-        $BUILD=iex("$METHOD build -t goadansible .")
-        if ($LASTEXITCODE -ne 0){
-          Write-Output "$ERROR $METHOD build failed"
-          exit 1
-        }
-        Write-Output "$OK Container goadansible creation complete"
-      }
+      build_container
       Write-Output "$OK Start provisioning from $METHOD"
       Write-Output "$PSScriptRoot"
-      Write-Output "$METHOD run -ti --rm --network host -h goadansible -v $($PSScriptRoot):/goad -w /goad/ansible goadansible /bin/bash -c ""ANSIBLE_COMMAND='ansible-playbook -i ../ad/$LAB/data/inventory -i ../ad/$LAB/providers/$PROVIDER/inventory' ../scripts/provisionning.sh"""
-      iex("$METHOD run -ti --rm --network host -h goadansible -v $($PSScriptRoot):/goad -w /goad/ansible goadansible /bin/bash -c ""ANSIBLE_COMMAND='ansible-playbook -i ../ad/$LAB/data/inventory -i ../ad/$LAB/providers/$PROVIDER/inventory' ../scripts/provisionning.sh""")
+      run_ansible("ANSIBLE_COMMAND='ansible-playbook -i ../ad/$LAB/data/inventory -i ../ad/$LAB/providers/$PROVIDER/inventory' ../scripts/provisionning.sh")
     }
   }
 }
@@ -144,6 +177,8 @@ function main {
     resume { vagrant_command("resume") }
     suspend { vagrant_command("suspend") }
     validate { vagrant_command("validate") }
+    isolate { isolate }
+    de_isolate { de_isolate }
     default { Write-Output "unknow option for TASK" } # NOT required as param([ValidateSet()] takes care
   }
 
