@@ -22,7 +22,10 @@
 
 - name: Set dhcp scope
   win_shell: |
-    Add-DhcpServerV4Scope -Name "DHCP Scope" -StartRange {{ip_from}} -EndRange {{ip_to}} -SubnetMask {{ip_mask}} -LeaseDuration {{lease_duration}}
+    $s = Get-DhcpServerv4Scope
+    if ($null -eq $s) {
+      Add-DhcpServerV4Scope -Name "DHCP Scope" -StartRange {{ip_from}} -EndRange {{ip_to}} -SubnetMask {{ip_mask}} -LeaseDuration {{lease_duration}}
+    }
 
 - name: Add DNS Server, Router Gateway Options in DHCP
   win_shell: |
