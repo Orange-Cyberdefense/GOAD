@@ -5,7 +5,8 @@ OK=$(tput setaf 2; echo -n "[✓]"; tput sgr0)
 INFO=$(tput setaf 3; echo -n "[-]"; tput sgr0)
 
 RESTART_COUNT=0
-MAX_RETRY=3
+MAX_RETRY=5
+
 
 #ANSIBLE_COMMAND="ansible-playbook -i ../ad/azure-sevenkingdoms.local/inventory"
 echo "[+] Current folder $(pwd)"
@@ -24,7 +25,9 @@ function run_ansible {
     echo "$OK Running command: $ANSIBLE_COMMAND $1"
 
     # Run the command with a timeout of 30 minutes to avoid failure when ansible is stuck
-    timeout 30m $ANSIBLE_COMMAND $1
+    # SCCM START : set timeout very long for install
+    timeout 180m $ANSIBLE_COMMAND $1
+    # SCCM END
     exit_code=$(echo $?)
 
     if [ $exit_code -eq 4 ]; then # ansible result code 4 = RUN_UNREACHABLE_HOSTS
@@ -51,6 +54,7 @@ function run_ansible {
 
 # We run all the recipes separately to minimize faillure
 echo "[+] Running all the playbook to setup the lab"
+
 run_ansible build.yml
 
 run_ansible ad-servers.yml
@@ -84,6 +88,15 @@ run_ansible security.yml
 
 run_ansible vulnerabilities.yml
 
+# SCCM START
+run_ansible sccm_install.yml
+
+run_ansible sccm_config.yml
+
+run_ansible dhcp.yml
+# SCCM END
+
 run_ansible reboot.yml
 
 echo "$OK your lab is successfully setup ! have fun ;)"
+date
