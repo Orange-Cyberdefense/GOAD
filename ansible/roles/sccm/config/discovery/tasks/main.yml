@@ -6,14 +6,23 @@
       [CmdletBinding()]
       param (
           [String]
+          $siteCode,
+
+          [String]
+          $sccmFQDN,
+
+          [String]
           $group_ldap,
           
           [String]
           $computer
       )
       Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
-      $SiteCode = Get-PSDrive -PSProvider CMSITE
-      Set-Location ($SiteCode.Name +":")
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
 
       # Forest
       # create a Schedule Token 
@@ -21,25 +30,25 @@
       
       # Enable the Active Directory Forest Discovery 
       try {
-        Set-CMDiscoveryMethod -ActiveDirectoryForestDiscovery -SiteCode $SiteCode.Name -Enabled:$true -PollingSchedule $Schedule -EnableActiveDirectorySiteBoundaryCreation:$true -EnableSubnetBoundaryCreation:$true
+        Set-CMDiscoveryMethod -ActiveDirectoryForestDiscovery -SiteCode $siteCode -Enabled:$true -PollingSchedule $Schedule -EnableActiveDirectorySiteBoundaryCreation:$true -EnableSubnetBoundaryCreation:$true
       } catch {
         # already exist
         $Ansible.Changed = $false
       }
 
       # To run AD Forest Discovery now
-      Invoke-CMForestDiscovery -SiteCode $SiteCode.Name -Verbose
+      Invoke-CMForestDiscovery -SiteCode $siteCode -Verbose
 
       # Group
       try {
-        Set-CMDiscoveryMethod -SiteCode $SiteCode.Name `
+        Set-CMDiscoveryMethod -SiteCode $siteCode `
         -ActiveDirectoryGroupDiscovery -Enabled $true `
         -EnableDeltaDiscovery $true -DeltaDiscoveryIntervalMinutes 5 `
         -EnableFilteringExpiredLogon $true -TimeSinceLastLogonDays 90 `
         -EnableFilteringExpiredPassword $true -TimeSinceLastPasswordUpdateDays 90 `
         -DiscoverDistributionGroupsMembership $true `
         -AddGroupDiscoveryScope (New-CMADGroupDiscoveryScope `
-            -name MyScope -SiteCode $SiteCode.Name -LdapLocation $group_ldap -RecursiveSearch $true)
+            -name MyScope -SiteCode $siteCode -LdapLocation $group_ldap -RecursiveSearch $true)
       } catch {
         # already exist
         $Ansible.Changed = $false
@@ -52,9 +61,11 @@
       (Get-Service SMS_SITE_COMPONENT_MANAGER -ComputerName $computer).start()
 
       # To run Group Discovery now
-      Invoke-CMForestDiscovery -SiteCode $SiteCode.Name -Verbose
+      Invoke-CMForestDiscovery -SiteCode $siteCode -Verbose
     error_action: stop
     parameters:
+      siteCode: "{{site_code}}"
+      sccmFQDN: "{{sccm_server}}.{{domain}}"
       group_ldap: "LDAP://CN=SCCM-Managed-Device,CN=USERS,DC=sccm,DC=lab"
       computer: "MECM"
   vars:

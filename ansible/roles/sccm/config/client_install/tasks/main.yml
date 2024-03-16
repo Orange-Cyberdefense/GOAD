@@ -4,22 +4,35 @@
       [CmdletBinding()]
       param (
           [String]
+          $siteCode,
+
+          [String]
+          $sccmFQDN,
+
+          [String]
           $device,
 
           [String]
           $password
       )
       Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
-      $SiteCode = Get-PSDrive -PSProvider CMSITE
-      Set-Location ($SiteCode.Name +":")
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
 
+      $Ansible.Changed = $false
       $client_active = Get-CMDevice| Select-Object Name, ClientActiveStatus
       foreach($c in $client_active) {
           if (($c.name -eq $device) -and (-not $c.ClientActiveStatus)) {
-            Install-CMClient -DeviceName $device -SiteCode $SiteCode.Name -AlwaysInstallClient $True -IncludeDomainController $true
+            Install-CMClient -DeviceName $device -SiteCode $siteCode -AlwaysInstallClient $True -IncludeDomainController $true
+            $Ansible.Changed = $true
           }
       }
     parameters:
+      siteCode: "{{site_code}}"
+      sccmFQDN: "{{sccm_server}}.{{domain}}"
       device: "{{item}}"
   vars:
     ansible_become: yes
@@ -27,5 +40,3 @@
     ansible_become_user: "{{domain_username}}"
     ansible_become_password: "{{domain_password}}"
   loop: "{{clients}}"
-
-  Get-CMDevice| Select-Object Name, ClientActiveStatus

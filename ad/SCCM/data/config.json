@@ -12,8 +12,7 @@
                     "SCCMLAB\\Domain Admins"
                 ],
                 "Remote Desktop Users" : [
-                    "SCCMLAB\\LocalAdmins",
-                    "SCCMLAB\\RDPUsers"
+                    "SCCMLAB\\LocalAdmins"
                 ]
             },
             "scripts" : [],
@@ -90,6 +89,7 @@
             "domain_password" : "AZERTY*qsdfg",
             "netbios_name": "SCCMLAB",
             "sccm": {
+                "site_code": "P01",
                 "sccm_server": "MECM",
                 "sccm_mssql_server": "MSSQL",
                 "clients": ["CLIENT","MECM","MSSQL"],

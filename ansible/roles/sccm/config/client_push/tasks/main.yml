@@ -5,16 +5,25 @@
       [CmdletBinding()]
       param (
           [String]
+          $siteCode,
+
+          [String]
+          $sccmFQDN,
+
+          [String]
           $pushAccount
       )
       # Step 1 - Import the Configuration Manager module
       Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
-      $SiteCode = Get-PSDrive -PSProvider CMSITE
-      Set-Location ($SiteCode.Name +":")
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
+      $property = "SMSSITECODE=" + $siteCode
 
-      $sc=$SiteCode.Name
       Set-CMClientPushInstallation `
-      -SiteCode $sc `
+      -SiteCode $siteCode `
       -EnableAutomaticClientPushInstallation $True `
       -EnableSystemTypeConfigurationManager $True `
       -EnableSystemTypeServer $True `
@@ -22,8 +31,10 @@
       -EnableSystemTypeWorkstation $True `
       -InstallClientToDomainController $false `
       -AddAccount $pushAccount `
-      -InstallationProperty "SMSSITECODE="+$sc
+      -InstallationProperty $property
     parameters:
+      siteCode: "{{site_code}}"
+      sccmFQDN: "{{sccm_server}}.{{domain}}"
       pushAccount: "{{push_account}}"
   vars:
     ansible_become: yes

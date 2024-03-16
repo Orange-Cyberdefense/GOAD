@@ -11,6 +11,7 @@
     domain: "{{lab.hosts[dict_key].domain}}"
     domain_username: "{{domain}}\\Administrator"
     domain_password: "{{lab.domains[domain].domain_password}}"
+    site_code: "{{lab.domains[domain].sccm.site_code}}"
     sccm_server: "{{lab.domains[domain].sccm.sccm_server | default('')}}"
     sccm_mssql_server: "{{lab.domains[domain].sccm.sccm_mssql_server | default('')}}"
 
@@ -26,5 +27,6 @@
     domain: "{{lab.hosts[dict_key].domain}}"
     domain_username: "{{domain}}\\Administrator"
     domain_password: "{{lab.domains[domain].domain_password}}"
+    site_code: "{{lab.domains[domain].sccm.site_code}}"
     sccm_server: "{{lab.domains[domain].sccm.sccm_server | default('')}}"
     sccm_mssql_server: "{{lab.domains[domain].sccm.sccm_mssql_server | default('')}}"
