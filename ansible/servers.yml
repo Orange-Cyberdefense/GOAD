@@ -35,6 +35,15 @@
   roles:
     - { role: 'mssql_ssms', tags: 'mssql_ssms'}
 
+- name: "Install SQL Server reporting"
+  hosts: mssql_reporting
+  roles:
+    - { role: 'mssql_reporting', tags: 'mssql_reporting'}
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    domain_admin: "{{domain}}\\Administrator"
+    domain_admin_password: "{{lab.domains[domain].domain_password}}"
+
 - name: "Install Webdav"
   hosts: webdav
   roles:

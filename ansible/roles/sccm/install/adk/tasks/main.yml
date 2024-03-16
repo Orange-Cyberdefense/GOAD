@@ -1,0 +1,46 @@
+# Step 7 – Installing Windows ADK version 2004
+# --------------------------------------------------------------
+
+- name: create directory to store the install files
+  ansible.windows.win_file:
+    path: C:\setup
+    state: directory
+
+- name: create directory to store the install files
+  ansible.windows.win_file:
+    path: C:\setup\adk
+    state: directory
+
+- name: check ADK version 2004 installation exists
+  win_stat:
+    path: C:\setup\adk\adksetup.exe
+  register: adksetup_installer_file
+
+# Must be ADK version 2004 for MECM 2303
+# Check if the file has already been downloaded (?)
+- name: download ADK version 2004
+  ansible.windows.win_get_url:
+    url: https://go.microsoft.com/fwlink/?linkid=2120254
+    dest: C:\setup\adk\adksetup.exe
+  when: not adksetup_installer_file.stat.exists
+
+- name: check ADK adkwinpesetup exists
+  win_stat:
+    path: C:\setup\adk\adkwinpesetup.exe
+  register: adkwinpesetup_installer_file
+
+- name: download PE add-on
+  ansible.windows.win_get_url:
+    url: https://go.microsoft.com/fwlink/?linkid=2120253
+    dest: C:\setup\adk\adkwinpesetup.exe
+  when: not adkwinpesetup_installer_file.stat.exists
+
+- name: installing ADK version 2004
+  win_shell: .\adksetup.exe /quiet /features OptionId.DeploymentTools OptionId.UserStateMigrationTool
+  args:
+    chdir: C:\setup\adk 
+
+- name: installing PE add-on
+  win_shell: .\adkwinpesetup.exe /quiet /features OptionId.WindowsPreinstallationEnvironment
+  args:
+    chdir: C:\setup\adk

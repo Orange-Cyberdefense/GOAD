@@ -1,0 +1,106 @@
+; LAB SCENARIO CONFIGURATION -----------------------------
+
+; computers inside domain (mandatory)
+; usage : build.yml, ad-relations.yml, ad-servers.yml, vulnerabilities.yml
+[domain]
+dc01
+srv01
+srv02
+ws01
+
+; domain controler (mandatory)
+; usage : ad-acl.yml, ad-data.yml, ad-relations.yml, laps.yml
+[dc]
+dc01
+
+; domain server to enroll (mandatory if you want servers)
+; usage : ad-data.yml, ad-servers.yml, laps.yml
+[server]
+srv01
+srv02
+
+; workstation to enroll (mandatory if you want workstation)
+; usage : ad-servers.yml, laps.yml
+[workstation]
+ws01
+
+; parent domain controler (mandatory)
+; usage : ad-servers.yml
+[parent_dc]
+dc01
+
+; child domain controler (need a fqdn child_name.parent_name)
+; usage : ad-servers.yml
+[child_dc]
+
+; external trust, need domain trust entry in config (bidirectionnal)
+; usage : ad-trusts.yml
+[trust]
+
+; install adcs
+; usage : adcs.yml
+[adcs]
+
+; install custom template (dc)
+; usage : adcs.yml
+[adcs_customtemplates]
+
+; install iis with default website asp upload on 80
+; usage : servers.yml
+[iis]
+;srv01
+
+; install mssql
+; usage : servers.yml
+[mssql]
+srv02
+; install mssql gui
+; usage : servers.yml
+[mssql_ssms]
+srv02
+[mssql_reporting]
+srv02
+
+; install webdav 
+[webdav]
+
+; install elk
+; usage : elk.yml
+[elk_server]
+elk
+
+; add log agent for elk
+; usage : elk.yml
+[elk_log]
+dc01
+srv01
+ws01
+
+[laps_dc]
+[laps_server]
+[laps_workstation]
+
+; allow computer update
+; usage : update.yml
+[update]
+dc01
+srv01
+ws01
+
+; disable update
+; usage : update.yml
+[no_update]
+
+; allow defender
+; usage : security.yml
+[defender_on]
+dc01
+srv01
+srv02
+
+; disable defender
+; usage : security.yml
+[defender_off]
+
+[sccm]
+srv01

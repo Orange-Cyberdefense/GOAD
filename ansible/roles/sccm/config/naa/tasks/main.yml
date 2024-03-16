@@ -1,0 +1,33 @@
+# script source : https://www.oscc.be/sccm/configmgr/powershell/naa/Set-NAA-using-Powershell-in-CB/
+- name: Create Configuration Manager user account 
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param ( 
+          [String]
+          $user
+      )
+      # Step 1 - Import the Configuration Manager module
+      Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
+      $SiteCode = Get-PSDrive -PSProvider CMSITE
+      Set-Location ($SiteCode.Name +":")
+
+      # Step 2 - make the user account your new Network Access Account
+      $component = gwmi -class SMS_SCI_ClientComp -Namespace "root\sms\site_$($SiteCode.Name)"  | Where-Object {$_.ItemName -eq "Software Distribution"}
+      $props = $component.PropLists
+      $prop = $props | where {$_.PropertyListName -eq "Network Access User Names"}
+
+      $new = [WmiClass] "root\sms\site_$($SiteCode.name):SMS_EmbeddedPropertyList"
+      $embeddedproperylist = $new.CreateInstance()
+      $embeddedproperylist.PropertyListName = "Network Access User Names"
+      $prop.Values = $user
+
+      $component.PropLists = $props
+      $component.Put() | Out-Null
+    parameters:
+      user: "{{naa_user}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"

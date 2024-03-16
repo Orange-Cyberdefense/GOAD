@@ -1,0 +1,46 @@
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+- name: "Config SCCM"
+  hosts: sccm
+  roles:
+    - { role: 'sccm/config/pxe', tags: 'sccm_pxe', when: sccm_server != ''}
+    - { role: 'sccm/config/discovery', tags: 'sccm_discovery', when: sccm_server != ''}
+    - { role: 'sccm/config/boundary', tags: 'sccm_boundary', when: sccm_server != ''}
+    - { role: 'sccm/config/accounts', tags: 'sccm_accounts', when: sccm_server != ''}
+    - { role: 'sccm/config/client_push', tags: 'sccm_boundary', when: sccm_server != ''}
+    - { role: 'sccm/config/naa', tags: 'sccm_naa', when: sccm_server != ''}
+    - { role: 'sccm/config/client_install', tags: 'sccm_pxe', when: sccm_server != ''}
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    domain_username: "{{domain}}\\Administrator"
+    domain_password: "{{lab.domains[domain].domain_password}}"
+    sccm_server: "{{lab.domains[domain].sccm.sccm_server | default('')}}"
+    sccm_mssql_server: "{{lab.domains[domain].sccm.sccm_mssql_server | default('')}}"
+    pxe_pass: "{{lab.domains[domain].sccm.pxe_pass| default('')}}"
+    clients: "{{lab.domains[domain].sccm.clients| default([])}}"
+    naa_user_name: "{{lab.domains[domain].sccm.naa_user| default('')}}"
+    naa_user: "{{domain}}\\{{naa_user_name}}"
+    naa_pass: "{{lab.domains[domain].users[naa_user_name].password}}"
+    push_account_name: "{{lab.domains[domain].sccm.push_account| default('')}}"
+    push_account: "{{domain}}\\{{push_account_name}}"
+    push_account_pass: "{{lab.domains[domain].users[push_account_name].password}}"
+    account_da_name: "{{lab.domains[domain].sccm.account_da| default('')}}"
+    account_da: "{{domain}}\\{{account_da_name}}"
+    account_da_pass: "{{lab.domains[domain].users[account_da_name].password}}"
+    cma_users: {
+      push_account: {
+        name: "{{push_account}}",
+        password: "{{push_account_pass}}"
+      },
+      naa_user: {
+        name: "{{naa_user}}",
+        password: "{{naa_pass}}"
+      },
+      account_da: {
+        name: "{{account_da}}",
+        password: "{{account_da_pass}}"
+      }
+    }

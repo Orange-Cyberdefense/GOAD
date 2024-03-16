@@ -19,7 +19,7 @@
 
 - name: create the configuration file
   win_template: 
-    src: files/sql_conf.ini.j2
+    src: files/sql_conf.ini.{{sql_version}}.j2
     dest: c:\setup\mssql\sql_conf.ini
 
 - name: check downloaded file exists
@@ -46,10 +46,19 @@
 # Get-ADUser -Identity "{{SQLSVCACCOUNT}}" | Set-ADAccountControl -TrustedToAuthForDelegation $true
 # Set-ADUser -Identity "{{SQLSVCACCOUNT}}" -Add @{'msDS-AllowedToDelegateTo'=@('CIFS/winterfell.north.sevenkingdoms.local','CIFS/winterfell')}
 
-- name: check install already done
-  win_stat:
-    path: "C:\\Program Files\\Microsoft SQL Server\\MSSQL15.{{sql_instance_name}}"
+# - name: check install already done
+#   win_stat:
+#     path: "C:\\Program Files\\Microsoft SQL Server\\MSSQL15.{{sql_instance_name}}"
+#   register: mssql_install_already_done
+
+- name: check MSSQL service already exist (if failed service do not exist, launch install)
+  win_service:
+    name: '{{mssql_service_name}}'
   register: mssql_install_already_done
+  failed_when: mssql_install_already_done is not defined
+  ignore_errors: yes
+
+- debug: msg="{{mssql_install_already_done}}"
 
 # Install the database with a domain admin user
 - name: Install the database
@@ -66,88 +75,30 @@
   until: "mssqlinstall is not failed"
   retries: 3
   delay: 120
-  when: not mssql_install_already_done.stat.exists
+  when: mssql_install_already_done.state is not defined or mssql_install_already_done.name is not defined
+#  when: not mssql_install_already_done.stat.exists
 
+# sql server 2022
+- name: Add or update registry for ip port
+  win_regedit:
+    path: 'HKLM:\Software\Microsoft\Microsoft SQL Server\MSSQL16.{{ sql_instance_name }}\MSSQLServer\SuperSocketNetLib\Tcp\IPAll'
+    name: TcpPort
+    data: 1433
+  register: win_reg
+  when: sql_version == "2022"
+
+# sql server 2019
 - name: Add or update registry for ip port
   win_regedit:
     path: 'HKLM:\Software\Microsoft\Microsoft SQL Server\MSSQL15.{{ sql_instance_name }}\MSSQLServer\SuperSocketNetLib\Tcp\IPAll'
     name: TcpPort
     data: 1433
   register: win_reg
+  when: sql_version == "2019"
 
-# - name: Add or update registry for named pipe
-#   win_regedit:
-#     path: 'HKLM:\Software\Microsoft\Microsoft SQL Server\MSSQL15.{{ sql_instance_name }}\MSSQLServer\SuperSocketNetLib\Np'
-#     name: Enabled
-#     data: 0x00000001
-#     type: dword
-#   register: win_reg
-
-- name: Restart a service
-  win_service:
-    name: 'MSSQL${{ sql_instance_name }}'
-    force_dependent_services: yes
-    state: restarted
+- name: Reboot
+  win_reboot:
   when: win_reg.changed
-
-- name: Add MSSQL admin
-  win_shell: |
-    SqlCmd -E -Q "CREATE LOGIN [{{item}}] FROM WINDOWS"
-    SqlCmd -E -Q "SP_ADDSRVROLEMEMBER '{{item}}','SYSADMIN'"
-  become: yes
-  become_method: runas
-  become_user: "{{SQLSVCACCOUNT}}"
-  vars:
-    ansible_become_pass: "{{SQLSVCPASSWORD}}"
-  loop: "{{sql_sysadmins}}"
-
-- name: Add IMPERSONATE on login
-  win_shell: |
-    SqlCmd -E -Q "CREATE LOGIN [{{item.key}}] FROM WINDOWS"
-    SqlCmd -E -Q "GRANT IMPERSONATE ON LOGIN::[{{item.value}}] TO [{{item.key}}]"
-  become: yes
-  become_method: runas
-  become_user: "{{SQLSVCACCOUNT}}"
-  vars:
-    ansible_become_pass: "{{SQLSVCPASSWORD}}"
-  with_dict: "{{executeaslogin}}"
-
-- name: Add IMPERSONATE on user
-  win_shell: |
-    SqlCmd -E -Q "CREATE LOGIN [{{item.key}}] FROM WINDOWS"
-    SqlCmd -E -Q "USE {{item.value.db}};CREATE USER [{{item.value.user}}] FOR LOGIN [{{item.value.user}}]"
-    SqlCmd -E -Q "USE {{item.value.db}};GRANT IMPERSONATE ON USER::[{{item.value.impersonate}}] TO [{{item.value.user}}]"
-  become: yes
-  become_method: runas
-  become_user: "{{SQLSVCACCOUNT}}"
-  vars:
-    ansible_become_pass: "{{SQLSVCPASSWORD}}"
-  with_dict: "{{executeasuser}}"
-
-- name: Enable sa account
-  win_shell: |
-    SqlCmd -E -Q "ALTER LOGIN sa ENABLE"
-    SqlCmd -E -Q "ALTER LOGIN sa WITH PASSWORD = '{{sa_password}}' , CHECK_POLICY=OFF"
-  become: yes
-  become_method: runas
-  become_user: "{{SQLSVCACCOUNT}}"
-  vars:
-    ansible_become_pass: "{{SQLSVCPASSWORD}}"
-
-- name: enable MSSQL authentication and windows authent
-  win_shell: |
-    SqlCmd -E -Q "EXEC xp_instance_regwrite N'HKEY_LOCAL_MACHINE', N'Software\Microsoft\MSSQLServer\MSSQLServer', N'LoginMode', REG_DWORD, 2"
-  become: yes
-  become_method: runas
-  become_user: "{{SQLSVCACCOUNT}}"
-  vars:
-    ansible_become_pass: "{{SQLSVCPASSWORD}}"
-
-- name: Restart service
-  win_service:
-    name: 'MSSQL${{ sql_instance_name }}'
-    force_dependent_services: yes
-    state: restarted
 
 - name: Firewall | Allow MSSQL through Firewall
   win_dsc:
@@ -172,3 +123,73 @@
     Localport: "1434"
     Protocol: "UDP"
     Description: "Opens the discover port for MSSQL"
+
+- name: Be sure service is started
+  win_service:
+    name: '{{mssql_service_name}}'
+    force_dependent_services: yes
+    state: started
+
+- name: Wait for port 1433 to become open on the host, start checking every 5 seconds
+  ansible.windows.win_wait_for:
+    port: 1433
+    delay: 5
+
+- name: Add MSSQL admin
+  win_shell: |
+    SqlCmd {{connection_type}} -Q "CREATE LOGIN [{{item}}] FROM WINDOWS"
+    SqlCmd {{connection_type}} -Q "SP_ADDSRVROLEMEMBER '{{item}}','SYSADMIN'"
+  become: yes
+  become_method: runas
+  become_user: "{{SQLSVCACCOUNT}}"
+  vars:
+    ansible_become_pass: "{{SQLSVCPASSWORD}}"
+  loop: "{{sql_sysadmins}}"
+
+- name: Add IMPERSONATE on login
+  win_shell: |
+    SqlCmd {{connection_type}} -Q "CREATE LOGIN [{{item.key}}] FROM WINDOWS"
+    SqlCmd {{connection_type}} -Q "GRANT IMPERSONATE ON LOGIN::[{{item.value}}] TO [{{item.key}}]"
+  become: yes
+  become_method: runas
+  become_user: "{{SQLSVCACCOUNT}}"
+  vars:
+    ansible_become_pass: "{{SQLSVCPASSWORD}}"
+  with_dict: "{{executeaslogin}}"
+
+- name: Add IMPERSONATE on user
+  win_shell: |
+    SqlCmd {{connection_type}} -Q "CREATE LOGIN [{{item.key}}] FROM WINDOWS"
+    SqlCmd {{connection_type}} -Q "USE {{item.value.db}};CREATE USER [{{item.value.user}}] FOR LOGIN [{{item.value.user}}]"
+    SqlCmd {{connection_type}} -Q "USE {{item.value.db}};GRANT IMPERSONATE ON USER::[{{item.value.impersonate}}] TO [{{item.value.user}}]"
+  become: yes
+  become_method: runas
+  become_user: "{{SQLSVCACCOUNT}}"
+  vars:
+    ansible_become_pass: "{{SQLSVCPASSWORD}}"
+  with_dict: "{{executeasuser}}"
+
+- name: Enable sa account
+  win_shell: |
+    SqlCmd {{connection_type}} -Q "ALTER LOGIN sa ENABLE"
+    SqlCmd {{connection_type}} -Q "ALTER LOGIN sa WITH PASSWORD = '{{sa_password}}' , CHECK_POLICY=OFF"
+  become: yes
+  become_method: runas
+  become_user: "{{SQLSVCACCOUNT}}"
+  vars:
+    ansible_become_pass: "{{SQLSVCPASSWORD}}"
+
+- name: enable MSSQL authentication and windows authent
+  win_shell: |
+    SqlCmd {{connection_type}} -Q "EXEC xp_instance_regwrite N'HKEY_LOCAL_MACHINE', N'Software\Microsoft\MSSQLServer\MSSQLServer', N'LoginMode', REG_DWORD, 2"
+  become: yes
+  become_method: runas
+  become_user: "{{SQLSVCACCOUNT}}"
+  vars:
+    ansible_become_pass: "{{SQLSVCPASSWORD}}"
+
+- name: Restart service MSSQL
+  win_service:
+    name: '{{mssql_service_name}}'
+    force_dependent_services: yes
+    state: restarted
