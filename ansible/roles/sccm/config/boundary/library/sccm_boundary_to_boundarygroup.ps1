@@ -6,7 +6,7 @@
 #  sccm_boundary_to_boundarygroup:
 #   boundary_name: "boundary name"
 #   boundary_group: "boundary group name"
-#   site_code: "code" (optional)
+#   site_code: "code"
 #   state: "present" (absent/present)
 
 $ErrorActionPreference = "Stop"
@@ -32,10 +32,10 @@ if ($null -eq $sc) {
 }
 Set-Location ($siteCode +":")
 
-$boundary_group_list = Get-CMBoundary -BoundaryGroupName $boundaryGroupName -ErrorAction SilentlyContinue
+($boundary_group_list = Get-CMBoundary -BoundaryGroupName $boundaryGroupName) | out-null
 
-$boundary = Get-CMBoundary -BoundaryName $boundaryName -ErrorAction SilentlyContinue
-$boundaryGroup = Get-CMBoundaryGroup -Name $boundaryGroupName -ErrorAction SilentlyContinue
+($boundary = Get-CMBoundary -BoundaryName $boundaryName) | out-null 
+($boundaryGroup = Get-CMBoundaryGroup -Name $boundaryGroupName) | out-null
 
 $present = $false
 foreach  ($b in $boundary_group_list){
@@ -46,11 +46,11 @@ foreach  ($b in $boundary_group_list){
 }
 
 if ($state -eq "absent" -and $present) {
-    $boundaryGroup | Remove-CMBoundaryFromGroup -BoundaryName $boundaryName -WhatIf:$check_mode
+    $boundaryGroup | Remove-CMBoundaryFromGroup -BoundaryName $boundaryName -WhatIf:$check_mode | out-null
     $result.changed = $true
 } elseif ($state -eq "present") {
     if (-Not $present) {
-        Add-CMBoundaryToGroup -BoundaryName $boundaryName -BoundaryGroupName $boundaryGroupName -WhatIf:$check_mode
+        Add-CMBoundaryToGroup -BoundaryName $boundaryName -BoundaryGroupName $boundaryGroupName -WhatIf:$check_mode | out-null
         $result.changed = $true
     }
 }

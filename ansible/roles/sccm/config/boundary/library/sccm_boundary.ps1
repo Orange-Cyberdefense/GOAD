@@ -7,7 +7,7 @@
 #   name: "boundary name"
 #   type: IPSubNet/ADSite/IPv6Prefix/IPRange/VPN
 #   value: "value" (ex: "172.16.50.0/24" / "Default-First-Site-Name" / "10.255.255.0-10.255.255.255")
-#   site_code: "code" (optional)
+#   site_code: "code"
 #   state: "present" (absent/present)
 
 $ErrorActionPreference = "Stop"
@@ -35,15 +35,15 @@ if ($null -eq $sc) {
 Set-Location ($siteCode +":")
 
 # search by name
-$boundary = Get-CMBoundary -BoundaryName $name -ErrorAction SilentlyContinue
+($boundary = Get-CMBoundary -BoundaryName $name) | out-null
 
 if ($state -eq "absent" -and $null -ne $boundary) {
-    $boundary | Remove-CMBoundary -WhatIf:$check_mode
+    $boundary | Remove-CMBoundary -WhatIf:$check_mode | out-null
     $result.changed = $true
 } elseif ($state -eq "present") {
     $update = $true
     if ($null -eq $boundary) {
-        New-CMBoundary -DisplayName $name -BoundaryType $boundary_type -Value $boundary_value -WhatIf:$check_mode
+        New-CMBoundary -DisplayName $name -BoundaryType $boundary_type -Value $boundary_value -WhatIf:$check_mode | out-null
         $result.changed = $true
     }
 }

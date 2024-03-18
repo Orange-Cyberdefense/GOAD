@@ -6,7 +6,7 @@
 # sccm_boundary_group:
 #   name: "boundary group name"
 #   server: sccmserver.myad.lab
-#   site_code: "code" (optional)
+#   site_code: "code"
 #   state: "present" (absent/present)
 
 $ErrorActionPreference = "Stop"
@@ -31,14 +31,14 @@ if ($null -eq $sc) {
 }
 Set-Location ($siteCode +":")
 
-$boundaryGroup = Get-CMBoundaryGroup -Name $name -ErrorAction SilentlyContinue
+($boundaryGroup = Get-CMBoundaryGroup -Name $name) | out-null
 
 if ($state -eq "absent" -and $null -ne $boundaryGroup) {
-    $boundaryGroup | Remove-CMBoundaryGroup -WhatIf:$check_mode
+    $boundaryGroup | Remove-CMBoundaryGroup -WhatIf:$check_mode | out-null
     $result.changed = $true
 } elseif ($state -eq "present") {
     if ($null -eq $boundaryGroup) {
-        New-CMBoundaryGroup -Name $name -AddSiteSystemServerName $server -DefaultSiteCode $sitecode -WhatIf:$check_mode
+        New-CMBoundaryGroup -Name $name -AddSiteSystemServerName $server -DefaultSiteCode $sitecode -WhatIf:$check_mode | out-null
         $result.changed = $true
     }
 }
