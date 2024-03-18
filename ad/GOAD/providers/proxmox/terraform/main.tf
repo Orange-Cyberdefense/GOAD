@@ -1,12 +1,8 @@
 terraform {
   required_providers {
-    #proxmox = {
-      #source = "telmate/proxmox"
-      #version = ">=1.0.0"
-    #}
     proxmox = {
-      source  = "thegameprofi/proxmox"
-      version = ">= 2.9.15"
+      source = "Telmate/proxmox"
+      version = "3.0.1-rc1"
     }
   }
 }
