@@ -43,7 +43,11 @@ if ($state -eq "absent" -and $null -ne $boundary) {
 } elseif ($state -eq "present") {
     $update = $true
     if ($null -eq $boundary) {
-        New-CMBoundary -DisplayName $name -BoundaryType $boundary_type -Value $boundary_value -WhatIf:$check_mode | out-null
+        try {
+            New-CMBoundary -DisplayName $name -BoundaryType $boundary_type -Value $boundary_value -WhatIf:$check_mode | out-null
+        } catch {
+            Set-CMBoundary -DisplayName $name -BoundaryType $boundary_type -Value $boundary_value -WhatIf:$check_mode | out-null
+        }
         $result.changed = $true
     }
 }

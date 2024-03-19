@@ -50,8 +50,12 @@ if ($state -eq "absent" -and $present) {
     $result.changed = $true
 } elseif ($state -eq "present") {
     if (-Not $present) {
-        Add-CMBoundaryToGroup -BoundaryName $boundaryName -BoundaryGroupName $boundaryGroupName -WhatIf:$check_mode | out-null
-        $result.changed = $true
+        try {
+            Add-CMBoundaryToGroup -BoundaryName $boundaryName -BoundaryGroupName $boundaryGroupName -WhatIf:$check_mode | out-null
+            $result.changed = $true
+        } catch {
+            $result.changed = $false
+        }
     }
 }
 

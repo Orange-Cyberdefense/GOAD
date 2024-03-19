@@ -38,7 +38,11 @@ if ($state -eq "absent" -and $null -ne $boundaryGroup) {
     $result.changed = $true
 } elseif ($state -eq "present") {
     if ($null -eq $boundaryGroup) {
-        New-CMBoundaryGroup -Name $name -AddSiteSystemServerName $server -DefaultSiteCode $sitecode -WhatIf:$check_mode | out-null
+        try {
+            New-CMBoundaryGroup -Name $name -AddSiteSystemServerName $server -DefaultSiteCode $sitecode -WhatIf:$check_mode | out-null
+        } catch {
+            Set-CMBoundaryGroup -Name $name -AddSiteSystemServerName $server -DefaultSiteCode $sitecode -WhatIf:$check_mode | out-null
+        }
         $result.changed = $true
     }
 }

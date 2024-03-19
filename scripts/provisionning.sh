@@ -89,9 +89,15 @@ run_ansible security.yml
 run_ansible vulnerabilities.yml
 
 # SCCM START
-run_ansible sccm_install.yml
+run_ansible sccm-install.yml
 
-run_ansible sccm_config.yml
+# reboot before launching the sccm config to finish the install
+run_ansible reboot.yml
+
+run_ansible sccm-config.yml
+
+echo "$INFO Waiting 10 minutes for the sccm client installation"
+sleep 10m
 
 run_ansible dhcp.yml
 # SCCM END
