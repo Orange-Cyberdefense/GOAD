@@ -6,7 +6,7 @@ boxes = [
   { :name => "SCCM-DC",  :ip => "192.168.33.10", :box => "mayfly/windows_server2019", :cpu => 2, :ram => 4000, :os => "windows"},
   { :name => "SCCM-MECM" , :ip => "192.168.33.11", :box => "mayfly/windows_server2019", :cpu => 2, :ram => 4000, :os => "windows"},
   { :name => "SCCM-MSSQL", :ip => "192.168.33.12", :box => "mayfly/windows_server2019", :cpu => 2, :ram => 4000, :os => "windows"},
-  { :name => "SCCM-WS",  :ip => "192.168.33.13", :box => "mayfly/windows_server2019", :cpu => 2, :ram => 4000, :os => "windows"},
+  { :name => "SCCM-CLIENT",  :ip => "192.168.33.13", :box => "mayfly/windows_server2019", :cpu => 2, :ram => 4000, :os => "windows"},
 ]
 
 if ENV.has_key?('GOAD_VAGRANT_OPTIONS') and ENV['GOAD_VAGRANT_OPTIONS'].include? "elk"

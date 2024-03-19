@@ -1,6 +1,10 @@
-# sql_instance_name: SQLEXPRESS
-sql_instance_name: MSSQLSERVER
-sql_version: "2022"
+# GOAD / NHA
+sql_instance_name: SQLEXPRESS
+sql_version: "2019"
+
+# SCCM
+#sql_instance_name: MSSQLSERVER
+#sql_version: "2022"
 
 # SQL2019-SSEI-Expr.exe
 download_url_2019: https://download.microsoft.com/download/7/f/8/7f8a9c43-8c8a-4f7c-9f92-83c18d96b681/SQL2019-SSEI-Expr.exe

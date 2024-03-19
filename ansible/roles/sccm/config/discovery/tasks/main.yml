@@ -1,3 +1,9 @@
+- name: Restart service SMS_SITE_COMPONENT_MANAGER
+  win_service:
+    name: 'SMS_SITE_COMPONENT_MANAGER'
+    force_dependent_services: yes
+    state: restarted
+
 # https://dexterposh.blogspot.com/2014/02/powershell-sccm-2012-r2-discovery.html
 # https://support.microsoft.com/en-us/topic/windows-powershell-changes-in-cumulative-update-4-for-system-center-2012-r2-configuration-manager-da42afbb-f286-edcf-5f1d-3dec46f415d3
 - name: Setup discovery

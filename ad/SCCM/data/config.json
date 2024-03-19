@@ -73,7 +73,8 @@
             "path" : "DC=sccm,DC=lab",
             "local_groups" : {
                 "Administrators" : [
-                    "SCCMLAB\\LocalAdmins"
+                    "SCCMLAB\\LocalAdmins",
+                    "SCCMLAB\\eve"
                 ]
             },
             "Remote Desktop Users" : [
@@ -145,7 +146,7 @@
                     "surname"     : "-",
                     "password"    : "marley",
                     "city"        : "-",
-                    "description" : "bob",
+                    "description" : "bob - local admin",
                     "groups"      : ["LocalAdmins"],
                     "path"        : "CN=Users,DC=sccm,DC=lab"
                 },
@@ -154,17 +155,35 @@
                     "surname"     : "-",
                     "password"    : "SCCMftw",
                     "city"        : "-",
-                    "description" : "carol",
+                    "description" : "carol - low user",
                     "groups"      : ["RDPUsers"],
                     "path"        : "CN=Users,DC=sccm,DC=lab"
                 },
                 "dave" : {
                     "firstname"   : "dave",
                     "surname"     : "-",
-                    "password"    : "9876543210",
+                    "password"    : "dragon",
                     "city"        : "-",
                     "description" : "dave",
                     "groups"      : ["SCCM-Admins"],
+                    "path"        : "CN=Users,DC=sccm,DC=lab"
+                },
+                "eve" : {
+                    "firstname"   : "eve",
+                    "surname"     : "-",
+                    "password"    : "iloveyou",
+                    "city"        : "-",
+                    "description" : "eve - admin on client",
+                    "groups"      : ["RDPUsers"],
+                    "path"        : "CN=Users,DC=sccm,DC=lab"
+                },
+                "franck" : {
+                    "firstname"   : "franck",
+                    "surname"     : "-",
+                    "password"    : "rockme",
+                    "city"        : "-",
+                    "description" : "franck - low user",
+                    "groups"      : ["RDPUsers"],
                     "path"        : "CN=Users,DC=sccm,DC=lab"
                 },
                 "sccm-client-push" : {

@@ -59,37 +59,17 @@ echo "[+] Running all the playbook to setup the lab"
 SECONDS=0
 
 case $LAB in
-    "GOAD"|"GOAD-Light")
-        echo "[+] Entering GOAD/GOAD-Light build"
-        run_ansible build.yml
-        run_ansible ad-servers.yml
-        run_ansible ad-parent_domain.yml
-        # Wait after the child domain creation before adding servers
-        run_ansible ad-child_domain.yml
-        echo "$INFO Waiting 5 minutes for the child domain to be ready"
-        sleep 5m
-        run_ansible ad-members.yml
-        run_ansible ad-trusts.yml
-        run_ansible ad-data.yml
-        run_ansible ad-gmsa.yml
-        run_ansible laps.yml
-        run_ansible ad-relations.yml
-        run_ansible adcs.yml
-        run_ansible ad-acl.yml
-        run_ansible servers.yml
-        run_ansible security.yml
-        run_ansible vulnerabilities.yml
-        ;;
     "NHA")
         echo "[+] Entering NHA build"
         run_ansible build.yml
         run_ansible ad-servers.yml
         run_ansible ad-parent_domain.yml
+        #run_ansible ad-child_domain.yml
         run_ansible ad-members.yml
         run_ansible ad-trusts.yml
         run_ansible ad-data.yml
         run_ansible ad-gmsa.yml
-        run_ansible laps.yml
+        #run_ansible laps.yml
         run_ansible ad-relations.yml
         run_ansible adcs.yml
         run_ansible ad-acl.yml
@@ -102,6 +82,7 @@ case $LAB in
         run_ansible build.yml
         run_ansible ad-servers.yml
         run_ansible ad-parent_domain.yml
+        #run_ansible ad-child_domain.yml
         run_ansible ad-members.yml
         #run_ansible ad-trusts.yml
         run_ansible ad-data.yml
@@ -114,15 +95,18 @@ case $LAB in
         run_ansible security.yml
         run_ansible vulnerabilities.yml
         run_ansible sccm-install.yml
+        echo "$INFO Waiting 5 minutes for the install to complete"
+        sleep 5m
         # reboot before launching the sccm config to finish the install
         run_ansible reboot.yml
         run_ansible sccm-config.yml
-        echo "$INFO Waiting 10 minutes for the sccm client installation"
+        echo "$INFO Waiting 10 minutes for the sccm client push installation finish"
         sleep 10m
         run_ansible dhcp.yml
         ;;
     *)
-        echo "unknow LAB : $LAB fallback to goad lab build"
+        # GOAD / GOAD-Light / others
+        echo "[+] Entering $LAB build"
         run_ansible build.yml
         run_ansible ad-servers.yml
         run_ansible ad-parent_domain.yml
