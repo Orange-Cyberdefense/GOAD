@@ -5,7 +5,7 @@ OK=$(tput setaf 2; echo -n "[✓]"; tput sgr0)
 INFO=$(tput setaf 3; echo -n "[-]"; tput sgr0)
 
 RESTART_COUNT=0
-MAX_RETRY=5
+MAX_RETRY=3
 
 
 echo "[+] Current folder $(pwd)"
@@ -27,9 +27,13 @@ function run_ansible {
     echo "$OK Running command: $ANSIBLE_COMMAND $1"
 
     # Run the command with a timeout of 30 minutes to avoid failure when ansible is stuck
-    # SCCM START : set timeout very long for install
-    timeout 180m $ANSIBLE_COMMAND $1
-    # SCCM END
+    if [[ $LAB == "SCCM" ]]; then
+        # SCCM no timeout
+        $ANSIBLE_COMMAND $1
+    else
+        timeout 30m $ANSIBLE_COMMAND $1
+    fi
+
     exit_code=$(echo $?)
 
     if [ $exit_code -eq 4 ]; then # ansible result code 4 = RUN_UNREACHABLE_HOSTS

@@ -1,7 +1,7 @@
 [all:vars]
 ;sccm lab variables
 sql_instance_name=MSSQLSERVER
-sql_version=2022
+sql_version=MSSQL_2022
 
 ; domain_name : folder inside ad/
 domain_name=SCCM

@@ -2,6 +2,31 @@
   win_reboot:
     reboot_timeout: 1200
 
+- name: Set download_url
+  set_fact:
+    download_url: "{{ download_url_2022 if sql_version == 'MSSQL_2022' else download_url_2019}}"
+
+- name: Set connection method
+  set_fact:
+    connection_type: "{{ connection_type_2022 if sql_version == 'MSSQL_2022' else connection_type_2019}}"
+
+- name: Set mssql_service_instance
+  set_fact:
+    mssql_service_instance: "MSSQL${{ sql_instance_name }}"
+
+- name: Set mssql_service_name
+  set_fact:
+    mssql_service_name: "{{ mssql_service_instance if sql_instance_name != 'MSSQLSERVER' else 'MSSQLSERVER' }}"
+
+- name: Display mssql variables in use
+  ansible.builtin.debug:
+    msg: 
+    - "MSSQL version        : {{ sql_version }}"
+    - "MSSQL service name   : {{ mssql_service_name }}"
+    - "MSSQL download url   : {{ download_url }}"
+    - "MSSQL instance       : {{ sql_instance_name }}"
+    - "MSSQL connection use : {{ connection_type }}"
+
 - name: create a directory for installer download
   win_file: 
     path: c:\setup
@@ -85,7 +110,7 @@
     name: TcpPort
     data: 1433
   register: win_reg
-  when: sql_version == "2022"
+  when: sql_version == "MSSQL_2022"
 
 # sql server 2019
 - name: Add or update registry for ip port
@@ -94,7 +119,7 @@
     name: TcpPort
     data: 1433
   register: win_reg
-  when: sql_version == "2019"
+  when: sql_version == "MSSQL_2019"
 
 - name: Reboot
   win_reboot:
