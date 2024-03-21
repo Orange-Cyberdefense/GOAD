@@ -192,7 +192,7 @@
                 "sccm-client-push" : {
                     "firstname"   : "sccm",
                     "surname"     : "client-push",
-                    "password"    : "123456789",
+                    "password"    : "superman",
                     "city"        : "-",
                     "description" : "client push account",
                     "groups"      : ["LocalAdmins"],
