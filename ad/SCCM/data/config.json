@@ -168,7 +168,7 @@
                     "password"    : "dragon",
                     "city"        : "-",
                     "description" : "dave",
-                    "groups"      : ["SCCM-Admins"],
+                    "groups"      : ["SCCM-Admins","RDPUsers"],
                     "path"        : "CN=Users,DC=sccm,DC=lab"
                 },
                 "eve" : {
