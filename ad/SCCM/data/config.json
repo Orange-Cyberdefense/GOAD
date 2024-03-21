@@ -99,7 +99,8 @@
                 "push_account" : "sccm-client-push",
                 "account_da" : "sccm-account-da",
                 "pxe_location" : "LDAP://CN=Computers,DC=sccm,DC=lab",
-                "pxe_admin_pass": "EP+xh7Rk6j90"
+                "pxe_admin_pass": "EP+xh7Rk6j90",
+                "admins" : ["SCCMLAB\\SCCM-Admins"]
             },
             "laps_path": "OU=Laps,DC=sccm,DC=lab",
             "organisation_units" : {},

@@ -12,6 +12,7 @@
     - { role: 'sccm/config/client_push', tags: 'sccm_client_push', when: sccm_server != ''}
     - { role: 'sccm/config/naa', tags: 'sccm_naa', when: sccm_server != ''}
     - { role: 'sccm/config/client_install', tags: 'sccm_client_install', when: sccm_server != ''}
+    - { role: 'sccm/config/users', tags: 'sccm_users', when: sccm_server != ''}
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
     domain_username: "{{domain}}\\Administrator"
@@ -30,6 +31,7 @@
     account_da_name: "{{lab.domains[domain].sccm.account_da| default('')}}"
     account_da: "{{domain}}\\{{account_da_name}}"
     account_da_pass: "{{lab.domains[domain].users[account_da_name].password}}"
+    admins: "{{lab.domains[domain].sccm.admins}}"
     cma_users: {
       push_account: {
         name: "{{push_account}}",
