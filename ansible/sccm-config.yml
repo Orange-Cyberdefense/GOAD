@@ -6,7 +6,6 @@
 - name: "Config SCCM"
   hosts: sccm
   roles:
-    - { role: 'sccm/config/pxe', tags: 'sccm_pxe', when: sccm_server != ''}
     - { role: 'sccm/config/discovery', tags: 'sccm_discovery', when: sccm_server != ''}
     - { role: 'sccm/config/boundary', tags: 'sccm_boundary', when: sccm_server != ''}
     - { role: 'sccm/config/accounts', tags: 'sccm_accounts', when: sccm_server != ''}

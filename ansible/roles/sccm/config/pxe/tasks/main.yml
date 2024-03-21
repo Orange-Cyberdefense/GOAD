@@ -25,7 +25,9 @@
       # get distribution point
       $DP = Get-CMDistributionPoint -SiteCode $siteCode
       # Enable PXE with password
-      Set-CMDistributionPoint -InputObject $DP -EnablePxe $True -PXEpassword $PXEpass -AllowPxeResponse $True -EnableUnknownComputerSupport $True 
+      # Set-CMDistributionPoint -InputObject $DP -EnablePxe $True -PXEpassword $PXEpass -AllowPxeResponse $True -EnableUnknownComputerSupport $True 
+      # without password
+      Set-CMDistributionPoint -InputObject $DP -EnablePxe $True -AllowPxeResponse $True -EnableUnknownComputerSupport $True 
       #Enable Multicast Feature
       # Add-CMMulticastServicePoint -SiteSystemServerName $DP -SiteCode $siteCode
     parameters:

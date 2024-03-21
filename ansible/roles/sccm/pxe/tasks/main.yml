@@ -211,57 +211,78 @@
     ansible_become_user: "{{domain_username}}"
     ansible_become_password: "{{domain_password}}"
 
-# # Deploy sequence
-# - name: Deploy Task sequence
-#   ansible.windows.win_powershell:
-#     script: |
-#       [CmdletBinding()]
-#       param (
-#           [String]
-#           $domainName,
-# 
-#           [String]
-#           $siteCode
-#       )
-#       Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
-#       $sc = Get-PSDrive -PSProvider CMSITE
-#       if ($null -eq $sc) {
-#         New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
-#       }
-#       Set-Location ($siteCode +":")
-#       $ts_name = "Install_win10_OS_image"
-# 
-#       $ts_deploy = Get-CMTaskSequenceDeployment -name "deploy_pxe"
-#       $ts = Get-CMTaskSequence -name $name
-#       $collection = Get-CMCollection -name "All Unknown Computers"
-#       if ($null -eq $ts_deploy){
-#         # New-CMTaskSequenceDeployment
-#         $parameters = @{
-#           InputObject = $ts
-#           DeployCollection = $collection.CollectionID
-#           AllowFallback = $true
-#           Availability = "MediaAndPxe"
-#           InternetOption = $false
-#           RerunBehavior = $true
-#           RunFromSoftwareCenter = $true
-#           SoftwareInstallation = $true
-#           SystemRestart = $true
-#           UseMeteredNetwork = $false
-#           PersistOnWriteFilterDevice = $true
-#           ShowTaskSequenceProgress = $true
-#         }
-#         New-CMTaskSequenceDeployment @parameters
-#         $Ansible.Changed = $true
-#       } else {
-#         $Ansible.Changed = $false
-#       }
-#     parameters:
-#       siteCode: "{{site_code}}"
-#       shareServer: "{{sccm_server}}"
-#       adminPass: "{{admin_pass}}"
-#       domainName : "{{domain}}"
-#   vars:
-#     ansible_become: yes
-#     ansible_become_method: runas
-#     ansible_become_user: "{{domain_username}}"
-#     ansible_become_password: "{{domain_password}}"
+# update unknow computers
+- name: Update unknow computers collection
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $siteCode
+      )
+      Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
+      Get-CMCollection -Name "All Unknown Computers" | Invoke-CMCollectionUpdate
+    parameters:
+      siteCode: "{{site_code}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+
+# Deploy sequence
+- name: Deploy Task sequence
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $domainName,
+
+          [String]
+          $siteCode
+      )
+      Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
+      $ts_name = "Install_win10_OS_image"
+      $ts_deploy = Get-CMTaskSequenceDeployment -name "deploy_pxe"
+
+      $ts = Get-CMTaskSequence -name $ts_name
+      $collection = Get-CMCollection -name "All Unknown Computers"
+      if ($null -eq $ts_deploy){
+        # New-CMTaskSequenceDeployment
+        $parameters = @{
+          InputObject = $ts
+          CollectionId = $collection.CollectionID
+          AllowFallback = $true
+          Availability = "MediaAndPxe"
+          InternetOption = $false
+          RunFromSoftwareCenter = $true
+          SoftwareInstallation = $true
+          SystemRestart = $true
+          UseMeteredNetwork = $false
+          PersistOnWriteFilterDevice = $true
+          ShowTaskSequenceProgress = $true
+        }
+        New-CMTaskSequenceDeployment @parameters
+        $Ansible.Changed = $true
+      } else {
+        $Ansible.Changed = $false
+      }
+    parameters:
+      siteCode: "{{site_code}}"
+      domainName : "{{domain}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
