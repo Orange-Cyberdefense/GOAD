@@ -97,7 +97,9 @@
                 "pxe_pass" : "123456789",
                 "naa_user" : "sccm-naa",
                 "push_account" : "sccm-client-push",
-                "account_da" : "sccm-account-da"
+                "account_da" : "sccm-account-da",
+                "pxe_location" : "LDAP://CN=Computers,DC=sccm,DC=lab",
+                "pxe_admin_pass": "EP+xh7Rk6j90"
             },
             "laps_path": "OU=Laps,DC=sccm,DC=lab",
             "organisation_units" : {},

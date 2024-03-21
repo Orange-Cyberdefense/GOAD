@@ -62,7 +62,7 @@
     inherit: ContainerInherit, ObjectInherit
     propagation: 'InheritOnly'
 
-- name: install MECM (this one take an eternity 12h46 -> )
+- name: install MECM (this one take an eternity ~ 1 hour  )
   win_shell: .\setup.exe /SCRIPT "C:\setup\ConfigMgrAutoSave.ini"
   args:
     chdir: C:\setup\cd.retail.LN\SMSSETUP\BIN\X64

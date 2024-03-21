@@ -31,6 +31,14 @@
   win_shell: |
     Set-DhcpServerV4OptionValue -DnsServer {{dns_ip}}
 
+- name: create server option boot server hostname (MECM)
+  win_shell: |
+    Set-DhcpServerV4OptionValue -OptionId 66 -Value {{sccm_server}}
+
+- name: create boot file name (SMSBoot\x64\wdsnbp.com)
+  win_shell: |
+    Set-DhcpServerV4OptionValue -OptionId 67 -Value "SMSBoot\x64\wdsnbp.com"
+
 # https://www.systemsitpro.com/2017/12/how-to-configure-dhcp-for-pxe-booting.html
 # https://www.it-connect.fr/serveurs-dhcp-wds-boot-pxe-bios-et-uefi/
 # Add-DhcpServerv4OptionDefinition -ComputerName SRV-ADDS-01 -Name PXEClient -Description "PXE Support" -OptionId 060 -Type String

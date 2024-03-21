@@ -24,13 +24,13 @@ function run_ansible {
     echo "[+] Restart counter: $RESTART_COUNT"
     let "RESTART_COUNT += 1"
 
-    echo "$OK Running command: $ANSIBLE_COMMAND $1"
-
     # Run the command with a timeout of 30 minutes to avoid failure when ansible is stuck
     if [[ $LAB == "SCCM" ]]; then
+        echo "$OK Running command without timeout: $ANSIBLE_COMMAND $1"
         # SCCM no timeout
         $ANSIBLE_COMMAND $1
     else
+        echo "$OK Running command with timeout 30min: $ANSIBLE_COMMAND $1"
         timeout 30m $ANSIBLE_COMMAND $1
     fi
 
@@ -99,14 +99,17 @@ case $LAB in
         run_ansible security.yml
         run_ansible vulnerabilities.yml
         run_ansible sccm-install.yml
-        echo "$INFO Waiting 5 minutes for the install to complete"
-        sleep 5m
-        # reboot before launching the sccm config to finish the install
+        echo "$INFO Waiting 10 minutes for the install to complete"
+        sleep 10m
         run_ansible reboot.yml
+        # reboot before launching the sccm config to finish the install
+        echo "$INFO Waiting 5 minutes before launching the configuration"
+        sleep 5m
         run_ansible sccm-config.yml
         echo "$INFO Waiting 10 minutes for the sccm client push installation finish"
         sleep 10m
         run_ansible dhcp.yml
+        run_ansible sccm-pxe.yml
         ;;
     *)
         # GOAD / GOAD-Light / others
@@ -130,8 +133,7 @@ case $LAB in
         run_ansible security.yml
         run_ansible vulnerabilities.yml
       ;;
-    esac
-;;
+esac
 
 # end build
 echo "[+] Almost finish, last reboot and it is finish !"

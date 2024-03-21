@@ -131,6 +131,7 @@ ws01
 dc01
 srv01
 srv02
+ws01
 
 ; disable defender
 ; usage : security.yml

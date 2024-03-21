@@ -11,6 +11,7 @@
     domain: "{{lab.hosts[dict_key].domain}}"
     domain_username: "{{domain}}\\Administrator"
     domain_password: "{{lab.domains[domain].domain_password}}"
+    sccm_server: "{{lab.domains[domain].sccm.sccm_server | default('')}}"
     dc_key: "{{lab.domains[domain].dc}}"
     dc_name: "{{lab.hosts[dc_key].hostname}}"
     dc_fqdn: "{{dc_name}}.{{domain}}"
