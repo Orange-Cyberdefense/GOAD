@@ -211,7 +211,13 @@
       Start-CMContentDistribution -BootImageName "Boot image (x86)" -DistributionPointName $distributionPoint
       # distribute boot image
       Start-CMContentDistribution -OperatingSystemImageName "Windows_10_22h2" -DistributionPointName $distributionPoint
+
       # distribute Configuration manager client package
+      $package = Get-CMDeploymentPackage -DeploymentPackageName "Configuration Manager Client Package" -DistributionPointName $distributionPoint
+      if ($null -eq $package) {
+        # package not found sleep waiting the Configuration Manager Client Package presence
+        Start-Sleep -seconds 300
+      }
       Start-CMContentDistribution -DeploymentPackageName "Configuration Manager Client Package" -DistributionPointName $distributionPoint
     parameters:
       siteCode: "{{site_code}}"
