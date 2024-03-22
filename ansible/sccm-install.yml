@@ -18,11 +18,11 @@
 - name: "Install SCCM"
   hosts: sccm
   roles:
-    - { role: 'sccm/install/iis', tags: 'sccm_iis', when: sccm_server != ''}
-    - { role: 'sccm/install/adk', tags: 'sccm_adk', when: sccm_server != ''}
+    - { role: 'sccm/install/iis', tags: 'sccm_iis'}
+    - { role: 'sccm/install/adk', tags: 'sccm_adk'}
 #    - { role: 'sccm/mssql', tags: 'sccm_wsus', when: sccm_server != ''} # done by the server playbook
-    - { role: 'sccm/install/wsus', tags: 'sccm_wsus', when: sccm_server != ''}
-    - { role: 'sccm/install/mecm', tags: 'sccm_mecm', when: sccm_server != ''}
+    - { role: 'sccm/install/wsus', tags: 'sccm_wsus'}
+    - { role: 'sccm/install/mecm', tags: 'sccm_mecm'}
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
     domain_username: "{{domain}}\\Administrator"

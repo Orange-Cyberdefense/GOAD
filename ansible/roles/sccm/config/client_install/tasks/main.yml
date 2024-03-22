@@ -10,10 +10,7 @@
           $sccmFQDN,
 
           [String]
-          $device,
-
-          [String]
-          $password
+          $device
       )
       Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
       $sc = Get-PSDrive -PSProvider CMSITE

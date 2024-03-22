@@ -105,11 +105,11 @@ case $LAB in
         # reboot before launching the sccm config to finish the install
         echo "$INFO Waiting 5 minutes before launching the configuration"
         sleep 5m
-        run_ansible sccm-config.yml
-        echo "$INFO Waiting 10 minutes for the sccm client push installation finish"
-        sleep 10m
         run_ansible dhcp.yml
+        run_ansible sccm-config.yml
         run_ansible sccm-pxe.yml
+        # replay client install fix some issue in enrollement for CLIENT
+        run_ansible sccm-client.yml
         ;;
     *)
         # GOAD / GOAD-Light / others
