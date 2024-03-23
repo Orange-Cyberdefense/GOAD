@@ -1,5 +1,3 @@
-> **THE SCCM BRANCH IS EXPERIMENTAL, DO NOT USE, it is not ready yet**
-
 <div align="center">
   <h1><img alt="GOAD (Game Of Active Directory)" src="./docs/img/logo_GOAD.png"></h1>
   <br>
