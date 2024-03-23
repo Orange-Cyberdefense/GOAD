@@ -28,6 +28,11 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 <img alt="GOAD Light" width="600" src="./docs/img/GOAD-Light_schema.png">
 </div>
 
+- [SCCM](./ad/SCCM/README.md) : 4 vms, 1 forest, 1 domain, with microsoft configuration manager installed
+<div align="center">
+<img alt="SCCM" width="600" src="./docs/img/SCCMLAB_overview.png">
+</div>
+
 - [NHA](./ad/NHA/README.md) : A challenge with 5 vms and 2 domains. no schema provided, you will have to find out how break it.
 
 ## Requirements
