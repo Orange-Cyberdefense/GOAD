@@ -1,0 +1,32 @@
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+- name: "Setup Prerequisites"
+  hosts: dc
+  roles:
+    - { role: 'sccm/install/prerequistes', tags: 'sccm_prerequistes', when: sccm_server != ''}
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    domain_username: "{{domain}}\\Administrator"
+    domain_password: "{{lab.domains[domain].domain_password}}"
+    site_code: "{{lab.domains[domain].sccm.site_code}}"
+    sccm_server: "{{lab.domains[domain].sccm.sccm_server | default('')}}"
+    sccm_mssql_server: "{{lab.domains[domain].sccm.sccm_mssql_server | default('')}}"
+
+- name: "Install SCCM"
+  hosts: sccm
+  roles:
+    - { role: 'sccm/install/iis', tags: 'sccm_iis'}
+    - { role: 'sccm/install/adk', tags: 'sccm_adk'}
+#    - { role: 'sccm/mssql', tags: 'sccm_wsus', when: sccm_server != ''} # done by the server playbook
+    - { role: 'sccm/install/wsus', tags: 'sccm_wsus'}
+    - { role: 'sccm/install/mecm', tags: 'sccm_mecm'}
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    domain_username: "{{domain}}\\Administrator"
+    domain_password: "{{lab.domains[domain].domain_password}}"
+    site_code: "{{lab.domains[domain].sccm.site_code}}"
+    sccm_server: "{{lab.domains[domain].sccm.sccm_server | default('')}}"
+    sccm_mssql_server: "{{lab.domains[domain].sccm.sccm_mssql_server | default('')}}"

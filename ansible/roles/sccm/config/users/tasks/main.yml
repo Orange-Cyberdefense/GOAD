@@ -1,0 +1,38 @@
+- name: Add full administrators accounts
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $siteCode,
+
+          [String]
+          $sccmFQDN,
+
+          [String]
+          $username
+      )
+      Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
+
+      $account = Get-CMAdministrativeUser -Name $username
+      if ($null -eq $account){
+        New-CMAdministrativeUser -Name $username -RoleName "Full Administrator"
+        $Ansible.Changed = $true
+      } else {
+        $Ansible.Changed = $false
+      }
+    parameters:
+      siteCode: "{{site_code}}"
+      username: "{{item}}"
+      sccmFQDN: "{{sccm_server}}.{{domain}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+  loop: "{{ admins }}"

@@ -1,0 +1,30 @@
+- name: create directory to store the install files
+  ansible.windows.win_file:
+    path: C:\setup
+    state: directory
+
+- name: create directory to store the install files
+  ansible.windows.win_file:
+    path: C:\setup\mssql_reporting
+    state: directory
+
+- name: Reporting Services 2022 exists
+  win_stat:
+    path: C:\setup\mssql_reporting\SQLServerReportingServices.exe
+  register: rs_installer_file
+
+- name: download SQL Server 2022 Reporting Services
+  ansible.windows.win_get_url:
+    url: https://download.microsoft.com/download/8/3/2/832616ff-af64-42b5-a0b1-5eb07f71dec9/SQLServerReportingServices.exe
+    dest: C:\setup\mssql_reporting\SQLServerReportingServices.exe
+  when: not rs_installer_file.stat.exists
+
+- name: install SQL Server 2022 Reporting Services
+  win_shell: .\SQLServerReportingServices.exe /IAcceptLicenseTerms /quiet
+  args:
+    chdir: C:\setup\mssql_reporting
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_admin}}"
+    ansible_become_password: "{{domain_admin_password}}"

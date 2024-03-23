@@ -1,0 +1,43 @@
+- name: Create CMA Accounts
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $siteCode,
+
+          [String]
+          $sccmFQDN,
+
+          [String]
+          $username,
+
+          [String]
+          $password
+      )
+      Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
+
+      $account = Get-CMAccount -UserName $username
+      if ($null -eq $account){
+        $securePass = ConvertTo-SecureString -String $password -AsPlainText -Force
+        New-CMAccount -UserName $username -Password $securePass -SiteCode $siteCode
+        $Ansible.Changed = $true
+      } else {
+        $Ansible.Changed = $false
+      }
+    parameters:
+      siteCode: "{{site_code}}"
+      sccmFQDN: "{{sccm_server}}.{{domain}}"
+      username: "{{item.value.name}}"
+      password: "{{item.value.password}}"
+  with_dict: "{{ cma_users }}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"

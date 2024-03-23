@@ -1,0 +1,24 @@
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+- name: "Setup Prerequisites"
+  hosts: dc
+  roles:
+    - { role: 'dhcp', tags: 'dhcp_install'}
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    domain_username: "{{domain}}\\Administrator"
+    domain_password: "{{lab.domains[domain].domain_password}}"
+    sccm_server: "{{lab.domains[domain].sccm.sccm_server | default('')}}"
+    dc_key: "{{lab.domains[domain].dc}}"
+    dc_name: "{{lab.hosts[dc_key].hostname}}"
+    dc_fqdn: "{{dc_name}}.{{domain}}"
+    dc_ip: "{{hostvars[dc_key].ansible_host}}"
+    ip_root: "{{'.'.join(dc_ip.split('.')[:3])}}"
+    ip_from: "{{ip_root}}.150"
+    ip_to: "{{ip_root}}.200"
+    ip_mask: "255.255.255.0"
+    lease_duration: "1.00:00:00"
+    dns_ip: "{{dc_ip}}"

@@ -1,0 +1,314 @@
+# Download win10 iso
+- name: check downloaded iso file exists
+  win_stat:
+    path: c:\setup\win_10_22h2.iso
+  register: iso_file
+
+- name: check wim file exists
+  win_stat:
+    path: c:\share_iso\install.wim
+  register: wim_file
+
+- name: download win10 iso file (~ 5.4GB )
+  win_get_url:
+      url: "{{win10_iso_url}}"
+      dest: 'c:\setup\win_10_22h2.iso'
+  when: not (iso_file.stat.exists or wim_file.stat.exists)
+
+- name: create share folder
+  win_file:
+    path: C:\share_iso
+    state: directory
+
+- name: Ensure share exists
+  win_share:
+    name: share_iso
+    description: iso share for all domain users
+    path: C:\share_iso
+    list: yes
+    full: Administrators
+    change: Users
+
+- name: check wim file exists
+  win_stat:
+    path: c:\share_iso\install.wim
+  register: wim_file
+
+# Extract setup.wim from iso
+- name: open ISO and extract wim file
+  ansible.windows.win_powershell:
+    script: |
+      $mountResult = Mount-DiskImage -ImagePath "c:\setup\win_10_22h2.iso" 
+      $driveLetter = ($mountResult | Get-Volume).DriveLetter
+      copy "${driveLetter}:\sources\install.wim" "c:\share_iso\install.wim"
+      Dismount-DiskImage -ImagePath "c:\setup\win_10_22h2.iso"
+      rm c:\setup\win_10_22h2.iso
+  when: not wim_file.stat.exists
+
+# Install operating system image
+- name: Create Operating system image
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $siteCode,
+
+          [String]
+          $sccmFQDN,
+
+          [String]
+          $shareServer
+      )
+      Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
+
+      $opsys = Get-CMOperatingSystemImage -Name "Windows_10_22h2"
+      if ($null -eq $opsys){
+        $image = New-CMOperatingSystemImage -Name "Windows_10_22h2" -Path "\\${shareServer}\share_iso\install.wim"
+        $Ansible.Changed = $true
+      } else {
+        $Ansible.Changed = $false
+      }
+    parameters:
+      siteCode: "{{site_code}}"
+      shareServer: "{{sccm_server}}"
+      sccmFQDN: "{{sccm_server}}.{{domain}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+
+# Create task sequence
+- name: Create Task sequence
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $domainName,
+
+          [String]
+          $sccmFQDN,
+
+          [String]
+          $domainAccount,
+
+          [String]
+          $domainPassword,
+
+          [String]
+          $ou,
+
+          [String]
+          $siteCode,
+
+          [String]
+          $shareServer,
+
+          [String]
+          $adminPass
+      )
+      Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
+      $name = "Install_win10_OS_image"
+
+      $ts = Get-CMTaskSequence -name $name
+
+      if ($null -eq $ts){
+        # operating system
+        $operating_system_image = Get-CMOperatingSystemImage -Name "Windows_10_22h2"
+        # boot image
+        $boot_image = Get-CMBootImage -name "Boot image (x64)"
+
+        # admin pass
+        $adminpass_secure = convertto-securestring -string $adminPass -asplaintext -force
+
+        # client package
+        $cp = Get-CMPackage -name "Configuration Manager Client Package"
+        
+        $parameters = @{
+          InstallOperatingSystemImage = $true
+          Name = $name
+          Description = "NewInstallOSImage parameter set"
+          BootImagePackageId = $boot_image.PackageID
+          HighPerformance = $true
+          CaptureNetworkSetting = $true
+          CaptureUserSetting = $false
+          SaveLocally = $true
+          CaptureLocallyUsingLink = $true
+          CaptureWindowsSetting = $true
+          ConfigureBitLocker = $false
+          PartitionAndFormatTarget = $true
+          ApplyAll = $false
+          OperatingSystemImagePackageId = $operating_system_image.PackageID
+          OperatingSystemImageIndex = 1
+          GeneratePassword = $false
+          LocalAdminPassword = $adminpass_secure
+          JoinDomain = "DomainType"
+          DomainAccount = $domainAccount
+          DomainName = $domainName
+          DomainOrganizationUnit = $ou
+          DomainPassword = ConvertTo-SecureString -String $domainPassword -AsPlainText -Force
+          ClientPackagePackageId = $cp.PackageID
+          IgnoreInvalidApplication = $false
+          SoftwareUpdateStyle = "NoInstall"
+        }
+
+        New-CMTaskSequence @parameters
+        $Ansible.Changed = $true
+      } else {
+        $Ansible.Changed = $false
+      }
+    parameters:
+      siteCode: "{{site_code}}"
+      shareServer: "{{sccm_server}}"
+      adminPass: "{{admin_pass}}"
+      domainName : "{{domain}}"
+      ou: "{{ou_location}}"
+      domainAccount: "{{naa_user}}"
+      domainPassword: "{{naa_pass}}"
+      sccmFQDN: "{{sccm_server}}.{{domain}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+
+# start distribute content
+- name: Start distribute content
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $siteCode,
+
+          [String]
+          $sccmFQDN,
+
+          [String]
+          $distributionPoint
+      )
+      Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
+
+      # distribute operating system image
+      Start-CMContentDistribution -BootImageName "Boot image (x64)" -DistributionPointName $distributionPoint
+      Start-CMContentDistribution -BootImageName "Boot image (x86)" -DistributionPointName $distributionPoint
+      # distribute boot image
+      Start-CMContentDistribution -OperatingSystemImageName "Windows_10_22h2" -DistributionPointName $distributionPoint
+
+      # distribute Configuration manager client package
+      $package = Get-CMDeploymentPackage -DeploymentPackageName "Configuration Manager Client Package" -DistributionPointName $distributionPoint
+      if ($null -eq $package) {
+        # package not found sleep waiting the Configuration Manager Client Package presence
+        Start-Sleep -seconds 300
+      }
+      Start-CMContentDistribution -DeploymentPackageName "Configuration Manager Client Package" -DistributionPointName $distributionPoint
+    parameters:
+      siteCode: "{{site_code}}"
+      distributionPoint: "{{sccm_server}}.{{domain}}"
+      sccmFQDN: "{{sccm_server}}.{{domain}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+
+# update unknow computers
+- name: Update unknow computers collection
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $siteCode,
+
+          [String]
+          $sccmFQDN
+      )
+      Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
+      Get-CMCollection -Name "All Unknown Computers" | Invoke-CMCollectionUpdate
+    parameters:
+      siteCode: "{{site_code}}"
+      sccmFQDN: "{{sccm_server}}.{{domain}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+
+# Deploy sequence
+- name: Deploy Task sequence
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $domainName,
+
+          [String]
+          $sccmFQDN,
+
+          [String]
+          $siteCode
+      )
+      Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
+      $ts_name = "Install_win10_OS_image"
+      $ts_deploy = Get-CMTaskSequenceDeployment -name "deploy_pxe"
+
+      $ts = Get-CMTaskSequence -name $ts_name
+      $collection = Get-CMCollection -name "All Unknown Computers"
+      if ($null -eq $ts_deploy){
+        # New-CMTaskSequenceDeployment
+        $parameters = @{
+          InputObject = $ts
+          CollectionId = $collection.CollectionID
+          AllowFallback = $true
+          Availability = "MediaAndPxe"
+          InternetOption = $false
+          RunFromSoftwareCenter = $true
+          SoftwareInstallation = $true
+          SystemRestart = $true
+          UseMeteredNetwork = $false
+          PersistOnWriteFilterDevice = $true
+          ShowTaskSequenceProgress = $true
+        }
+        New-CMTaskSequenceDeployment @parameters
+        $Ansible.Changed = $true
+      } else {
+        $Ansible.Changed = $false
+      }
+    parameters:
+      siteCode: "{{site_code}}"
+      domainName : "{{domain}}"
+      sccmFQDN: "{{sccm_server}}.{{domain}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"

@@ -1,0 +1,81 @@
+- name: Restart service SMS_SITE_COMPONENT_MANAGER
+  win_service:
+    name: 'SMS_SITE_COMPONENT_MANAGER'
+    force_dependent_services: yes
+    state: restarted
+
+# https://dexterposh.blogspot.com/2014/02/powershell-sccm-2012-r2-discovery.html
+# https://support.microsoft.com/en-us/topic/windows-powershell-changes-in-cumulative-update-4-for-system-center-2012-r2-configuration-manager-da42afbb-f286-edcf-5f1d-3dec46f415d3
+- name: Setup discovery
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $siteCode,
+
+          [String]
+          $sccmFQDN,
+
+          [String]
+          $group_ldap,
+          
+          [String]
+          $computer
+      )
+      Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
+
+      # Forest
+      # create a Schedule Token 
+      $Schedule = New-CMSchedule -RecurInterval Days -RecurCount 7
+      
+      # Enable the Active Directory Forest Discovery 
+      try {
+        Set-CMDiscoveryMethod -ActiveDirectoryForestDiscovery -SiteCode $siteCode -Enabled:$true -PollingSchedule $Schedule -EnableActiveDirectorySiteBoundaryCreation:$true -EnableSubnetBoundaryCreation:$true
+      } catch {
+        # already exist
+        $Ansible.Changed = $false
+      }
+
+      # To run AD Forest Discovery now
+      Invoke-CMForestDiscovery -SiteCode $siteCode -Verbose
+
+      # Group
+      try {
+        Set-CMDiscoveryMethod -SiteCode $siteCode `
+        -ActiveDirectoryGroupDiscovery -Enabled $true `
+        -EnableDeltaDiscovery $true -DeltaDiscoveryIntervalMinutes 5 `
+        -EnableFilteringExpiredLogon $true -TimeSinceLastLogonDays 90 `
+        -EnableFilteringExpiredPassword $true -TimeSinceLastPasswordUpdateDays 90 `
+        -DiscoverDistributionGroupsMembership $true `
+        -AddGroupDiscoveryScope (New-CMADGroupDiscoveryScope `
+            -name MyScope -SiteCode $siteCode -LdapLocation $group_ldap -RecursiveSearch $true)
+      } catch {
+        # already exist
+        $Ansible.Changed = $false
+      }
+      # need to restart the Component Manager Service ..to reflect the changes
+      (Get-Service SMS_SITE_COMPONENT_MANAGER -ComputerName $computer).stop()
+
+      Start-Sleep -Seconds 10
+
+      (Get-Service SMS_SITE_COMPONENT_MANAGER -ComputerName $computer).start()
+
+      # To run Group Discovery now
+      Invoke-CMForestDiscovery -SiteCode $siteCode -Verbose
+    error_action: stop
+    parameters:
+      siteCode: "{{site_code}}"
+      sccmFQDN: "{{sccm_server}}.{{domain}}"
+      group_ldap: "LDAP://CN=SCCM-Managed-Device,CN=USERS,DC=sccm,DC=lab"
+      computer: "MECM"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
