@@ -300,3 +300,38 @@ proxmox-iso.windows: output will be in this color.
 ==> proxmox-iso.windows: No VM ID given, getting next free from Proxmox
 ==> proxmox-iso.windows: Starting VM
 ```
+
+- another solution is to switch to raw : `proxmox_vm_storage      = "raw"`
+
+## proxmox - packer error creating vm :  volume 'local:iso/windows_XXX.iso' does not exist
+
+```
+==> proxmox-iso.windows: Error creating VM: error creating VM: unable to create VM 116 - volume 'local:iso/windows_server2019_XXX_en-us.iso' does not exist, error status:  (params: map[agent:1 args: boot: cores:2 cpu:kvm64 description:Packer ephemeral build VM hotplug
+: ide2:local:iso/windows_server2019_XXX_en-us.iso,media=cdrom kvm:true machine: memory:4096 name:WinServer2019x64-cloudinit-qcow2-uptodate net0:virtio=DA:CB:EB:85:08:0E,bridge=vmbr3,tag=10,firewall=false onboot:false ostype:win10 pool:Templates sata0:local:80,format=q
+cow2 scsihw:lsi sockets:1 startup: tags: vmid:116])   
+```
+
+verify your iso files inside proxmox and be sure the iso you want to use exist in proxmox
+
+## ansible adapter name error 
+
+```
+No MSFT_NetAdapter objects found with property 'Name' equal to 'Ethernet'
+
+or 
+
+No MSFT_NetAdapter objects found with property 'Name' equal to 'Ethernet2 '
+```
+
+- connect to the vm and run ipconfig, verify the adapter name are the same as described in the inventory file.
+- if not change them to match the inventory name in the vm.
+
+## unreachable - proxmox, ansible
+```
+fatal: [dc01]: UNREACHABLE! => {"changed": false, "msg": "ssl: HTTPSConnectionPool(host='192.168.10.40', port=5986): Max retries exceeded with url: /wsman
+```
+
+- may be the vm is not well ready after the terraform creation. retry the install.
+- if you still get the error connect to the vm and verify the static ip is corresponding with the one expect.
+
+
