@@ -44,6 +44,7 @@ end
         v.vmx["memsize"] = box[:ram]
         v.vmx["numvcpus"] = box[:cpu]
         v.force_vmware_license = "workstation"  # force the licence for fix some vagrant plugin issue
+        v.gui = true
       end
 
       target.vm.box_download_insecure = box[:box]
