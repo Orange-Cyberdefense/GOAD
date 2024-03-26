@@ -7,8 +7,11 @@ INFO=$(tput setaf 3; echo -n "[-]"; tput sgr0)
 RESTART_COUNT=0
 MAX_RETRY=3
 
-#ANSIBLE_COMMAND="ansible-playbook -i ../ad/azure-sevenkingdoms.local/inventory"
+
 echo "[+] Current folder $(pwd)"
+echo "[+] Current LAB : $LAB"
+echo "[+] Current PROVIDER : $PROVIDER"
+export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$LAB/data/inventory -i ../ad/$LAB/providers/$PROVIDER/inventory"
 echo "[+] Ansible command : $ANSIBLE_COMMAND"
 
 function run_ansible {
@@ -21,10 +24,16 @@ function run_ansible {
     echo "[+] Restart counter: $RESTART_COUNT"
     let "RESTART_COUNT += 1"
 
-    echo "$OK Running command: $ANSIBLE_COMMAND $1"
-
     # Run the command with a timeout of 30 minutes to avoid failure when ansible is stuck
-    timeout 30m $ANSIBLE_COMMAND $1
+    if [[ $LAB == "SCCM" ]]; then
+        echo "$OK Running command without timeout: $ANSIBLE_COMMAND $1"
+        # SCCM no timeout
+        $ANSIBLE_COMMAND $1
+    else
+        echo "$OK Running command with timeout 30min: $ANSIBLE_COMMAND $1"
+        timeout 30m $ANSIBLE_COMMAND $1
+    fi
+
     exit_code=$(echo $?)
 
     if [ $exit_code -eq 4 ]; then # ansible result code 4 = RUN_UNREACHABLE_HOSTS
@@ -51,39 +60,84 @@ function run_ansible {
 
 # We run all the recipes separately to minimize faillure
 echo "[+] Running all the playbook to setup the lab"
-run_ansible build.yml
+SECONDS=0
 
-run_ansible ad-servers.yml
+case $LAB in
+    "NHA")
+        echo "[+] Entering NHA build"
+        run_ansible build.yml
+        run_ansible ad-servers.yml
+        run_ansible ad-parent_domain.yml
+        #run_ansible ad-child_domain.yml
+        run_ansible ad-members.yml
+        run_ansible ad-trusts.yml
+        run_ansible ad-data.yml
+        run_ansible ad-gmsa.yml
+        #run_ansible laps.yml
+        run_ansible ad-relations.yml
+        run_ansible adcs.yml
+        run_ansible ad-acl.yml
+        run_ansible servers.yml
+        run_ansible security.yml
+        run_ansible vulnerabilities.yml
+        ;;
+    "SCCM")
+        echo "[+] Entering SCCM build"
+        run_ansible build.yml
+        run_ansible ad-servers.yml
+        run_ansible ad-parent_domain.yml
+        #run_ansible ad-child_domain.yml
+        run_ansible ad-members.yml
+        #run_ansible ad-trusts.yml
+        run_ansible ad-data.yml
+        #run_ansible ad-gmsa.yml
+        #run_ansible laps.yml
+        run_ansible ad-relations.yml
+        #run_ansible adcs.yml
+        run_ansible ad-acl.yml
+        run_ansible servers.yml
+        run_ansible security.yml
+        run_ansible vulnerabilities.yml
+        run_ansible sccm-install.yml
+        echo "$INFO Waiting 10 minutes for the install to complete"
+        sleep 10m
+        run_ansible reboot.yml
+        # reboot before launching the sccm config to finish the install
+        echo "$INFO Waiting 5 minutes before launching the configuration"
+        sleep 5m
+        run_ansible dhcp.yml
+        run_ansible sccm-config.yml
+        run_ansible sccm-pxe.yml
+        # replay client install fix some issue in enrollement for CLIENT
+        run_ansible sccm-client.yml
+        ;;
+    *)
+        # GOAD / GOAD-Light / others
+        echo "[+] Entering $LAB build"
+        run_ansible build.yml
+        run_ansible ad-servers.yml
+        run_ansible ad-parent_domain.yml
+        # Wait after the child domain creation before adding servers
+        run_ansible ad-child_domain.yml
+        echo "$INFO Waiting 5 minutes for the child domain to be ready"
+        sleep 5m
+        run_ansible ad-members.yml
+        run_ansible ad-trusts.yml
+        run_ansible ad-data.yml
+        run_ansible ad-gmsa.yml
+        run_ansible laps.yml
+        run_ansible ad-relations.yml
+        run_ansible adcs.yml
+        run_ansible ad-acl.yml
+        run_ansible servers.yml
+        run_ansible security.yml
+        run_ansible vulnerabilities.yml
+      ;;
+esac
 
-run_ansible ad-parent_domain.yml
-
-# Wait after the child domain creation before adding servers
-run_ansible ad-child_domain.yml
-echo "$INFO Waiting 5 minutes for the child domain to be ready"
-sleep 5m
-
-run_ansible ad-members.yml
-
-run_ansible ad-trusts.yml
-
-run_ansible ad-data.yml
-
-run_ansible ad-gmsa.yml
-
-run_ansible laps.yml
-
-run_ansible ad-relations.yml
-
-run_ansible adcs.yml
-
-run_ansible ad-acl.yml
-
-run_ansible servers.yml
-
-run_ansible security.yml
-
-run_ansible vulnerabilities.yml
-
+# end build
+echo "[+] Almost finish, last reboot and it is finish !"
 run_ansible reboot.yml
-
-echo "$OK your lab is successfully setup ! have fun ;)"
+echo "$OK your lab : $LAB is successfully setup ! have fun ;)"
+duration=$SECONDS
+echo "Build in $((duration / 60)) minutes and $((duration % 60)) seconds."

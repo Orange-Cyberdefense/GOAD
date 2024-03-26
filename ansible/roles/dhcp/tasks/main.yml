@@ -1,0 +1,48 @@
+# https://www.faqforge.com/windows/configure-dhcp-powershell/
+
+- name: Install DHCP
+  win_feature:
+    name: DHCP
+    state: present
+    include_management_tools: yes
+  register: win_feature
+
+- name: Reboot if installing windows feature requires it
+  ansible.windows.win_reboot:
+  when: win_feature.reboot_required
+
+- name: allow dhcp in dc
+  win_shell: |
+    Add-DHCPServerInDC -DNSName {{dc_fqdn}}
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+
+- name: Set dhcp scope
+  win_shell: |
+    $s = Get-DhcpServerv4Scope
+    if ($null -eq $s) {
+      Add-DhcpServerV4Scope -Name "DHCP Scope" -StartRange {{ip_from}} -EndRange {{ip_to}} -SubnetMask {{ip_mask}} -LeaseDuration {{lease_duration}}
+    }
+
+- name: Add DNS Server, Router Gateway Options in DHCP
+  win_shell: |
+    Set-DhcpServerV4OptionValue -DnsServer {{dns_ip}}
+
+#- name: create server option boot server hostname (MECM)
+#  win_shell: |
+#    Set-DhcpServerV4OptionValue -OptionId 66 -Value {{sccm_server}}
+#
+#- name: create boot file name (SMSBoot\x64\wdsnbp.com)
+#  win_shell: |
+#    Set-DhcpServerV4OptionValue -OptionId 67 -Value "SMSBoot\x64\wdsnbp.com"
+
+# https://www.systemsitpro.com/2017/12/how-to-configure-dhcp-for-pxe-booting.html
+# https://www.it-connect.fr/serveurs-dhcp-wds-boot-pxe-bios-et-uefi/
+# Add-DhcpServerv4OptionDefinition -ComputerName SRV-ADDS-01 -Name PXEClient -Description "PXE Support" -OptionId 060 -Type String
+- name: Restart service DHCP
+  win_service:
+    name: 'dhcpserver'
+    state: restarted

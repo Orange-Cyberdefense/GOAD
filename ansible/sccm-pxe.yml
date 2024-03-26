@@ -1,0 +1,23 @@
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+- name: "Setup SCCM PXE"
+  hosts: sccm
+  roles:
+    - { role: 'sccm/config/pxe', tags: 'sccm_pxe'}
+    - { role: 'sccm/pxe', tags: 'sccm_pxe' }
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    domain_username: "{{domain}}\\Administrator"
+    domain_password: "{{lab.domains[domain].domain_password}}"
+    site_code: "{{lab.domains[domain].sccm.site_code}}"
+    pxe_pass: "{{lab.domains[domain].sccm.pxe_pass| default('')}}"
+    sccm_server: "{{lab.domains[domain].sccm.sccm_server | default('')}}"
+    admin_pass: "{{lab.domains[domain].sccm.pxe_admin_pass}}"
+    ou_location: "{{lab.domains[domain].sccm.pxe_location}}"
+    naa_user_name: "{{lab.domains[domain].sccm.naa_user| default('')}}"
+    naa_user: "{{domain}}\\{{naa_user_name}}"
+    naa_pass: "{{lab.domains[domain].users[naa_user_name].password}}"
+

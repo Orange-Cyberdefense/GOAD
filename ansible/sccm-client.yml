@@ -1,0 +1,16 @@
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+- name: "client install"
+  hosts: sccm
+  roles:
+    - { role: 'sccm/config/client_install', tags: 'sccm_client_install' }
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    domain_username: "{{domain}}\\Administrator"
+    domain_password: "{{lab.domains[domain].domain_password}}"
+    sccm_server: "{{lab.domains[domain].sccm.sccm_server | default('')}}"
+    site_code: "{{lab.domains[domain].sccm.site_code}}"
+    clients: "{{lab.domains[domain].sccm.clients| default([])}}"

@@ -1,0 +1,15 @@
+[default]
+; Note: ansible_host *MUST* be an IPv4 address or setting things like DNS
+; servers will break.
+; ------------------------------------------------
+; sccm.lab
+; ------------------------------------------------
+dc01 ansible_host=192.168.33.10 dns_domain=dc01 dict_key=dc01
+srv01 ansible_host=192.168.33.11 dns_domain=dc01 dict_key=srv01
+srv02 ansible_host=192.168.33.12 dns_domain=dc01 dict_key=srv02
+ws01 ansible_host=192.168.33.13 dns_domain=dc01 dict_key=ws01
+
+[all:vars]
+; adapter created by vagrant and vmware (uncomment if you use vmware)
+nat_adapter=Ethernet0
+domain_adapter=Ethernet1

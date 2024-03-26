@@ -32,6 +32,7 @@ end
     v.vmx["memsize"] = "4000"
     v.vmx["numvcpus"] = "2"
     v.force_vmware_license = "workstation"  # force the licence for fix some vagrant plugin issue
+    v.gui = true
   end
 
   # disable rdp forwarded port inherited from StefanScherer box
