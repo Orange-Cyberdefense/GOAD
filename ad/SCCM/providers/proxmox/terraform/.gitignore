@@ -1,0 +1,7 @@
+variables.tf
+terraform.tfstate
+terraform.tfstate.backup
+terraform-plugin-proxmox.log
+goad.plan
+.terraform/
+.terraform.lock.hcl/
