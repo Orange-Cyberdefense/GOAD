@@ -15,7 +15,7 @@ variable "pm_node" {
 }
 
 variable "pm_pool" {
-  default = "NHA"
+  default = "SCCM"
 }
 
 variable "pm_full_clone" {
@@ -26,7 +26,7 @@ variable "pm_full_clone" {
 variable "vm_template_id" {
   type = map(number)
 
-  # set the ids according to your templates (here set the id of the up to date winserver2019 template)
+  # set the ids according to your templates (set up the id of the WinServer2019_x64 up to date vm)
   default = {
       "WinServer2019_x64"  = 0
   }
@@ -46,7 +46,7 @@ variable "network_model" {
 }
 
 variable "network_vlan" {
-  default = 20
+  default = 10
 }
 
 ## the following variable is only for telmate provider (not used)

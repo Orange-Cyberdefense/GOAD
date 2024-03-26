@@ -18,5 +18,20 @@ All vms got defender activated
 - The installation take environ 2,5 hours (with fiber connection)
 - The lab download multiple files during the install (windows iso, mecm installation package, mssql installation package, ...), be sure to have a good internet connection.
 
-## virtualization providers
-- By now only vmware and virtualbox are available as provider. 
+## proxmox installation
+- In order to use the proxmox provider follow this :
+
+1) create a template with the windows_server2019_proxmox_cloudinit_uptodate.pkvars.hcl packer file (guide here: https://mayfly277.github.io/posts/GOAD-on-proxmox-part2-packer/) (note the id after the creation)
+
+2) create the variable file (ad/SCCM/providers/proxmox/terraform/variables.tf) by coping the template (ad/SCCM/providers/proxmox/terraform/variables.tf.template) and change the value according to your proxmox environnement
+
+3) on the provisioning computer :
+```bash
+./goad.sh -t check -l SCCM -p proxmox -m local
+./goad.sh -t install -l SCCM -p proxmox -m local
+```
+
+4) if something goes wrong (restart of the vms during install, etc...), you can rerun only ansible with -a
+```bash
+./goad.sh -t install -l SCCM -p proxmox -m local -a
+```
