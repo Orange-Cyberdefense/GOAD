@@ -122,8 +122,7 @@ resource "proxmox_virtual_environment_vm" "bgp" {
       datastore_id = var.storage
       dns {
         servers = [
-          each.value.dns,
-          "1.1.1.1",
+          each.value.dns
         ]
       }
       ip_config {
