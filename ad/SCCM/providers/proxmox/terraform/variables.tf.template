@@ -15,7 +15,7 @@ variable "pm_node" {
 }
 
 variable "pm_pool" {
-  default = "GOAD"
+  default = "SCCM"
 }
 
 variable "pm_full_clone" {
