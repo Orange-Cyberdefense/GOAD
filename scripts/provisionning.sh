@@ -11,7 +11,9 @@ MAX_RETRY=3
 echo "[+] Current folder $(pwd)"
 echo "[+] Current LAB : $LAB"
 echo "[+] Current PROVIDER : $PROVIDER"
-export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$LAB/data/inventory -i ../ad/$LAB/providers/$PROVIDER/inventory"
+if [ -z  $ANSIBLE_COMMAND ]; then
+  export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$LAB/data/inventory -i ../ad/$LAB/providers/$PROVIDER/inventory"
+fi
 echo "[+] Ansible command : $ANSIBLE_COMMAND"
 
 function run_ansible {
