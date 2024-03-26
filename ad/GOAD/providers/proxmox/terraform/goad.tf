@@ -98,6 +98,7 @@ resource "proxmox_virtual_environment_vm" "bgp" {
     clone {
       vm_id = lookup(var.vm_template_id, each.value.clone, -1)
       full  = var.pm_full_clone
+      retries = 2
     }
 
     agent {
