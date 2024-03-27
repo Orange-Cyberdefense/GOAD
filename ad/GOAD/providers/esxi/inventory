@@ -1,0 +1,57 @@
+[default]
+; Note: ansible_host *MUST* be an IPv4 address or setting things like DNS
+; servers will break.
+; ------------------------------------------------
+; sevenkingdoms.local
+; ------------------------------------------------
+dc01 ansible_host=192.168.56.10 dns_domain=dc01 dict_key=dc01
+;ws01 ansible_host=192.168.56.30 dns_domain=dc01 dict_key=ws01
+; ------------------------------------------------
+; north.sevenkingdoms.local
+; ------------------------------------------------
+dc02 ansible_host=192.168.56.11 dns_domain=dc01 dict_key=dc02
+srv02 ansible_host=192.168.56.22 dns_domain=dc02 dict_key=srv02
+; ------------------------------------------------
+; essos.local
+; ------------------------------------------------
+dc03 ansible_host=192.168.56.12 dns_domain=dc03 dict_key=dc03
+srv03 ansible_host=192.168.56.23 dns_domain=dc03 dict_key=srv03
+; ------------------------------------------------
+; Other
+; ------------------------------------------------
+elk ansible_host=192.168.56.50 ansible_connection=ssh
+
+[all:vars]
+; domain_name : folder inside ad/
+domain_name=GOAD
+
+force_dns_server=no
+dns_server=x.x.x.x
+two_adapters=yes
+
+; adapter created by vagrant and vmware (uncomment if you use vmware)
+nat_adapter=Ethernet0
+domain_adapter=Ethernet1
+
+; winrm connection (windows)
+ansible_user=vagrant
+ansible_password=vagrant
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+ansible_winrm_operation_timeout_sec=400
+ansible_winrm_read_timeout_sec=500
+# ansible_winrm_transport=basic
+# ansible_port=5985
+
+; proxy settings (the lab need internet for some install, if you are behind a proxy you should set the proxy here)
+enable_http_proxy=no
+ad_http_proxy=http://x.x.x.x:xxxx
+ad_https_proxy=http://x.x.x.x:xxxx
+
+[elk_server:vars]
+; ssh connection (linux)
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=./.vagrant/machines/elk/virtualbox/private_key
+ansible_ssh_port=22
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
