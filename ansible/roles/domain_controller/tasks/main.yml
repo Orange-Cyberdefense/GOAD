@@ -43,6 +43,11 @@
 #   retries: 3
 #   delay: 120
 
+- name: Be sure DNS feature is installed
+  win_feature:
+    name: DNS
+    state: present
+
 - name: Check for xDnsServer Powershell module
   win_psmodule:
     name: xDnsServer
