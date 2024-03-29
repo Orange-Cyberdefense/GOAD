@@ -168,11 +168,13 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 - [X] Shares with secrets (all, sysvol)
 - [ ] ADCS add vulns
 - [ ] Add Applocker
+- [ ] Add optional EDR install on goad
+- [ ] Add attackbox + guacamole and openvpn creation
 
 ## Road Map for other labs (because these are too heavy for being embedded in goad)
+- [X] Wsus (see SCCM lab)
+- [X] Sccm (see SCCM lab)
 - [ ] Exchange
-- [ ] Wsus
-- [ ] Sccm
 
 ## Lab organization
 
