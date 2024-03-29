@@ -141,12 +141,21 @@ ansible-galaxy collection install chocolatey.chocolatey
 ```
 
 - To install and start the elk play the following commands :
-```
-./goad.sh -t install -l GOAD -p virtualbox -m local -e -r elk.yml
+```bash
+./goad.sh -t install -l GOAD -p virtualbox -m local -r elk.yml -e
+#or
+./goad.sh -t install -l GOAD -p vmware -m local -r elk.yml -e
 ```
 
  * -e : to add the elk in vagrantfile for the vagrant up
  * -r : to run only the elk.yml ansible script
+
+If you want to only launch the elk.yml file without providing (vm creation), because your elk vm is already up do :
+```bash
+./goad.sh -t install -l GOAD -p virtualbox -m local -a -r elk.yml -e
+#or
+./goad.sh -t install -l GOAD -p vmware -m local -a -r elk.yml -e
+```
 
 If you want to do that by hand:
   1. run: `GOAD_VAGRANT_OPTIONS=elk vagrant up`
