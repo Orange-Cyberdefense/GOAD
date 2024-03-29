@@ -9,9 +9,9 @@ LAB=
 PROVIDER=
 METHOD=
 JOB=
-PROVIDERS="virtualbox vmware azure proxmox"
+PROVIDERS="virtualbox vmware azure proxmox vmware_esxi"
 LABS=$(ls -A ad/ |grep -v 'TEMPLATE')
-TASKS="check install start stop status restart destroy disablevagrant enablevagrant"
+TASKS="check install start stop status restart destroy snapshot reset disablevagrant enablevagrant"
 ANSIBLE_PLAYBOOKS="edr.yml build.yml ad-servers.yml ad-parent_domain.yml ad-child_domain.yml ad-members.yml ad-trusts.yml ad-data.yml ad-gmsa.yml laps.yml ad-relations.yml adcs.yml ad-acl.yml servers.yml security.yml vulnerabilities.yml reboot.yml elk.yml sccm-install.yml sccm-config.yml"
 METHODS="local docker"
 ANSIBLE_ONLY=0
@@ -29,6 +29,8 @@ print_usage() {
   echo "   - restart : reload the lab";
   echo "   - status  : show lab info and status";
   echo "   - destroy : trash the lab";
+  echo "   - snapshot: create a snapshot";
+  echo "   - reset   : restore a snapshot";
   echo "${INFO} -l : lab must be one of the following:"
   for lab in $LABS;  do
     echo "   - $lab";
@@ -158,7 +160,7 @@ install_providing(){
   provider=$2
 
   case $provider in
-    "virtualbox"|"vmware")
+    "virtualbox"|"vmware"|"vmware_esxi")
         cd "ad/$lab/providers/$provider"
         echo "${OK} launch vagrant"
         GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant up
@@ -235,6 +237,9 @@ install_providing(){
         exit 1
       fi
       ;;
+    *)
+          echo "unknown provider"
+      ;;
   esac
 }
 
@@ -243,7 +248,7 @@ install_provisioning(){
   provider=$2
   method=$3
   case $provider in
-    "virtualbox"|"vmware"|"proxmox")
+    "virtualbox"|"vmware"|"proxmox"|"vmware_esxi")
         case $method in
           "local")
               if [ -z $ANSIBLE_PLAYBOOK ]; then
@@ -314,6 +319,9 @@ EOF
               ;;
           esac
       ;;
+    *)
+          echo "unknown provider"
+      ;;
   esac
 }
 
@@ -330,7 +338,7 @@ disablevagrant(){
           ;;
   esac
   case $PROVIDER in
-    "virtualbox"|"vmware"|"proxmox")
+    "virtualbox"|"vmware"|"proxmox"|"vmware_esxi")
         case $METHOD in
           "local")
               cd ansible
@@ -361,12 +369,15 @@ disablevagrant(){
     "azure")
           echo "Vagrant user not used in azure, skip."
       ;;
+    *)
+          echo "unknown provider"
+      ;;
   esac
 }
 
 enablevagrant(){
   case $PROVIDER in
-    "virtualbox"|"vmware"|"proxmox")
+    "virtualbox"|"vmware"|"proxmox"|"vmware_esxi")
         case $METHOD in
           "local")
               cd ansible
@@ -397,6 +408,9 @@ enablevagrant(){
     "azure")
           echo "Vagrant user not used in azure, skip."
       ;;
+    *)
+          echo "unknown provider"
+      ;;
   esac
 }
 
@@ -424,7 +438,7 @@ check(){
 
 start(){
   case $PROVIDER in
-    "virtualbox"|"vmware")
+    "virtualbox"|"vmware"|"vmware_esxi")
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} start vms"
           GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant up
@@ -454,12 +468,15 @@ start(){
       az vm start --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
       status
       ;;
+    *)
+          echo "unknown provider"
+      ;;
   esac
 }
 
 stop(){
   case $PROVIDER in
-    "virtualbox"|"vmware")
+    "virtualbox"|"vmware"|"vmware_esxi")
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} stop vms"
           GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant halt
@@ -489,12 +506,15 @@ stop(){
       az vm stop --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
       status
       ;;
+    *)
+          echo "unknown provider"
+      ;;
   esac
 }
 
 restart(){
   case $PROVIDER in
-    "virtualbox"|"vmware")
+    "virtualbox"|"vmware"|"vmware_esxi")
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} restart start vms"
           vagrant reload
@@ -526,12 +546,15 @@ restart(){
       az vm restart --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
       status
       ;;
+    *)
+          echo "unknown provider"
+      ;;
   esac
 }
 
 destroy(){
   case $PROVIDER in
-    "virtualbox"|"vmware")
+    "virtualbox"|"vmware"|"vmware_esxi")
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} destroy the lab"
           read -r -p "Are you sure? [y/N] " response
@@ -555,12 +578,15 @@ destroy(){
         exit 1
       fi
       ;;
+    *)
+          echo "unknown provider"
+      ;;
   esac
 }
 
 status(){
   case $PROVIDER in
-    "virtualbox"|"vmware")
+    "virtualbox"|"vmware"|"vmware_esxi")
           cd "ad/$LAB/providers/$PROVIDER"
           GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant status
           cd -
@@ -585,17 +611,42 @@ status(){
     "azure")
       az vm list -g $LAB -d --output table
       ;;
+    *)
+          echo "unknown provider"
+      ;;
   esac
 }
 
 snapshot() {
-  # TODO : snapshot
-  echo "not implemeneted"
+  case $PROVIDER in
+    "virtualbox"|"vmware"|"vmware_esxi")
+          cd "ad/$LAB/providers/$PROVIDER"
+          GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant snapshot push
+          cd -
+      ;;
+    "proxmox"|"azure")
+          echo "Snapshots supported for Vagrant deployed boxes only."
+      ;;
+    *)
+          echo "unknown provider"
+      ;;
+  esac
 }
 
 reset() {
-  # TODO : reset to last snapshot
-  echo "not implemeneted"
+  case $PROVIDER in
+    "virtualbox"|"vmware"|"vmware_esxi")
+          cd "ad/$LAB/providers/$PROVIDER"
+          GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant snapshot pop --no-delete
+          cd -
+      ;;
+    "proxmox"|"azure")
+          echo "Snapshots supported for Vagrant deployed boxes only."
+      ;;
+    *)
+          echo "unknown provider"
+      ;;
+  esac
 }
 
 main() {
@@ -626,6 +677,9 @@ main() {
     snapshot)
       snapshot
       ;;
+    reset)
+      reset
+      ;;
     disablevagrant)
       disablevagrant
       ;;
@@ -633,7 +687,7 @@ main() {
       enablevagrant
       ;;
     *)
-      echo "unknow option"
+      echo "unknown option"
       ;;
   esac
 }
