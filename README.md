@@ -72,7 +72,7 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 - For linux users check dependencies installation before install :
 
 ```
-./goad -t check -l <LAB> -p <PROVIDER> -m <ANSIBLE_RUN_METHOD>
+./goad.sh -t check -l <LAB> -p <PROVIDER> -m <ANSIBLE_RUN_METHOD>
 ```
 
 - LAB: lab must be one of the following (folder in ad/)
@@ -97,7 +97,7 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 - Launch all the install (vagrant or terraform) vms creation followed by ansible provisioning :
 
 ```
-./goad -t install -l <LAB> -p <PROVIDER> -m <ANSIBLE_RUN_METHOD>
+./goad.sh -t install -l <LAB> -p <PROVIDER> -m <ANSIBLE_RUN_METHOD>
 ```
 
 - The goad install will run all the ansible playbook one by one with a failover to restart the ansible playbook if something goes wrong (sometimes vms or playbook hit timeout so this will restart the playbook automatically)
