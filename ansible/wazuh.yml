@@ -1,5 +1,5 @@
 - name: Install and configure Wazuh Manager
-  hosts: wazuh
+  hosts: wazuh_server
   become: yes
   roles:
     - wazuh_manager
