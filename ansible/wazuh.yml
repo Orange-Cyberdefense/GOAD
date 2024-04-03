@@ -1,3 +1,5 @@
+#Aleem Ladha @LadhaAleem
+#Credits to SOCFortress and May4Fly
 - name: Install and configure Wazuh Manager
   hosts: wazuh_server
   become: yes
