@@ -6,7 +6,7 @@
 - name: Download Wazuh Agent MSI package
   win_get_url:
     url: "{{ wazuh_agent_install_package }}"
-    dest: "c:\\wazuh-agent"
+    dest: "{{wazuh_install_location}}\wazuh-agent"
   register: wazuh_agent_download
   until: wazuh_agent_download is succeeded
   when: not wazuh_agent_service.exists
