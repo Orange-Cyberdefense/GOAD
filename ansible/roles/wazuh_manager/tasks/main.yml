@@ -16,7 +16,7 @@
   copy:
     src: wazuh_socfortress_rules.sh
     dest: /tmp/wazuh_socfortress_rules.sh
-  mode: "0755"  # Ensure the script is executable
+    mode: "0755"  # Ensure the script is executable
 
 - name: Run SOCFORTRESS Wazuh rules script
   shell: sudo bash /tmp/wazuh_socfortress_rules.sh
