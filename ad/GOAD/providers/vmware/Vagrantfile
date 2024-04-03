@@ -3,7 +3,7 @@ Vagrant.configure("2") do |config|
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vmware_desktop'
 
 boxes = [
-  { :name => "GOAD-ANSIBLE", :ip => "192.168.56.100", :box => "kalilinux/rolling", :forwarded_port => [ {:guest => 22, :host => 2310, :id => "ssh"} ] },
+  #{ :name => "GOAD-ANSIBLE", :ip => "192.168.56.100", :box => "kalilinux/rolling", :forwarded_port => [ {:guest => 22, :host => 2310, :id => "ssh"} ] },
   { :name => "GOAD-DC01",  :ip => "192.168.56.10", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows", :memory => 2048},
   { :name => "GOAD-DC02",  :ip => "192.168.56.11", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows", :memory => 2048},
   { :name => "GOAD-DC03",  :ip => "192.168.56.12", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows", :memory => 2048},
