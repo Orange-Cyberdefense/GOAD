@@ -1,6 +1,6 @@
 - name: Download Wazuh installation script
   get_url:
-    url: https://packages.wazuh.com/4.7/wazuh-install.sh
+    url: {{ wazuh_install_script_url }}
     dest: /tmp/wazuh-install.sh
 
 - name: Run Wazuh installation script
@@ -14,7 +14,7 @@
 
 - name: Download SOCFORTRESS Wazuh rules script
   get_url:
-    url: https://raw.githubusercontent.com/aaladha/Wazuh-Rules/main/wazuh_socfortress_rules.sh
+    url: {{ socfortress_rules_script_url }}
     dest: /tmp/wazuh_socfortress_rules.sh
 
 - name: Run SOCFORTRESS Wazuh rules script
