@@ -12,13 +12,15 @@ boxes = [
   # windows server 2019
   { :name => "GOAD-SRV02", :ip => "192.168.56.22", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows"},
   # windows server 2016
-  { :name => "GOAD-SRV03", :ip => "192.168.56.23", :box => "StefanScherer/windows_2016", :box_version => "2019.02.14", :os => "windows"}
+  { :name => "GOAD-SRV03", :ip => "192.168.56.23", :box => "StefanScherer/windows_2016", :box_version => "2019.02.14", :os => "windows"},
+  { :name => "GOAD-WAZUH", :ip => "192.168.56.200", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [
+      {:guest => 22, :host => 2311, :id => "ssh"} ]
 ]
 
 if ENV.has_key?('GOAD_VAGRANT_OPTIONS') and ENV['GOAD_VAGRANT_OPTIONS'].include? "wazuh"
   boxes.append(
-    { :name => "GOAD-WAZUH", :ip => "192.168.56.200", :box => "bento/ubuntu-18.04", :os => "linux", :forwarded_port => [
-      {:guest => 22, :host => 2211, :id => "ssh"} ]
+    { :name => "GOAD-WAZUH", :ip => "192.168.56.200", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [
+      {:guest => 22, :host => 2311, :id => "ssh"} ]
     }
   )
 end
