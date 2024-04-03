@@ -6,13 +6,13 @@
 - name: Download Wazuh Agent MSI package
   win_get_url:
     url: "{{ wazuh_agent_install_package }}"
-    dest: "${env.tmp}\\wazuh-agent"
+    dest: "c:\\wazuh-agent"
   register: wazuh_agent_download
   until: wazuh_agent_download is succeeded
   when: not wazuh_agent_service.exists
 
 - name: Install Wazuh Agent
-  win_command: msiexec.exe /i "${env.tmp}\\wazuh-agent" /q WAZUH_MANAGER='{{ wazuh_manager_host }}' WAZUH_REGISTRATION_SERVER='{{ wazuh_manager_host }}'
+  win_command: msiexec.exe /i "c:\\wazuh-agent" /q WAZUH_MANAGER='{{ wazuh_manager_host }}' WAZUH_REGISTRATION_SERVER='{{ wazuh_manager_host }}'
   when: wazuh_agent_download is succeeded and not wazuh_agent_service.exists
 
 - name: Start Wazuh Agent service
@@ -21,3 +21,4 @@
     state: started
     start_mode: auto
   when: wazuh_agent_download is succeeded and not wazuh_agent_service.exists
+
