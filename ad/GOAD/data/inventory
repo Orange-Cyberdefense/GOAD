@@ -84,6 +84,11 @@ dc03
 srv02
 srv03
 
+; install wazuh server
+; usage : wazuh.yml
+[wazuh_server]
+wazuh
+
 ; install elk
 ; usage : elk.yml
 [elk_server]
