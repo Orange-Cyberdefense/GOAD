@@ -17,6 +17,8 @@ srv02 ansible_host=192.168.56.22 dns_domain=dc02 dict_key=srv02
 dc03 ansible_host=192.168.56.12 dns_domain=dc03 dict_key=dc03
 srv03 ansible_host=192.168.56.23 dns_domain=dc03 dict_key=srv03
 ; ------------------------------------------------
+wazuh ansible_host=192.168.56.200 ansible_connection=ssh
+; ------------------------------------------------
 ; Other
 ; ------------------------------------------------
 elk ansible_host=192.168.56.50 ansible_connection=ssh
