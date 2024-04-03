@@ -1,7 +1,8 @@
 - name: Download Wazuh installation script
-  get_url:
-    url: {{ wazuh_install_script_url }}
+  copy:
+    src: ../files/wazuh-install.sh
     dest: /tmp/wazuh-install.sh
+  mode: "0755"  # Ensure the script is executable
 
 - name: Run Wazuh installation script
   shell: sudo bash /tmp/wazuh-install.sh -a -i > /tmp/wazuh-install-output.txt
@@ -13,9 +14,10 @@
     enabled: yes
 
 - name: Download SOCFORTRESS Wazuh rules script
-  get_url:
-    url: {{ socfortress_rules_script_url }}
+  copy:
+    src: ../files/wazuh_socfortress_rules.sh
     dest: /tmp/wazuh_socfortress_rules.sh
+  mode: "0755"  # Ensure the script is executable
 
 - name: Run SOCFORTRESS Wazuh rules script
   shell: sudo bash /tmp/wazuh_socfortress_rules.sh
