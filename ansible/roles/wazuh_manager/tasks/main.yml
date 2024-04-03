@@ -1,0 +1,31 @@
+- name: Download Wazuh installation script
+  get_url:
+    url: https://packages.wazuh.com/4.7/wazuh-install.sh
+    dest: /tmp/wazuh-install.sh
+
+- name: Run Wazuh installation script
+  shell: sudo bash /tmp/wazuh-install.sh -a -i > /tmp/wazuh-install-output.txt
+
+- name: Start Wazuh Manager service
+  service:
+    name: wazuh-manager
+    state: started
+    enabled: yes
+
+- name: Download SOCFORTRESS Wazuh rules script
+  get_url:
+    url: https://raw.githubusercontent.com/aaladha/Wazuh-Rules/main/wazuh_socfortress_rules.sh
+    dest: /tmp/wazuh_socfortress_rules.sh
+
+- name: Run SOCFORTRESS Wazuh rules script
+  shell: sudo bash /tmp/wazuh_socfortress_rules.sh
+
+- name: Extract username and password
+  shell: "grep -E 'User:|Password:' /tmp/wazuh-install-output.txt | awk '{print $NF}'"
+  register: access_info
+
+- name: Display username and password
+  debug:
+    msg:
+      - "Username: {{ access_info.stdout_lines[0] }}"
+      - "Password: {{ access_info.stdout_lines[1] }}"
