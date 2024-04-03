@@ -1,5 +1,5 @@
 - name: Install Wazuh Agent
-  hosts: wazuh_hosts
+  hosts: wazuh_agents
   tasks:
     - name: "Include Wazuh Agent Installation Role"
       include_role:
