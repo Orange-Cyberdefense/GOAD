@@ -1,5 +1,5 @@
 - name: Install Wazuh Agent
-  hosts: wazuh_agents
+  hosts: elk_log
   tasks:
     - name: "Include Wazuh Agent Installation Role"
       include_role:
