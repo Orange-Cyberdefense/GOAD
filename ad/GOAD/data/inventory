@@ -75,15 +75,6 @@ srv02
 srv02
 srv03
 
-; Install Wazuh Agents
-; usage : wazuh-agents.yml
-[wazuh_agents]
-dc01
-dc02
-dc03
-srv02
-srv03
-
 ; install wazuh server
 ; usage : wazuh.yml
 [wazuh_server]
