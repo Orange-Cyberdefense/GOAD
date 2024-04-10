@@ -20,6 +20,7 @@ srv03 ansible_host=192.168.56.23 dns_domain=dc03 dict_key=srv03
 ; Other
 ; ------------------------------------------------
 elk ansible_host=192.168.56.50 ansible_connection=ssh
+wazuh ansible_host=192.168.56.51 ansible_connection=ssh
 
 [all:vars]
 ; domain_name : folder inside ad/
