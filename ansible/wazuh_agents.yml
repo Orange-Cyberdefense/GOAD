@@ -1,0 +1,10 @@
+- name: Install Wazuh Agent
+  hosts: wazuh_agents
+  tasks:
+    - name: "Include Wazuh Agent Installation Role"
+      include_role:
+        name: wazuh_agent
+      vars:
+        wazuh_manager_host: "{{ hostvars['wazuh']['ansible_host'] }}"
+
+                                                                              
