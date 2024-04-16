@@ -458,6 +458,7 @@ main() {
       check_vagrant_path
       check_vagrant_reload_plugin
       check_vagrant_esxi_plugin
+      check_vagrant_env_plugin
       case $ANSIBLE_HOST in
         "docker")
           check_docker_installed
