@@ -1,0 +1,9 @@
+- name: Disable the user 'localuser'
+  ansible.windows.win_user:
+    name: localuser
+    account_disabled: true
+  become: yes
+  become_method: runas
+  become_user: "{{domain_username}}"
+  vars:
+    ansible_become_pass: "{{domain_password}}"
