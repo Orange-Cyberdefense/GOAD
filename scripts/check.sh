@@ -442,6 +442,12 @@ main() {
       check_terraform_path
       check_rsync_path
       ;;
+    "aws")
+      (echo >&2 "[+] Enumerating aws")
+      check_aws_installed
+      check_terraform_path
+      check_rsync_path
+      ;;
     *)
       print_usage
       ;;

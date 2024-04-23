@@ -9,7 +9,7 @@ LAB=
 PROVIDER=
 METHOD=
 JOB=
-PROVIDERS="virtualbox vmware azure proxmox"
+PROVIDERS="virtualbox vmware azure proxmox aws"
 LABS=$(ls -A ad/ |grep -v 'TEMPLATE')
 TASKS="check install start stop status restart destroy disablevagrant enablevagrant"
 ANSIBLE_PLAYBOOKS="edr.yml build.yml ad-servers.yml ad-parent_domain.yml ad-child_domain.yml ad-members.yml ad-trusts.yml ad-data.yml ad-gmsa.yml laps.yml ad-relations.yml adcs.yml ad-acl.yml servers.yml security.yml vulnerabilities.yml reboot.yml elk.yml sccm-install.yml sccm-config.yml"
@@ -146,7 +146,7 @@ print_azure_info() {
     echo -e "\n\n"
 
     echo "${OK} ssh/config :"
-    echo "Host goad_azure"
+    echo "Host goad_$provider"
     echo "    Hostname $public_ip"
     echo "    User goad"
     echo "    Port 22"
@@ -197,7 +197,7 @@ install_providing(){
         exit 1
       fi
       ;;
-    "azure")
+    "azure"|"aws")
       if [ -d "ad/$lab/providers/$provider/terraform" ]; then
           cd "ad/$lab/providers/$provider/terraform"
           echo "${OK} Initializing Terraform..."
@@ -210,7 +210,14 @@ install_providing(){
           fi
 
           echo "${OK} Apply Terraform..."
-          terraform apply
+          case $provider in
+            "azure")
+              terraform apply
+            ;;
+            "aws")
+              terraform apply -var-file="values.tfvars"
+            ;;
+          esac
           result=$?
           if [ ! $result -eq 0 ]; then
             echo "${ERROR} terraform apply finish with error abort"
@@ -283,7 +290,7 @@ install_provisioning(){
             ;;
         esac
       ;;
-    "azure")
+    "azure"|"aws")
 
           cd "ad/$lab/providers/$provider/terraform"
           public_ip=$(terraform output -raw ubuntu-jumpbox-ip)
@@ -361,6 +368,9 @@ disablevagrant(){
     "azure")
           echo "Vagrant user not used in azure, skip."
       ;;
+    "aws")
+          echo "Vagrant user not used in AWS, skip."
+      ;;
   esac
 }
 
@@ -396,6 +406,9 @@ enablevagrant(){
       ;;
     "azure")
           echo "Vagrant user not used in azure, skip."
+      ;;
+    "aws")
+          echo "Vagrant user not used in AWS, skip."
       ;;
   esac
 }
@@ -454,6 +467,10 @@ start(){
       az vm start --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
       status
       ;;
+    "aws")
+      aws ec2 start-instances --instance-ids $(aws ec2 describe-instances --filters "Name=tag:Lab,Values=GOAD" "Name=instance-state-name,Values=stopped" --query 'Reservations[].Instances[].InstanceId' --output text) 2>&1 > /dev/null
+      status
+      ;;
   esac
 }
 
@@ -487,6 +504,10 @@ stop(){
       ;;
     "azure")
       az vm stop --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
+      status
+      ;;
+    "aws")
+      aws ec2 stop-instances --instance-ids $(aws ec2 describe-instances --filters "Name=tag:Lab,Values=GOAD" "Name=instance-state-name,Values=running" --query 'Reservations[].Instances[].InstanceId' --output text) 2>&1 > /dev/null
       status
       ;;
   esac
@@ -526,6 +547,10 @@ restart(){
       az vm restart --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
       status
       ;;
+    "aws")
+      aws ec2 reboot-instances --instance-ids $(aws ec2 describe-instances --filters "Name=tag:Lab,Values=GOAD" "Name=instance-state-name,Values=running" --query 'Reservations[].Instances[].InstanceId' --output text) 2>&1 > /dev/null
+      status
+      ;;
   esac
 }
 
@@ -545,7 +570,7 @@ destroy(){
           esac
           cd -
       ;;
-    "proxmox"|"azure")
+    "proxmox"|"azure"|"aws")
       if [ -d "ad/$LAB/providers/$PROVIDER/terraform" ]; then
         cd "ad/$LAB/providers/$PROVIDER/terraform"
         echo "${OK} Destroy infrastructure..."
@@ -584,6 +609,9 @@ status(){
       ;;
     "azure")
       az vm list -g $LAB -d --output table
+      ;;
+    "aws")
+      aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId, Tags[?Key==`Name`].Value | [0], State.Name, PrivateIpAddress, PublicIpAddress]' --filters "Name=tag:Lab,Values=GOAD" "Name=instance-state-name,Values=stopped,running,stopping,pending" --output table
       ;;
   esac
 }

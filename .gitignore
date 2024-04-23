@@ -18,5 +18,6 @@ ad/PURPLE
 ad/REDLAB
 ad/EDRLAB
 ad/MINILAB
+ad/*/providers/*/ssh_keys/*
 #ansible/roles/edr
 #ansible/edr.yml
