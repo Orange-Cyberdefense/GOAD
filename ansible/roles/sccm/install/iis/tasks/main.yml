@@ -22,6 +22,12 @@
   ansible.windows.win_reboot:
   when: win_feature.reboot_required
 
+- name: Enable update service
+  ansible.windows.win_service:
+    name: Windows Update
+    state: started
+    start_mode: auto
+
 - name: install .NET Framework 3.5 with DISM
   win_shell: DISM /Online /Enable-Feature /FeatureName:NetFx3 /All
   vars:
