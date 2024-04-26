@@ -9,14 +9,14 @@ ws01 ansible_host=192.168.10.30 dns_domain=dc01 dict_key=ws01
 domain_name=MINILAB
 
 ;use to setup a dns server in the start of provisioning
-force_dns_server=no
-dns_server=x.x.x.x
-; set to no if you use only one network adapter
-two_adapters=yes
+force_dns_server=yes
+dns_server=192.168.10.1
 
-; adapter created by vagrant and vmware
-nat_adapter=Ethernet0
-domain_adapter=Ethernet1
+two_adapters=no
+; adapter created by proxmox (change them if you get an error)
+; to get the name connect to one vm and run ipconfig it will show you the adapters name
+nat_adapter=Ethernet 2
+domain_adapter=Ethernet 2
 
 ; winrm connection (windows)
 ansible_user=vagrant
