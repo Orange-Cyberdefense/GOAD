@@ -1,0 +1,14 @@
+#Aleem Ladha @LadhaAleem
+#Credits to SOCFortress and Mayfly277
+- name: Install and configure Wazuh Manager
+  hosts: wazuh_server
+  become: yes
+  roles:
+    - { role: 'wazuh_manager', tags: 'wazuh_manager' }
+
+- name: Install Wazuh Agent
+  hosts: wazuh_agents
+  roles:
+    - { role: 'wazuh_agent', tags: 'wazuh_agent' }
+  vars:
+    wazuh_manager_host: "{{ hostvars['wazuh']['ansible_host'] }}"
