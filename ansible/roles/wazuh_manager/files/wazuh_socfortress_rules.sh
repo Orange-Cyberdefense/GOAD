@@ -1,5 +1,6 @@
-#Credit to SOC Fortress for this amazing pack
 #!/bin/bash
+# Credit to SOC Fortress for this amazing pack
+# credits : https://github.com/socfortress/Wazuh-Rules/blob/main/wazuh_socfortress_rules.sh
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 clear

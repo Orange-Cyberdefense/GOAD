@@ -4,4 +4,11 @@
   hosts: wazuh_server
   become: yes
   roles:
-    - wazuh_manager
+    - { role: 'wazuh_manager', tags: 'wazuh_manager' }
+
+- name: Install Wazuh Agent
+  hosts: wazuh_agents
+  roles:
+    - { role: 'wazuh_agent', tags: 'wazuh_agent' }
+  vars:
+    wazuh_manager_host: "{{ hostvars['wazuh']['ansible_host'] }}"
