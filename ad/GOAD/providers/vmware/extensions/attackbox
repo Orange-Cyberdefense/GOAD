@@ -1,0 +1,11 @@
+[default]
+attackbox ansible_host=192.168.56.99 ansible_connection=ssh
+
+[attackbox_machine:vars]
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=./.vagrant/machines/attackbox/virtualbox/private_key
+ansible_ssh_port=22
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[extensions]
+attackbox

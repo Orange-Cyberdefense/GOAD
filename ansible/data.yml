@@ -1,6 +1,6 @@
 ---
 - name: "Read data files"
-  hosts: all:!elk
+  hosts: domain:extensions
   connection: local
   vars_files:
     - "{{data_path}}/config.json"

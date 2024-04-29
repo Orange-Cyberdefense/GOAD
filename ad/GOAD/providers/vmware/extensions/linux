@@ -1,0 +1,15 @@
+[default]
+lx01 ansible_host=192.168.56.24 ansible_connection=ssh
+
+[lx01:vars]
+; ssh connection (linux)
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=./.vagrant/machines/lx01/virtualbox/private_key
+ansible_ssh_port=22
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[enroll_linux]
+lx01
+
+[extensions]
+lx01

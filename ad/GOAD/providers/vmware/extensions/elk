@@ -1,0 +1,12 @@
+[default]
+elk ansible_host=192.168.56.50 ansible_connection=ssh
+
+[elk_server:vars]
+; ssh connection (linux)
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=./.vagrant/machines/elk/virtualbox/private_key
+ansible_ssh_port=22
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[extensions]
+elk

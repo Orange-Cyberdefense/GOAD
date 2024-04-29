@@ -75,21 +75,6 @@ srv02
 srv02
 srv03
 
-; install elk
-; usage : elk.yml
-[elk_server]
-elk
-
-; add log agent for elk
-; usage : elk.yml
-[elk_log]
-dc01
-dc02
-dc03
-srv02
-srv03
-
-
 [laps_dc]
 dc03
 [laps_server]
@@ -121,3 +106,29 @@ srv03
 ; usage : security.yml
 [defender_off]
 srv02
+
+; ################################################################
+; EXTENSIONS
+; ################################################################
+
+; EXTENSION : ELK ------------------------------------------
+; install elk
+; usage : elk.yml
+[elk_server]
+elk
+
+; add log agent for elk
+; usage : elk.yml
+[elk_log:children]
+domain
+
+; EXTENSION : WAZUH ------------------------------------------
+[wazuh_server]
+wazuh
+
+[wazuh_client:children]
+domain
+
+; EXTENSION : ATTACKBOX ------------------------------------------
+[attackbox_machine]
+attackbox

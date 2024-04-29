@@ -7,12 +7,27 @@ INFO=$(tput setaf 3; echo -n "[-]"; tput sgr0)
 RESTART_COUNT=0
 MAX_RETRY=3
 
+EXT_INVENTORY=""
 
 echo "[+] Current folder $(pwd)"
 echo "[+] Current LAB : $LAB"
 echo "[+] Current PROVIDER : $PROVIDER"
+echo "[+] Extensions : $EXTENSIONS"
+
+if [ ! -z  $EXTENSIONS ]; then
+    for EXT in $(echo $EXTENSIONS | sed "s/,/ /g")
+    do
+        if [ -f "../ad/$LAB/providers/$PROVIDER/extensions/$EXT" ]; then
+            echo "[+] Add extension : $EXT to inventory list"
+            EXT_INVENTORY="$EXT_INVENTORY -i ../ad/$LAB/providers/$PROVIDER/extensions/$EXT"
+        else
+            echo "[-] Extension : $EXT does not exist"
+        fi
+    done
+fi
+
 if [ -z  $ANSIBLE_COMMAND ]; then
-  export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$LAB/data/inventory -i ../ad/$LAB/providers/$PROVIDER/inventory"
+  export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$LAB/data/inventory -i ../ad/$LAB/providers/$PROVIDER/inventory $EXT_INVENTORY"
 fi
 echo "[+] Ansible command : $ANSIBLE_COMMAND"
 
@@ -136,6 +151,24 @@ case $LAB in
         run_ansible vulnerabilities.yml
       ;;
 esac
+
+for EXT in $(echo $EXTENSIONS | sed "s/,/ /g")
+do
+    case $EXT in
+        elk)
+            run_ansible elk.yml
+            ;;
+        wazuh)
+            #run_ansible wazuh.yml
+            ;;
+        guacamole)
+            run_ansible guacamole.yml
+            ;;
+        attackbox)
+            run_ansible attackbox.yml
+            ;;
+    esac
+done
 
 # end build
 echo "[+] Almost finish, last reboot and it is finish !"
