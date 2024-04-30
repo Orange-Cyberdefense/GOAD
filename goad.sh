@@ -12,7 +12,7 @@ JOB=
 PROVIDERS="virtualbox vmware azure proxmox"
 LABS=$(ls -A ad/ |grep -v 'TEMPLATE')
 TASKS="check install start stop status restart destroy disablevagrant enablevagrant"
-ANSIBLE_PLAYBOOKS="edr.yml build.yml ad-servers.yml ad-parent_domain.yml ad-child_domain.yml ad-members.yml ad-trusts.yml ad-data.yml ad-gmsa.yml laps.yml ad-relations.yml adcs.yml ad-acl.yml servers.yml security.yml vulnerabilities.yml reboot.yml elk.yml sccm-install.yml sccm-config.yml"
+ANSIBLE_PLAYBOOKS="edr.yml build.yml ad-servers.yml ad-parent_domain.yml ad-child_domain.yml ad-members.yml ad-trusts.yml ad-data.yml ad-gmsa.yml laps.yml ad-relations.yml adcs.yml ad-acl.yml servers.yml security.yml vulnerabilities.yml reboot.yml elk.yml sccm-install.yml sccm-config.yml wazuh.yml"
 METHODS="local docker"
 ANSIBLE_ONLY=0
 ANSIBLE_PLAYBOOK=
@@ -246,11 +246,11 @@ install_provisioning(){
   if [ ! -z  $GOAD_VAGRANT_OPTIONS ]; then
       for EXT in $(echo $GOAD_VAGRANT_OPTIONS | sed "s/,/ /g")
       do
-          if [ -f "../ad/$lab/providers/$provider/extensions/$EXT" ]; then
+          if [ -f "ad/$lab/providers/$provider/extensions/$EXT" ]; then
               echo "[+] Add extension : $EXT to inventory list"
               export EXT_INVENTORY="$EXT_INVENTORY -i ../ad/$lab/providers/$provider/extensions/$EXT"
           else
-              echo "[-] Extension : $EXT does not exist for lab: $lab and provider $provider: , skip"
+              echo "[-] Extension : $EXT does not exist for lab: $lab and provider $provider : skip"
           fi
       done
   fi
