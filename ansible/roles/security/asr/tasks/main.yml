@@ -1,0 +1,4 @@
+- name: Enable ASR rule
+  ansible.windows.win_shell: |
+    Add-MpPreference -AttackSurfaceReductionRules_Ids {{item.value.ruleid}} -AttackSurfaceReductionRules_Actions enable
+  with_dict: "{{ security_vars }}"
