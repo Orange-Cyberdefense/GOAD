@@ -5,7 +5,6 @@
 ; sevenkingdoms.local
 ; ------------------------------------------------
 dc01 ansible_host=192.168.56.10 dns_domain=dc01 dict_key=dc01
-;ws01 ansible_host=192.168.56.30 dns_domain=dc01 dict_key=ws01
 ; ------------------------------------------------
 ; north.sevenkingdoms.local
 ; ------------------------------------------------
@@ -16,10 +15,6 @@ srv02 ansible_host=192.168.56.22 dns_domain=dc02 dict_key=srv02
 ; ------------------------------------------------
 dc03 ansible_host=192.168.56.12 dns_domain=dc03 dict_key=dc03
 srv03 ansible_host=192.168.56.23 dns_domain=dc03 dict_key=srv03
-; ------------------------------------------------
-; Other
-; ------------------------------------------------
-elk ansible_host=192.168.56.50 ansible_connection=ssh
 
 [all:vars]
 ; domain_name : folder inside ad/

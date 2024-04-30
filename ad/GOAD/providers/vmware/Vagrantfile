@@ -3,7 +3,6 @@ Vagrant.configure("2") do |config|
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vmware_desktop'
 
 boxes = [
-  { :name => "GOAD-KALI", :ip => "192.168.56.51", :box => "kalilinux/rolling", :forwarded_port => [ {:guest => 22, :host => 2310, :id => "ssh"} ] },
   # windows server 2019
   { :name => "GOAD-DC01",  :ip => "192.168.56.10", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows"},
   # windows server 2019
@@ -17,9 +16,9 @@ boxes = [
 ]
 
 if ENV.has_key?('GOAD_VAGRANT_OPTIONS') 
-  if ENV['GOAD_VAGRANT_OPTIONS'].include? "ws01"
+  if ENV['GOAD_VAGRANT_OPTIONS'].include? "workstation"
     boxes.append(
-      { :name => "GOAD-WS01", :ip => "192.168.56.31", :box => "mayfly/windows10", :os => "windows"}
+      { :name => "GOAD-WS01", :ip => "192.168.56.30", :box => "mayfly/windows10", :os => "windows"}
     )
   end
 

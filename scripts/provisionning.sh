@@ -159,7 +159,7 @@ do
             run_ansible elk.yml
             ;;
         wazuh)
-            #run_ansible wazuh.yml
+            run_ansible wazuh.yml
             ;;
         guacamole)
             run_ansible guacamole.yml
