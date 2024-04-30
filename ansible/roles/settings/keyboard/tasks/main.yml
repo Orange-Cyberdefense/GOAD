@@ -1,2 +1,3 @@
-- name: Windows | Add the fr keyboard layout
-  win_shell: $langList = Get-WinUserLanguageList; $langList.Add("{{layout}}"); Set-WinUserLanguageList -LanguageList $langList -Force
+- name: "Windows | Add the keyboard layouts"
+  win_shell: $langList = Get-WinUserLanguageList; $langList.Add("{{item}}"); Set-WinUserLanguageList -LanguageList $langList -Force
+  loop: "{{layouts}}"

@@ -16,15 +16,8 @@ srv02 ansible_host=192.168.10.22 dns_domain=dc02 dict_key=srv02
 ; ------------------------------------------------
 dc03 ansible_host=192.168.10.12 dns_domain=dc03 dict_key=dc03
 srv03 ansible_host=192.168.10.23 dns_domain=dc03 dict_key=srv03
-; ------------------------------------------------
-; Other
-; ------------------------------------------------
-elk ansible_host=192.168.10.50 ansible_connection=ssh
 
 [all:vars]
-; domain_name : folder inside ad/
-domain_name=GOAD
-
 force_dns_server=yes
 dns_server=192.168.10.1
 
@@ -33,24 +26,3 @@ two_adapters=no
 ; to get the name connect to one vm and run ipconfig it will show you the adapters name
 nat_adapter=Ethernet 2
 domain_adapter=Ethernet 2
-
-; winrm connection (windows)
-ansible_user=vagrant
-ansible_password=vagrant
-ansible_connection=winrm
-ansible_winrm_server_cert_validation=ignore
-ansible_winrm_operation_timeout_sec=400
-ansible_winrm_read_timeout_sec=500
-
-; proxy settings (the lab need internet for some install, if you are behind a proxy you should set the proxy here)
-enable_http_proxy=no
-ad_http_proxy=http://x.x.x.x:xxxx
-ad_https_proxy=http://x.x.x.x:xxxx
-
-[elk_server:vars]
-; ssh connection (linux)
-ansible_ssh_user=vagrant
-ansible_ssh_private_key_file=./.vagrant/machines/elk/virtualbox/private_key
-ansible_ssh_port=22
-host_key_checking=false
-
