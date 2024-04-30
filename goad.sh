@@ -266,7 +266,7 @@ install_provisioning(){
                 cd -
               else
                 cd ansible
-                ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $EXT_INVENTORY $ANSIBLE_PLAYBOOK
+                ansible-playbook -i ../globalsettings.ini -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $EXT_INVENTORY $ANSIBLE_PLAYBOOK
                 cd -
               fi
             ;;
@@ -291,7 +291,7 @@ install_provisioning(){
                 $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "LAB=$lab PROVIDER=$provider EXTENSIONS=$GOAD_VAGRANT_OPTIONS ../scripts/provisionning.sh"
               else
               echo "${OK} Start provisioning from docker"
-                $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $EXT_INVENTORY $ANSIBLE_PLAYBOOK"
+                $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../globalsettings.ini -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $EXT_INVENTORY $ANSIBLE_PLAYBOOK"
               fi
             ;;
         esac
@@ -347,7 +347,7 @@ disablevagrant(){
         case $METHOD in
           "local")
               cd ansible
-              ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant disable_vagrant.yml
+              ansible-playbook -i ../globalsettings.ini -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant disable_vagrant.yml
               cd -
             ;;
           "docker")
@@ -367,7 +367,7 @@ disablevagrant(){
                 echo "${OK} Container goadansible creation complete"
               fi
               echo "${OK} Start provisioning from docker"
-              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant disable_vagrant.yml"
+              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../globalsettings.ini -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant disable_vagrant.yml"
             ;;
         esac
       ;;
@@ -383,7 +383,7 @@ enablevagrant(){
         case $METHOD in
           "local")
               cd ansible
-              ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant enable_vagrant.yml
+              ansible-playbook -i ../globalsettings.ini -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant enable_vagrant.yml
               cd -
             ;;
           "docker")
@@ -403,7 +403,7 @@ enablevagrant(){
                 echo "${OK} Container goadansible creation complete"
               fi
               echo "${OK} Start provisioning from docker"
-              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant enable_vagrant.yml"
+              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../globalsettings.ini -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant enable_vagrant.yml"
             ;;
         esac
       ;;

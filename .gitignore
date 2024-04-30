@@ -19,3 +19,5 @@ ad/REDLAB
 ad/EDRLAB
 #ansible/roles/edr
 #ansible/edr.yml
+ad/GOAD-Purple
+.vscode
