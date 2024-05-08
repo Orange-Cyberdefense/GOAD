@@ -390,6 +390,16 @@ check_vagrant_env_plugin() {
   fi
 }
 
+check_ovftool_installed() {
+  if ! which ovftool >/dev/null; then
+    (echo >&2 "${ERROR} ovftool was not found in your PATH.")
+    exit 1
+  else
+    OVFTOOL_VERSION=$(ovftool -v | cut -d ' ' -f 3)
+    (echo >&2 "${GOODTOGO} ovftool (${OVFTOOL_VERSION}) is installed, make sure that version matches your ESXi environment")
+  fi
+}
+
 # Check available disk space. Recommend 120GB free, warn if less.
 check_disk_free_space() {
   FREE_DISK_SPACE=$(df -m "$HOME" | tr -s ' ' | grep '/' | cut -d ' ' -f 4)
@@ -459,6 +469,7 @@ main() {
       check_vagrant_reload_plugin
       check_vagrant_esxi_plugin
       check_vagrant_env_plugin
+      check_ovftool_installed
       case $ANSIBLE_HOST in
         "docker")
           check_docker_installed
