@@ -47,7 +47,7 @@ end
       target.vm.provider :vmware_esxi do |v|
         v.esxi_hostname         = ENV['GOAD_VAGRANT_ESXIHOSTNAME']
         v.esxi_username         = ENV['GOAD_VAGRANT_ESXIUSERNAME']
-        v.esxi_password         = ENV['GOAD_VAGRANT_ESXIPASSWORD']
+        v.esxi_password         = 'env:GOAD_VAGRANT_ESXIPASSWORD'
         v.esxi_virtual_network  = [ ENV['GOAD_VAGRANT_ESXINETNAT'], ENV['GOAD_VAGRANT_ESXINETDOM'] ]
         v.guest_numvcpus        = '4'
         v.guest_memsize         = '6000'
