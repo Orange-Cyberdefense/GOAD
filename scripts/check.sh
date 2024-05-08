@@ -393,6 +393,8 @@ check_vagrant_env_plugin() {
 check_ovftool_installed() {
   if ! which ovftool >/dev/null; then
     (echo >&2 "${ERROR} ovftool was not found in your PATH.")
+    (echo >&2 "${ERROR} Please correct this before continuing. Exiting.")
+    (echo >&2 "${ERROR} Correct this by installing appropriate ovftool version for your environment : https://developer.broadcom.com/tools/open-virtualization-format-ovf-tool/latest")
     exit 1
   else
     OVFTOOL_VERSION=$(ovftool -v | cut -d ' ' -f 3)
