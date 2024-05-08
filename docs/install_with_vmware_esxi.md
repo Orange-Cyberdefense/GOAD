@@ -1,8 +1,8 @@
-# Vmware setup (aka "Virtualbox c'est no way")
+# VMware ESXi setup (aka "Virtualbox c'est no way")
 
 <div align="center">
   <img alt="vagrant" width="150" height="150" src="./img/icon_vagrant.png">
-  <img alt="icon_vwmare" width="150"  height="150" src="./img/icon_vwmare.png">
+  <img alt="icon_vwmare" width="150"  height="150" src="./img/icon_vmware_esxi.png">
   <img alt="icon_ansible" width="150"  height="150" src="./img/icon_ansible.png">
 </div>
 
