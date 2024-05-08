@@ -119,12 +119,14 @@ ansible-galaxy install -r ansible/requirements.yml
 
 Since ESXi server is remote you will need to provide the environment details of the ESXi server. Those are located inside the `ad/<LAB>/providers/vmware_esxi/.env` file.
 
+```
 GOAD_VAGRANT_ESXIHOSTNAME is the IP or hostname of your ESXi server
 GOAD_VAGRANT_ESXIUSERNAME is the username for your ESXi server
 GOAD_VAGRANT_ESXIPASSWORD is the password for your ESXi server
 GOAD_VAGRANT_ESXINETNAT is the ESXi portgroup for a NAT network present that contains your ESXi server and the deployment server
 GOAD_VAGRANT_ESXINETDOM is the ESXi portgroup that is isolated domain network for the lab
 GOAD_VAGRANT_ESXISTORE is the ESXi datastore where all the LAB files will be stored
+```
 
 You can use this file either by sourcing it or if you followed the previous steps that is done automatically with `vagrant-env` plugin.
 
