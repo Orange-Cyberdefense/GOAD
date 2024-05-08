@@ -19,6 +19,7 @@
       - winrm
       - winrm-fs
       - winrm-elevated
+  - ovftool (https://developer.broadcom.com/tools/open-virtualization-format-ovf-tool/latest)
 
 - Provisioning with python
   - Python3 (>=3.8)
@@ -114,17 +115,36 @@ ansible-galaxy install -r ansible/requirements.yml
 
 ## Install
 
+### Enter credentials
+
+Since ESXi server is remote you will need to provide the environment details of the ESXi server. Those are located inside the `ad/<LAB>/providers/vmware_esxi/.env` file.
+
+GOAD_VAGRANT_ESXIHOSTNAME is the IP or hostname of your ESXi server
+GOAD_VAGRANT_ESXIUSERNAME is the username for your ESXi server
+GOAD_VAGRANT_ESXIPASSWORD is the password for your ESXi server
+GOAD_VAGRANT_ESXINETNAT is the ESXi portgroup for a NAT network present that contains your ESXi server and the deployment server
+GOAD_VAGRANT_ESXINETDOM is the ESXi portgroup that is isolated domain network for the lab
+GOAD_VAGRANT_ESXISTORE is the ESXi datastore where all the LAB files will be stored
+
+You can use this file either by sourcing it or if you followed the previous steps that is done automatically with `vagrant-env` plugin.
+
+Sourcing inside a bash shell can be done as:
+
+```bash
+source ad/<LAB>/providers/vmware_esxi/.env
+```
+
 ### Launch installation automatically
 
 - This will launch vagrant up and the ansible playbooks
 - If you run ansible locally
 ```bash
-./goad.sh -t check -l GOAD -p vmware_esxi -m local
+./goad.sh -t install -l GOAD -p vmware_esxi -m local
 ```
 
 - If you run ansible on docker
 ```bash
-./goad.sh -t check -l GOAD -p vmware_esxi -m docker
+./goad.sh -t install -l GOAD -p vmware_esxi -m docker
 ```
 
 ### Launch installation manually
@@ -182,3 +202,25 @@ ansible-playbook -i ../ad/GOAD/data/inventory -i ../ad/GOAD/providers/vmware_esx
 
 
 - Details on the provisioning process are here : [provisioning.md](./provisioning.md)
+
+## Additional features supported for the vmware_esxi provider
+
+### snapshot
+
+It creates a snapshot for all Vagrant deployed boxes in a lab.
+
+Example usage:
+
+```bash
+./goad.sh -t snapshot -l GOAD -p vmware_esxi -m local
+```
+
+### reset
+
+It reverts to a latest snapshot without deleting it for all Vagrant deployed boxes in a lab.
+
+Example usage:
+
+```bash
+./goad.sh -t reset -l GOAD -p vmware_esxi -m local
+```

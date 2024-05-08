@@ -173,3 +173,26 @@ ansible-playbook -i ../ad/GOAD/data/inventory -i ../ad/GOAD/providers/virtualbox
 ```
 
 - Details on the provisioning process are here : [provisioning.md](./provisioning.md)
+
+
+## Additional features supported for the virtualbox provider
+
+### snapshot
+
+It creates a snapshot for all Vagrant deployed boxes in a lab.
+
+Example usage:
+
+```bash
+./goad.sh -t snapshot -l GOAD -p virtualbox -m local
+```
+
+### reset
+
+It reverts to a latest snapshot without deleting it for all Vagrant deployed boxes in a lab.
+
+Example usage:
+
+```bash
+./goad.sh -t reset -l GOAD -p virtualbox -m local
+```
