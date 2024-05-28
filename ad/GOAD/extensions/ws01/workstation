@@ -1,11 +1,12 @@
 [default]
 ws01 ansible_host=192.168.56.30 dns_domain=dc01 dict_key=ws01
 
+[extensions]
+ws01
+
+; Recipe associations -------------------
 [domain]
 ws01
 
 [workstation]
-ws01
-
-[extensions]
 ws01

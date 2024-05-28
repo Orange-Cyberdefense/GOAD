@@ -61,6 +61,25 @@ variable "vm_config" {
   }
 }
 
+resource "azurerm_resource_group" "resource_group" {
+  name     = "GOAD"
+  location = var.location
+}
+
+resource "azurerm_virtual_network" "virtual_network" {
+  name                = "goad-virtual-network"
+  address_space       = ["192.168.0.0/16"]
+  location            = azurerm_resource_group.resource_group.location
+  resource_group_name = azurerm_resource_group.resource_group.name
+}
+
+resource "azurerm_subnet" "subnet" {
+  name                 = "goat-vm-subnet"
+  resource_group_name  = azurerm_resource_group.resource_group.name
+  virtual_network_name = azurerm_virtual_network.virtual_network.name
+  address_prefixes     = ["192.168.56.0/24"]
+}
+
 resource "azurerm_network_interface" "goad-vm-nic" {
   for_each = var.vm_config
 

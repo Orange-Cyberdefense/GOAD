@@ -1,0 +1,35 @@
+---
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+- name: show variables
+  hosts: dc01
+  tasks:
+    - debug:
+        "var=ansible_interfaces"
+
+# - name: set Network adapter variables
+#   hosts: dc01
+#   tasks:
+#     - set_fact: 
+#         the_domain_interface="{{item.connection_name}}"
+#       when: item.ipv4.address == hostvars[dns_domain].ansible_host
+#       with_items: "{{ ansible_interfaces }}"
+#     - set_fact: 
+#         the_nat_interface="{{item.connection_name}}"
+#       when: item.ipv4.address != hostvars[dns_domain].ansible_host
+#       with_items: "{{ ansible_interfaces }}"
+#     - set_fact: 
+#         number_of_interfaces="{{ansible_interfaces|length}}"
+
+- name: show variables
+  hosts: domain
+  tasks:
+    - debug:
+        msg: "domain interface : {{eth_domain_interface}}"
+    - debug:
+        msg: "nat interface : {{eth_nat_interface}}"
+    - debug:
+        msg: "number_of_interfaces : {{number_of_interfaces}}"

@@ -43,7 +43,7 @@ print_usage() {
   echo "${INFO} -a : to run only ansible on install (optional)";
   echo "${INFO} -r : to run only one ansible playbook (optional)";
   echo "   - example : vulnerabilities.yml";
-  echo "${INFO} -e : to activate extension (separated by coma) (optional)";
+  echo "${INFO} -e : to activate extension (separated by coma) (optional) (GOAD lab only)";
   for extension in $GOAD_EXTENSIONS;  do
     echo "   - $extension";
   done

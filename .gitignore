@@ -17,7 +17,7 @@ tfplan
 ad/PURPLE
 ad/REDLAB
 ad/EDRLAB
-#ansible/roles/edr
-#ansible/edr.yml
-ad/GOAD-Purple
+ad/DEMO
+ansible/roles/edr
+ansible/edr.yml
 .vscode

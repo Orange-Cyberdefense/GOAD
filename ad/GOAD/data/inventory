@@ -1,5 +1,8 @@
 ; GLOBAL CONFIG
 [all:vars]
+; global settings inventory default value
+keyboard_layouts=["en-US", "da-DK", "fr-FR"]
+
 ; domain_name : folder inside ad/
 domain_name=GOAD
 
@@ -121,29 +124,3 @@ srv03
 ; usage : security.yml
 [defender_off]
 srv02
-
-; ################################################################
-; EXTENSIONS
-; ################################################################
-
-; EXTENSION : ELK ------------------------------------------
-; install elk
-; usage : elk.yml
-[elk_server]
-elk
-
-; add log agent for elk
-; usage : elk.yml
-[elk_log:children]
-domain
-
-; EXTENSION : WAZUH ------------------------------------------
-[wazuh_server]
-wazuh
-
-[wazuh_agents:children]
-domain
-
-; EXTENSION : ATTACKBOX ------------------------------------------
-[attackbox_machine]
-attackbox
