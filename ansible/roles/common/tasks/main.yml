@@ -54,3 +54,11 @@
     Localport: "3389"
     Protocol: "TCP"
     Description: "Opens the listener port for RDP"
+
+- name: Add a network static route
+  community.windows.win_route:
+    destination: "{{route_network}}"
+    gateway: "{{route_gateway}}"
+    metric: 1
+    state: present
+  when: add_route == "yes"

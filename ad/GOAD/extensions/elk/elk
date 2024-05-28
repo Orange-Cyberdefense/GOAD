@@ -1,0 +1,18 @@
+; EXTENSION : ELK ------------------------------------------
+; install elk
+; usage : elk.yml
+
+[default]
+elk ansible_host=192.168.56.50 ansible_connection=ssh ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[extensions]
+elk
+
+; Recipe associations -------------------
+[elk_server]
+elk
+
+; add log agent for elk
+; usage : elk.yml
+[elk_log:children]
+domain

@@ -3,7 +3,7 @@
   hosts: domain
   roles:
     - { role: 'common', tags: 'common', http_proxy: "{{enable_http_proxy}}"}
-    - { role: 'settings/keyboard', tags: 'keyboard', layout: "fr-FR" }
+    - { role: 'settings/keyboard', tags: 'keyboard', layouts: "{{keyboard_layouts}}" }
 
 # do not add srv with no update -> generate error on iis install
 - name: build all no update

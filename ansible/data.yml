@@ -1,6 +1,6 @@
 ---
 - name: "Read data files"
-  hosts: all:!elk
+  hosts: domain:extensions
   connection: local
   vars_files:
     - "{{data_path}}/config.json"
@@ -9,3 +9,17 @@
       set_fact:
         lab: "{{lab}}"
         cacheable: yes
+      run_once: true
+    - set_fact: 
+        eth_domain_interface="{{item.connection_name}}"
+      when: item.ipv4.address == hostvars[dns_domain].ansible_host
+      with_items: "{{ ansible_interfaces }}"
+      run_once: true
+    - set_fact: 
+        eth_nat_interface="{{item.connection_name}}"
+      when: item.ipv4.address != hostvars[dns_domain].ansible_host
+      with_items: "{{ ansible_interfaces }}"
+      run_once: true
+    - set_fact: 
+        number_of_interfaces="{{ansible_interfaces|length}}"
+      run_once: true

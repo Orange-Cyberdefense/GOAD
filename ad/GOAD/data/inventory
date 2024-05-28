@@ -1,3 +1,21 @@
+; GLOBAL CONFIG
+[all:vars]
+; global settings inventory default value
+keyboard_layouts=["en-US", "da-DK", "fr-FR"]
+
+; domain_name : folder inside ad/
+domain_name=GOAD
+
+; winrm connection (windows)
+ansible_user=vagrant
+ansible_password=vagrant
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+ansible_winrm_operation_timeout_sec=400
+ansible_winrm_read_timeout_sec=500
+# ansible_winrm_transport=basic
+# ansible_port=5985
+
 ; LAB SCENARIO CONFIGURATION -----------------------------
 
 ; computers inside domain (mandatory)
@@ -74,21 +92,6 @@ srv02
 [webdav]
 srv02
 srv03
-
-; install elk
-; usage : elk.yml
-[elk_server]
-elk
-
-; add log agent for elk
-; usage : elk.yml
-[elk_log]
-dc01
-dc02
-dc03
-srv02
-srv03
-
 
 [laps_dc]
 dc03

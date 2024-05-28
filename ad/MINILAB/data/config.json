@@ -1,0 +1,104 @@
+{
+"lab" : {
+    "hosts" : {
+        "dc01" : {
+            "hostname" : "dc",
+            "type" : "dc",
+            "local_admin_password": "8dCT-DJjgScp",
+            "domain" : "mini.lab",
+            "path" : "DC=mini,DC=lab",
+            "vulns" : ["files", "credentials", "enable_credssp_client", "schedule"],
+            "vulns_vars" : {
+                "credentials" : {
+                    "TERMSRV/alicesecret": {
+                        "username" : "MINILAB\\alice",
+                        "secret"   : "F0llOwTheWh1teR@bit",
+                        "runas"    : "MINILAB\\alice",
+                        "runas_password" : "spongebob"
+                    }
+                },
+                "files" : {
+                    "csp" : {
+                        "src" : "bot.ps1",
+                        "dest" : "c:\\bot.ps1"
+                    }
+                },
+                "schedule": {
+                    "bot": {
+                        "name": "connect_bot",
+                        "cmd" : "powershell c:\\bot.ps1",
+                        "interval" : "PT1M"
+                    }
+                }
+            }
+        },
+        "ws01" : {
+            "hostname" : "ws",
+            "type" : "workstation",
+            "local_admin_password": "EP+xh7Rk6j90",
+            "domain" : "mini.lab",
+            "use_laps": false,
+            "path" : "DC=mini,DC=lab",
+            "local_groups" : {
+                "Administrators" : [
+                    "MINILAB\\wsadmin"
+                ],
+                "Remote Desktop users" : [
+                    "MINILAB\\wsrdp"
+                ]
+            },
+            "vulns" : ["disable_firewall", "enable_credssp_server"]
+        }
+    },
+    "domains" : {
+        "mini.lab" : {
+            "dc": "dc01",
+            "domain_password" : "8dCT-DJjgScp",
+            "netbios_name": "MINILAB",
+            "groups" : {
+                "global" : {
+                    "wsadmin" : {
+                        "managed_by" : "alice",
+                        "path" : "CN=Users,DC=mini,DC=lab"
+                    },
+                    "wsrdp" : {
+                        "managed_by" : "dave",
+                        "path" : "CN=Users,DC=mini,DC=lab"
+                    }
+                }
+            },
+            "acls" : {
+                "anonymous_rpc" : {"for": "NT AUTHORITY\\ANONYMOUS LOGON", "to": "DC=mini,DC=lab", "right": "ReadProperty", "inheritance": "All"},
+                "anonymous_rpc2" : {"for": "NT AUTHORITY\\ANONYMOUS LOGON", "to": "DC=mini,DC=lab", "right": "GenericExecute", "inheritance": "All"}
+            },
+            "users" : {
+                "alice" : {
+                    "firstname"   : "alice",
+                    "password"    : "spongebob",
+                    "groups"      : ["wsadmin", "Domain Admins"],
+                    "path"        : "CN=Users,DC=mini,DC=lab"
+                },
+                "bob" : {
+                    "firstname"   : "bob",
+                    "password"    : "superman",
+                    "description" : "(Password : superman)",
+                    "groups"      : ["wsadmin"],
+                    "path"        : "CN=Users,DC=mini,DC=lab"
+                },
+                "carol" : {
+                    "firstname"   : "carol",
+                    "password"    : "123456789",
+                    "groups"      : ["wsadmin", "Domain Admins"],
+                    "path"        : "CN=Users,DC=mini,DC=lab"
+                },
+                "dave" : {
+                    "firstname"   : "dave",
+                    "password"    : "rockyou",
+                    "groups"      : ["wsrdp"],
+                    "path"        : "CN=Users,DC=mini,DC=lab"
+                }
+            }
+        }
+    }
+}
+}

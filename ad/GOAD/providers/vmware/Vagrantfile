@@ -15,12 +15,44 @@ boxes = [
   { :name => "GOAD-SRV03", :ip => "192.168.56.23", :box => "StefanScherer/windows_2016", :box_version => "2019.02.14", :os => "windows"}
 ]
 
-if ENV.has_key?('GOAD_VAGRANT_OPTIONS') and ENV['GOAD_VAGRANT_OPTIONS'].include? "elk"
-  boxes.append(
-    { :name => "GOAD-ELK", :ip => "192.168.56.50", :box => "bento/ubuntu-18.04", :os => "linux", :forwarded_port => [
-      {:guest => 22, :host => 2210, :id => "ssh"} ]
-    }
-  )
+if ENV.has_key?('GOAD_VAGRANT_OPTIONS') 
+  if ENV['GOAD_VAGRANT_OPTIONS'].include? "workstation"
+    boxes.append(
+      { :name => "GOAD-WS01", :ip => "192.168.56.30", :box => "mayfly/windows10", :os => "windows"}
+    )
+  end
+
+  if ENV['GOAD_VAGRANT_OPTIONS'].include? "elk"
+    boxes.append(
+      { :name => "GOAD-ELK", :ip => "192.168.56.50", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [
+        {:guest => 22, :host => 2210, :id => "ssh"} ]
+      }
+    )
+  end
+
+  if ENV['GOAD_VAGRANT_OPTIONS'].include? "wazuh"
+    boxes.append(
+      { :name => "GOAD-WAZUH", :ip => "192.168.56.51", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [
+        {:guest => 22, :host => 2210, :id => "ssh"} ]
+      }
+    )
+  end
+
+  if ENV['GOAD_VAGRANT_OPTIONS'].include? "guacamole"
+    boxes.append(
+      { :name => "GOAD-GUACAMOLE", :ip => "192.168.56.100", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [
+        {:guest => 22, :host => 2210, :id => "ssh"} ]
+      }
+    )
+  end
+
+  if ENV['GOAD_VAGRANT_OPTIONS'].include? "attackbox"
+    boxes.append(
+      { :name => "GOAD-ATTACK", :ip => "192.168.56.99", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [
+        {:guest => 22, :host => 2210, :id => "ssh"} ]
+      }
+    )
+  end
 end
 
   config.vm.provider "virtualbox" do |v|
