@@ -15,14 +15,14 @@ boxes = [
   { :name => "GOAD-SRV03", :ip => "192.168.56.23", :box => "StefanScherer/windows_2016", :box_version => "2019.02.14", :os => "windows"}
 ]
 
-if ENV.has_key?('GOAD_VAGRANT_OPTIONS') 
-  if ENV['GOAD_VAGRANT_OPTIONS'].include? "workstation"
+if ENV.has_key?('GOAD_SELECTED_EXTENSIONS') 
+  if ENV['GOAD_SELECTED_EXTENSIONS'].include? "workstation"
     boxes.append(
       { :name => "GOAD-WS01", :ip => "192.168.56.30", :box => "mayfly/windows10", :os => "windows"}
     )
   end
 
-  if ENV['GOAD_VAGRANT_OPTIONS'].include? "elk"
+  if ENV['GOAD_SELECTED_EXTENSIONS'].include? "elk"
     boxes.append(
       { :name => "GOAD-ELK", :ip => "192.168.56.50", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [
         {:guest => 22, :host => 2210, :id => "ssh"} ]
@@ -30,7 +30,7 @@ if ENV.has_key?('GOAD_VAGRANT_OPTIONS')
     )
   end
 
-  if ENV['GOAD_VAGRANT_OPTIONS'].include? "wazuh"
+  if ENV['GOAD_SELECTED_EXTENSIONS'].include? "wazuh"
     boxes.append(
       { :name => "GOAD-WAZUH", :ip => "192.168.56.51", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [
         {:guest => 22, :host => 2210, :id => "ssh"} ]
@@ -38,7 +38,7 @@ if ENV.has_key?('GOAD_VAGRANT_OPTIONS')
     )
   end
 
-  if ENV['GOAD_VAGRANT_OPTIONS'].include? "guacamole"
+  if ENV['GOAD_SELECTED_EXTENSIONS'].include? "guacamole"
     boxes.append(
       { :name => "GOAD-GUACAMOLE", :ip => "192.168.56.100", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [
         {:guest => 22, :host => 2210, :id => "ssh"} ]
@@ -46,7 +46,7 @@ if ENV.has_key?('GOAD_VAGRANT_OPTIONS')
     )
   end
 
-  if ENV['GOAD_VAGRANT_OPTIONS'].include? "attackbox"
+  if ENV['GOAD_SELECTED_EXTENSIONS'].include? "attackbox"
     boxes.append(
       { :name => "GOAD-ATTACK", :ip => "192.168.56.99", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [
         {:guest => 22, :host => 2210, :id => "ssh"} ]

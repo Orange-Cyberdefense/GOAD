@@ -3,6 +3,16 @@
 ; global settings inventory default value
 keyboard_layouts=["en-US", "da-DK", "fr-FR"]
 
+; modify this to add a default route
+add_route=no
+route_gateway=192.168.56.1
+route_network=10.0.0.0/8
+
+; modify this to enable http proxy
+enable_http_proxy=no
+ad_http_proxy=http://x.x.x.x:xxxx
+ad_https_proxy=http://x.x.x.x:xxxx
+
 ; domain_name : folder inside ad/
 domain_name=GOAD
 
@@ -124,3 +134,6 @@ srv03
 ; usage : security.yml
 [defender_off]
 srv02
+
+;stay empty until override
+[extensions]

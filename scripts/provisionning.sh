@@ -27,7 +27,7 @@ if [ ! -z  $EXTENSIONS ]; then
 fi
 
 if [ -z  $ANSIBLE_COMMAND ]; then
-  export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$LAB/data/inventory -i ../ad/$LAB/providers/$PROVIDER/inventory $EXT_INVENTORY"
+  export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$LAB/data/inventory -i ../ad/$LAB/providers/$PROVIDER/inventory $EXT_INVENTORY -i ../globalsettings.ini"
 fi
 echo "[+] Ansible command : $ANSIBLE_COMMAND"
 

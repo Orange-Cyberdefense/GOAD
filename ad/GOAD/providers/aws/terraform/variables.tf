@@ -1,8 +1,15 @@
+# Region
+variable "region" {
+  description = "Where you want to deploy GOAD"
+  type      = string
+  default   = "eu-west-3"
+}
+
 # Zone
 variable "zone" {
   description = "Where you want to deploy GOAD"
   type      = string
-  default   = "eu-west-3a"
+  default   = "eu-west-1c"
 }
 
 # CIDRs
@@ -26,9 +33,9 @@ variable "goad_private_cidr" {
 
 # Define a CIDR for access to the jumphost!
 variable "whitelist_cidr" {
-  description = "Whitelisted IP that can access the Ubuntu jumpbox"
-  type    = string
-  default = "127.0.0.1/32"
+  description = "Whitelisted table IP that can access the Ubuntu jumpbox"
+  type    = set(string)
+  default = ["127.0.0.1/32"]
 }
 
 # Credentials

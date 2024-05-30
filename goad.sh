@@ -16,7 +16,7 @@ ANSIBLE_PLAYBOOKS="edr.yml build.yml ad-servers.yml ad-parent_domain.yml ad-chil
 METHODS="local docker"
 ANSIBLE_ONLY=0
 ANSIBLE_PLAYBOOK=
-GOAD_VAGRANT_OPTIONS=
+GOAD_SELECTED_EXTENSIONS=
 GOAD_EXTENSIONS="workstation elk wazuh attackbox guacamole"
 
 print_usage() {
@@ -68,7 +68,7 @@ while getopts t:l:p:m:ar:e:h flag
           m) METHOD=${OPTARG};;
           a) ANSIBLE_ONLY=1;;
           r) ANSIBLE_PLAYBOOK=${OPTARG};;
-          e) GOAD_VAGRANT_OPTIONS="$GOAD_VAGRANT_OPTIONS,${OPTARG}";;
+          e) GOAD_SELECTED_EXTENSIONS="$GOAD_SELECTED_EXTENSIONS,${OPTARG}";;
           h) print_usage; exit;
       esac
   done
@@ -95,7 +95,7 @@ while getopts t:l:p:m:ar:e:h flag
   fi
 
   # loop on every extension
-  for GOAD_EXT in $(echo $GOAD_VAGRANT_OPTIONS | sed "s/,/ /g")
+  for GOAD_EXT in $(echo $GOAD_SELECTED_EXTENSIONS | sed "s/,/ /g")
   do
       if exists_in_list "$GOAD_EXTENSIONS" "$GOAD_EXT"; then
         echo "${OK} Extension: $GOAD_EXT"
@@ -161,7 +161,7 @@ install_providing(){
     "virtualbox"|"vmware")
         cd "ad/$lab/providers/$provider"
         echo "${OK} launch vagrant"
-        GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant up
+        GOAD_SELECTED_EXTENSIONS=$GOAD_SELECTED_EXTENSIONS vagrant up
         result=$?
         if [ ! $result -eq 0 ]; then
           cd -
@@ -250,8 +250,8 @@ install_provisioning(){
   provider=$2
   method=$3
 
-  if [ ! -z  $GOAD_VAGRANT_OPTIONS ]; then
-      for EXT in $(echo $GOAD_VAGRANT_OPTIONS | sed "s/,/ /g")
+  if [ ! -z  $GOAD_SELECTED_EXTENSIONS ]; then
+      for EXT in $(echo $GOAD_SELECTED_EXTENSIONS | sed "s/,/ /g")
       do
           if [ -f "ad/$lab/providers/$provider/extensions/$EXT" ]; then
               echo "[+] Add extension : $EXT to inventory list"
@@ -268,12 +268,12 @@ install_provisioning(){
           "local")
               if [ -z $ANSIBLE_PLAYBOOK ]; then
                 cd ansible
-                export LAB=$lab PROVIDER=$provider EXTENSIONS=$GOAD_VAGRANT_OPTIONS
+                export LAB=$lab PROVIDER=$provider EXTENSIONS=$GOAD_SELECTED_EXTENSIONS
                 ../scripts/provisionning.sh
                 cd -
               else
                 cd ansible
-                ansible-playbook -i ../globalsettings.ini -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $EXT_INVENTORY $ANSIBLE_PLAYBOOK
+                ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $EXT_INVENTORY -i ../globalsettings.ini $ANSIBLE_PLAYBOOK
                 cd -
               fi
             ;;
@@ -295,10 +295,10 @@ install_provisioning(){
               fi
               if [ -z $ANSIBLE_PLAYBOOK ]; then
                 echo "${OK} Start provisioning from docker"
-                $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "LAB=$lab PROVIDER=$provider EXTENSIONS=$GOAD_VAGRANT_OPTIONS ../scripts/provisionning.sh"
+                $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "LAB=$lab PROVIDER=$provider EXTENSIONS=$GOAD_SELECTED_EXTENSIONS ../scripts/provisionning.sh"
               else
               echo "${OK} Start provisioning from docker"
-                $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../globalsettings.ini -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $EXT_INVENTORY $ANSIBLE_PLAYBOOK"
+                $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory -i ../globalsettings.ini $EXT_INVENTORY $ANSIBLE_PLAYBOOK"
               fi
             ;;
         esac
@@ -316,14 +316,14 @@ install_provisioning(){
               if [ -z $ANSIBLE_PLAYBOOK ]; then
                 ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" goad@$public_ip << EOF
                   cd /home/goad/GOAD/ansible
-                  export LAB=$lab PROVIDER=$provider EXTENSIONS=$GOAD_VAGRANT_OPTIONS 
+                  export LAB=$lab PROVIDER=$provider EXTENSIONS=$GOAD_SELECTED_EXTENSIONS 
                   ../scripts/provisionning.sh
                   exit
 EOF
               else
               ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" goad@$public_ip << EOF
                   cd /home/goad/GOAD/ansible
-                  ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $EXT_INVENTORY $ANSIBLE_PLAYBOOK
+                  ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $EXT_INVENTORY -i ../globalsettings.ini $ANSIBLE_PLAYBOOK
                   exit
 EOF
               fi
@@ -354,7 +354,7 @@ disablevagrant(){
         case $METHOD in
           "local")
               cd ansible
-              ansible-playbook -i ../globalsettings.ini -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant disable_vagrant.yml
+              ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant -i ../globalsettings.ini disable_vagrant.yml
               cd -
             ;;
           "docker")
@@ -374,7 +374,7 @@ disablevagrant(){
                 echo "${OK} Container goadansible creation complete"
               fi
               echo "${OK} Start provisioning from docker"
-              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../globalsettings.ini -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant disable_vagrant.yml"
+              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant -i ../globalsettings.ini disable_vagrant.yml"
             ;;
         esac
       ;;
@@ -393,7 +393,7 @@ enablevagrant(){
         case $METHOD in
           "local")
               cd ansible
-              ansible-playbook -i ../globalsettings.ini -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant enable_vagrant.yml
+              ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant -i ../globalsettings.ini enable_vagrant.yml
               cd -
             ;;
           "docker")
@@ -413,7 +413,7 @@ enablevagrant(){
                 echo "${OK} Container goadansible creation complete"
               fi
               echo "${OK} Start provisioning from docker"
-              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../globalsettings.ini -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant enable_vagrant.yml"
+              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant -i ../globalsettings.ini enable_vagrant.yml"
             ;;
         esac
       ;;
@@ -453,7 +453,7 @@ start(){
     "virtualbox"|"vmware")
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} start vms"
-          GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant up
+          GOAD_SELECTED_EXTENSIONS=$GOAD_SELECTED_EXTENSIONS vagrant up
           cd -
       ;;
     "proxmox")
@@ -492,7 +492,7 @@ stop(){
     "virtualbox"|"vmware")
           cd "ad/$LAB/providers/$PROVIDER"
           echo "${OK} stop vms"
-          GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant halt
+          GOAD_SELECTED_EXTENSIONS=$GOAD_SELECTED_EXTENSIONS vagrant halt
           cd -
       ;;
     "proxmox")
@@ -575,7 +575,7 @@ destroy(){
           read -r -p "Are you sure? [y/N] " response
           case "$response" in
               [yY][eE][sS]|[yY]) 
-                  GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant destroy --force
+                  GOAD_SELECTED_EXTENSIONS=$GOAD_SELECTED_EXTENSIONS vagrant destroy --force
                   ;;
               *)
                   echo "abort"
@@ -600,7 +600,7 @@ status(){
   case $PROVIDER in
     "virtualbox"|"vmware")
           cd "ad/$LAB/providers/$PROVIDER"
-          GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant status
+          GOAD_SELECTED_EXTENSIONS=$GOAD_SELECTED_EXTENSIONS vagrant status
           cd -
       ;;
     "proxmox")

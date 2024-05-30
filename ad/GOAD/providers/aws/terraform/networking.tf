@@ -10,14 +10,13 @@ resource "aws_vpc" "goad_vpc" {
 
 
 # Subnets
-
 resource "aws_subnet" "goad_private_network" {
   vpc_id     = aws_vpc.goad_vpc.id
   cidr_block = var.goad_private_cidr
   availability_zone = var.zone
   
   tags = {
-    Name = "GOAD--private-network"
+    Name = "GOAD-private-network"
     Lab = "GOAD"
   }
 }
@@ -35,6 +34,14 @@ resource "aws_subnet" "goad_public_network" {
 }
 
 # Routing
+resource "aws_default_route_table" "goad_default_table" {
+  default_route_table_id = aws_vpc.goad_vpc.default_route_table_id
+  tags = {
+    Name = "GOAD Default Route table"
+    Lab = "GOAD"
+  }
+}
+
 resource "aws_route_table" "goad_public_table" {
   vpc_id = aws_vpc.goad_vpc.id
 
@@ -54,7 +61,7 @@ resource "aws_route_table" "goad_private_table" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.nat_gateway.id
+    nat_gateway_id = aws_nat_gateway.nat_gateway.id
   }
 
   tags = {
@@ -63,17 +70,26 @@ resource "aws_route_table" "goad_private_table" {
   }
 }
 
-resource "aws_route_table_association" "a" {
+resource "aws_route_table_association" "goad_private_table_association" {
   subnet_id      = aws_subnet.goad_private_network.id
   route_table_id = aws_route_table.goad_private_table.id
 }
 
-resource "aws_route_table_association" "b" {
+resource "aws_route_table_association" "goad_public_table_association" {
   subnet_id      = aws_subnet.goad_public_network.id
   route_table_id = aws_route_table.goad_public_table.id
 }
 
 # Security group
+resource "aws_default_security_group" "goad_default_security_group" {
+  vpc_id      = aws_vpc.goad_vpc.id
+
+  tags = {
+    Name = "GOAD Default Security Group"
+    Lab = "GOAD"
+  }
+}
+
 resource "aws_security_group" "goad_security_group" {
   name        = "GOAD Security Group"
   description = "Allow traffic necessary to use GOAD"
@@ -86,8 +102,9 @@ resource "aws_security_group" "goad_security_group" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_whitelist_ingress" {
+  for_each = var.whitelist_cidr
   security_group_id = aws_security_group.goad_security_group.id
-  cidr_ipv4         = var.whitelist_cidr
+  cidr_ipv4         = each.key
   ip_protocol       = "-1"
 }
 
@@ -141,6 +158,11 @@ resource "aws_eip" "public_ip" {
 
   instance                  = aws_instance.goad-vm-jumpbox.id
   associate_with_private_ip = "192.168.56.100"
+
+  tags = {
+    Name = "GOAD Jumpbox public IP"
+    Lab = "GOAD"
+  }
 }
 
 resource "aws_eip" "nat_ip" {
@@ -152,7 +174,7 @@ resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.goad_vpc.id
 
   tags = {
-    Name = "Internet Gateway"
+    Name = "GOAD Internet Gateway"
     Lab = "GOAD"
   }
 }
