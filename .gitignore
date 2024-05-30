@@ -22,4 +22,5 @@ ansible/roles/edr
 ansible/edr.yml
 .vscode
 ad/MINILAB
-ad/*/providers/*/ssh_keys/*
+ad/*/providers/*/ssh_keys/*id_rsa*
+ad/*/providers/*/ssh_keys/*.pub
