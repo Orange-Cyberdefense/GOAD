@@ -10,7 +10,7 @@
 ![Architecture](./img/OCI_architecture.png)
 
 > **Warning**
-> LLMNR, NBTNS and other poisoning network attacks will not work in azure environment.
+> LLMNR, NBTNS and other poisoning network attacks will not work in OCI environment.
 > Only network coerce attacks will work.
 
 ## Prerequisites
