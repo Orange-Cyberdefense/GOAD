@@ -3,11 +3,11 @@
 
 <div align="center">
   <img alt="terraform" width="150" height="150" src="./img/icon_terraform.png">
-  <img alt="icon_azure" width="150"  height="150" src="./img/icon_azure.png">
+  <img alt="icon_azure" width="150"  height="150" src="./img/icon_oci.png">
   <img alt="icon_ansible" width="150"  height="150" src="./img/icon_ansible.png">
 </div>
 
-![Architecture](./img/oci_architecture.png)
+![Architecture](./img/OCI_architecture.png)
 
 > **Warning**
 > LLMNR, NBTNS and other poisoning network attacks will not work in azure environment.
