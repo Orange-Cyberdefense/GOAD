@@ -27,10 +27,9 @@
 # check prerequisites
 ./goad.sh -t check -l GOAD -p oci
 # Install
-./goad.sh -t install -l GOAD -p oci
-```
+./goad.sh -t check -l GOAD -p oci -m local```
 
-![azure check](./img/azure_check.png)
+![azure check](./img/oci_check.png)
 
 ## Manual installation
 
@@ -75,7 +74,7 @@ rsync -a --exclude-from='.gitignore' -e "ssh -i $CURRENT_DIR/ad/GOAD/providers/o
 1. Run the setup.sh script to install Ansible and download GOAD on the Ubuntu VM
 
 ```bash
-ssh -i ad/GOAD/providers/oci/ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu-jumpbox-ip> 'bash -s' < scripts/setup_oci.sh
+ssh -i ad/GOAD/providers/oci/ssh_keys/ubuntu-jumpbox.pem ubuntu@<ubuntu-jumpbox-ip> 'bash -s' < scripts/setup_oci.sh
 ```
 
 > Note: To get the public ip of the Ubuntu VM, you can run `terraform output` in the terraform directory
