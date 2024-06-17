@@ -1,13 +1,13 @@
 variable "tenancy_ocid" {
   description = "The OCID of your tenancy."
   type        = string
-  default = "ocid1.tenancy.oc1..aaaaaaaaxzpxbcag7zgamh2erlggqro3y63tvm2rbkkjz4z2zskvagupiz7a"
+  default = "ocid1.tenancy.oc1..YourOCID"
 }
 
 variable "user_ocid" {
   description = "The OCID of the user calling the API."
   type        = string
-  default = "ocid1.user.oc1..aaaaaaaawlmnpsv76fbqs6bjdt4bmx5hpwnve3j77u6bwfk36ltdoaspbgpq"
+  default = "ocid1.user.oc1..YourOCID"
 }
 
 variable "fingerprint" {
@@ -31,7 +31,7 @@ variable "region" {
 variable "compartment_ocid" {
   description = "The OCID of the compartment to use."
   type        = string
-  default = "ocid1.compartment.oc1..aaaaaaaagy3yddkkampnhj3cqm5ar7w2p7tuq5twbojyycvol6wugfav3ckq"
+  default = "ocid1.compartment.oc1..YourOCID"
 }
 
 variable "availability_domain" {
@@ -61,11 +61,11 @@ variable "memory_in_gbs" {
 variable "ssh_authorized_keys" {
   description = "The public key for SSH access to the instances."
   type        = string
-  default     =  "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBW/qSv/R+M7Igi4h1unpQmOhQLvOEQiBJ6OQPUA2dY999kRBZuJlIH0CLjHIPf8X0GkvJonhWpFhy6OrSSbcWjjyc6Kbx3y24k3GszixVLMN3tnYNLS8EJ+28NPJDhitXouvAvEAbgo89ZTAwdytBtgiD3BqZi6qSlGlhTCsFlkoaAEzeSdsfE5vxeG+kDBnIrAYp/Oa5r3jjRHOfZaMufun9TEM4E3Ob7SM/HeW5UtESfbTEjySQVOBG7A/RCD7gIhGhhehQkQVJ1MiZ5KGka4uhuCo7qOJECt5Qn5DK5hxGLUL+JKVKgguTDGiClIXe2JdJIobAomguJaM7tlr9 alexandru_@419d0b8d7292"
+  default     =  "Your Public key c6Kbx3y24k3GszixVLMN3tnYNLS8EJ+28NPJDhitXouvAvEAbgo89ZTAwdytBtgiD3BqZi6qSlGlhTCsFlkoaAEzeSdsfE5vxeG+kDBnIrAYp///RCD7gIhGhhehQkQVJ1MiZ5KGka4uhuCo7qOJECt5Qn5DK5hxGLUL+JKVKgguTDGiClIXe2JdJIobAomguJaM7tlr9 alexandru_@419d0b8d7292"
 }
 
 variable "image_ocid" {
-  description = "The OCID of the image to use."
+  description = "The OCID of the Ubuntu image to use."
   type        = string
   default = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaaxroekfbow3kdrdjlwao6tsxxfcb23xmqrdjtjcay2ow52eijvzqa"
 }
