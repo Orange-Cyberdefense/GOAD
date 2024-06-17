@@ -85,6 +85,7 @@ This lab use free windows VM only (180 days). After that delay enter a license o
    - vmware
    - azure
    - proxmox
+   - oci
 
 - ANSIBLE_RUN_METHOD : ansible method to use :
    - local : to use local ansible install
