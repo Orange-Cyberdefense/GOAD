@@ -3,7 +3,7 @@
 
 <div align="center">
   <img alt="terraform" width="150" height="150" src="./img/icon_terraform.png">
-  <img alt="icon_azure" width="150"  height="150" src="./img/icon_oci.png">
+  <img alt="icon_azure" width="150"  height="150" src="./img/oracle-cloud.1024x647.png">
   <img alt="icon_ansible" width="150"  height="150" src="./img/icon_ansible.png">
 </div>
 
