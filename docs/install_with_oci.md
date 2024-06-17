@@ -7,7 +7,7 @@
   <img alt="icon_ansible" width="150"  height="150" src="./img/icon_ansible.png">
 </div>
 
-![Architecture](img/oci_architecture.png)
+![Architecture](./img/oci_architecture.png)
 
 > **Warning**
 > LLMNR, NBTNS and other poisoning network attacks will not work in azure environment.
