@@ -69,9 +69,12 @@ resource "oci_core_default_dhcp_options" "default_dhcp_options" {
   options {
     type                  = "DomainNameServer"
     server_type           = "CustomDnsServer"
-    custom_dns_servers    = ["192.168.56.10"]
-    search_domain_names   = ["sevenkingdoms.local"]
+    custom_dns_servers    = ["192.168.56.10","8.8.8.8"]
   }
+ options {
+        type = "SearchDomain"
+        search_domain_names = [ "sevenkingdoms.local" ]
+    }
 }
 
 resource "oci_core_security_list" "winrm_rdp_security_list" {
