@@ -1,3 +1,18 @@
+- name: Install ODBC Mssql 18 driver
+  ansible.windows.win_package:
+    arguments: "IACCEPTMSODBCSQLLICENSETERMS=YES ALLUSERS=1"
+    path: https://go.microsoft.com/fwlink/?linkid=2266640&clcid=0x409&culture=en-us&country=us
+    state: present
+    creates_path: "%ProgramFiles%\\Microsoft SQL Server\\Client SDK\\ODBC"
+  register: odbc_install
+  until: odbc_install is success
+  retries: 3  # Try 3 times just in case it failed to download the URL
+  delay: 1
+
+- name: reboot after installing ODBC if required
+  ansible.windows.win_reboot:
+  when: odbc_install.reboot_required
+
 # Step 14 – Download SCCM 1902 Baseline Media
 # --------------------------------------------------------------
 
