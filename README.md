@@ -26,6 +26,8 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 <img alt="GOAD Light" width="600" src="./docs/img/GOAD-Light_schema.png">
 </div>
 
+- [MINILAB](./ad/MINILAB/README.md): 2 vms, 1 forst, 1 domain (basic lab with one DC (windows server 2019) and one Workstation (windows 10))
+
 - [SCCM](./ad/SCCM/README.md) : 4 vms, 1 forest, 1 domain, with microsoft configuration manager installed
 <div align="center">
 <img alt="SCCM" width="600" src="./docs/img/SCCMLAB_overview.png">
