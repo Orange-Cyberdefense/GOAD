@@ -14,6 +14,7 @@ srv02 ansible_host=192.168.56.22 dns_domain=dc02 dict_key=srv02
 [all:vars]
 ; domain_name : folder inside ad/
 domain_name=GOAD-Light
+provider=vmware
 
 force_dns_server=no
 dns_server=x.x.x.x

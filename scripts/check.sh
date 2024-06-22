@@ -7,7 +7,7 @@ ERROR=$(tput setaf 1; echo -n "  [!]"; tput sgr0)
 GOODTOGO=$(tput setaf 2; echo -n "  [✓]"; tput sgr0)
 INFO=$(tput setaf 3; echo -n "  [-]"; tput sgr0)
 
-PROVIDERS="virtualbox vmware azure proxmox"
+PROVIDERS="virtualbox vmware azure proxmox aws"
 ANSIBLE_HOSTS="docker local"
 print_usage() {
   echo "Usage: ./check.sh <provider> <ansible_host>"
@@ -439,6 +439,12 @@ main() {
     "azure")
       (echo >&2 "[+] Enumerating azure")
       check_azure_installed
+      check_terraform_path
+      check_rsync_path
+      ;;
+    "aws")
+      (echo >&2 "[+] Enumerating aws")
+      check_aws_installed
       check_terraform_path
       check_rsync_path
       ;;

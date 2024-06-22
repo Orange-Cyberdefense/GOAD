@@ -2,6 +2,7 @@
 - name: build all
   hosts: domain
   roles:
+    - { role: 'init', tags: 'init'}
     - { role: 'common', tags: 'common', http_proxy: "{{enable_http_proxy}}"}
     - { role: 'settings/keyboard', tags: 'keyboard', layout: "fr-FR" }
 

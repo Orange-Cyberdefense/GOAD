@@ -61,6 +61,7 @@ This lab use free windows VM only (180 days). After that delay enter a license o
   - [Install with VmWare](./docs/install_with_vmware.md)
   - [Install with Proxmox](./docs/install_with_proxmox.md)
   - [Install with Azure](./docs/install_with_azure.md)
+  - [Install with Aws](./docs/install_with_aws.md)
 
 - Installation is in three parts :
   1. Templating : this will create the template to use (needed only for proxmox) 
@@ -84,6 +85,7 @@ This lab use free windows VM only (180 days). After that delay enter a license o
    - vmware
    - azure
    - proxmox
+   - aws
 
 - ANSIBLE_RUN_METHOD : ansible method to use :
    - local : to use local ansible install
@@ -202,6 +204,9 @@ ad/
       azure/
         terraform/    # specific azure terraform recipe
         inventory     # specific azure inventory
+      aws/
+        terraform/    # specific aws terraform recipe
+        inventory     # specific aws inventory
 ```
 
 

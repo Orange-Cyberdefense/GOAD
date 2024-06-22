@@ -23,6 +23,7 @@ srv03 ansible_host=192.168.56.23 dns_domain=dc03 dict_key=srv03 ansible_user=ans
 [all:vars]
 ; domain_name : folder inside ad/
 domain_name=GOAD
+provider=azure
 
 force_dns_server=no
 dns_server=9.9.9.9

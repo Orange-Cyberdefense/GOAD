@@ -24,6 +24,7 @@ elk ansible_host=192.168.56.50 ansible_connection=ssh
 [all:vars]
 ; domain_name : folder inside ad/
 domain_name=GOAD
+provider=vmware
 
 force_dns_server=no
 dns_server=x.x.x.x
