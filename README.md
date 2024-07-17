@@ -108,7 +108,7 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 
 - `-a` : ansible only is played during install task (no vagrant or terraform). This is useful if you install and run vagrant on windows and then launch the provisioning from a different computer (example : a kali linux connected to goad network)
 - `-r <ansible_file.yml>` : run only one ansible task (useful to run elk.yml or run only one playbook)
-- `-e` : enable elk in vagrant (example to install elk and play the elk playbook once you finish goad install run : `./goad.sh -t install -l GOAD -p virtualbox -m local -e -r elk.yml`)
+- `-e` : enable elk in vagrant (example to install elk and play the elk playbook once you finish goad install run : `./goad.sh -t install -l GOAD -p virtualbox -m local -e elk -r elk.yml`)
 
 ## Provisioning
 
