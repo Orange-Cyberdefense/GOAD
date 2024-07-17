@@ -8,10 +8,10 @@ INFO=$(tput setaf 3; echo -n "[-]"; tput sgr0)
 LAB=
 PROVIDER=
 METHOD=
-JOB=
-PROVIDERS="virtualbox vmware azure proxmox"
-LABS=$(ls -A ad/ |grep -v 'TEMPLATE')
-TASKS="check install start stop status restart destroy disablevagrant enablevagrant"
+TASK=
+PROVIDERS="virtualbox vmware azure proxmox vmware_esxi"
+LABS=$(ls --color=never -1 -ITEMPLATE -A ad/)
+TASKS="check install start stop status restart destroy snapshot reset disablevagrant enablevagrant"
 ANSIBLE_PLAYBOOKS="edr.yml build.yml ad-servers.yml ad-parent_domain.yml ad-child_domain.yml ad-members.yml ad-trusts.yml ad-data.yml ad-gmsa.yml laps.yml ad-relations.yml adcs.yml ad-acl.yml servers.yml security.yml vulnerabilities.yml reboot.yml elk.yml sccm-install.yml sccm-config.yml"
 METHODS="local docker"
 ANSIBLE_ONLY=0
@@ -29,6 +29,8 @@ print_usage() {
   echo "   - restart : reload the lab";
   echo "   - status  : show lab info and status";
   echo "   - destroy : trash the lab";
+  echo "   - snapshot: create a snapshot";
+  echo "   - reset   : restore a snapshot";
   echo "${INFO} -l : lab must be one of the following:"
   for lab in $LABS;  do
     echo "   - $lab";
@@ -50,12 +52,12 @@ print_usage() {
   echo "${INFO} -h : show this help";
   echo
   echo "${OK} example: ./goad.sh -t check -l GOAD -p virtualbox -m local";
-  exit 0
 }
 
 function exists_in_list() {
     LIST=$1
     VALUE=$2
+    # shellcheck disable=SC2086
     echo $LIST | tr " " '\n' | grep -F -q -x "$VALUE"
 }
 
@@ -69,7 +71,8 @@ while getopts t:l:p:m:ar:e:h flag
           a) ANSIBLE_ONLY=1;;
           r) ANSIBLE_PLAYBOOK=${OPTARG};;
           e) GOAD_VAGRANT_OPTIONS="$GOAD_VAGRANT_OPTIONS,${OPTARG}";;
-          h) print_usage; exit;
+          h) print_usage; exit 0;;
+          *) echo "invalid option"; print_usage; exit 1;;
       esac
   done
 
@@ -78,6 +81,7 @@ while getopts t:l:p:m:ar:e:h flag
   else
     echo "${ERROR} Task: \"$TASK\" unknow"
     print_usage
+    exit 1
   fi
 
   if exists_in_list "$LABS" "$LAB"; then
@@ -85,6 +89,7 @@ while getopts t:l:p:m:ar:e:h flag
   else
     echo "${ERROR} Lab: $LAB not allowed"
     print_usage
+    exit 1
   fi
 
   if exists_in_list "$PROVIDERS" "$PROVIDER"; then
@@ -92,20 +97,23 @@ while getopts t:l:p:m:ar:e:h flag
   else
     echo "${ERROR} Provider: $PROVIDER not allowed"
     print_usage
+    exit 1
   fi
 
   # loop on every extension
-  for GOAD_EXT in $(echo $GOAD_VAGRANT_OPTIONS | sed "s/,/ /g")
+  # shellcheck disable=SC2001
+  for GOAD_EXT in $(echo "$GOAD_VAGRANT_OPTIONS" | sed "s/,/ /g")
   do
       if exists_in_list "$GOAD_EXTENSIONS" "$GOAD_EXT"; then
         echo "${OK} Extension: $GOAD_EXT"
       else
         echo "${ERROR} Extension: $GOAD_EXT not allowed"
         print_usage
+        exit 1
       fi
   done
 
-  if [ -z $METHOD ]; then
+  if [ -z "$METHOD" ]; then
      METHOD="local"
   else
     if exists_in_list "$METHODS" "$METHOD"; then
@@ -113,14 +121,16 @@ while getopts t:l:p:m:ar:e:h flag
     else
       echo "${ERROR} Method: $METHOD not allowed"
       print_usage
+      exit 1
     fi
   fi
-  if [[ ! -z $ANSIBLE_PLAYBOOK ]]; then
+  if [[ -n $ANSIBLE_PLAYBOOK ]]; then
      if exists_in_list "$ANSIBLE_PLAYBOOKS" "$ANSIBLE_PLAYBOOK"; then
       echo "${OK} Ansible playbook: $ANSIBLE_PLAYBOOK"
     else
       echo "${ERROR} Ansible playbook: $ANSIBLE_PLAYBOOK not allowed"
       print_usage
+      exit 1
     fi
   fi
 
@@ -158,20 +168,20 @@ install_providing(){
   provider=$2
 
   case $provider in
-    "virtualbox"|"vmware")
-        cd "ad/$lab/providers/$provider"
+    "virtualbox"|"vmware"|"vmware_esxi")
+        cd "ad/$lab/providers/$provider" || { echo "provider dir does not exist"; exit 1; }
         echo "${OK} launch vagrant"
         GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant up
         result=$?
         if [ ! $result -eq 0 ]; then
-          cd -
           echo "${ERROR} vagrant finish with error abort"
           exit 1
         fi
-        cd -
+        cd - || exit 1
       ;;
     "proxmox")
       if [ -d "ad/$lab/providers/$provider/terraform" ]; then
+        # shellcheck disable=SC2164
         cd "ad/$lab/providers/$provider/terraform"
         echo "${OK} Initializing Terraform..."
         terraform init
@@ -191,7 +201,7 @@ install_providing(){
         fi
 
         echo "${OK} Ready to launch provisioning"
-        cd -
+        cd - || exit 1
       else
         echo "${ERROR} folder ad/$lab/providers/$provider/terraform not found"
         exit 1
@@ -199,6 +209,7 @@ install_providing(){
       ;;
     "azure")
       if [ -d "ad/$lab/providers/$provider/terraform" ]; then
+          # shellcheck disable=SC2164
           cd "ad/$lab/providers/$provider/terraform"
           echo "${OK} Initializing Terraform..."
           terraform init
@@ -221,7 +232,7 @@ install_providing(){
           echo "${OK} Getting jumpbox IP address..."
           public_ip=$(terraform output -raw ubuntu-jumpbox-ip)
           print_azure_info
-          cd -
+          cd - || exit 1
 
           echo "${OK} Rsync goad to jumpbox"
           rsync -a --exclude-from='.gitignore' -e "ssh -o 'StrictHostKeyChecking no' -i $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" "$CURRENT_DIR/" goad@$public_ip:~/GOAD/
@@ -235,6 +246,9 @@ install_providing(){
         exit 1
       fi
       ;;
+    *)
+          echo "unknown provider"
+      ;;
   esac
 }
 
@@ -243,26 +257,27 @@ install_provisioning(){
   provider=$2
   method=$3
   case $provider in
-    "virtualbox"|"vmware"|"proxmox")
+    "virtualbox"|"vmware"|"proxmox"|"vmware_esxi")
         case $method in
           "local")
-              if [ -z $ANSIBLE_PLAYBOOK ]; then
-                cd ansible
+              if [ -z "$ANSIBLE_PLAYBOOK" ]; then
+                cd ansible || { echo "no ansible dir"; exit 1; }
                 export LAB=$lab PROVIDER=$provider
                 ../scripts/provisionning.sh
-                cd -
+                cd - || exit 1
               else
-                cd ansible
-                ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $ANSIBLE_PLAYBOOK
-                cd -
+                (
+                cd ansible || { echo "no ansible dir"; exit 1; }
+                ansible-playbook -i ../ad/"$lab"/data/inventory -i ../ad/"$lab"/providers/"$provider"/inventory "$ANSIBLE_PLAYBOOK"
+                )
               fi
             ;;
           "docker")
               use_sudo=""
               if id -nG "$USER" | grep -qw "docker"; then
-                  echo $USER belongs to docker group
+                  echo "$USER belongs to docker group"
               else
-                  echo $USER does not belong to docker group
+                  echo "$USER does not belong to docker group"
                   echo "${INFO} Root password could be asked for docker interaction"
                   use_sudo="sudo"
               fi
@@ -273,35 +288,37 @@ install_provisioning(){
                 $use_sudo docker build -t goadansible .
                 echo "${OK} Container goadansible creation complete"
               fi
-              if [ -z $ANSIBLE_PLAYBOOK ]; then
+              if [ -z "$ANSIBLE_PLAYBOOK" ]; then
                 echo "${OK} Start provisioning from docker"
-                $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "LAB=$lab PROVIDER=$provider ../scripts/provisionning.sh"
+                $use_sudo docker run -ti --rm --network host -h goadansible -v "$(pwd)":/goad -w /goad/ansible goadansible /bin/bash -c "LAB=$lab PROVIDER=$provider ../scripts/provisionning.sh"
               else
               echo "${OK} Start provisioning from docker"
-                $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $ANSIBLE_PLAYBOOK"
+                $use_sudo docker run -ti --rm --network host -h goadansible -v "$(pwd)":/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $ANSIBLE_PLAYBOOK"
               fi
             ;;
         esac
       ;;
     "azure")
 
-          cd "ad/$lab/providers/$provider/terraform"
+          cd "ad/$lab/providers/$provider/terraform" || { echo "azure provider dir does not exist"; exit 1; }
           public_ip=$(terraform output -raw ubuntu-jumpbox-ip)
-          cd -
+          cd - || exit 1
           
           rsync -a --exclude-from='.gitignore' -e "ssh -o 'StrictHostKeyChecking no' -i $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" "$CURRENT_DIR/" goad@$public_ip:~/GOAD/
 
            case $method in
             "local")
-              if [ -z $ANSIBLE_PLAYBOOK ]; then
-                ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" goad@$public_ip << EOF
+              if [ -z "$ANSIBLE_PLAYBOOK" ]; then
+                # shellcheck disable=SC2087
+                ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" goad@"$public_ip" << EOF
                   cd /home/goad/GOAD/ansible
                   export LAB=$lab PROVIDER=$provider
                   ../scripts/provisionning.sh
                   exit
 EOF
               else
-              ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" goad@$public_ip << EOF
+              # shellcheck disable=SC2087
+              ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" goad@"$public_ip" << EOF
                   cd /home/goad/GOAD/ansible
                   ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $ANSIBLE_PLAYBOOK
                   exit
@@ -313,6 +330,9 @@ EOF
               echo "${ERROR} $method install on azure not implemented, use local"
               ;;
           esac
+      ;;
+    *)
+          echo "unknown provider"
       ;;
   esac
 }
@@ -330,19 +350,20 @@ disablevagrant(){
           ;;
   esac
   case $PROVIDER in
-    "virtualbox"|"vmware"|"proxmox")
+    "virtualbox"|"vmware"|"proxmox"|"vmware_esxi")
         case $METHOD in
           "local")
-              cd ansible
-              ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant disable_vagrant.yml
-              cd -
+              (
+              cd ansible || { echo "no ansible dir"; exit 1; }
+              ansible-playbook -i ../ad/"$LAB"/providers/"$PROVIDER"/inventory_disablevagrant disable_vagrant.yml
+              )
             ;;
           "docker")
               use_sudo=""
               if id -nG "$USER" | grep -qw "docker"; then
-                  echo $USER belongs to docker group
+                  echo "$USER belongs to docker group"
               else
-                  echo $USER does not belong to docker group
+                  echo "$USER does not belong to docker group"
                   echo "${INFO} Root password could be asked for docker interaction"
                   use_sudo="sudo"
               fi
@@ -354,31 +375,35 @@ disablevagrant(){
                 echo "${OK} Container goadansible creation complete"
               fi
               echo "${OK} Start provisioning from docker"
-              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant disable_vagrant.yml"
+              $use_sudo docker run -ti --rm --network host -h goadansible -v "$(pwd)":/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant disable_vagrant.yml"
             ;;
         esac
       ;;
     "azure")
           echo "Vagrant user not used in azure, skip."
+      ;;
+    *)
+          echo "unknown provider"
       ;;
   esac
 }
 
 enablevagrant(){
   case $PROVIDER in
-    "virtualbox"|"vmware"|"proxmox")
+    "virtualbox"|"vmware"|"proxmox"|"vmware_esxi")
         case $METHOD in
           "local")
-              cd ansible
-              ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant enable_vagrant.yml
-              cd -
+            (
+              cd ansible || { echo "no ansible dir"; exit 1; }
+              ansible-playbook -i ../ad/"$LAB"/providers/"$PROVIDER"/inventory_disablevagrant enable_vagrant.yml
+            )
             ;;
           "docker")
               use_sudo=""
               if id -nG "$USER" | grep -qw "docker"; then
-                  echo $USER belongs to docker group
+                  echo "$USER belongs to docker group"
               else
-                  echo $USER does not belong to docker group
+                  echo "$USER does not belong to docker group"
                   echo "${INFO} Root password could be asked for docker interaction"
                   use_sudo="sudo"
               fi
@@ -390,29 +415,32 @@ enablevagrant(){
                 echo "${OK} Container goadansible creation complete"
               fi
               echo "${OK} Start provisioning from docker"
-              $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant enable_vagrant.yml"
+              $use_sudo docker run -ti --rm --network host -h goadansible -v "$(pwd)":/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$LAB/providers/$PROVIDER/inventory_disablevagrant enable_vagrant.yml"
             ;;
         esac
       ;;
     "azure")
           echo "Vagrant user not used in azure, skip."
       ;;
+    *)
+          echo "unknown provider"
+      ;;
   esac
 }
 
 install(){
   echo "${OK} Launch installation for: $LAB / $PROVIDER / $METHOD"
-  cd $CURRENT_DIR
+  cd "$CURRENT_DIR" || exit 1
   if [[ "$ANSIBLE_ONLY" -eq 0 ]]; then
-    install_providing $LAB $PROVIDER
+    install_providing "$LAB" "$PROVIDER"
   fi
-  cd $CURRENT_DIR
-  install_provisioning $LAB $PROVIDER $METHOD
+  cd "$CURRENT_DIR" || exit 1
+  install_provisioning "$LAB" "$PROVIDER" "$METHOD"
 }
 
 check(){
   echo "${OK} Launch check : ./scripts/check.sh $PROVIDER $METHOD"
-  ./scripts/check.sh $PROVIDER $METHOD
+  ./scripts/check.sh "$PROVIDER" "$METHOD"
   check_result=$?
   if [ $check_result -eq 0 ]; then
     echo "${OK} Check is ok, you can start the installation"
@@ -424,11 +452,12 @@ check(){
 
 start(){
   case $PROVIDER in
-    "virtualbox"|"vmware")
-          cd "ad/$LAB/providers/$PROVIDER"
+    "virtualbox"|"vmware"|"vmware_esxi")
+        (
+          cd "ad/$LAB/providers/$PROVIDER" || { echo "provider dir does not exist"; exit 1; }
           echo "${OK} start vms"
           GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant up
-          cd -
+        )
       ;;
     "proxmox")
       if ! which qm >/dev/null; then
@@ -436,7 +465,7 @@ start(){
         exit 1
       else
         if [ -d "ad/$LAB/providers/$PROVIDER/terraform" ]; then
-          vms=$(cat ad/$LAB/providers/$PROVIDER/terraform/*.tf| grep -E 'name = ".*"'|cut -d '"' -f 2)
+          vms=$(cat ad/"$LAB"/providers/"$PROVIDER"/terraform/*.tf| grep -E 'name = ".*"'|cut -d '"' -f 2)
           for vm in "${vms[@]}"
           do
             id=$(qm list | grep $vm  | awk '{print $1}')
@@ -451,19 +480,24 @@ start(){
       fi
       ;;
     "azure")
-      az vm start --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
+      # shellcheck disable=SC2046
+      az vm start --ids $(az vm list --resource-group "$LAB" --query "[].id" -o tsv)
       status
+      ;;
+    *)
+          echo "unknown provider"
       ;;
   esac
 }
 
 stop(){
   case $PROVIDER in
-    "virtualbox"|"vmware")
-          cd "ad/$LAB/providers/$PROVIDER"
+    "virtualbox"|"vmware"|"vmware_esxi")
+        (
+          cd "ad/$LAB/providers/$PROVIDER" || { echo "provider dir does not exist"; exit 1; }
           echo "${OK} stop vms"
           GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant halt
-          cd -
+        )
       ;;
     "proxmox")
       if ! which qm >/dev/null; then
@@ -471,7 +505,7 @@ stop(){
         exit 1
       else
         if [ -d "ad/$LAB/providers/$PROVIDER/terraform" ]; then
-          vms=$(cat ad/$LAB/providers/$PROVIDER/terraform/*.tf| grep -E 'name = ".*"'|cut -d '"' -f 2)
+          vms=$(cat ad/"$LAB"/providers/"$PROVIDER"/terraform/*.tf| grep -E 'name = ".*"'|cut -d '"' -f 2)
           for vm in "${vms[@]}"
           do
             id=$(qm list | grep $vm  | awk '{print $1}')
@@ -486,19 +520,24 @@ stop(){
       fi
       ;;
     "azure")
-      az vm stop --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
+      # shellcheck disable=SC2046
+      az vm stop --ids $(az vm list --resource-group "$LAB" --query "[].id" -o tsv)
       status
+      ;;
+    *)
+          echo "unknown provider"
       ;;
   esac
 }
 
 restart(){
   case $PROVIDER in
-    "virtualbox"|"vmware")
-          cd "ad/$LAB/providers/$PROVIDER"
+    "virtualbox"|"vmware"|"vmware_esxi")
+        (
+          cd "ad/$LAB/providers/$PROVIDER" || { echo "provider dir does not exist"; exit 1; }
           echo "${OK} restart start vms"
           vagrant reload
-          cd -
+        )
       ;;
     "proxmox")
       if ! which qm >/dev/null; then
@@ -506,7 +545,7 @@ restart(){
         exit 1
       else
         if [ -d "ad/$LAB/providers/$PROVIDER/terraform" ]; then
-          vms=$(cat ad/$LAB/providers/$PROVIDER/terraform/*.tf| grep -E 'name = ".*"'|cut -d '"' -f 2)
+          vms=$(cat ad/"$LAB"/providers/"$PROVIDER"/terraform/*.tf| grep -E 'name = ".*"'|cut -d '"' -f 2)
           for vm in "${vms[@]}"
           do
             id=$(qm list | grep $vm  | awk '{print $1}')
@@ -523,16 +562,21 @@ restart(){
       fi
       ;;
     "azure")
-      az vm restart --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
+      # shellcheck disable=SC2046
+      az vm restart --ids $(az vm list --resource-group "$LAB" --query "[].id" -o tsv)
       status
+      ;;
+    *)
+          echo "unknown provider"
       ;;
   esac
 }
 
 destroy(){
   case $PROVIDER in
-    "virtualbox"|"vmware")
-          cd "ad/$LAB/providers/$PROVIDER"
+    "virtualbox"|"vmware"|"vmware_esxi")
+        (
+          cd "ad/$LAB/providers/$PROVIDER" || { echo "provider dir does not exit"; exit 1; }
           echo "${OK} destroy the lab"
           read -r -p "Are you sure? [y/N] " response
           case "$response" in
@@ -543,10 +587,11 @@ destroy(){
                   echo "abort"
                   ;;
           esac
-          cd -
+        )
       ;;
     "proxmox"|"azure")
       if [ -d "ad/$LAB/providers/$PROVIDER/terraform" ]; then
+        # shellcheck disable=SC2164
         cd "ad/$LAB/providers/$PROVIDER/terraform"
         echo "${OK} Destroy infrastructure..."
         terraform destroy
@@ -555,15 +600,19 @@ destroy(){
         exit 1
       fi
       ;;
+    *)
+          echo "unknown provider"
+      ;;
   esac
 }
 
 status(){
   case $PROVIDER in
-    "virtualbox"|"vmware")
-          cd "ad/$LAB/providers/$PROVIDER"
+    "virtualbox"|"vmware"|"vmware_esxi")
+        (
+          cd "ad/$LAB/providers/$PROVIDER" || { echo "provider dir does not exist"; exit 1; }
           GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant status
-          cd -
+        )
       ;;
     "proxmox")
       if ! which qm >/dev/null; then
@@ -571,7 +620,7 @@ status(){
         exit 1
       else
         if [ -d "ad/$LAB/providers/$PROVIDER/terraform" ]; then
-          vms=$(cat ad/$LAB/providers/$PROVIDER/terraform/*.tf| grep -E 'name = ".*"'|cut -d '"' -f 2)
+          vms=$(cat ad/"$LAB"/providers/"$PROVIDER"/terraform/*.tf| grep -E 'name = ".*"'|cut -d '"' -f 2)
           for vm in "${vms[@]}"
           do
             qm list | grep $vm
@@ -583,24 +632,51 @@ status(){
       fi
       ;;
     "azure")
-      az vm list -g $LAB -d --output table
+      az vm list -g "$LAB" -d --output table
+      ;;
+    *)
+          echo "unknown provider"
       ;;
   esac
 }
 
 snapshot() {
-  # TODO : snapshot
-  echo "not implemeneted"
+  case $PROVIDER in
+    "virtualbox"|"vmware"|"vmware_esxi")
+        (
+          cd "ad/$LAB/providers/$PROVIDER" || { echo "provider dir does not exist"; exit 1; }
+          GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant snapshot push
+        )
+      ;;
+    "proxmox"|"azure")
+          echo "Snapshots supported for Vagrant deployed boxes only."
+      ;;
+    *)
+          echo "unknown provider"
+      ;;
+  esac
 }
 
 reset() {
-  # TODO : reset to last snapshot
-  echo "not implemeneted"
+  case $PROVIDER in
+    "virtualbox"|"vmware"|"vmware_esxi")
+        (
+          cd "ad/$LAB/providers/$PROVIDER" || { echo "provider dir does not exist"; exit 1; }
+          GOAD_VAGRANT_OPTIONS=$GOAD_VAGRANT_OPTIONS vagrant snapshot pop --no-delete
+        )
+      ;;
+    "proxmox"|"azure")
+          echo "Snapshots supported for Vagrant deployed boxes only."
+      ;;
+    *)
+          echo "unknown provider"
+      ;;
+  esac
 }
 
 main() {
   CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  cd $CURRENT_DIR
+  cd "$CURRENT_DIR" || { echo "cannot cd"; exit 1; }
   case $TASK in
     check)
       check
@@ -626,6 +702,9 @@ main() {
     snapshot)
       snapshot
       ;;
+    reset)
+      reset
+      ;;
     disablevagrant)
       disablevagrant
       ;;
@@ -633,7 +712,7 @@ main() {
       enablevagrant
       ;;
     *)
-      echo "unknow option"
+      echo "unknown option"
       ;;
   esac
 }

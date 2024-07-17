@@ -7,7 +7,7 @@ ERROR=$(tput setaf 1; echo -n "  [!]"; tput sgr0)
 GOODTOGO=$(tput setaf 2; echo -n "  [✓]"; tput sgr0)
 INFO=$(tput setaf 3; echo -n "  [-]"; tput sgr0)
 
-PROVIDERS="virtualbox vmware azure proxmox"
+PROVIDERS="virtualbox vmware azure proxmox vmware_esxi"
 ANSIBLE_HOSTS="docker local"
 print_usage() {
   echo "Usage: ./check.sh <provider> <ansible_host>"
@@ -358,6 +358,50 @@ check_vagrant_reload_plugin() {
   fi
 }
 
+check_vagrant_esxi_plugin() {
+  # Ensure the vagrant-vmware-esxi plugin is installed
+  VAGRANT_ESXI_PLUGIN_INSTALLED=$(vagrant plugin list | grep -c 'vagrant-vmware-esxi')
+  if [ "$VAGRANT_ESXI_PLUGIN_INSTALLED" != "1" ]; then
+    (echo >&2 "${ERROR} The vagrant-vmware-esxi plugin is required and was not found. This script will attempt to install it now.")
+    if ! $(which vagrant) plugin install "vagrant-vmware-esxi"; then
+      (echo >&2 "Unable to install the vagrant-vmware-esxi plugin. Please try to do so manually and re-run this script.")
+      exit 1
+    else 
+      (echo >&2 "${GOODTOGO} The vagrant-vmware-esxi plugin was successfully installed!")
+    fi
+  else
+    (echo >&2 "${GOODTOGO} The vagrant-vmware-esxi plugin is currently installed")
+  fi
+}
+
+check_vagrant_env_plugin() {
+  # Ensure the vagrant-env plugin is installed
+  VAGRANT_ENV_PLUGIN_INSTALLED=$(vagrant plugin list | grep -c 'vagrant-env')
+  if [ "$VAGRANT_ENV_PLUGIN_INSTALLED" != "1" ]; then
+    (echo >&2 "${ERROR} The vagrant-env plugin is required and was not found. This script will attempt to install it now.")
+    if ! $(which vagrant) plugin install "vagrant-env"; then
+      (echo >&2 "Unable to install the vagrant-env plugin. Please try to do so manually and re-run this script.")
+      exit 1
+    else 
+      (echo >&2 "${GOODTOGO} The vagrant-env plugin was successfully installed!")
+    fi
+  else
+    (echo >&2 "${GOODTOGO} The vagrant-env plugin is currently installed")
+  fi
+}
+
+check_ovftool_installed() {
+  if ! which ovftool >/dev/null; then
+    (echo >&2 "${ERROR} ovftool was not found in your PATH.")
+    (echo >&2 "${ERROR} Please correct this before continuing. Exiting.")
+    (echo >&2 "${ERROR} Correct this by installing appropriate ovftool version for your environment : https://developer.broadcom.com/tools/open-virtualization-format-ovf-tool/latest")
+    exit 1
+  else
+    OVFTOOL_VERSION=$(ovftool -v | cut -d ' ' -f 3)
+    (echo >&2 "${GOODTOGO} ovftool (${OVFTOOL_VERSION}) is installed, make sure that version matches your ESXi environment")
+  fi
+}
+
 # Check available disk space. Recommend 120GB free, warn if less.
 check_disk_free_space() {
   FREE_DISK_SPACE=$(df -m "$HOME" | tr -s ' ' | grep '/' | cut -d ' ' -f 4)
@@ -410,6 +454,24 @@ main() {
       check_vmware_desktop_vagrant_plugin_installed
       check_disk_free_space
       check_ram_space
+      case $ANSIBLE_HOST in
+        "docker")
+          check_docker_installed
+          ;;
+        "local")
+          check_python_env
+          ;;
+        *)
+          ;;
+      esac
+      ;;
+    "vmware_esxi")
+      (echo >&2 "[+] Enumerating vmware_esxi")
+      check_vagrant_path
+      check_vagrant_reload_plugin
+      check_vagrant_esxi_plugin
+      check_vagrant_env_plugin
+      check_ovftool_installed
       case $ANSIBLE_HOST in
         "docker")
           check_docker_installed
