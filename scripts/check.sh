@@ -7,7 +7,7 @@ ERROR=$(tput setaf 1; echo -n "  [!]"; tput sgr0)
 GOODTOGO=$(tput setaf 2; echo -n "  [✓]"; tput sgr0)
 INFO=$(tput setaf 3; echo -n "  [-]"; tput sgr0)
 
-PROVIDERS="virtualbox vmware azure proxmox"
+PROVIDERS="virtualbox vmware azure proxmox oci"
 ANSIBLE_HOSTS="docker local"
 print_usage() {
   echo "Usage: ./check.sh <provider> <ansible_host>"
