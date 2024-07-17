@@ -1,3 +1,4 @@
+.DS_Store
 .vagrant/
 .idea/
 .venv/
@@ -14,6 +15,7 @@ ansible/test.yml
 *.tfstate*
 tfplan
 *.pem
+wg-goad.conf
 ad/PURPLE
 ad/REDLAB
 ad/EDRLAB

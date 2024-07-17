@@ -12,6 +12,7 @@ ws01 ansible_host=192.168.10.43 dns_domain=dc01 dict_key=ws01
 [all:vars]
 force_dns_server=yes
 dns_server=192.168.10.1
+provider=proxmox
 
 two_adapters=no
 ; adapter created by proxmox (change them if you get an error)

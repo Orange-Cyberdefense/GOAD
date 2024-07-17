@@ -11,6 +11,7 @@ srv03 ansible_host=192.168.58.23 dns_domain=dc02 dict_key=srv03
 [all:vars]
 ; domain_name : folder inside ad/
 domain_name=NHA
+provider=vmware
 
 ; VIRTUALBOX
 ; use to setup a dns server in the start of provisioning

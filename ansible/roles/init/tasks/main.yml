@@ -1,0 +1,13 @@
+- name: "Retrieve nic name"
+  win_shell: |
+    $interfaces = Get-NetAdapter | Where-Object { $_.Status -eq "up" }
+    $primary_interface = $interfaces | Sort-Object -Property MacAddress -Descending | Select-Object -First 1
+    $primary_interface.name
+  register: primary_interface_name 
+- name: "Add nic name to inventory"
+  copy:
+    content: |
+      nat_adapter: {{ primary_interface_name.stdout }}
+      domain_adapter: {{ primary_interface_name.stdout }}
+    dest: './../ad/{{domain_name}}/providers/{{provider}}/host_vars/{{inventory_hostname}}'
+  delegate_to: localhost

@@ -13,3 +13,5 @@ ws01 ansible_host=192.168.33.13 dns_domain=dc01 dict_key=ws01
 ; adapter created by vagrant and vmware (uncomment if you use vmware)
 nat_adapter=Ethernet0
 domain_adapter=Ethernet1
+
+provider=vmware
