@@ -31,6 +31,7 @@
 - import_playbook: ad-gmsa.yml
 # install LAPS
 - import_playbook: laps.yml
+- import_playbook: localusers.yml
 ## MSSQL + IIS  ----------
 # configure servers vulns (done in the middle of ad install to let time before install relations and acl)
 #- import_playbook: servers.yml
