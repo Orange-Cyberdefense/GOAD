@@ -132,12 +132,12 @@ ansible-galaxy install -r ansible/requirements.yml
 - This will launch vagrant up and the ansible playbooks
 - If you run ansible locally
 ```bash
-./goad.sh -t check -l GOAD -p vmware -m local
+./goad.sh -t install -l GOAD -p vmware -m local
 ```
 
 - If you run ansible on docker
 ```bash
-./goad.sh -t check -l GOAD -p vmware -m docker
+./goad.sh -t install -l GOAD -p vmware -m docker
 ```
 
 ### Launch installation manually
