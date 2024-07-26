@@ -1,0 +1,3 @@
+class ProviderPathNotFound(Exception):
+    pass
+

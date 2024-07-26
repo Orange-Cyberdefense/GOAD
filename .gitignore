@@ -24,3 +24,5 @@ ansible/edr.yml
 ad/MINILAB
 ad/*/providers/*/ssh_keys/*id_rsa*
 ad/*/providers/*/ssh_keys/*.pub
+__pycache__/
+*.pyc
