@@ -1,5 +1,5 @@
 resource "sbercloud_vpc" "goad_vpc" {
-  name   = "GOAD_GOAD"
+  name   = var.vpc_name
   cidr   = "192.168.0.0/16"
   region = var.region
 }

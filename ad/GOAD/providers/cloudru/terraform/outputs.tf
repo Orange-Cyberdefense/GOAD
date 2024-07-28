@@ -1,7 +1,7 @@
 output "ubuntu-jumpbox-ip" {
-  value = sbercloud_vpc_eip.goad_nat_public_ip.address
+  value = module.cloudru_deploy.ubuntu-jumpbox-ip
 }
 
 output "ubuntu-jumpbox-username" {
-  value = "root"
+  value = module.cloudru_deploy.ubuntu-jumpbox-username
 }

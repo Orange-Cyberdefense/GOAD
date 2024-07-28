@@ -1,18 +1,3 @@
-terraform {
-  required_providers {
-    sbercloud = {
-      source  = "sbercloud-terraform/sbercloud"
-      version = "1.12.0"
-    }
-  }
-}
-
-provider "sbercloud" {
-  region     = var.region
-  access_key = var.access_key
-  secret_key = var.secret_key
-}
-
 variable "vm_config" {
   type = map(object({
     name               = string
@@ -55,29 +40,13 @@ variable "vm_config" {
   }
 }
 
-resource "sbercloud_compute_instance" "goad_vm" {
-  for_each = var.vm_config
+module "cloudru_deploy" {
+  source = "./../../../../../terraform/cloudru"
 
-  name               = "goad-vm-${each.value.name}"
   region             = var.region
-  image_name         = each.value.os_image
-  flavor_id          = var.vm_size
-  admin_pass         = each.value.password
-  security_group_ids = [sbercloud_networking_secgroup.secgroup_allow_any.id]
-  user_data = templatefile("${path.module}/../../../../../terraform/cloudru-instance-init.ps1.tpl", {
-    username = "ansible"
-    password = each.value.password
-  })
-
-  network {
-    uuid        = sbercloud_vpc_subnet.goad_subnet.id
-    fixed_ip_v4 = each.value.private_ip_address
-  }
-}
-
-# sleep because of sysprep SID change
-resource "time_sleep" "goad_vm_wait_10m" {
-  depends_on = [sbercloud_compute_instance.goad_vm]
-
-  create_duration = "10m"
+  vpc_name           = var.vpc_name
+  vm_size            = var.vm_size
+  eip_bandwidth_size = var.eip_bandwidth_size
+  nat_gateway_spec   = var.nat_gateway_spec
+  vm_config          = var.vm_config
 }

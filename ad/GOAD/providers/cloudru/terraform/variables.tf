@@ -3,6 +3,11 @@ variable "region" {
   default = "ru-moscow-1"
 }
 
+variable "vpc_name" {
+  type    = string
+  default = "GOAD_GOAD"
+}
+
 variable "vm_size" {
   type    = string
   default = "s7n.large.2"
@@ -16,16 +21,4 @@ variable "eip_bandwidth_size" {
 variable "nat_gateway_spec" {
   type    = number
   default = 1
-}
-
-# IAM user ak on cloud.ru (https://cloud.ru/docs/obs/ug/topics/guides__create-access-keys.html)
-variable "access_key" {
-  type    = string
-  default = "qweqwe"
-}
-
-# IAM user sk on cloud.ru (https://cloud.ru/docs/obs/ug/topics/guides__create-access-keys.html)
-variable "secret_key" {
-  type    = string
-  default = "qweqwe"
 }
