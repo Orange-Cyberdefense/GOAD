@@ -56,7 +56,7 @@ variable "vm_config" {
       windows_sku        = "2019-Datacenter"
       windows_version    = "latest"
       private_ip_address = "192.168.58.23"
-      password           = "EalwxkfhqsdP+xh7sdfzaRk6j90"
+      password           = "EalwkdP+xh7sdfaRk6j90"
     }
   }
 }
@@ -84,7 +84,7 @@ resource "azurerm_windows_virtual_machine" "goad-vm" {
   resource_group_name = azurerm_resource_group.resource_group.name
   size                = var.size
   admin_username      = var.username
-  admin_password      = "${each.value.password}"
+  admin_password      = each.value.password
   network_interface_ids = [
     azurerm_network_interface.goad-vm-nic[each.key].id,
   ]

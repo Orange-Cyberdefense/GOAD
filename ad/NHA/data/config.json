@@ -142,7 +142,7 @@
         "srv03" : {
             "hostname" : "share",
             "type" : "server",
-            "local_admin_password": "EalwxkfhqsdP+xh7sdfzaRk6j90",
+            "local_admin_password": "EalwkdP+xh7sdfaRk6j90",
             "domain" : "academy.ninja.lan",
             "use_laps": false,
             "path" : "OU=share_servers,DC=academy,DC=ninja,DC=lan",
