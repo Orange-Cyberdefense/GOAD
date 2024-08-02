@@ -12,8 +12,8 @@
   roles:
   - { role: 'gmsa', tags: 'gmsa'}
   vars:
-    ad_gmsa: "{{lab.domains[lab.hosts[dict_key].domain].gmsa | default({})}}"
-    domain: "{{lab.hosts[dict_key].domain}}"
+    ad_gmsa: "{{lab.domains[lab.hosts[inventory_hostname].domain].gmsa | default({})}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"
     domain_username: "{{domain}}\\Administrator"
     domain_password: "{{lab.domains[domain].domain_password}}"
 
@@ -22,8 +22,8 @@
   roles:
   - { role: 'gmsa_hosts', tags: 'gmsa'}
   vars:
-    ad_gmsa: "{{lab.domains[lab.hosts[dict_key].domain].gmsa | default({})}}"
-    domain: "{{lab.hosts[dict_key].domain}}"
+    ad_gmsa: "{{lab.domains[lab.hosts[inventory_hostname].domain].gmsa | default({})}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"
     domain_username: "{{domain}}\\Administrator"
     domain_password: "{{lab.domains[domain].domain_password}}"
-    hostname: "{{lab.hosts[dict_key].hostname}}"
+    hostname: "{{lab.hosts[inventory_hostname].hostname}}"

@@ -14,7 +14,7 @@
     - { role: 'sccm/config/client_install', tags: 'sccm_client_install'}
     - { role: 'sccm/config/users', tags: 'sccm_users'}
   vars:
-    domain: "{{lab.hosts[dict_key].domain}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"
     domain_username: "{{domain}}\\Administrator"
     domain_password: "{{lab.domains[domain].domain_password}}"
     sccm_server: "{{lab.domains[domain].sccm.sccm_server | default('')}}"

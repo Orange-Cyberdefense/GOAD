@@ -12,22 +12,22 @@
     - { role: 'password_policy', tags: 'policy', try_before_lock: "5", pass_length: "5", lock_duration: "00:05:00", lock_observation: "00:05:00", complexity: false}
     - { role: 'ad', tags: 'ad_domain_data' }
   vars:
-    hostname: "{{lab.hosts[dict_key].hostname}}"
-    domain: "{{lab.hosts[dict_key].domain}}"
+    hostname: "{{lab.hosts[inventory_hostname].hostname}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"
     domain_username: "{{domain}}\\Administrator"
     domain_password: "{{lab.domains[domain].domain_password}}"
-    domain_server: "{{lab.hosts[dict_key].hostname}}.{{domain}}"
-    ad_users: "{{lab.domains[lab.hosts[dict_key].domain].users}}"
-    ad_ou: "{{lab.domains[lab.hosts[dict_key].domain].organisation_units  | default({}) }}"
-    ad_groups: "{{lab.domains[lab.hosts[dict_key].domain].groups}}"
+    domain_server: "{{lab.hosts[inventory_hostname].hostname}}.{{domain}}"
+    ad_users: "{{lab.domains[lab.hosts[inventory_hostname].domain].users}}"
+    ad_ou: "{{lab.domains[lab.hosts[inventory_hostname].domain].organisation_units  | default({}) }}"
+    ad_groups: "{{lab.domains[lab.hosts[inventory_hostname].domain].groups}}"
 
 - name: "Servers AD data configuration"
   hosts: server
   roles:
     - { role: 'settings/copy_files', tags: 'download_files' }
   vars:
-    hostname: "{{lab.hosts[dict_key].hostname}}"
-    domain_ou_path: "{{lab.hosts[dict_key].path}}"
+    hostname: "{{lab.hosts[inventory_hostname].hostname}}"
+    domain_ou_path: "{{lab.hosts[inventory_hostname].path}}"
 
 - name: "Move to OU"
   hosts: dc
@@ -35,5 +35,5 @@
     - { role: 'move_to_ou', tags: 'move_to_ou'}
   vars:
     hosts_dict: "{{lab.hosts}}"
-    member_domain: "{{lab.hosts[dict_key].domain}}"
+    member_domain: "{{lab.hosts[inventory_hostname].domain}}"
     domain_password: "{{lab.domains[member_domain].domain_password}}"

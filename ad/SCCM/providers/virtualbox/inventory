@@ -4,10 +4,10 @@
 ; ------------------------------------------------
 ; sccm.lab
 ; ------------------------------------------------
-dc01 ansible_host=192.168.60.10 dns_domain=dc01 dict_key=dc01
-srv01 ansible_host=192.168.60.11 dns_domain=dc01 dict_key=srv01
-srv02 ansible_host=192.168.60.12 dns_domain=dc01 dict_key=srv02
-ws01 ansible_host=192.168.60.13 dns_domain=dc01 dict_key=ws01
+dc01 ansible_host=192.168.60.10 dns_domain=dc01
+srv01 ansible_host=192.168.60.11 dns_domain=dc01
+srv02 ansible_host=192.168.60.12 dns_domain=dc01
+ws01 ansible_host=192.168.60.13 dns_domain=dc01
 
 [all:vars]
 ; adapter created by vagrant and virtualbox

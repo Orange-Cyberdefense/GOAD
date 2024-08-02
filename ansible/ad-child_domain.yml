@@ -14,7 +14,7 @@
     - { role: 'child_domain', tags: 'child_domain'}
     - { role: 'dns_conditional_forwarder', tags: 'dns_conditional_forwarder' }
   vars:
-    domain: "{{lab.hosts[dict_key].domain}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
     netbios_name: "{{lab.domains[domain].netbios_name}}"
     parent_domain: "{{'.'.join(domain.split('.')[1:])}}"
@@ -33,4 +33,4 @@
   vars:
     lab: "{{lab}}"
     domains: "{{lab.domains.keys()}}"
-    domain: "{{lab.hosts[dict_key].domain}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"

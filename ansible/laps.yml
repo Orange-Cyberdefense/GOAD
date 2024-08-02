@@ -10,7 +10,7 @@
   roles:
     - { role: 'laps/dc', tags: 'laps-dc'}
   vars:
-    domain: "{{lab.hosts[dict_key].domain}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"
     laps_path: "{{lab.domains[domain].laps_path if lab.domains[domain].laps_path is defined else false}}"
     hosts_dict: "{{lab.hosts}}"
 
@@ -19,9 +19,9 @@
   roles:
     - { role: 'laps/server', tags: 'laps-server'}
   vars:
-    domain: "{{lab.hosts[dict_key].domain}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"
     laps_path: "{{lab.domains[domain].laps_path if lab.domains[domain].laps_path is defined else false}}"
-    use_laps: "{{lab.hosts[dict_key].use_laps if lab.hosts[dict_key].use_laps is defined else false}}"
+    use_laps: "{{lab.hosts[inventory_hostname].use_laps if lab.hosts[inventory_hostname].use_laps is defined else false}}"
 
 
 - name: verify and show laps passwords
@@ -29,7 +29,7 @@
   roles:
     - { role: 'laps/verify', tags: 'laps-verify'}
   vars:
-    domain: "{{lab.hosts[dict_key].domain}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"
     laps_path: "{{lab.domains[domain].laps_path if lab.domains[domain].laps_path is defined else false}}"
     hosts_dict: "{{lab.hosts}}"
 
@@ -38,6 +38,6 @@
   roles:
     - { role: 'laps/permissions', tags: 'laps-permissions'}
   vars:
-    domain: "{{lab.hosts[dict_key].domain}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"
     laps_path: "{{lab.domains[domain].laps_path if lab.domains[domain].laps_path is defined else false}}"
     laps_readers: "{{lab.domains[domain].laps_readers  | default([]) }}"

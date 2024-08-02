@@ -11,11 +11,11 @@
     - include_role:
         name: "vulns/{{vuln}}"
       vars:
-        vulns_vars : "{{ lab.hosts[dict_key].vulns_vars[vuln] | default({}) }}"
-        domain: "{{lab.hosts[dict_key].domain}}"
+        vulns_vars : "{{ lab.hosts[inventory_hostname].vulns_vars[vuln] | default({}) }}"
+        domain: "{{lab.hosts[inventory_hostname].domain}}"
         domain_username: "{{domain}}\\Administrator"
         domain_password: "{{lab.domains[domain].domain_password}}"
-      loop: "{{lab.hosts[dict_key].vulns | default([]) }}"
+      loop: "{{lab.hosts[inventory_hostname].vulns | default([]) }}"
       loop_control:
         loop_var: vuln
 
@@ -24,4 +24,4 @@
       vars:
         script_path: "../ad/{{domain_name}}/scripts"
         ps_script: "{{script_path}}/{{item}}"
-      loop: "{{lab.hosts[dict_key].scripts | default([]) }}"
+      loop: "{{lab.hosts[inventory_hostname].scripts | default([]) }}"

@@ -8,7 +8,7 @@
   roles:
     - { role: 'sccm/install/prerequistes', tags: 'sccm_prerequistes', when: sccm_server != ''}
   vars:
-    domain: "{{lab.hosts[dict_key].domain}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"
     domain_username: "{{domain}}\\Administrator"
     domain_password: "{{lab.domains[domain].domain_password}}"
     site_code: "{{lab.domains[domain].sccm.site_code}}"
@@ -24,7 +24,7 @@
     - { role: 'sccm/install/wsus', tags: 'sccm_wsus'}
     - { role: 'sccm/install/mecm', tags: 'sccm_mecm'}
   vars:
-    domain: "{{lab.hosts[dict_key].domain}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"
     domain_username: "{{domain}}\\Administrator"
     domain_password: "{{lab.domains[domain].domain_password}}"
     site_code: "{{lab.domains[domain].sccm.site_code}}"
