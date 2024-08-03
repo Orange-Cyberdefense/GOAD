@@ -11,11 +11,11 @@
   roles:
     - { role: 'onlyusers', tags: 'onlyusers' }
   vars:
-    hostname: "{{lab.hosts[dict_key].hostname}}"
-    domain: "{{lab.hosts[dict_key].domain}}"
+    hostname: "{{lab.hosts[inventory_hostname].hostname}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"
     domain_username: "{{domain}}\\Administrator"
     domain_password: "{{lab.domains[domain].domain_password}}"
-    domain_server: "{{lab.hosts[dict_key].hostname}}.{{domain}}"
-    ad_users: "{{lab.domains[lab.hosts[dict_key].domain].users}}"
-    ad_ou: "{{lab.domains[lab.hosts[dict_key].domain].organisation_units}}"
-    ad_groups: "{{lab.domains[lab.hosts[dict_key].domain].groups}}"
+    domain_server: "{{lab.hosts[inventory_hostname].hostname}}.{{domain}}"
+    ad_users: "{{lab.domains[lab.hosts[inventory_hostname].domain].users}}"
+    ad_ou: "{{lab.domains[lab.hosts[inventory_hostname].domain].organisation_units}}"
+    ad_groups: "{{lab.domains[lab.hosts[inventory_hostname].domain].groups}}"

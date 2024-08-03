@@ -25,10 +25,10 @@
     - include_role:
         name: "security/{{secu}}"
       vars:
-        security_vars : "{{ lab.hosts[dict_key].security_vars[secu] | default({}) }}"
-        domain: "{{lab.hosts[dict_key].domain}}"
+        security_vars : "{{ lab.hosts[inventory_hostname].security_vars[secu] | default({}) }}"
+        domain: "{{lab.hosts[inventory_hostname].domain}}"
         domain_username: "{{domain}}\\Administrator"
         domain_password: "{{lab.domains[domain].domain_password}}"
-      loop: "{{lab.hosts[dict_key].security | default([]) }}"
+      loop: "{{lab.hosts[inventory_hostname].security | default([]) }}"
       loop_control:
         loop_var: secu

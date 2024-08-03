@@ -23,8 +23,8 @@
           Reset-ComputerMachinePassword -Credential $Cred
         error_action: stop
         parameters:
-          domain_username: "{{lab.hosts[dict_key].domain}}\\Administrator"
-          domain_password: "{{lab.domains[lab.hosts[dict_key].domain].domain_password}}"
+          domain_username: "{{lab.hosts[inventory_hostname].domain}}\\Administrator"
+          domain_password: "{{lab.domains[lab.hosts[inventory_hostname].domain].domain_password}}"
 
     - name: "Reboot and wait for the AD system to restart"
       win_reboot:
