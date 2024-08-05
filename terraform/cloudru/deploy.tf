@@ -14,12 +14,16 @@ provider "sbercloud" {
 resource "sbercloud_compute_instance" "goad_vm" {
   for_each = var.vm_config
 
-  name               = "goad-vm-${each.value.name}"
+  name               = "${var.vpc_name}-${each.value.name}"
   region             = var.region
   image_name         = each.value.os_image
   flavor_id          = var.vm_size
   admin_pass         = each.value.password
   security_group_ids = [sbercloud_networking_secgroup.secgroup_allow_any.id]
+
+  system_disk_type = "SAS"
+  system_disk_size = 60 # 60 because SCCM lab can't be setted up with default 40
+
   user_data = templatefile("${path.module}/user_data/cloudru-instance-init.ps1.tpl", {
     username = "ansible"
     password = each.value.password

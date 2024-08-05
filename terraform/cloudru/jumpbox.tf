@@ -13,7 +13,7 @@ resource "sbercloud_nat_dnat_rule" "goad_dnat_jumpbox" {
 }
 
 resource "sbercloud_compute_instance" "jumpbox" {
-  name               = "goad-jumpbox-ubuntu"
+  name               = "${var.vpc_name}-jumpbox-ubuntu"
   region             = var.region
   image_name         = "Ubuntu 22.04 server 64bit"
   flavor_id          = var.vm_size
