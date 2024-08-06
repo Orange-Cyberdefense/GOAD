@@ -5,7 +5,7 @@ variable "region" {
 
 variable "vpc_name" {
   type    = string
-  default = "GOAD_LIGHT"
+  default = "GOAD_GOAD-Light"
 }
 
 variable "vm_size" {

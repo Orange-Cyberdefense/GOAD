@@ -118,6 +118,17 @@ check_azure_installed() {
   fi
 }
 
+check_cloud_installed() {
+  if ! which cloud >/dev/null; then
+    (echo >&2 "${ERROR} cloud was not found in your PATH.")
+    (echo >&2 "${ERROR} Please correct this before continuing. Exiting.")
+    (echo >&2 "${ERROR} Correct this by installing cloud (https://cloud.ru/docs/cloud-cli/ug/topics/guides__install-cli.html)")
+    exit 1
+  else
+    (echo >&2 "${GOODTOGO} cloud is installed")
+  fi
+}
+
 check_rsync_path() {
   if ! which rsync >/dev/null; then
     (echo >&2 "${ERROR} rsync was not found in your PATH.")
@@ -438,7 +449,7 @@ main() {
       ;;
     "cloudru")
       (echo >&2 "[+] Enumerating cloudru")
-      # TODO: check cloud installed
+      check_cloud_installed
       check_terraform_path
       check_rsync_path
       ;;

@@ -452,10 +452,13 @@ start(){
         fi
       fi
       ;;
-    "azure"|"cloudru")
-      # TODO
+    "azure")
       az vm start --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
-      status
+      ;;
+    "cloudru")
+      cloudru_config="$(mktemp -d)/config.json"
+      cloud ECS ListServersDetails --name="GOAD_$LAB" --cli-query="{body: {\"os-start\": {servers: servers[].{id: id}}}}" > $cloudru_config
+      cloud ECS BatchStartServers --cli-jsonInput=$cloudru_config
       ;;
   esac
 }
@@ -488,10 +491,13 @@ stop(){
         fi
       fi
       ;;
-    "azure"|"cloudru")
-      # TODO
+    "azure")
       az vm stop --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
-      status
+      ;;
+    "cloudru")
+      cloudru_config="$(mktemp -d)/config.json"
+      cloud ECS ListServersDetails --name="GOAD_$LAB" --cli-query="{body: {\"os-stop\": {servers: servers[].{id: id}, type: 'SOFT'}}}" > $cloudru_config
+      cloud ECS BatchStopServers --cli-jsonInput=$cloudru_config
       ;;
   esac
 }
@@ -526,10 +532,13 @@ restart(){
         fi
       fi
       ;;
-    "azure"|"cloudru")
-      # TODO
+    "azure")
       az vm restart --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
-      status
+      ;;
+    "cloudru")
+      cloudru_config="$(mktemp -d)/config.json"
+      cloud ECS ListServersDetails --name="GOAD_$LAB" --cli-query="{body: {\"reboot\": {servers: servers[].{id: id}, type: 'SOFT'}}}" > $cloudru_config
+      cloud ECS BatchRebootServers --cli-jsonInput=$cloudru_config
       ;;
   esac
 }
@@ -587,9 +596,11 @@ status(){
         fi
       fi
       ;;
-    "azure"|"cloudru")
-      # TODO
+    "azure")
       az vm list -g $LAB -d --output table
+      ;;
+    "cloudru")
+      cloud ECS ListServersDetails --name="GOAD_$LAB" --cli-output=table --cli-query="servers[].{ID: id, Name: name, Status: status}"
       ;;
   esac
 }
