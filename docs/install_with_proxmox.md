@@ -28,4 +28,4 @@
 ./goad.sh -t install -l GOAD -p proxmox
 ```
 
-- Details on the provisioning process are here : [provisioning.md](./provisioning.md)
+- Details on the provisioning process are here: [provisioning.md](./provisioning.md)
