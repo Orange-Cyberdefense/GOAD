@@ -80,7 +80,7 @@ rsync -a --exclude-from='.gitignore' -e "ssh -i $CURRENT_DIR/ad/GOAD/providers/a
 1. Run the setup.sh script to install Ansible and download GOAD on the Ubuntu VM
 
 ```bash
-ssh -i ad/GOAD/providers/azure/ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu-jumpbox-ip> 'bash -s' < scripts/setup_azure.sh
+ssh -i ad/GOAD/providers/azure/ssh_keys/ubuntu-jumpbox.pem goad@<ubuntu-jumpbox-ip> 'bash -s' < scripts/setup_ubuntu_jumpbox.sh
 ```
 
 > Note: To get the public ip of the Ubuntu VM, you can run `terraform output` in the terraform directory
@@ -99,7 +99,7 @@ export ANSIBLE_COMMAND="ansible-playbook -i ../ad/GOAD/data/inventory -i ../ad/G
 ../scripts/provisionning.sh
 ```
 
-- Details on the provisioning process are here : [provisioning.md](./provisioning.md)
+- Details on the provisioning process are here: [provisioning.md](./provisioning.md)
 
 ## Tips
 

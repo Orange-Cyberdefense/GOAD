@@ -1,3 +1,13 @@
+- name: Install vc_redist.x64.exe
+  ansible.windows.win_package:
+    arguments: "/install /passive /norestart"
+    path: https://aka.ms/vs/17/release/vc_redist.x64.exe
+    state: present
+  register: vcredist_install
+  until: vcredist_install is success
+  retries: 3 # Try 3 times just in case it failed to download the URL
+  delay: 1
+
 - name: Install ODBC Mssql 18 driver
   ansible.windows.win_package:
     arguments: "IACCEPTMSODBCSQLLICENSETERMS=YES ALLUSERS=1"
@@ -6,7 +16,7 @@
     creates_path: "%ProgramFiles%\\Microsoft SQL Server\\Client SDK\\ODBC"
   register: odbc_install
   until: odbc_install is success
-  retries: 3  # Try 3 times just in case it failed to download the URL
+  retries: 3 # Try 3 times just in case it failed to download the URL
   delay: 1
 
 - name: reboot after installing ODBC if required
@@ -75,7 +85,7 @@
     type: allow
     state: present
     inherit: ContainerInherit, ObjectInherit
-    propagation: 'InheritOnly'
+    propagation: "InheritOnly"
 
 - name: install MECM (this one take an eternity ~ 1 hour  )
   win_shell: .\setup.exe /SCRIPT "C:\setup\ConfigMgrAutoSave.ini"
