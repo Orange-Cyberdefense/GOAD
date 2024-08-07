@@ -6,12 +6,17 @@ You can use this template to create your own lab
 
 This is the ansible inventory file.
 
-- All the vms defined in the vagrant file must be set here.
+- All the vms defined in the vagrant/terraform file must be set here.
 - This will do the mapping between IP and the configuration file (data/config.json)
 ```
 [default]
 dc01 ansible_host=192.168.56.10 dns_domain=dc01 dict_key=dc01
 srv01 ansible_host=192.168.56.11 dns_domain=dc01 dict_key=srv01
+```
+
+- Definition for azure/cloudru must also contain `ansible_user` and `ansible_password` for local administrator access
+```
+dc01 ansible_host=192.168.56.10 dns_domain=dc01 dict_key=dc01 ansible_user=ansible ansible_password=dc_and_domain_password
 ```
 
 - Vm defined in the inventory must be set into the groups to run the associated roles
