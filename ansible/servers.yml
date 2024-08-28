@@ -12,6 +12,7 @@
 
 - name: "Install MSSQL Express"
   hosts: mssql
+  serial: 1 # add one MSSQL install at a time to avoid issues
   roles:
     - { role: 'mssql', tags: 'mssql'}
     - { role: 'mssql_link', tags: 'mssql, mssql_link'}
