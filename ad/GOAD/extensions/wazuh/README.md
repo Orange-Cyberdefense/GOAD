@@ -1,0 +1,1 @@
+# WAZUH extension
