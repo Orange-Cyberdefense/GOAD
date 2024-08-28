@@ -1,0 +1,9 @@
+ansible_runner
+ansible-core==2.12.6
+rich
+pywinrm
+# AZURE
+azure-identity
+azure-mgmt-resource
+azure-mgmt-compute
+azure-mgmt-network
