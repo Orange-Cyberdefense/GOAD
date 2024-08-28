@@ -13,6 +13,8 @@ provider "azurerm" {
   features {}
 }
 
+# find image list:
+# az vm image list --location "west europe" --publisher "MicrosoftWindowsServer" --offer "WindowsServer" --sku "2019-Datacenter" --all -o table
 variable "vm_config" {
   type = map(object({
     name               = string
@@ -26,35 +28,35 @@ variable "vm_config" {
     "dc01" = {
       name               = "dc01"
       windows_sku        = "2019-Datacenter"
-      windows_version    = "2019.0.20181122"
+      windows_version    = "17763.4377.230505" # deprecated : "2019.0.20181122"
       private_ip_address = "192.168.56.10"
       password           = "8dCT-DJjgScp"
     }
     "dc02" = {
       name               = "dc02"
       windows_sku        = "2019-Datacenter"
-      windows_version    = "2019.0.20181122"
+      windows_version    = "17763.4377.230505" # deprecated : "2019.0.20181122"
       private_ip_address = "192.168.56.11"
       password           = "NgtI75cKV+Pu"
     }
     "dc03" = {
       name               = "dc03"
       windows_sku        = "2016-Datacenter"
-      windows_version    = "2016.127.20181122"
+      windows_version    = "14393.5921.230506" # deprecated : "2016.127.20181122"
       private_ip_address = "192.168.56.12"
       password           = "Ufe-bVXSx9rk"
     }
     "srv02" = {
       name               = "srv02"
       windows_sku        = "2019-Datacenter"
-      windows_version    = "2019.0.20181122"
+      windows_version    = "17763.4377.230505" # deprecated : "2019.0.20181122"
       private_ip_address = "192.168.56.22"
       password           = "NgtI75cKV+Pu"
     }
     "srv03" = {
       name               = "srv03"
       windows_sku        = "2016-Datacenter"
-      windows_version    = "2016.127.20181122"
+      windows_version    = "14393.5921.230506" # deprecated : "2016.127.20181122"
       private_ip_address = "192.168.56.23"
       password           = "978i2pF43UJ-"
     }
