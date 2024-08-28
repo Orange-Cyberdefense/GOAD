@@ -6,6 +6,9 @@ class Command:
     def check_vagrant(self):
         pass
 
+    def check_vmware(self):
+        pass
+
     def run_vagrant(self, args, path):
         pass
 

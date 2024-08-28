@@ -36,6 +36,16 @@ class LinuxCommand(Command):
             Log.error('vagrant not found in PATH')
             return False
 
+    def check_vmware(self):
+        command = 'which vmrun >/dev/null'
+        try:
+            subprocess.run(command, shell=True, check=True)
+            Log.success('vmware workstation found in PATH')
+            return True
+        except subprocess.CalledProcessError as e:
+            Log.error('vmware workstation not found in PATH')
+            return False
+
     def run_vagrant(self, args, path):
         result = None
         try:
