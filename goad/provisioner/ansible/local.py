@@ -14,7 +14,7 @@ class LocalAnsibleProvisionerCmd(Ansible):
 
         Log.info(f'Run playbook : {playbook} with inventory file(s) : {", ".join(inventories)}')
 
-        args = f'-i {"-i ".join(inventories)} {playbook}'
+        args = f'-i {" -i ".join(inventories)} {playbook}'
 
         run_complete = False
         nb_try = 0
