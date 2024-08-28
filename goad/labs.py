@@ -68,6 +68,9 @@ class Lab:
             return None
         return self.providers[provider_name]
 
+    def get_first_provider_name(self):
+        return next(iter(self.providers))
+
     def get_extension(self, extension_name):
         return self.providers[extension_name]
 

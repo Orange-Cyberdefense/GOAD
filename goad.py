@@ -3,31 +3,16 @@ import argparse
 from rich import print
 
 from goad.config import Config
-from goad.lab_controller import LabController
-from goad.menu import print_menu
+from goad.jumpbox import JumpBox
+from goad.lab_manager import LabManager
+from goad.menu import print_menu, print_logo
 from goad.log import Log
 from goad.utils import *
 from goad.labs import *
-from goad.gui import *
+from goad.infos import *
 
 
 class Goad(cmd.Cmd):
-
-    @staticmethod
-    def print_logo():
-        logo = """[white]
-   _____   _____          _____ 
-  / ____| / ||| \  [blue] /\\\\[/blue]   |  __ \ 
- | |  __||  |||  | [blue]/  \\\\[/blue]  | |  | |
- | | |_ ||  |||  |[blue]/ /\ \\\\[/blue] | |  | |
- | |__| ||  |||  [blue]/ /__\ \\\\[/blue]| |__| |
-  \_____| \_|||_[blue]/________\\\\[/blue]_____/
-    [bold]Game Of Active Directory[/bold]
-      [yellow][italic]Pwning is comming[/italic][/yellow]
-[/white]
-Goad management console type help or ? to list commands
-"""
-        print(logo)
 
     def __init__(self, args):
         super().__init__()
@@ -40,19 +25,19 @@ Goad management console type help or ? to list commands
         config = Config().merge_config(args)
 
         # prepare lab controller to manage labs
-        self.lab_controller = LabController().init(labs, config)
+        self.lab_manager = LabManager().init(labs, config)
 
         # set current lab and provider
         self.refresh_prompt()
 
     def refresh_prompt(self):
-        self.prompt = f"\n{self.lab_controller.get_current_lab_name()} @ {self.lab_controller.get_current_provider_name()} > "
+        self.prompt = f"\n{self.lab_manager.get_current_lab_name()} @ {self.lab_manager.get_current_provider_name()} > "
 
     def default(self, line):
         print()
 
     def do_help(self, arg):
-        print_menu()
+        print_menu(self.lab_manager)
 
     def do_exit(self, arg):
         print('bye')
@@ -60,25 +45,58 @@ Goad management console type help or ? to list commands
 
     # main commands
     def do_status(self, arg):
-        self.lab_controller.get_current_provider().status()
+        self.lab_manager.get_current_provider().status()
 
     def do_check(self, arg):
-        self.lab_controller.get_current_provider().check()
+        self.lab_manager.get_current_provider().check()
 
     def do_install(self, arg):
-        self.lab_controller.get_current_provider().install()
+        self.lab_manager.get_current_provider().install()
 
     def do_start(self, arg):
-        self.lab_controller.get_current_provider().start()
+        self.lab_manager.get_current_provider().start()
 
     def do_stop(self, arg):
-        self.lab_controller.get_current_provider().stop()
+        self.lab_manager.get_current_provider().stop()
 
     def do_destroy(self, arg):
-        self.lab_controller.get_current_provider().destroy()
+        self.lab_manager.get_current_provider().destroy()
 
-    def do_lab_info(self, arg):
-        pass
+    def do_provide(self, arg):
+        self.lab_manager.get_current_provider().install()
+
+    def do_provision(self, arg):
+        if arg == '':
+            Log.error('missing playbook argument')
+            Log.info('provision <playbook>')
+        else:
+            # run playbook
+            self.lab_manager.get_current_provisioner().run(arg)
+
+    def do_provision_lab(self, arg):
+        self.lab_manager.get_current_provisioner().run()
+
+    def do_provision_lab_from(self, arg):
+        self.lab_manager.get_current_provisioner().run_from(arg)
+
+    def do_prepare_jumpbox(self, arg):
+        if self.lab_manager.get_current_provisioner().provisioner_name == 'ansible_remote':
+            self.lab_manager.get_current_provisioner().prepare_jumpbox()
+        else:
+            Log.error('no remote provisioning')
+
+    def do_show_config(self, arg):
+        show_current_config(self.lab_manager)
+
+    def do_ssh_jumpbox(self, arg):
+        if self.lab_manager.get_current_provider_name() == AZURE or self.lab_manager.get_current_provider_name() == AWS:
+            try:
+                jump_box = JumpBox(self.lab_manager.get_current_lab_name(), self.lab_manager.get_current_provider())
+                jump_box.ssh()
+            except JumpBoxInitFailed as e:
+                Log.error('Jumpbox retrieve connection info failed, abort')
+        else:
+            Log.error('No jump box for this provider')
 
     # configuration
     def do_set_lab(self, arg):
@@ -92,15 +110,13 @@ Goad management console type help or ? to list commands
             Log.info('set_lab <lab>')
         else:
             try:
-                if self.lab_controller.set_lab(arg):
+                if self.lab_manager.set_lab(arg):
                     Log.success(f'Lab {arg} loaded')
-                    # lab has changed, so change the provider too
-                    self.do_set_provider(self.lab_controller.get_current_provider_name())
                     self.refresh_prompt()
             except ValueError as err:
                 Log.error(err.args[0])
                 Log.info('Available labs :')
-                for lab in self.lab_controller.labs:
+                for lab in self.lab_manager.labs:
                     Log.info(f' - {lab}')
 
     def do_set_provider(self, arg):
@@ -111,31 +127,40 @@ Goad management console type help or ? to list commands
         """
         if arg == '':
             Log.error('missing provider argument')
-            Log.info('set_provider <provider>')
+            Log.info(f'set_provider <provider> (allowed values : {",".join(ALLOWED_PROVIDERS)})')
         else:
             try:
-                if self.lab_controller.set_provider(arg):
+                if self.lab_manager.set_provider(arg):
                     Log.success(f'Provider {arg} loaded')
                     self.refresh_prompt()
                 else:
-                    Log.error(f'provider {arg} does not exist on lab {self.lab_controller.get_current_lab_name()}')
+                    Log.error(f'provider {arg} does not exist on lab {self.lab_manager.get_current_lab_name()}')
                     Log.info('Available Providers :')
-                    for provider_name in self.lab_controller.get_lab_providers(self.lab_controller.get_current_lab_name()):
+                    for provider_name in self.lab_manager.get_lab_providers(self.lab_manager.get_current_lab_name()):
                         Log.info(f' - {provider_name}')
             except ValueError as err:
                 Log.error(err.args[0])
 
-    # def do_show_config(self, arg):
-    #     self.config.show_config()
+    def do_set_provisioning_method(self, arg):
+        if arg == '':
+            Log.error('missing provisioner argument')
+            Log.info(f'set_provisioner <provisioner> (allowed values : {",".join(ALLOWED_PROVISIONER)})')
+        else:
+            try:
+                if self.lab_manager.set_provisioner(arg):
+                    Log.success(f'Provisioner {arg} loaded')
+                    self.refresh_prompt()
+                else:
+                    Log.error(f'provisioner {arg} does not exist on lab {self.lab_manager.get_current_lab_name()}')
+                    Log.info(f'Available Provisioner : {",".join(ALLOWED_PROVISIONER)}')
+            except ValueError as err:
+                Log.error(err.args[0])
 
-    def do_show_table_providers(self, arg):
-        show_labs_providers(self.lab_controller.get_labs())
+    def do_show_providers_table(self, arg):
+        show_labs_providers_table(self.lab_manager.get_labs())
 
     def do_show_list_providers(self, arg):
-        for lab in self.lab_controller.get_labs():
-            Log.success(f'*** {lab.lab_name} ***')
-            for provider in lab.providers.keys():
-                Log.info(f' {provider}')
+        show_labs_providers_list(self.lab_manager.get_labs())
 
 
 def parse_args():
@@ -163,7 +188,7 @@ def show_help():
 
 
 if __name__ == '__main__':
-    Goad.print_logo()
+    print_logo()
     args = parse_args()
     goad = Goad(args)
 

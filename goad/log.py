@@ -30,4 +30,4 @@ class Log:
     @staticmethod
     def cmd(message, level=INFO):
         if level >= log_level:
-            print(f'[cyan][*] [/cyan] Running command : [yellow]{message}[/yellow]')
+            print(f'[cyan][*] [/cyan]Running command : [yellow]{message}[/yellow]')

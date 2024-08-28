@@ -10,6 +10,8 @@ from goad.utils import *
 class Provider(ABC):
     lab_name = ''
     provider_name = None
+    default_provisioner = PROVISIONING_LOCAL
+    allowed_provisioners = [PROVISIONING_LOCAL, PROVISIONING_RUNNER, PROVISIONING_DOCKER, PROVISIONING_REMOTE]
 
     def __init__(self, lab_name):
         self.lab_name = lab_name
@@ -20,9 +22,6 @@ class Provider(ABC):
             self.command = LinuxCommand()
 
     def check(self):
-        pass
-
-    def dependencies(self):
         pass
 
     def install(self):

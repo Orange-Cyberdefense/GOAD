@@ -25,7 +25,7 @@ class Config:
             if args.provider:
                 self.set(PROVIDER, args.provider)
             if args.method:
-                self.set(PROVIDING_METHOD, args.provider)
+                self.set(PROVISIONER, args.provider)
             # if args.extensions:
             #     for extension in args.extensions:
             #         lab_extensions_key = self.current_lab() + '-extensions'
@@ -39,20 +39,3 @@ class Config:
     def set(self, key, value, section='default'):
         return self.config.set(section, key, value)
 
-    def current_provider(self):
-        return self.get(PROVIDER)
-
-    def current_method(self):
-        return self.get(PROVIDING_METHOD)
-
-    def show_config(self):
-        for key in self.config.sections():
-            Log.success(f'*** {key} ***')
-            for param in self.config[key]:
-                config_value = str(self.config[key][param])
-                if config_value == 'true':
-                    config_value = f'[green]{config_value}[/green]'
-                elif config_value == 'false':
-                    config_value = f'[red]{config_value}[/red]'
-                Log.info(f'{param} [white]'.ljust(48, '.') + f'[/white] {config_value}')
-            print()

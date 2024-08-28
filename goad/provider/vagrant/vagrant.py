@@ -7,9 +7,6 @@ class VagrantProvider(Provider):
     def check(self):
         self.command.check_vagrant()
 
-    def dependencies(self):
-        pass
-
     def install(self):
         self.command.run_vagrant(['up'], self.path)
 
