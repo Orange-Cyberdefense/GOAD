@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Install git and python3
+# Install git and python3
 sudo apt-get update
 sudo apt-get install -y git python3-venv python3-pip
 

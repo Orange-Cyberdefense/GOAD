@@ -1,6 +1,7 @@
+rich
+# Ansible
 ansible_runner
 ansible-core==2.12.6
-rich
 pywinrm
 # AZURE
 azure-identity
