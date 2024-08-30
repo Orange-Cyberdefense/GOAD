@@ -3,6 +3,8 @@
   <br>
 </div>
 
+**INSTABLE VERSION NOT READY, DO NOT USE**
+
 ## Description
 GOAD is a pentest active directory LAB project.
 The purpose of this lab is to give pentesters a vulnerable Active directory environment ready to use to practice usual attack techniques.
