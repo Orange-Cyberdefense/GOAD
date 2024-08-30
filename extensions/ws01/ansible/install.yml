@@ -1,0 +1,26 @@
+---
+- import_playbook: "data.yml"
+  vars:
+    data_path: "../../../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+- name: prepare workstation
+  hosts: ws01
+  roles:
+    # build.yml
+    - { role: 'common', tags: 'common', http_proxy: "{{enable_http_proxy}}" }
+    - { role: 'settings/keyboard', tags: 'keyboard', layouts: "{{keyboard_layouts}}" }
+    # ad-servers.yml
+    - { role: 'settings/admin_password', tags: 'admin_password' }
+    - { role: 'settings/hostname', tags: 'hostname' }
+    # ad-members.yml : enroll ws01
+    - { role: 'commonwkstn', tags: 'workstation' }
+    # ad-relations.yml : domain group and users local permissions
+    - { role: "settings/adjust_rights", tags: 'adjust_rights' }
+    - { role: "settings/user_rights", tags: 'adjust_rights' }
+  vars:
+    local_admin_password: "{{lab_ws01_extension.hosts[dict_key].local_admin_password}}"
+    hostname: "{{lab_ws01_extension.hosts[dict_key].hostname}}"
+    member_domain: "{{lab_ws01_extension.hosts[dict_key].domain}}"
+    domain_password: "{{lab.domains[member_domain].domain_password}}"
+    local_groups: "{{lab_ws01_extension.hosts[dict_key].local_groups  | default({}) }}"

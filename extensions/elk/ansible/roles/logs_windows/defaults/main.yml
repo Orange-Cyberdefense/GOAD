@@ -1,0 +1,12 @@
+
+sysmon_download_url_base: "https://download.sysinternals.com/files"
+sysmon_install_location: "c:\\sysmon"
+sysmon_download_file: Sysmon
+file_ext: .zip
+sysmon_config_url: "https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml"
+
+winlogbeat_service:
+  install_path_64: "C:\\Program Files\\Elastic\\winlogbeat"
+  install_path_32: "C:\\Program Files (x86)\\Elastic\\winlogbeat"
+  version: "7.17.6"
+  download: true

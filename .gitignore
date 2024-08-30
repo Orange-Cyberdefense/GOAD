@@ -25,5 +25,6 @@ ansible/private_data_dir/artifacts/
 ad/MINILAB
 ad/*/providers/*/ssh_keys/*id_rsa*
 ad/*/providers/*/ssh_keys/*.pub
+ad/*/providers/*/extensions/*.rb
 __pycache__/
 *.pyc

@@ -1,0 +1,18 @@
+---
+- name: "Read data files"
+  hosts: myextension
+  connection: local
+  vars_files:
+    - "{{data_path}}/config.json"
+    - "../data/config.json"
+  tasks:
+    - name: save the Json data to a Variable as a Fact
+      set_fact:
+        lab: "{{lab}}"
+        cacheable: yes
+      run_once: true
+    - name: save the extension Json data to a Variable as a Fact
+      set_fact:
+        lab_extension: "{{lab_extension}}"
+        cacheable: yes
+      run_once: true

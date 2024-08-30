@@ -1,0 +1,67 @@
+---
+# from https://github.com/j91321/ansible-role-winlogbeat
+- name: Create 64-bit install directory
+  win_file:
+    path: "{{ winlogbeat_service.install_path_64 }}"
+    state: directory
+
+- name: Check if winlogbeat service is installed
+  win_service:
+    name: winlogbeat
+  register: winlogbeat_installed
+
+- name: Check if winlogbeat is using current version
+  win_stat:
+    path: "{{ winlogbeat_service.install_path_64 }}\\winlogbeat-{{ winlogbeat_service.version }}-windows-x86_64"
+  register: winlogbeat_folder
+
+- name: Copy winlogbeat uninstall script
+  win_copy:
+    src: files/uninstall-service-winlogbeat.ps1
+    dest: "{{ winlogbeat_service.install_path_64 }}\\uninstall-service-winlogbeat.ps1"
+    force: yes
+  when: winlogbeat_installed.exists and not winlogbeat_folder.stat.exists
+
+- name: Uninstall winlogbeat
+  win_shell: .\uninstall-service-winlogbeat.ps1
+  args:
+    chdir: "{{ winlogbeat_service.install_path_64 }}"
+  when: winlogbeat_installed.exists and not winlogbeat_folder.stat.exists
+
+- name: Download winlogbeat
+  win_get_url:
+    url: "https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-{{ winlogbeat_service.version }}-windows-x86_64.zip"
+    dest: "{{ winlogbeat_service.install_path_64 }}\\winlogbeat.zip"
+  when: winlogbeat_service.download and not winlogbeat_folder.stat.exists
+
+- name: Copy winlogbeat
+  win_copy:
+    src: "files/winlogbeat-{{ winlogbeat_service.version }}-windows-x86_64.zip"
+    dest: "{{ winlogbeat_service.install_path_64 }}\\winlogbeat.zip"
+  when: not winlogbeat_service.download and not winlogbeat_folder.stat.exists
+
+- name: Unzip winlogbeat
+  win_unzip:
+    src: "{{ winlogbeat_service.install_path_64 }}\\winlogbeat.zip"
+    dest: "{{ winlogbeat_service.install_path_64 }}\\"
+    delete_archive: yes
+  when: not winlogbeat_folder.stat.exists
+
+- name: Configure winlogbeat
+  win_template:
+    src: winlogbeat.yml.j2
+    dest: "{{ winlogbeat_service.install_path_64 }}\\winlogbeat-{{ winlogbeat_service.version }}-windows-x86_64\\winlogbeat.yml"
+  notify: restart-winlogbeat
+
+- name: Install winlogbeat
+  win_shell: .\install-service-winlogbeat.ps1
+  args:
+    chdir: "{{ winlogbeat_service.install_path_64 }}\\winlogbeat-{{ winlogbeat_service.version }}-windows-x86_64\\"
+  when: not winlogbeat_folder.stat.exists
+  notify: restart-winlogbeat
+
+- name: Remove other winlogbeat installations
+  win_shell: |
+    $version="{{ winlogbeat_service.version }}"
+    Get-ChildItem -Path "{{ winlogbeat_service.install_path_64 }}" | Where-Object {$_.Name -CNotMatch $version} | Remove-Item -Recurse
+  when: not winlogbeat_folder.stat.exists
