@@ -34,11 +34,17 @@ def print_menu(lab_manager):
     print_menu_entry('check', 'check dependencies for install')
     print_menu_entry('install', 'launch install (provide + provision_lab)')
 
-    print_menu_title('Manage commands')
+    print_menu_title('Manage Lab commands')
     print_menu_entry('status', 'show current status')
     print_menu_entry('start', 'start lab')
     print_menu_entry('stop', 'stop lab')
     print_menu_entry('destroy', 'destroy lab')
+
+    print_menu_title('Manage one vm commands')
+    print_menu_entry('start_vm <vm_name>', 'start selected virtual machine')
+    print_menu_entry('stop_vm <vm_name>', 'stop selected virtual machine')
+    print_menu_entry('restart_vm <vm_name>', 'restart selected virtual machine')
+    print_menu_entry('destroy_vm <vm_name>', 'destroy selected virtual machine')
 
     print_menu_title('Configuration')
     print_menu_entry('show_config', 'show current configuration')
@@ -59,5 +65,10 @@ def print_menu(lab_manager):
     print_menu_entry('provision_lab', 'run all the current lab ansible playbooks')
     print_menu_entry('provision_lab_from <playbook>', 'run all the current lab ansible playbooks from specific playbook to the end')
 
+    print_menu_title('Extensions')
+    print_menu_entry('list_extensions', 'list extensions')
+    print_menu_entry('install_extension <extension>', 'install extension')
+    print_menu_entry('provision_extension <extension>', 'provision extension')
+
     print_menu_title('Global commands')
-    print_menu_entry('show_providers_table', 'show all labs and availble providers')
+    print_menu_entry('show_labs_providers', 'show all labs and available providers')

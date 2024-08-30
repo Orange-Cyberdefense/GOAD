@@ -4,14 +4,13 @@ import yaml
 from goad.utils import *
 from goad.log import Log
 from goad.provisioner.provisioner import Provisioner
+from goad.extension import Extension
 
 
 class Ansible(Provisioner):
 
-    @staticmethod
-    def get_inventory(lab_name, provider_name):
+    def _get_lab_inventory(self, lab_name, provider_name):
         inventory = []
-        Log.info('Loading inventory')
         # Lab inventory
         lab_inventory = get_lab_inventory_path(lab_name)
         if os.path.isfile(lab_inventory):
@@ -22,15 +21,25 @@ class Ansible(Provisioner):
         if os.path.isfile(provider_inventory):
             inventory.append(provider_inventory)
             Log.success(f'Provider inventory : {provider_inventory} file found')
+        return inventory
+
+    def _get_global_inventory(self):
         # Global inventory
         global_inventory = get_global_inventory_path()
         if os.path.isfile(global_inventory):
-            inventory.append(global_inventory)
             Log.success(f'Global inventory : {global_inventory} file found')
+            return global_inventory
+        return None
+
+    def get_inventory(self, lab_name, provider_name):
+        Log.info('Loading inventory')
+        inventory = self._get_lab_inventory(lab_name, provider_name)
+        global_inventory = self._get_global_inventory()
+        if global_inventory is not None:
+            inventory.append(global_inventory)
         return inventory
 
-    @staticmethod
-    def get_playbook_list(lab_name):
+    def get_playbook_list(self, lab_name):
         Log.info('Loading playbook list')
         playbook_organisation_file = get_playbooks_lab_config()
         playbook_list = []
@@ -65,6 +74,26 @@ class Ansible(Provisioner):
             provision_result = self.run_playbook(playbook, inventory)
         return provision_result
 
+    def run_extension(self, extension, install=True):
+        inventory = self._get_lab_inventory(self.lab_name, self.provider_name)
+
+        extension_inventory = extension.get_inventory(self.provider_name)
+        if extension_inventory is not None:
+            inventory += extension_inventory
+
+        global_inventory = self._get_global_inventory()
+        if global_inventory is not None:
+            inventory.append(global_inventory)
+
+        playbook = extension.get_playbook(install)
+        extension_ansible_path = extension.get_ansible_path()
+
+        provision_result = self.run_playbook(playbook, inventory, playbook_path=extension_ansible_path)
+        if not provision_result:
+            Log.error(f'Something wrong during the provisioning task : {playbook}')
+            return False
+        return provision_result
+
     def run_from(self, task):
         inventory = self.get_inventory(self.lab_name, self.provider_name)
         playbooks = self.get_playbook_list(self.lab_name)
@@ -89,9 +118,6 @@ class Ansible(Provisioner):
                     return False
         return True
 
-    def run_playbook(self, playbook, inventories, tries=3, timeout=30):
+    def run_playbook(self, playbook, inventories, tries=3, timeout=30, playbook_path=None):
         # abstract
         pass
-
-
-

@@ -15,43 +15,17 @@ boxes = [
   { :name => "GOAD-SRV03", :ip => "192.168.56.23", :box => "StefanScherer/windows_2016", :box_version => "2019.02.14", :os => "windows"}
 ]
 
-if ENV.has_key?('GOAD_SELECTED_EXTENSIONS') 
-  if ENV['GOAD_SELECTED_EXTENSIONS'].include? "workstation"
-    boxes.append(
-      { :name => "GOAD-WS01", :ip => "192.168.56.30", :box => "mayfly/windows10", :os => "windows"}
-    )
-  end
-
-  if ENV['GOAD_SELECTED_EXTENSIONS'].include? "elk"
-    boxes.append(
-      { :name => "GOAD-ELK", :ip => "192.168.56.50", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [
-        {:guest => 22, :host => 2210, :id => "ssh"} ]
-      }
-    )
-  end
-
-  if ENV['GOAD_SELECTED_EXTENSIONS'].include? "wazuh"
-    boxes.append(
-      { :name => "GOAD-WAZUH", :ip => "192.168.56.51", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [
-        {:guest => 22, :host => 2210, :id => "ssh"} ]
-      }
-    )
-  end
-
-  if ENV['GOAD_SELECTED_EXTENSIONS'].include? "guacamole"
-    boxes.append(
-      { :name => "GOAD-GUACAMOLE", :ip => "192.168.56.100", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [
-        {:guest => 22, :host => 2210, :id => "ssh"} ]
-      }
-    )
-  end
-
-  if ENV['GOAD_SELECTED_EXTENSIONS'].include? "attackbox"
-    boxes.append(
-      { :name => "GOAD-ATTACK", :ip => "192.168.56.99", :box => "bento/ubuntu-22.04", :os => "linux", :forwarded_port => [
-        {:guest => 22, :host => 2210, :id => "ssh"} ]
-      }
-    )
+# Load extension files if exist
+extension_path = "./extensions"
+if File.directory?(extension_path)
+  for extension_file in Dir.entries(extension_path)
+    if extension_file.end_with?('rb')
+        extension_function = extension_file[0, extension_file.length - 3]
+        # load every file finishing by .rb in the extension folder
+        load "#{extension_path}/#{extension_file}"
+        # call extension function
+        boxes = send(extension_function, boxes)
+    end
   end
 end
 
@@ -82,7 +56,7 @@ end
 
   boxes.each do |box|
     config.vm.define box[:name] do |target|
-      # BOX
+      # BOX
       target.vm.provider "virtualbox" do |v|
         v.name = box[:name]
         v.customize ["modifyvm", :id, "--groups", "/GOAD"]
@@ -106,7 +80,7 @@ end
         target.vm.provision :shell, :path => "../../../../vagrant/Install-WMF3Hotfix.ps1", privileged: false
         target.vm.provision :shell, :path => "../../../../vagrant/ConfigureRemotingForAnsible.ps1", privileged: false
 
-        # fix ip for vmware
+        # fix ip for vmware
         if ENV['VAGRANT_DEFAULT_PROVIDER'] == "vmware_desktop"
           target.vm.provision :shell, :path => "../../../../vagrant/fix_ip.ps1", privileged: false, args: box[:ip]
         end

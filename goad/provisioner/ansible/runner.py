@@ -9,7 +9,9 @@ from goad.provisioner.ansible.ansible import Ansible
 class LocalAnsibleProvisionerEmbed(Ansible):
     provisioner_name = PROVISIONING_RUNNER
 
-    def run_playbook(self, playbook, inventories, tries=3, timeout=30):
+    def run_playbook(self, playbook, inventories, tries=3, timeout=30, playbook_path=None):
+        if playbook_path is None:
+            playbook_path = self.path
         Log.info(f'Run playbook : {playbook} with inventory file(s) : {", ".join(inventories)}')
         Log.cmd(f'ansible-playbook -i {" -i ".join(inventories)} {playbook}')
 
@@ -19,7 +21,7 @@ class LocalAnsibleProvisionerEmbed(Ansible):
         while not run_complete:
             nb_try += 1
             runner_result = ansible_runner.run(private_data_dir=self.path + 'private_data_dir',
-                                               playbook=self.path + playbook,
+                                               playbook=playbook_path + playbook,
                                                inventory=inventories)
             if len(runner_result.stats['ok'].keys()) >= 1:
                 run_complete = True

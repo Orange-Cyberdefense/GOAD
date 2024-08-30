@@ -36,6 +36,8 @@ VIRTUALBOX_ALLOWED_PROVISIONER = [PROVISIONING_LOCAL, PROVISIONING_RUNNER, PROVI
 project_path = os.path.normpath(os.path.dirname(os.path.abspath(__file__)) + os.path.sep + '..')
 
 
+# TODO : create a class PathManager and use it
+
 def get_project_path():
     return project_path + os.path.sep
 
@@ -84,8 +86,29 @@ def get_playbooks_lab_config():
     return project_path + os.path.sep + 'playbooks.yml'
 
 
-def get_extensions_path(lab_name):
-    return project_path + os.path.sep + 'ad' + os.path.sep + lab_name + os.path.sep + 'extensions'
+def get_extensions_path():
+    return project_path + os.path.sep + 'extensions'
+
+
+# extensions paths
+def get_extension_providers_path(extension_name):
+    return project_path + os.path.sep + 'extensions' + os.path.sep + extension_name + os.path.sep + 'providers'
+
+
+def get_extension_ansible_path(extension_name):
+    return project_path + os.path.sep + 'extensions' + os.path.sep + extension_name + os.path.sep + 'ansible'
+
+
+def get_extension_inventory_path(extension_name):
+    return get_extension_ansible_path(extension_name) + os.path.sep + 'inventory'
+
+
+def get_extension_provider_path(extension_name, provider_name):
+    return get_extension_providers_path(extension_name) + os.path.sep + provider_name + os.path.sep
+
+
+def get_extension_provider_inventory_path(extension_name, provider_name):
+    return get_extension_providers_path(extension_name) + os.path.sep + provider_name + os.path.sep + 'inventory'
 
 
 class SingletonMeta(type):
@@ -100,4 +123,7 @@ class SingletonMeta(type):
 class Utils:
     @staticmethod
     def list_folders(path):
-        return [p.name for p in Path(path).iterdir() if p.is_dir()]
+        if os.path.isdir(path):
+            return [p.name for p in Path(path).iterdir() if p.is_dir()]
+        else:
+            return []

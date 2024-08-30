@@ -16,6 +16,7 @@ class AzureProvider(TerraformProvider):
     provider_name = AZURE
     default_provisioner = PROVISIONING_REMOTE
     allowed_provisioners = [PROVISIONING_REMOTE]
+    use_jumpbox = True
 
     def __init__(self, lab_name):
         super().__init__(lab_name)
@@ -174,6 +175,18 @@ class AzureProvider(TerraformProvider):
         except Exception as e:
             Log.error('Error stoping the lab vms')
             return False
+
+    def start_vm(self, vm_name):
+        # TODO
+        pass
+
+    def stop_vm(self, vm_name):
+        # TODO
+        pass
+
+    def destroy_vm(self, vm_name):
+        # TODO
+        pass
 
     def _get_az_jumpbox_ip(self):
         try:

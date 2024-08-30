@@ -29,7 +29,12 @@ class RemoteAnsibleProvisioner(Ansible):
         except JumpBoxInitFailed as e:
             Log.error('Jumpbox retrieve connection info failed, abort')
 
-    def run_playbook(self, playbook, inventories, tries=3, timeout=30):
+    def run_playbook(self, playbook, inventories, tries=3, timeout=30, playbook_path=None):
+        if playbook_path is None:
+            playbook_path = self.remote_project_path + '/ansible/'
+        else:
+            playbook_path = transform_path(playbook_path, self.remote_project_path)
+
         remote_inventories = []
         for inventory in inventories:
             remote_inventories.append(transform_path(inventory, self.remote_project_path))
@@ -42,7 +47,7 @@ class RemoteAnsibleProvisioner(Ansible):
         nb_try = 0
         while not run_complete:
             nb_try += 1
-            run_complete = self.jumpbox.run_command(command, self.remote_project_path + '/ansible/')
+            run_complete = self.jumpbox.run_command(command, playbook_path)
 
             if not run_complete and nb_try > tries:
                 Log.error('3 fails abort.')

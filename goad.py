@@ -56,11 +56,32 @@ class Goad(cmd.Cmd):
     def do_start(self, arg):
         self.lab_manager.get_current_provider().start()
 
+    def do_start_vm(self, arg):
+        if arg == '':
+            Log.error('missing virtual machine name')
+            Log.info('start_vm <vm>')
+        else:
+            self.lab_manager.get_current_provider().start_vm(arg)
+
     def do_stop(self, arg):
         self.lab_manager.get_current_provider().stop()
 
+    def do_stop_vm(self, arg):
+        if arg == '':
+            Log.error('missing virtual machine name')
+            Log.info('stop_vm <vm>')
+        else:
+            self.lab_manager.get_current_provider().stop_vm(arg)
+
     def do_destroy(self, arg):
         self.lab_manager.get_current_provider().destroy()
+
+    def do_destroy_vm(self, arg):
+        if arg == '':
+            Log.error('missing virtual machine name')
+            Log.info('destroy_vm <vm>')
+        else:
+            self.lab_manager.get_current_provider().destroy_vm(arg)
 
     def do_provide(self, arg):
         self.lab_manager.get_current_provider().install()
@@ -89,7 +110,7 @@ class Goad(cmd.Cmd):
         show_current_config(self.lab_manager)
 
     def do_ssh_jumpbox(self, arg):
-        if self.lab_manager.get_current_provider_name() == AZURE or self.lab_manager.get_current_provider_name() == AWS:
+        if self.lab_manager.get_current_provider().use_jumpbox:
             try:
                 jump_box = JumpBox(self.lab_manager.get_current_lab_name(), self.lab_manager.get_current_provider())
                 jump_box.ssh()
@@ -156,7 +177,34 @@ class Goad(cmd.Cmd):
             except ValueError as err:
                 Log.error(err.args[0])
 
-    def do_show_providers_table(self, arg):
+    def do_list_extensions(self, arg):
+        print(self.lab_manager.get_current_lab().get_list_extensions())
+
+    def do_install_extension(self, arg):
+        if arg == '':
+            Log.error('missing extension argument')
+            Log.info(f'provision_extension <extension>')
+        else:
+            extension_name = arg
+            extension = self.lab_manager.get_current_lab().get_extension(extension_name)
+            if extension is not None:
+                self.lab_manager.get_current_provider().install_extension(extension)
+            else:
+                Log.error(f'extension {extension_name} not found abort')
+
+    def do_provision_extension(self, arg):
+        if arg == '':
+            Log.error('missing extension argument')
+            Log.info(f'provision_extension <extension>')
+        else:
+            extension_name = arg
+            extension = self.lab_manager.get_current_lab().get_extension(extension_name)
+            if extension is not None:
+                self.lab_manager.get_current_provisioner().run_extension(extension)
+            else:
+                Log.error(f'extension {extension_name} not found abort')
+
+    def do_show_labs_providers(self, arg):
         show_labs_providers_table(self.lab_manager.get_labs())
 
     def do_show_list_providers(self, arg):

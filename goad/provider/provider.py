@@ -5,13 +5,14 @@ import platform
 from goad.command.linux import LinuxCommand
 from goad.command.windows import WindowsCommand
 from goad.utils import *
-
+from goad.log import Log
 
 class Provider(ABC):
     lab_name = ''
     provider_name = None
     default_provisioner = PROVISIONING_LOCAL
     allowed_provisioners = [PROVISIONING_LOCAL, PROVISIONING_RUNNER, PROVISIONING_DOCKER, PROVISIONING_REMOTE]
+    use_jumpbox = False
 
     def __init__(self, lab_name):
         self.lab_name = lab_name
@@ -38,3 +39,22 @@ class Provider(ABC):
 
     def status(self):
         pass
+
+    def start_vm(self, vm_name):
+        pass
+
+    def stop_vm(self, vm_name):
+        pass
+
+    def destroy_vm(self, vm_name):
+        pass
+
+    def restart_vm(self, vm_name):
+        self.stop_vm(vm_name)
+        self.start_vm(vm_name)
+
+    def install_extension(self, extension):
+        if self.provider_name not in extension.providers_name_list:
+            Log.error('Provider not available for this extension')
+            return None
+

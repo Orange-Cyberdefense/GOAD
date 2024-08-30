@@ -6,6 +6,7 @@ class AwsProvider(TerraformProvider):
     provider_name = AWS
     default_provisioner = PROVISIONING_REMOTE
     allowed_provisioners = [PROVISIONING_REMOTE]
+    use_jumpbox = True
 
     def __init__(self, lab_name):
         super().__init__(lab_name)

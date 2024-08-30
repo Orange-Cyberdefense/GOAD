@@ -1,4 +1,4 @@
-from goad.config import Config
+from goad.extension import Extension
 from goad.utils import *
 from goad.log import Log
 from goad.exceptions import *
@@ -60,8 +60,8 @@ class Lab:
                 self.providers[provider_name] = provider
 
     def _load_extensions(self, lab_name):
-        for extension_name in Utils.list_folders(get_extensions_path(lab_name)):
-            self.extensions[extension_name] = Extension(lab_name, extension_name)
+        for extension_name in Utils.list_folders(get_extensions_path()):
+            self.extensions[extension_name] = Extension(extension_name)
 
     def get_provider(self, provider_name):
         if provider_name not in self.providers.keys():
@@ -72,15 +72,10 @@ class Lab:
         return next(iter(self.providers))
 
     def get_extension(self, extension_name):
-        return self.providers[extension_name]
+        if extension_name in self.extensions.keys():
+            return self.extensions[extension_name]
+        else:
+            return None
 
-
-class Extension:
-
-    def __init__(self, lab_name, extension_name):
-        self.lab_name = lab_name
-        self.name = extension_name
-        self._load_extension_providers()
-
-    def _load_extension_providers(self):
-        pass
+    def get_list_extensions(self):
+        return list(self.extensions.keys())
