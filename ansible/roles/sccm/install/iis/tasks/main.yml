@@ -1,0 +1,61 @@
+# Step 6 – Install Web Server IIS (Prerequisites)
+# --------------------------------------------------------------
+
+- name: create directory to store the install files
+  ansible.windows.win_file:
+    path: C:\setup
+    state: directory
+
+- name: create directory to store the install files
+  ansible.windows.win_file:
+    path: C:\setup\net3.5
+    state: directory
+
+- name: install features Remote Differential Compression feature and BITS
+  win_feature:
+    name: 
+      - RDC
+      - BITS
+  register: win_feature
+
+- name: Reboot if installing windows feature requires it
+  ansible.windows.win_reboot:
+  when: win_feature.reboot_required
+
+- name: Enable update service
+  ansible.windows.win_service:
+    name: Windows Update
+    state: started
+    start_mode: auto
+
+- name: install .NET Framework 3.5 with DISM
+  win_shell: DISM /Online /Enable-Feature /FeatureName:NetFx3 /All
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+
+- name: install IIS feature and other components
+  win_feature:
+    name:
+      - Web-Server
+      - Web-Dyn-Compression
+      - Web-Http-Redirect
+      - Web-Log-Libraries
+      - Web-Request-Monitor
+      - Web-Http-Tracing
+      - Web-Windows-Auth
+      - Web-App-Dev
+      - Web-Net-Ext
+      - Web-Net-Ext45
+      - Web-Asp-Net
+      - Web-Asp-Net45
+      - Web-Mgmt-Tools
+      - Web-Mgmt-Compat
+      - Web-WMI
+  register: win_feature_iis
+
+- name: Reboot if installing windows feature requires it
+  ansible.windows.win_reboot:
+  when: win_feature_iis.reboot_required

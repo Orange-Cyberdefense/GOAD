@@ -250,3 +250,88 @@ The primary issue for this error is that the provider you're using
 is not properly configured. This is very rarely a Vagrant issue.
 ```
 Solution : install vagrant from the hashicorp repo
+
+## proxmox: error creating VM: 403 Permission check failed (/sdn/zones/localnetwork/vmbr3/10, SDN.Use)
+
+The error may look similar to below:
+```
+==> proxmox-iso.windows: Error creating VM: error creating VM: 403 Permission check failed (/sdn/zones/localnetwork/vmbr3/10, SDN.Use), 
+error status: {"data":null} (params: ......
+```
+
+It may be fixed by delegating the SDN.Use privilege to the packer user
+```
+pveum role modify Packer -privs "VM.Config.Disk VM.Config.CPU VM.Config.Memory Datastore.AllocateTemplate Datastore.Audit Datastore.AllocateSpace Sys.Modify VM.Config.Options VM.Allocate VM.Audit VM.Console VM.Config.CDROM VM.Config.Cloudinit VM.Config.Network VM.PowerMgmt VM.Config.HWType VM.Monitor SDN.Use"
+```
+
+## proxmox: ==> proxmox-iso.windows: Error creating VM: error creating VM: unable to create VM 103 - unsupported format 'qcow2' 
+
+The error may look similar to below:
+```
+root@goadprovisioning:~/GOAD/packer/proxmox# packer build -var-file=windows_server2019_proxmox_cloudinit.pkvars.hcl .
+proxmox-iso.windows: output will be in this color.
+
+==> proxmox-iso.windows: Retrieving additional ISO
+==> proxmox-iso.windows: Trying ./iso/Autounattend_winserver2019_cloudinit.iso
+==> proxmox-iso.windows: Trying ./iso/Autounattend_winserver2019_cloudinit.iso?checksum=sha256%3A43857cb780de3a58696285f644034499d4b29608b3c511feb27e315832b696c4
+==> proxmox-iso.windows: ./iso/Autounattend_winserver2019_cloudinit.iso?checksum=sha256%3A43857cb780de3a58696285f644034499d4b29608b3c511feb27e315832b696c4 => /root/GOAD/packer/proxmox/iso/Autounattend_winserver2019_cloudinit.iso
+    proxmox-iso.windows: Uploaded ISO to local:iso/Autounattend_winserver2019_cloudinit.iso
+==> proxmox-iso.windows: Creating VM
+==> proxmox-iso.windows: No VM ID given, getting next free from Proxmox
+==> proxmox-iso.windows: Error creating VM: error creating VM: unable to create VM 103 - unsupported format 'qcow2' at /usr/share/perl5/PVE/Storage/LvmThinPlugin.pm line 87., error status:  (params: map[agent:1 args: boot: cores:2 cpu:kvm64 description:Packer ephemeral build VM hotplug: ide2:local:iso/windows_server_2019.iso,media=cdrom kvm:true machine: memory:4096 name:WinServer2019x64-cloudinit-qcow2 net0:virtio=5E:5D:24:C4:0F:DA,bridge=vmbr3,tag=10 numa:false onboot:false ostype:win10 pool:GOAD sata0:vms:40,discard=ignore,format=qcow2 scsihw:lsi sockets:1 startup: tags: vmid:103])......
+```
+
+Filesystems such as ZFS (and others) do not support qcow2. From my reading the best approach is to use an ext4 filesystem and modify `config.auto.pkrvars.hcl` with the newly created ext4 volume.
+
+```
+root@goadprovisioning:~/GOAD/packer/proxmox# vi config.auto.pkrvars.hcl
+...
+proxmox_vm_storage      = "ext4-qcow2"
+...
+root@goadprovisioning:~/GOAD/packer/proxmox# packer build -var-file=windows_server2019_proxmox_cloudinit.pkvars.hcl .
+proxmox-iso.windows: output will be in this color.
+
+==> proxmox-iso.windows: Retrieving additional ISO
+==> proxmox-iso.windows: Trying ./iso/Autounattend_winserver2019_cloudinit.iso
+==> proxmox-iso.windows: Trying ./iso/Autounattend_winserver2019_cloudinit.iso?checksum=sha256%3A43857cb780de3a58696285f644034499d4b29608b3c511feb27e315832b696c4
+==> proxmox-iso.windows: ./iso/Autounattend_winserver2019_cloudinit.iso?checksum=sha256%3A43857cb780de3a58696285f644034499d4b29608b3c511feb27e315832b696c4 => /root/GOAD/packer/proxmox/iso/Autounattend_winserver2019_cloudinit.iso
+    proxmox-iso.windows: Uploaded ISO to local:iso/Autounattend_winserver2019_cloudinit.iso
+==> proxmox-iso.windows: Creating VM
+==> proxmox-iso.windows: No VM ID given, getting next free from Proxmox
+==> proxmox-iso.windows: Starting VM
+```
+
+- another solution is to switch to raw : `proxmox_vm_storage      = "raw"`
+
+## proxmox - packer error creating vm :  volume 'local:iso/windows_XXX.iso' does not exist
+
+```
+==> proxmox-iso.windows: Error creating VM: error creating VM: unable to create VM 116 - volume 'local:iso/windows_server2019_XXX_en-us.iso' does not exist, error status:  (params: map[agent:1 args: boot: cores:2 cpu:kvm64 description:Packer ephemeral build VM hotplug
+: ide2:local:iso/windows_server2019_XXX_en-us.iso,media=cdrom kvm:true machine: memory:4096 name:WinServer2019x64-cloudinit-qcow2-uptodate net0:virtio=DA:CB:EB:85:08:0E,bridge=vmbr3,tag=10,firewall=false onboot:false ostype:win10 pool:Templates sata0:local:80,format=q
+cow2 scsihw:lsi sockets:1 startup: tags: vmid:116])   
+```
+
+verify your iso files inside proxmox and be sure the iso you want to use exist in proxmox
+
+## ansible adapter name error 
+
+```
+No MSFT_NetAdapter objects found with property 'Name' equal to 'Ethernet'
+
+or 
+
+No MSFT_NetAdapter objects found with property 'Name' equal to 'Ethernet2 '
+```
+
+- connect to the vm and run ipconfig, verify the adapter name are the same as described in the inventory file.
+- if not change them to match the inventory name in the vm.
+
+## unreachable - proxmox, ansible
+```
+fatal: [dc01]: UNREACHABLE! => {"changed": false, "msg": "ssl: HTTPSConnectionPool(host='192.168.10.40', port=5986): Max retries exceeded with url: /wsman
+```
+
+- may be the vm is not well ready after the terraform creation. retry the install.
+- if you still get the error connect to the vm and verify the static ip is corresponding with the one expect.
+
+

@@ -1,0 +1,13 @@
+; LAB SCENARIO CONFIGURATION -----------------------------
+[domain]
+dc01
+ws01
+[dc]
+dc01
+[workstation]
+ws01
+[parent_dc]
+dc01
+[update]
+dc01
+ws01

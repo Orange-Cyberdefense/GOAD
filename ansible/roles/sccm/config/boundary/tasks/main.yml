@@ -1,0 +1,38 @@
+- name: Create boundary
+  sccm_boundary:
+    name: "ADSiteBoundary01"
+    type: "ADSite"
+    value: "Default-First-Site-Name"
+    site_code: "{{site_code}}"
+    server: "{{sccm_server}}.{{domain}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+    ansible_become_flags: logon_flags=
+
+- name: Create boundary group
+  sccm_boundary_group:
+    name: "BoundaryGroup01"
+    server: "{{sccm_server}}.{{domain}}"
+    site_code: "{{site_code}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+    ansible_become_flags: logon_flags=
+
+- name: Add boundary to boundary group
+  sccm_boundary_to_boundarygroup:
+    boundary_name: "ADSiteBoundary01"
+    boundary_group: "BoundaryGroup01"
+    site_code: "{{site_code}}"
+    server: "{{sccm_server}}.{{domain}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+    ansible_become_flags: logon_flags=

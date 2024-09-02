@@ -452,7 +452,7 @@
                 "sansa.stark" : {
                     "firstname"   : "Sansa",
                     "surname"     : "Stark",
-                    "password"    : "345etrdfg",
+                    "password"    : "345ertdfg",
                     "city"        : "Winterfell",
                     "description" : "Sansa Stark",
                     "groups"      : ["Stark"],

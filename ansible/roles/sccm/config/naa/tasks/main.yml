@@ -1,0 +1,50 @@
+# script source : https://www.oscc.be/sccm/configmgr/powershell/naa/Set-NAA-using-Powershell-in-CB/
+# error on first try :/
+# "The property 'Values' cannot be found on this object. Verify that the property exists and can be set.",
+- name: Create Configuration Manager user account 
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param ( 
+          [String]
+          $siteCode,
+
+          [String]
+          $sccmFQDN,
+
+          [String]
+          $user
+      )
+      # Step 1 - Import the Configuration Manager module
+      Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
+
+      # Step 2 - make the user account your new Network Access Account
+      $component = gwmi -class SMS_SCI_ClientComp -Namespace "root\sms\site_$($siteCode)"  | Where-Object {$_.ItemName -eq "Software Distribution"}
+      $props = $component.PropLists
+
+      if ($null -eq $props) {
+        $new = [WmiClass] "root\sms\site_$($siteCode):SMS_EmbeddedPropertyList"
+        $embeddedproperylist = $new.CreateInstance()
+        $embeddedproperylist.PropertyListName = "Network Access User Names"
+        $props = @($embeddedproperylist)
+      }
+
+      $prop = $props | where {$_.PropertyListName -eq "Network Access User Names"}
+      $prop.Values = $user
+
+      $component.PropLists = $props
+      $component.Put() | Out-Null
+    parameters:
+      siteCode: "{{site_code}}"
+      sccmFQDN: "{{sccm_server}}.{{domain}}"
+      user: "{{naa_user}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"

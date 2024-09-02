@@ -1,0 +1,41 @@
+# https://www.prajwaldesai.com/install-sccm-distribution-point-using-powershell-script/
+- name: Create PXE config 
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $siteCode,
+
+          [String]
+          $sccmFQDN,
+
+          [String]
+          $pass
+      )
+      Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
+
+      #Define PXE Password
+      $PXEpass = convertto-securestring -string $pass -asplaintext -force
+      # get distribution point
+      $DP = Get-CMDistributionPoint -SiteCode $siteCode
+      # Enable PXE with password
+      # Set-CMDistributionPoint -InputObject $DP -EnablePxe $True -PXEpassword $PXEpass -AllowPxeResponse $True -EnableUnknownComputerSupport $True 
+      # without password
+      Set-CMDistributionPoint -InputObject $DP -EnablePxe $True -AllowPxeResponse $True -EnableUnknownComputerSupport $True 
+      #Enable Multicast Feature
+      # Add-CMMulticastServicePoint -SiteSystemServerName $DP -SiteCode $siteCode
+    parameters:
+      siteCode: "{{site_code}}"
+      sccmFQDN: "{{sccm_server}}.{{domain}}"
+      pass: "{{pxe_pass}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"

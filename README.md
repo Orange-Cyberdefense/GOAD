@@ -26,6 +26,13 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 <img alt="GOAD Light" width="600" src="./docs/img/GOAD-Light_schema.png">
 </div>
 
+- [MINILAB](./ad/MINILAB/README.md): 2 vms, 1 forst, 1 domain (basic lab with one DC (windows server 2019) and one Workstation (windows 10))
+
+- [SCCM](./ad/SCCM/README.md) : 4 vms, 1 forest, 1 domain, with microsoft configuration manager installed
+<div align="center">
+<img alt="SCCM" width="600" src="./docs/img/SCCMLAB_overview.png">
+</div>
+
 - [NHA](./ad/NHA/README.md) : A challenge with 5 vms and 2 domains. no schema provided, you will have to find out how break it.
 
 ## Requirements
@@ -101,7 +108,7 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 
 - `-a` : ansible only is played during install task (no vagrant or terraform). This is useful if you install and run vagrant on windows and then launch the provisioning from a different computer (example : a kali linux connected to goad network)
 - `-r <ansible_file.yml>` : run only one ansible task (useful to run elk.yml or run only one playbook)
-- `-e` : enable elk in vagrant (example to install elk and play the elk playbook once you finish goad install run : `./goad.sh -t install -l GOAD -p virtualbox -m local -e -r elk.yml`)
+- `-e` : enable elk in vagrant (example to install elk and play the elk playbook once you finish goad install run : `./goad.sh -t install -l GOAD -p virtualbox -m local -e elk -r elk.yml`)
 
 ## Provisioning
 
@@ -163,11 +170,13 @@ This lab use free windows VM only (180 days). After that delay enter a license o
 - [X] Shares with secrets (all, sysvol)
 - [ ] ADCS add vulns
 - [ ] Add Applocker
+- [ ] Add optional EDR install on goad
+- [ ] Add attackbox + guacamole and openvpn creation
 
 ## Road Map for other labs (because these are too heavy for being embedded in goad)
+- [X] Wsus (see SCCM lab)
+- [X] Sccm (see SCCM lab)
 - [ ] Exchange
-- [ ] Wsus
-- [ ] Sccm
 
 ## Lab organization
 

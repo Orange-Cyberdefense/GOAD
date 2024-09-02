@@ -1,0 +1,232 @@
+{
+"lab" : {
+    "hosts" : {
+        "dc01" : {
+            "hostname" : "DC",
+            "type" : "dc",
+            "local_admin_password": "AZERTY*qsdfg",
+            "domain" : "sccm.lab",
+            "path" : "DC=sccm,DC=lab",
+            "local_groups" : {
+                "Administrators" : [
+                    "SCCMLAB\\Domain Admins"
+                ],
+                "Remote Desktop Users" : [
+                    "SCCMLAB\\LocalAdmins"
+                ]
+            },
+            "scripts" : [],
+            "vulns" : ["disable_firewall"]
+        },
+        "srv01" : {
+            "hostname" : "MECM",
+            "type" : "server",
+            "local_admin_password": "NgtI75cKV+Pu",
+            "domain" : "sccm.lab",
+            "path" : "DC=sccm,DC=lab",
+            "local_groups" : {
+                "Administrators" : [
+                    "SCCMLAB\\LocalAdmins",
+                    "SCCMLAB\\SCCM-Admins"
+                ],
+                "Remote Desktop Users" : [
+                    "SCCMLAB\\RDPUsers"
+                ]
+            },
+            "scripts" : [],
+            "vulns" : ["disable_firewall"]
+        },
+        "srv02" : {
+            "hostname" : "MSSQL",
+            "type" : "server",
+            "local_admin_password": "NgtazecKV+Pu",
+            "domain" : "sccm.lab",
+            "path" : "DC=sccm,DC=lab",
+            "local_groups" : {
+                "Administrators" : [
+                    "SCCMLAB\\LocalAdmins",
+                    "SCCMLAB\\sccm-sql",
+                    "SCCMLAB\\MECM$"
+                ],
+                "Remote Desktop Users" : [
+                    "SCCMLAB\\RDPUsers"
+                ]
+            },
+            "scripts" : [],
+            "vulns" : ["disable_firewall"],
+            "mssql":{
+                "sa_password": "Sup1_sa_P@ssw0rd!",
+                "svcaccount" : "sccm-sql",
+                "sysadmins" : [
+                    "SCCMLAB\\administrator",
+                    "SCCMLAB\\sccm-sql",
+                    "SCCMLAB\\LocalAdmins",
+                    "SCCMLAB\\MECM$"
+                ]
+            }
+        },
+        "ws01" : {
+            "hostname" : "CLIENT",
+            "type" : "workstation",
+            "local_admin_password": "EP+xh7Rk6j90",
+            "domain" : "sccm.lab",
+            "path" : "DC=sccm,DC=lab",
+            "local_groups" : {
+                "Administrators" : [
+                    "SCCMLAB\\LocalAdmins",
+                    "SCCMLAB\\eve"
+                ]
+            },
+            "Remote Desktop Users" : [
+                "SCCMLAB\\RDPUsers"
+            ],
+            "scripts" : [],
+            "vulns" : ["disable_firewall"]
+        }
+    },
+    "domains" : {
+        "sccm.lab" : {
+            "dc": "dc01",
+            "domain_password" : "AZERTY*qsdfg",
+            "netbios_name": "SCCMLAB",
+            "sccm": {
+                "site_code": "P01",
+                "sccm_server": "MECM",
+                "sccm_mssql_server": "MSSQL",
+                "clients": ["CLIENT","MECM","MSSQL"],
+                "pxe_pass" : "123456789",
+                "naa_user" : "sccm-naa",
+                "push_account" : "sccm-client-push",
+                "account_da" : "sccm-account-da",
+                "pxe_location" : "LDAP://CN=Computers,DC=sccm,DC=lab",
+                "pxe_admin_pass": "EP+xh7Rk6j90",
+                "admins" : ["SCCMLAB\\SCCM-Admins"]
+            },
+            "laps_path": "OU=Laps,DC=sccm,DC=lab",
+            "organisation_units" : {},
+            "groups" : {
+                "universal" : {},
+                "global" : {
+                    "LocalAdmins" : {
+                        "managed_by" : "bob",
+                        "path" : "CN=Users,DC=sccm,DC=lab"
+                    },
+                    "RDPUsers" : {
+                        "managed_by" : "bob",
+                        "path" : "CN=Users,DC=sccm,DC=lab"
+                    },
+                    "SCCM-Site-Server" : {
+                        "managed_by" : "alice",
+                        "path" : "CN=Users,DC=sccm,DC=lab",
+                        "members" : ["SCCMLAB\\MECM$"]
+                    },
+                    "SCCM-Admins" : {
+                        "managed_by" : "dave",
+                        "path" : "CN=Users,DC=sccm,DC=lab"
+                    },
+                    "SCCM-Managed-Device" : {
+                        "managed_by" : "alice",
+                        "path" : "CN=Users,DC=sccm,DC=lab",
+                        "members" : ["SCCMLAB\\CLIENT$","SCCMLAB\\MECM$","SCCMLAB\\MSSQL$","SCCMLAB\\DC$"]
+                    }
+                },
+                "domainlocal" : {}
+            },
+            "multi_domain_groups_member" : {},
+            "acls" : {},
+            "users" : {
+                "alice" : {
+                    "firstname"   : "alice",
+                    "surname"     : "-",
+                    "password"    : "whiteRabbit",
+                    "city"        : "-",
+                    "description" : "alice",
+                    "groups"      : ["LocalAdmins", "Domain Admins"],
+                    "path"        : "CN=Users,DC=sccm,DC=lab"
+                },
+                "bob" : {
+                    "firstname"   : "bob",
+                    "surname"     : "-",
+                    "password"    : "marley",
+                    "city"        : "-",
+                    "description" : "bob - local admin",
+                    "groups"      : ["LocalAdmins"],
+                    "path"        : "CN=Users,DC=sccm,DC=lab"
+                },
+                "carol" : {
+                    "firstname"   : "carol",
+                    "surname"     : "-",
+                    "password"    : "SCCMftw",
+                    "city"        : "-",
+                    "description" : "carol - low user",
+                    "groups"      : ["RDPUsers"],
+                    "path"        : "CN=Users,DC=sccm,DC=lab"
+                },
+                "dave" : {
+                    "firstname"   : "dave",
+                    "surname"     : "-",
+                    "password"    : "dragon",
+                    "city"        : "-",
+                    "description" : "dave",
+                    "groups"      : ["SCCM-Admins","RDPUsers"],
+                    "path"        : "CN=Users,DC=sccm,DC=lab"
+                },
+                "eve" : {
+                    "firstname"   : "eve",
+                    "surname"     : "-",
+                    "password"    : "iloveyou",
+                    "city"        : "-",
+                    "description" : "eve - admin on client",
+                    "groups"      : ["RDPUsers"],
+                    "path"        : "CN=Users,DC=sccm,DC=lab"
+                },
+                "franck" : {
+                    "firstname"   : "franck",
+                    "surname"     : "-",
+                    "password"    : "rockme",
+                    "city"        : "-",
+                    "description" : "franck - low user",
+                    "groups"      : ["RDPUsers"],
+                    "path"        : "CN=Users,DC=sccm,DC=lab"
+                },
+                "sccm-client-push" : {
+                    "firstname"   : "sccm",
+                    "surname"     : "client-push",
+                    "password"    : "superman",
+                    "city"        : "-",
+                    "description" : "client push account",
+                    "groups"      : ["LocalAdmins"],
+                    "path"        : "CN=Users,DC=sccm,DC=lab"
+                },
+                "sccm-account-da" : {
+                    "firstname"   : "sccm",
+                    "surname"     : "sccm da account",
+                    "password"    : "SCCM_D@-ftw_",
+                    "city"        : "-",
+                    "description" : "sccm account",
+                    "groups"      : ["Domain Admins"],
+                    "path"        : "CN=Users,DC=sccm,DC=lab"
+                },
+                "sccm-naa" : {
+                    "firstname"   : "sccm",
+                    "surname"     : "naa",
+                    "password"    : "123456789",
+                    "city"        : "-",
+                    "description" : "naa account",
+                    "groups"      : [],
+                    "path"        : "CN=Users,DC=sccm,DC=lab"
+                },
+                "sccm-sql" : {
+                    "firstname"   : "sccm",
+                    "surname"     : "sql",
+                    "password"    : "SCCM_SQL_SERVICEACCOUNT",
+                    "city"        : "-",
+                    "description" : "sql service",
+                    "groups"      : [],
+                    "path"        : "CN=Users,DC=sccm,DC=lab",
+                    "spns"        : ["MSSQLSvc/MSSQL.sccm.lab:1433","MSSQLSvc/MSSQL.sccm.lab"]
+                }
+            }
+        }
+    }
+}}

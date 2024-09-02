@@ -12,12 +12,12 @@ JOB=
 PROVIDERS="virtualbox vmware azure proxmox"
 LABS=$(ls -A ad/ |grep -v 'TEMPLATE')
 TASKS="check install start stop status restart destroy disablevagrant enablevagrant"
-ANSIBLE_PLAYBOOKS="edr.yml build.yml ad-servers.yml ad-parent_domain.yml ad-child_domain.yml ad-members.yml ad-trusts.yml ad-data.yml ad-gmsa.yml laps.yml ad-relations.yml adcs.yml ad-acl.yml servers.yml security.yml vulnerabilities.yml reboot.yml elk.yml"
+ANSIBLE_PLAYBOOKS="edr.yml build.yml ad-servers.yml ad-parent_domain.yml ad-child_domain.yml ad-members.yml ad-trusts.yml ad-data.yml ad-gmsa.yml laps.yml ad-relations.yml adcs.yml ad-acl.yml servers.yml security.yml vulnerabilities.yml reboot.yml elk.yml sccm-install.yml sccm-config.yml"
 METHODS="local docker"
 ANSIBLE_ONLY=0
 ANSIBLE_PLAYBOOK=
 GOAD_VAGRANT_OPTIONS=
-
+GOAD_EXTENSIONS="elk"
 
 print_usage() {
   echo "${ERROR} Usage: ./goad.sh -t task -l lab -p provider -m method"
@@ -43,6 +43,10 @@ print_usage() {
   echo "${INFO} -a : to run only ansible on install (optional)";
   echo "${INFO} -r : to run only one ansible playbook (optional)";
   echo "   - example : vulnerabilities.yml";
+  echo "${INFO} -e : to activate extension (separated by coma) (optional)";
+  for extension in $GOAD_EXTENSIONS;  do
+    echo "   - $extension";
+  done
   echo "${INFO} -h : show this help";
   echo
   echo "${OK} example: ./goad.sh -t check -l GOAD -p virtualbox -m local";
@@ -64,7 +68,7 @@ while getopts t:l:p:m:ar:e:h flag
           m) METHOD=${OPTARG};;
           a) ANSIBLE_ONLY=1;;
           r) ANSIBLE_PLAYBOOK=${OPTARG};;
-          e) GOAD_VAGRANT_OPTIONS="$GOAD_VAGRANT_OPTIONS,elk";;
+          e) GOAD_VAGRANT_OPTIONS="$GOAD_VAGRANT_OPTIONS,${OPTARG}";;
           h) print_usage; exit;
       esac
   done
@@ -89,6 +93,17 @@ while getopts t:l:p:m:ar:e:h flag
     echo "${ERROR} Provider: $PROVIDER not allowed"
     print_usage
   fi
+
+  # loop on every extension
+  for GOAD_EXT in $(echo $GOAD_VAGRANT_OPTIONS | sed "s/,/ /g")
+  do
+      if exists_in_list "$GOAD_EXTENSIONS" "$GOAD_EXT"; then
+        echo "${OK} Extension: $GOAD_EXT"
+      else
+        echo "${ERROR} Extension: $GOAD_EXT not allowed"
+        print_usage
+      fi
+  done
 
   if [ -z $METHOD ]; then
      METHOD="local"
@@ -233,7 +248,7 @@ install_provisioning(){
           "local")
               if [ -z $ANSIBLE_PLAYBOOK ]; then
                 cd ansible
-                export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory"
+                export LAB=$lab PROVIDER=$provider
                 ../scripts/provisionning.sh
                 cd -
               else
@@ -260,7 +275,7 @@ install_provisioning(){
               fi
               if [ -z $ANSIBLE_PLAYBOOK ]; then
                 echo "${OK} Start provisioning from docker"
-                $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ANSIBLE_COMMAND='ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory' ../scripts/provisionning.sh"
+                $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "LAB=$lab PROVIDER=$provider ../scripts/provisionning.sh"
               else
               echo "${OK} Start provisioning from docker"
                 $use_sudo docker run -ti --rm --network host -h goadansible -v $(pwd):/goad -w /goad/ansible goadansible /bin/bash -c "ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $ANSIBLE_PLAYBOOK"
@@ -281,7 +296,7 @@ install_provisioning(){
               if [ -z $ANSIBLE_PLAYBOOK ]; then
                 ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" goad@$public_ip << EOF
                   cd /home/goad/GOAD/ansible
-                  export ANSIBLE_COMMAND="ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory"
+                  export LAB=$lab PROVIDER=$provider
                   ../scripts/provisionning.sh
                   exit
 EOF

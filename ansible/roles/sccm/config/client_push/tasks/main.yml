@@ -1,0 +1,43 @@
+# script source : https://github.com/MicrosoftDocs/sccm-docs-powershell-ref/blob/main/sccm-ps/ConfigurationManager/Set-CMClientPushInstallation.md
+- name: Create Configuration For client push
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $siteCode,
+
+          [String]
+          $sccmFQDN,
+
+          [String]
+          $pushAccount
+      )
+      # Step 1 - Import the Configuration Manager module
+      Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1") -force
+      $sc = Get-PSDrive -PSProvider CMSITE
+      if ($null -eq $sc) {
+        New-PSDrive -Name $siteCode -PSProvider "CMSite" -Root $sccmFQDN -Description "primary site"
+      }
+      Set-Location ($siteCode +":")
+      $property = "SMSSITECODE=" + $siteCode
+
+      Set-CMClientPushInstallation `
+      -SiteCode $siteCode `
+      -EnableAutomaticClientPushInstallation $True `
+      -EnableSystemTypeConfigurationManager $True `
+      -EnableSystemTypeServer $True `
+      -AllownNTLMFallback $True `
+      -EnableSystemTypeWorkstation $True `
+      -InstallClientToDomainController $false `
+      -AddAccount $pushAccount `
+      -InstallationProperty $property
+    parameters:
+      siteCode: "{{site_code}}"
+      sccmFQDN: "{{sccm_server}}.{{domain}}"
+      pushAccount: "{{push_account}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"

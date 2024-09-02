@@ -15,7 +15,7 @@ boxes = [
   # windows server 2016
   { :name => "GOAD-DC03",  :ip => "192.168.56.12", :box => "StefanScherer/windows_2016", :box_version => "2017.12.14", :os => "windows"},
   # windows server 2019
-  { :name => "GOAD-SRV02", :ip => "192.168.56.22", :box => "StefanScherer/windows_2019", :box_version => "2020.07.17", :os => "windows"},
+  { :name => "GOAD-SRV02", :ip => "192.168.56.22", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows"},
   # windows server 2016
   { :name => "GOAD-SRV03", :ip => "192.168.56.23", :box => "StefanScherer/windows_2016", :box_version => "2019.02.14", :os => "windows"}
 ]

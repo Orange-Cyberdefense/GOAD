@@ -1,0 +1,89 @@
+- name: Install ODBC Mssql 18 driver
+  ansible.windows.win_package:
+    arguments: "IACCEPTMSODBCSQLLICENSETERMS=YES ALLUSERS=1"
+    path: https://go.microsoft.com/fwlink/?linkid=2266640&clcid=0x409&culture=en-us&country=us
+    state: present
+    creates_path: "%ProgramFiles%\\Microsoft SQL Server\\Client SDK\\ODBC"
+  register: odbc_install
+  until: odbc_install is success
+  retries: 3  # Try 3 times just in case it failed to download the URL
+  delay: 1
+
+- name: reboot after installing ODBC if required
+  ansible.windows.win_reboot:
+  when: odbc_install.reboot_required
+
+# Step 14 – Download SCCM 1902 Baseline Media
+# --------------------------------------------------------------
+
+- name: create directory to store the downloaded prerequisite files
+  ansible.windows.win_file:
+    path: C:\setup
+    state: directory
+
+- name: MECM installation media exists
+  win_stat:
+    path: C:\setup\MCM_Configmgr_2303.exe
+  register: mecm_installer_file
+
+- name: download MECM installation media
+  ansible.windows.win_get_url:
+    url: https://go.microsoft.com/fwlink/p/?LinkID=2195628&clcid=0x409&culture=en-us&country=us
+    dest: C:\setup\MCM_Configmgr_2303.exe
+  when: not mecm_installer_file.stat.exists
+
+- name: Remove directory cd.retail.LN if exist
+  ansible.windows.win_file:
+    path: C:\setup\cd.retail.LN
+    state: absent
+  ignore_errors: true
+
+# We should verify if the cd.retail.LN directory exists first.
+# If yes, remove it.
+- name: extract MECM installation media
+  win_shell: .\MCM_Configmgr_2303.exe -s
+  args:
+    chdir: C:\setup\
+
+#- name: move the MECM installation media to C:\
+#  ansible.windows.win_powershell:
+#    script: Move-Item -Path C:\Windows\Temp\cd.retail.LN -Destination C:\
+
+- name: create directory to store the downloaded prerequisite files
+  ansible.windows.win_file:
+    path: C:\updates
+    state: directory
+
+- name: download prerequisite files
+  win_shell: .\setupdl.exe /NoUI C:\updates
+  args:
+    chdir: C:\setup\cd.retail.LN\SMSSETUP\BIN\X64
+
+# Step 15 – Install SCCM 1902 using Baseline Media
+# --------------------------------------------------------------
+
+- name: copy the configuration file
+  win_template:
+    src: files/ConfigMgrAutoSave.ini
+    dest: C:\setup\ConfigMgrAutoSave.ini
+
+- name: Fix MSSQL generate certificate issue (change crypto rsa permissions)
+  ansible.windows.win_acl:
+    path: C:\ProgramData\Microsoft\Crypto\RSA
+    user: Administrators
+    rights: FullControl
+    type: allow
+    state: present
+    inherit: ContainerInherit, ObjectInherit
+    propagation: 'InheritOnly'
+
+- name: install MECM (this one take an eternity ~ 1 hour  )
+  win_shell: .\setup.exe /SCRIPT "C:\setup\ConfigMgrAutoSave.ini"
+  args:
+    chdir: C:\setup\cd.retail.LN\SMSSETUP\BIN\X64
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    domain_name: "{{domain}}"
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"

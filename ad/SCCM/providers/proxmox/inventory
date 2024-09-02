@@ -1,0 +1,20 @@
+[default]
+; Note: ansible_host *MUST* be an IPv4 address or setting things like DNS
+; servers will break.
+; ------------------------------------------------
+; sccm.lab
+; ------------------------------------------------
+dc01 ansible_host=192.168.10.40 dns_domain=dc01 dict_key=dc01
+srv01 ansible_host=192.168.10.41 dns_domain=dc01 dict_key=srv01
+srv02 ansible_host=192.168.10.42 dns_domain=dc01 dict_key=srv02
+ws01 ansible_host=192.168.10.43 dns_domain=dc01 dict_key=ws01
+
+[all:vars]
+force_dns_server=yes
+dns_server=192.168.10.1
+
+two_adapters=no
+; adapter created by proxmox (change them if you get an error)
+; to get the name connect to one vm and run ipconfig it will show you the adapters name
+nat_adapter=Ethernet 2
+domain_adapter=Ethernet 2

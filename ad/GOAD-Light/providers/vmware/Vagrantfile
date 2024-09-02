@@ -26,6 +26,7 @@ boxes = [
     v.vmx["memsize"] = "4000"
     v.vmx["numvcpus"] = "2"
     v.gui = ARGV.include?("--with-gui") ? true : false
+    v.force_vmware_license = "workstation"  # force the licence for fix some vagrant plugin issue
   end
 
   # disable rdp forwarded port inherited from StefanScherer box
