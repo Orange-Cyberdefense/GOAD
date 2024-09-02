@@ -43,6 +43,12 @@
 ./goad.sh -t check -l GOAD -p vmware -m docker
 ```
 
+- If you run on windows
+
+```powershell
+.\goad.ps1 -t check -l GOAD -p vmware -m podman
+```
+
 ## Install dependencies
 
 > If the check is not ok you will have to install the dependencies (no automatic install is provided as it depend of your package manager and distribution). Here some install command lines are given for ubuntu.
@@ -132,12 +138,20 @@ ansible-galaxy install -r ansible/requirements.yml
 - This will launch vagrant up and the ansible playbooks
 - If you run ansible locally
 ```bash
-./goad.sh -t check -l GOAD -p vmware -m local
+./goad.sh -t install -l GOAD -p vmware -m local
 ```
 
 - If you run ansible on docker
 ```bash
-./goad.sh -t check -l GOAD -p vmware -m docker
+./goad.sh -t install -l GOAD -p vmware -m docker
+```
+
+- If you run on windows
+```powershell
+.\goad.ps1 -t install -l GOAD -p vmware -m podman -g $True
+
+# with optional KALI VM inside GOAD network & Enabled GUI mode (VM will displayed in hypervisor) 
+.\goad.ps1 -t install -l GOAD -p vmware -m podman -k $True -g $True
 ```
 
 ### Launch installation manually
@@ -193,5 +207,20 @@ cd ansible/
 ansible-playbook -i ../ad/GOAD/data/inventory -i ../ad/GOAD/providers/vmware/inventory main.yml
 ```
 
+### De/Isolate VM after setup (recommended only for Winodows native installation)
+
+- Isolate GOAD VMs by disabling nat_adapter from all machines
+Attention: Isolation only disables vagrant NAT interface. You have to manually disconnect the host from GOAD network. E.g. vmware: Virtual Network Editor>VMNetX (192.168.56.0)>Uncheck 'Connect a host virtual network adapter to this network
+
+```powershell
+.\goad.ps1 -t isolate -l GOAD-Light -p vmware -m podman
+```
+
+- revert isolation
+Attention: De-Isolation only enables vagrant NAT interface. You have to manually connect the host to GOAD network again. E.g. vmware: Virtual Network Editor>VMNetX (192.168.56.0)>Check 'Connect a host virtual network adapter to this network
+
+```
+.\goad.ps1 -t de_isolate -l GOAD-Light -p vmware -m podman
+```
 
 - Details on the provisioning process are here : [provisioning.md](./provisioning.md)

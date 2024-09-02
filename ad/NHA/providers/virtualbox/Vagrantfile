@@ -2,7 +2,11 @@ Vagrant.configure("2") do |config|
 
   # Uncomment this depending on the provider you want to use
   ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
-  
+
+  optional_boxes = [
+    { :name => "NHA-Kali",  :ip => "192.168.58.42", :box => "kalilinux/rolling", :os => "linux"}
+  ]
+
   boxes = [
     { :name => "NHA-DC01",   :ip => "192.168.58.10", :box => "mayfly/windows_server2019", :os => "windows"},
     { :name => "NHA-DC02",   :ip => "192.168.58.20", :box => "mayfly/windows_server2019", :os => "windows"},
@@ -14,11 +18,13 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |v|
     v.memory = 4000
     v.cpus = 2
+    v.gui = ARGV.include?("--with-gui") ? true : false
   end
 
   config.vm.provider "vmware_desktop" do |v|
     v.vmx["memsize"] = "4000"
     v.vmx["numvcpus"] = "2"
+    v.gui = ARGV.include?("--with-gui") ? true : false
   end
 
   # disable forwarded port
@@ -34,6 +40,9 @@ Vagrant.configure("2") do |config|
   config.vm.graceful_halt_timeout = 600
   config.winrm.retry_limit = 30
   config.winrm.retry_delay = 10
+
+  boxes += optional_boxes if (ARGV.include?("--with-optional-boxes"))
+  boxes = optional_boxes if (ARGV.include?("--only-optional-boxes"))
 
   boxes.each do |box|
     config.vm.define box[:name] do |target|
@@ -77,6 +86,18 @@ Vagrant.configure("2") do |config|
         end
       end
 
+      # Optional box "Kali"
+      if box[:name] == "NHA-Kali"
+        # provisioning requires internet access
+        # but default GW not set if no auto route is enabled
+        target.vm.network :private_network, ip: box[:ip], :use_dhcp_assigned_default_route => true
+
+        # Provision the machine with a shell script
+        # Update and install least required tool set
+        target.vm.provision :shell, inline: <<-EOF
+          sudo apt update -y
+        EOF
+      end
     end
   end
 end

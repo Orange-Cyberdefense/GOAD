@@ -1,0 +1,4 @@
+- name: "enable nat_adapter interface"
+  hosts: all
+  roles:
+  - { role: 'settings/enable_nat_adapter' , tags: 'enable_nat_adapter'}

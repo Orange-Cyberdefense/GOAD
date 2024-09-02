@@ -1,0 +1,4 @@
+- name: "disable nat_adapter interface"
+  hosts: all
+  roles:
+  - { role: 'settings/disable_nat_adapter' , tags: 'disable_nat_adapter'}
