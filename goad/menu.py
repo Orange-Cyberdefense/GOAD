@@ -28,7 +28,7 @@ def print_menu_entry(cmd, description):
     print(f'{line}[/white] [sky_blue3]{description}[/sky_blue3]')
 
 
-def print_menu(lab_manager, advanced=True):
+def print_menu(lab_manager, advanced=True, debug=False):
     provider = lab_manager.get_current_provider_name()
 
     if lab_manager.get_current_instance() is not None:
@@ -81,6 +81,9 @@ def print_menu(lab_manager, advanced=True):
     if lab_manager.get_current_instance() is None:
         print_menu_entry('install', 'alias for create_instance')
         print_menu_entry('create_instance', 'create a lab instance')
+        print_menu_entry('create_empty_instance', 'create a lab instance without providing and provisioning')
+    if lab_manager.get_current_instance() is not None:
+        print_menu_entry('update_instance_files', 'update lab instance files')
     print_menu_entry('list_instances', 'list lab instances')
     print_menu_entry('load_instance <instance_id>', 'load a lab instance')
 

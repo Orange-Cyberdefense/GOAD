@@ -239,6 +239,10 @@ class Goad(cmd.Cmd):
         self.do_provision_lab()
         self.refresh_prompt()
 
+    def do_create_empty_instance(self, arg=''):
+        Log.info('Create instance folder')
+        self.lab_manager.create_instance()
+
     def do_load_instance(self, arg):
         if arg == '':
             Log.error('missing instance id argument')
