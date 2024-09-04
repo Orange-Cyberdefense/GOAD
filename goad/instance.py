@@ -136,7 +136,7 @@ class LabInstance:
         instance_vagrant_file = self.instance_provider_path + sep + 'Vagrantfile'
         with open(instance_vagrant_file, mode="w", encoding="utf-8") as vagrantfile:
             vagrantfile.write(vagrantfile_content)
-            Log.info(f'Instance vagrantfile created : {Utils.get_relative_path(vagrantfile)}')
+            Log.info(f'Instance vagrantfile created : {Utils.get_relative_path(instance_vagrant_file)}')
 
     def _create_terraform_folder(self):
         # load lab file

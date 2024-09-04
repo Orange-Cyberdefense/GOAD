@@ -1,6 +1,7 @@
 .vagrant/
 .idea/
 .venv/
+.archives/
 writeup/
 docs/scenarios/
 docs/notes.md

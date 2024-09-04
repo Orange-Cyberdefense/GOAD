@@ -83,7 +83,7 @@ class Goad(cmd.Cmd):
         else:
             self.lab_manager.get_current_instance_provider().destroy_vm(arg)
 
-    def do_provide(self, arg):
+    def do_provide(self, arg=''):
         result = self.lab_manager.get_current_instance_provider().install()
         if result:
             self.lab_manager.current_instance.set_status(PROVIDED)
@@ -99,7 +99,7 @@ class Goad(cmd.Cmd):
             time_provision = time.ctime(time.time() - start)[11:19]
             Log.info(f'Provisioned with {arg} in {time_provision}')
 
-    def do_provision_lab(self, arg):
+    def do_provision_lab(self, arg=''):
         start = time.time()
         provision_result = self.lab_manager.get_current_instance_provisioner().run()
         if provision_result:
@@ -120,7 +120,7 @@ class Goad(cmd.Cmd):
         else:
             Log.error('no remote provisioning')
 
-    def do_prepare_jumpbox(self, arg):
+    def do_prepare_jumpbox(self, arg=''):
         if self.lab_manager.get_current_instance_provider().use_jumpbox:
             self.lab_manager.get_current_instance_provisioner().prepare_jumpbox()
 
@@ -233,7 +233,7 @@ class Goad(cmd.Cmd):
         Log.info('Prepare jumpbox if needed')
         self.do_prepare_jumpbox()
         Log.info('Launch provisioning')
-        self.do_provision()
+        self.do_provision_lab()
         self.refresh_prompt()
 
     def do_load_instance(self, arg):
