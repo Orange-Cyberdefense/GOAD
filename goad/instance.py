@@ -194,6 +194,9 @@ class LabInstance:
             inventory_file.write(instance_inventory_content)
             Log.success(f'Instance inventory file created : {Utils.get_relative_path(instance_inventory_file)}')
 
+    def update_instance_folder(self):
+        self.create_instance_folder(True)
+
     def create_instance_folder(self, force=False):
         instance_exist = False
         if os.path.isdir(self.instance_path):

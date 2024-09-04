@@ -225,6 +225,9 @@ class Goad(cmd.Cmd):
     def do_show_list_providers(self, arg):
         show_labs_providers_list(self.lab_manager.get_labs())
 
+    def do_update_instance_files(self, arg):
+        self.lab_manager.update_instance_files()
+
     def do_create_instance(self, arg=''):
         Log.info('Create instance folder')
         self.lab_manager.create_instance()
