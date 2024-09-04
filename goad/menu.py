@@ -59,9 +59,6 @@ def print_menu(lab_manager, advanced=True):
             print_menu_entry('ssh_jumpbox', 'connect to jump box with ssh')
 
         if advanced:
-            print_menu_title('Installation commands')
-            print_menu_entry('install', 'launch install (provide + provision_lab)')
-
             print_menu_title('Providing (Vagrant/Terrafom)')
             print_menu_entry('provide', 'run only the providing (vagrant/terraform)')
 
@@ -82,6 +79,7 @@ def print_menu(lab_manager, advanced=True):
     print_menu_title('Lab Instances')
     print_menu_entry('check', 'check dependencies before creation')
     if lab_manager.get_current_instance() is None:
+        print_menu_entry('install', 'alias for create_instance')
         print_menu_entry('create_instance', 'create a lab instance')
     print_menu_entry('list_instances', 'list lab instances')
     print_menu_entry('load_instance <instance_id>', 'load a lab instance')

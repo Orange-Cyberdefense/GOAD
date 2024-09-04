@@ -50,8 +50,8 @@ class Goad(cmd.Cmd):
     def do_status(self, arg):
         self.lab_manager.get_current_instance().provider.status()
 
-    def do_install(self, arg):
-        self.lab_manager.get_current_instance_provider().install()
+    def do_install(self, arg=''):
+        self.do_create_instance()
 
     def do_start(self, arg):
         self.lab_manager.get_current_instance_provider().start()
@@ -225,7 +225,7 @@ class Goad(cmd.Cmd):
     def do_show_list_providers(self, arg):
         show_labs_providers_list(self.lab_manager.get_labs())
 
-    def do_create_instance(self, arg):
+    def do_create_instance(self, arg=''):
         Log.info('Create instance folder')
         self.lab_manager.create_instance()
         Log.info('Launch providing')
