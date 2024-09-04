@@ -4,25 +4,20 @@
 ; ------------------------------------------------
 ; sevenkingdoms.local
 ; ------------------------------------------------
-dc01 ansible_host=192.168.10.10 dns_domain=dc01 dict_key=dc01
-;ws01 ansible_host=192.168.10.30 dns_domain=dc01 dict_key=ws01
+dc01 ansible_host{{ip_range}}.10 dns_domain=dc01 dict_key=dc01
+;ws01 ansible_host={{ip_range}}.30 dns_domain=dc01 dict_key=ws01
 ; ------------------------------------------------
 ; north.sevenkingdoms.local
 ; ------------------------------------------------
-dc02 ansible_host=192.168.10.11 dns_domain=dc01 dict_key=dc02
-srv02 ansible_host=192.168.10.22 dns_domain=dc02 dict_key=srv02
+dc02 ansible_host={{ip_range}}.11 dns_domain=dc01 dict_key=dc02
+srv02 ansible_host={{ip_range}}.22 dns_domain=dc02 dict_key=srv02
 ; ------------------------------------------------
 ; essos.local
 ; ------------------------------------------------
-dc03 ansible_host=192.168.10.12 dns_domain=dc03 dict_key=dc03
-srv03 ansible_host=192.168.10.23 dns_domain=dc03 dict_key=srv03
+dc03 ansible_host={{ip_range}}.12 dns_domain=dc03 dict_key=dc03
+srv03 ansible_host={{ip_range}}.23 dns_domain=dc03 dict_key=srv03
 
 [all:vars]
 force_dns_server=yes
-dns_server=192.168.10.1
+dns_server={{ip_range}}.1
 
-two_adapters=no
-; adapter created by proxmox (change them if you get an error)
-; to get the name connect to one vm and run ipconfig it will show you the adapters name
-nat_adapter=Ethernet 2
-domain_adapter=Ethernet 2

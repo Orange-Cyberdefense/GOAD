@@ -28,3 +28,4 @@ ad/*/providers/*/ssh_keys/*.pub
 ad/*/providers/*/extensions/*.rb
 __pycache__/
 *.pyc
+workspace/

@@ -39,10 +39,9 @@ VIRTUALBOX_ALLOWED_PROVISIONER = [PROVISIONING_LOCAL, PROVISIONING_RUNNER, PROVI
 project_path = os.path.normpath(os.path.dirname(os.path.abspath(__file__)) + os.path.sep + '..')
 
 # instance status
-TO_PROVIDE = 'to_provide'
-TO_PROVISION = 'to_provision'
+CREATED = 'ready for providing'
+PROVIDED = 'ready for provisioning'
 READY = 'ready'
-
 
 # TODO : create a class PathManager and use it
 
@@ -94,6 +93,14 @@ class Utils:
             return [p.name for p in Path(path).iterdir() if p.is_dir()]
         else:
             return []
+
+    @staticmethod
+    def list_files(path):
+        f = []
+        for (dirpath, dirnames, filenames) in os.walk(path):
+            f.extend(filenames)
+            break
+        return f
 
     @staticmethod
     def get_relative_path(path):

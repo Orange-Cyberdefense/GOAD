@@ -19,7 +19,7 @@ resource "azurerm_network_interface" "ubuntu_jumbox_nic" {
     name                          = "ubuntu-jumbox-nic-ipconfig"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Static"
-    private_ip_address            = "192.168.56.100"
+    private_ip_address            = "{{ip_range}}.100"
     public_ip_address_id          = azurerm_public_ip.ubuntu_public_ip.id
   }
 }

@@ -1,5 +1,6 @@
 import cmd
 import argparse
+import time
 from goad.config import Config
 from goad.jumpbox import JumpBox
 from goad.lab_manager import LabManager
@@ -85,27 +86,43 @@ class Goad(cmd.Cmd):
     def do_provide(self, arg):
         result = self.lab_manager.get_current_instance_provider().install()
         if result:
-            self.lab_manager.current_instance.set_status(TO_PROVISION)
+            self.lab_manager.current_instance.set_status(PROVIDED)
 
     def do_provision(self, arg):
         if arg == '':
             Log.error('missing playbook argument')
             Log.info('provision <playbook>')
         else:
+            start = time.time()
             # run playbook
             self.lab_manager.get_current_instance_provisioner().run(arg)
+            time_provision = time.ctime(time.time() - start)[11:19]
+            Log.info(f'Provisioned with {arg} in {time_provision}')
 
     def do_provision_lab(self, arg):
-        self.lab_manager.get_current_instance_provisioner().run()
+        start = time.time()
+        provision_result = self.lab_manager.get_current_instance_provisioner().run()
+        if provision_result:
+            self.lab_manager.current_instance.set_status(READY)
+            time_provision = time.ctime(time.time() - start)[11:19]
+            Log.info(f'Lab successfully provisioned in {time_provision}')
 
     def do_provision_lab_from(self, arg):
-        self.lab_manager.get_current_instance_provisioner().run_from(arg)
+        start = time.time()
+        provision_result = self.lab_manager.get_current_instance_provisioner().run_from(arg)
+        if provision_result:
+            time_provision = time.ctime(time.time() - start)[11:19]
+            Log.info(f'Provisioned from {arg} in {time_provision}')
 
-    def do_prepare_jumpbox(self, arg):
-        if self.lab_manager.get_current_instance_provisioner().provisioner_name == 'ansible_remote':
-            self.lab_manager.get_current_instance_provisioner().prepare_jumpbox()
+    def do_sync_source_jumpbox(self, arg):
+        if self.lab_manager.get_current_instance_provider().use_jumpbox:
+            self.lab_manager.get_current_instance_provisioner().sync_source_jumpbox()
         else:
             Log.error('no remote provisioning')
+
+    def do_prepare_jumpbox(self, arg):
+        if self.lab_manager.get_current_instance_provider().use_jumpbox:
+            self.lab_manager.get_current_instance_provisioner().prepare_jumpbox()
 
     def do_show_config(self, arg):
         self.lab_manager.show_settings()
@@ -113,7 +130,7 @@ class Goad(cmd.Cmd):
     def do_ssh_jumpbox(self, arg):
         if self.lab_manager.get_current_instance_provider().use_jumpbox:
             try:
-                jump_box = JumpBox(self.lab_manager.get_current_lab_name(), self.lab_manager.get_current_instance_provider())
+                jump_box = self.lab_manager.get_current_instance_provisioner().jumpbox
                 jump_box.ssh()
             except JumpBoxInitFailed as e:
                 Log.error('Jumpbox retrieve connection info failed, abort')
@@ -209,7 +226,14 @@ class Goad(cmd.Cmd):
         show_labs_providers_list(self.lab_manager.get_labs())
 
     def do_create_instance(self, arg):
+        Log.info('Create instance folder')
         self.lab_manager.create_instance()
+        Log.info('Launch providing')
+        self.do_provide()
+        Log.info('Prepare jumpbox if needed')
+        self.do_prepare_jumpbox()
+        Log.info('Launch provisioning')
+        self.do_provision()
         self.refresh_prompt()
 
     def do_load_instance(self, arg):

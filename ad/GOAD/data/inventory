@@ -13,6 +13,10 @@ enable_http_proxy=no
 ad_http_proxy=http://x.x.x.x:xxxx
 ad_https_proxy=http://x.x.x.x:xxxx
 
+;force_dns_server
+force_dns_server=no
+dns_server=1.1.1.1
+
 ; domain_name : folder inside ad/
 domain_name=GOAD
 

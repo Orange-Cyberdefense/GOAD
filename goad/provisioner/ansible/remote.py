@@ -14,20 +14,23 @@ class RemoteAnsibleProvisioner(Ansible):
         self.remote_project_path = '/home/goad/GOAD'
 
     def prepare_jumpbox(self):
-        try:
-            self.jumpbox = JumpBox(self.lab_name, self.provider)
+        if self.jumpbox is not None:
             self.jumpbox.sync_sources()
-            self.jumpbox.prepare_jumpbox()
-        except JumpBoxInitFailed as e:
-            Log.error('Jumpbox retrieve connection info failed, abort')
+            self.jumpbox.provision()
+        else:
+            Log.error('no jumpbox for provisioner')
+
+    def sync_source_jumpbox(self):
+        if self.jumpbox is not None:
+            self.jumpbox.sync_sources()
+        else:
+            Log.error('no jumpbox for provisioner')
 
     def run(self, playbook=None):
-        try:
-            if self.jumpbox is None:
-                self.jumpbox = JumpBox(self.lab_name, self.provider)
-            super().run(playbook)
-        except JumpBoxInitFailed as e:
-            Log.error('Jumpbox retrieve connection info failed, abort')
+        if self.jumpbox is None:
+            Log.error('Jumpbox not set')
+            return False
+        super().run(playbook)
 
     def run_playbook(self, playbook, inventories, tries=3, timeout=30, playbook_path=None):
         if playbook_path is None:

@@ -23,6 +23,9 @@ class AzureProvider(TerraformProvider):
         self.resource_group = lab_name
         self.jumpbox_setup_script = 'setup_azure.sh'
 
+    def set_resource_group(self, resource_group):
+        self.resource_group = resource_group
+
     def _get_subscription_id(self):
         credential = DefaultAzureCredential()
         if credential is not None:
@@ -87,8 +90,8 @@ class AzureProvider(TerraformProvider):
 
             # List all VMs in the specified resource group
             vms = compute_client.virtual_machines.list(self.resource_group)
-
-            table = Table(title=f"Azure VMs for resource {self.resource_group}")
+            Log.info(f"Azure VMs for resource {self.resource_group}")
+            table = Table()
             table.add_column('VM Id')
             table.add_column('Name')
             table.add_column('Location')

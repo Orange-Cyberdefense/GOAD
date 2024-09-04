@@ -10,16 +10,33 @@
         lab: "{{lab}}"
         cacheable: yes
       run_once: true
-    - set_fact: 
-        eth_domain_interface="{{item.connection_name}}"
-      when: item.ipv4.address == hostvars[dns_domain].ansible_host
+
+    - name: find domain_adapter
+      set_fact:
+       domain_adapter="{{item.connection_name}}"
+      when: item.ipv4.address == hostvars[dict_key].ansible_host
       with_items: "{{ ansible_interfaces }}"
       run_once: true
-    - set_fact: 
-        eth_nat_interface="{{item.connection_name}}"
-      when: item.ipv4.address != hostvars[dns_domain].ansible_host
+
+    - name: find nat_adapter
+      set_fact:
+       nat_adapter="{{item.connection_name}}"
+      when: item.ipv4.address != hostvars[dict_key].ansible_host
       with_items: "{{ ansible_interfaces }}"
       run_once: true
-    - set_fact: 
-        number_of_interfaces="{{ansible_interfaces|length}}"
+
+    - name: find number of interfaces
+      set_fact:
+       number_of_interfaces="{{ansible_interfaces|length}}"
+      run_once: true
+
+    - name: find if two adapters
+      set_fact:
+       two_adapters="{{ 'no' if number_of_interfaces != '1' else 'yes' }}"
+      run_once: true
+
+    - name: confirm nat_adapter
+      set_fact:
+       nat_adapter="{{domain_adapter}}"
+      when: two_adapters == 'no'
       run_once: true

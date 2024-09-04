@@ -1,0 +1,81 @@
+Vagrant.configure("2") do |config|
+
+# Uncomment this depending on the provider you want to use
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
+
+{{boxes]}
+
+# Load extension files if exist
+extension_path = "./extensions"
+if File.directory?(extension_path)
+  for extension_file in Dir.entries(extension_path)
+    if extension_file.end_with?('rb')
+        extension_function = extension_file[0, extension_file.length - 3]
+        # load every file finishing by .rb in the extension folder
+        load "#{extension_path}/#{extension_file}"
+        # call extension function
+        boxes = send(extension_function, boxes)
+    end
+  end
+end
+
+  # disable rdp forwarded port inherited from StefanScherer box
+  config.vm.network :forwarded_port, guest: 3389, host: 3389, id: "rdp", auto_correct: true, disabled: true
+
+  # no autoupdate if vagrant-vbguest is installed
+  if Vagrant.has_plugin?("vagrant-vbguest") then
+    config.vbguest.auto_update = false
+  end
+
+  config.vm.boot_timeout = 600
+  config.vm.graceful_halt_timeout = 600
+  config.winrm.retry_limit = 30
+  config.winrm.retry_delay = 10
+
+  boxes.each do |box|
+    config.vm.define box[:name] do |target|
+      # BOX
+      target.vm.provider "virtualbox" do |v|
+        v.name = box[:name]
+        v.customize ["modifyvm", :id, "--groups", "/GOAD"]
+        v.memory = box[:mem]
+        v.cpus = box[:cpus]
+      end
+      target.vm.box_download_insecure = box[:box]
+      target.vm.box = box[:box]
+      if box.has_key?(:box_version)
+        target.vm.box_version = box[:box_version]
+      end
+
+      # issues/49
+      target.vm.synced_folder '.', '/vagrant', disabled: true
+
+      # IP
+      target.vm.network :private_network, ip: box[:ip]
+
+      # OS specific
+      if box[:os] == "windows"
+        target.vm.guest = :windows
+        target.vm.communicator = "winrm"
+        target.vm.provision :shell, :path => "../../../vagrant/Install-WMF3Hotfix.ps1", privileged: false
+        target.vm.provision :shell, :path => "../../../vagrant/ConfigureRemotingForAnsible.ps1", privileged: false
+
+        # fix ip for vmware
+        if ENV['VAGRANT_DEFAULT_PROVIDER'] == "vmware_desktop"
+          target.vm.provision :shell, :path => "../../../vagrant/fix_ip.ps1", privileged: false, args: box[:ip]
+        end
+
+      else
+        target.vm.communicator = "ssh"
+      end
+
+      if box.has_key?(:forwarded_port)
+        # forwarded port explicit
+        box[:forwarded_port] do |forwarded_port|
+          target.vm.network :forwarded_port, guest: forwarded_port[:guest], host: forwarded_port[:host], host_ip: "127.0.0.1", id: forwarded_port[:id]
+        end
+      end
+
+    end
+  end
+end

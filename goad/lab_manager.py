@@ -49,8 +49,10 @@ class LabManager(metaclass=SingletonMeta):
         if result:
             self.lab_instances.add_instance(instance)
             self.load_instance(instance.instance_id)
+            return True
         else:
             Log.error('Error during creating instance folder')
+            return False
 
     def load_instance(self, instance_id):
         instance = self.lab_instances.get_instance(instance_id)

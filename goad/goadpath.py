@@ -29,6 +29,13 @@ class GoadPath:
     def get_project_path():
         return project_path + sep
 
+    @staticmethod
+    def get_template_path(provider):
+        """
+        :return:  <project>/template/provider/<provider>/
+        """
+        return project_path + sep + 'template' + sep + 'provider' + sep + provider + sep
+
     # config
     @staticmethod
     def get_playbooks_lab_config():
@@ -82,7 +89,14 @@ class GoadPath:
 
     # script
     @staticmethod
-    def get_script_path(script):
+    def get_script_path():
+        """
+        :return: <project>/scripts
+        """
+        return project_path + os.path.sep + 'scripts'
+
+    @staticmethod
+    def get_script_file(script):
         """
         :return: <project>/scripts/<script>
         """
@@ -105,8 +119,8 @@ class GoadPath:
         return GoadPath.get_workspace_path() + sep + instance_id
 
     @staticmethod
-    def get_instance_provider_path(instance_id, provider_name):
-        return GoadPath.get_instance_path(instance_id) + sep + 'provider' + sep + provider_name
+    def get_instance_provider_path(instance_id):
+        return GoadPath.get_instance_path(instance_id) + sep + 'provider'
 
     # EXTENSIONS
     @staticmethod

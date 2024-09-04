@@ -1,11 +1,13 @@
 import json
 import shutil
 import uuid
+from jinja2 import Template, Environment, FileSystemLoader
 from rich.table import Table
 from rich import print
 from goad.goadpath import *
+from goad.jumpbox import JumpBox
 from goad.log import Log
-from goad.exceptions import ProviderPathNotFound
+from goad.exceptions import ProviderPathNotFound, JumpBoxInitFailed
 from goad.provisioner.ansible.docker import DockerAnsibleProvisioner
 from goad.provisioner.ansible.local import LocalAnsibleProvisionerCmd
 from goad.provisioner.ansible.runner import LocalAnsibleProvisionerEmbed
@@ -28,6 +30,10 @@ class LabInstance:
             extensions = []
         self.extensions = extensions
 
+        # paths
+        self.instance_path = GoadPath.get_instance_path(self.instance_id)
+        self.instance_provider_path = GoadPath.get_instance_provider_path(self.instance_id)
+
         # prepare model objects
         self.lab = None
         self.provider = None
@@ -49,13 +55,14 @@ class LabInstance:
             Log.error('provider not found')
             return False
 
-        instance_provider_path = GoadPath.get_instance_provider_path(self.instance_id, self.provider_name)
+        if self.provider_name == AZURE:
+            self.provider.set_resource_group(self.lab_name + '-' + self.instance_id)
 
-        if not os.path.isdir(instance_provider_path):
+        if not os.path.isdir(self.instance_provider_path):
             Log.error('instance provider path {instance_provider_path} not found')
             return False
 
-        self.provider.set_instance_path(instance_provider_path)
+        self.provider.set_instance_path(self.instance_provider_path)
 
         if self.provisioner_name == PROVISIONING_DOCKER:
             self.provisioner = DockerAnsibleProvisioner(self.lab_name, self.provider)
@@ -65,6 +72,7 @@ class LabInstance:
             self.provisioner = LocalAnsibleProvisionerCmd(self.lab_name, self.provider)
         elif self.provisioner_name == PROVISIONING_REMOTE:
             self.provisioner = RemoteAnsibleProvisioner(self.lab_name, self.provider)
+            self.provisioner.jumpbox = JumpBox(self)
 
         if self.provisioner is None:
             Log.error('instance provisioner does not exist')
@@ -109,45 +117,82 @@ class LabInstance:
         with open(self.instance_path + sep + "instance.json", "w") as outfile:
             outfile.write(json_object)
 
+    def _create_vagrantfile(self):
+        # load lab vagrantfile
+        lab_environment = Environment(loader=FileSystemLoader(GoadPath.get_lab_provider_path(self.lab_name, self.provider_name)))
+        lab_vagrantfile_template = lab_environment.get_template("Vagrantfile")
+        lab_vagrantfile_content = lab_vagrantfile_template.render(
+            ip_range=self.ip_range
+        )
+
+        # load template folder
+        environment = Environment(loader=FileSystemLoader(GoadPath.get_template_path(self.provider_name)))
+        vagrantfile_template = environment.get_template("Vagrantfile")
+        vagrantfile_content = vagrantfile_template.render(
+            lab=lab_vagrantfile_content
+        )
+
+        # create vagrantfile
+        instance_vagrant_file = self.instance_provider_path + sep + 'Vagrantfile'
+        with open(instance_vagrant_file, mode="w", encoding="utf-8") as vagrantfile:
+            vagrantfile.write(vagrantfile_content)
+            Log.info(f'Instance vagrantfile created : {Utils.get_relative_path(vagrantfile)}')
+
+    def _create_terraform_folder(self):
+        # load lab file
+        lab_environment = Environment(loader=FileSystemLoader(GoadPath.get_lab_provider_path(self.lab_name, self.provider_name)))
+        lab_windows_template = lab_environment.get_template("windows.tf")
+        windows_vm = lab_windows_template.render(
+            ip_range=self.ip_range
+        )
+
+        # load template folder
+        environment = Environment(loader=FileSystemLoader(GoadPath.get_template_path(self.provider_name)))
+
+        for template in Utils.list_files(GoadPath.get_template_path(self.provider_name)):
+            tf_template = environment.get_template(template)
+            tf_content = tf_template.render(
+                windows_vms=windows_vm,
+                resource_group=self.lab_name + '-' + self.instance_id,
+                lab_name=self.lab_name,
+                ip_range=self.ip_range
+            )
+            # create terraform files
+            instance_tf_file = self.instance_provider_path + sep + template
+            with open(instance_tf_file, mode="w", encoding="utf-8") as tf_file:
+                tf_file.write(tf_content)
+                Log.success(f'Instance terraform file created : {Utils.get_relative_path(instance_tf_file)}')
+
     def _create_provider_dir(self):
         # create provider dir
-        provider_folder = self.instance_path + sep + 'provider'
-        os.mkdir(provider_folder, 0o755)
+        # workspace/provider
+        os.mkdir(self.instance_provider_path, 0o755)
+        # workspace/ssh_keys
+        ssh_folder = self.instance_path + sep + 'ssh_keys'
+        os.mkdir(ssh_folder, 0o750)
+        Log.info('Create instance providing files')
+        if self.is_vagrant():
+            self._create_vagrantfile()
 
         if self.is_terraform():
-            # copy provider recipe
-            lab_provider_path = GoadPath.get_lab_provider_path(self.lab_name, self.provider_name) + sep + 'terraform'
-            if not os.path.isdir(lab_provider_path):
-                Log.error(f'Lab Provider path {lab_provider_path} not found')
-                raise ProviderPathNotFound('path not found')
-            shutil.copytree(lab_provider_path, self.instance_provider_path, dirs_exist_ok=True)
-            for tf_file in Utils.list_folders(self.instance_provider_path):
-                if tf_file.endswith('tf'):
-                    Utils.replace_in_file(self.instance_provider_path + sep + tf_file, '192.168.56', self.ip_range)
-            return True
-
-        if self.is_vagrant():
-            lab_provider_path = GoadPath.get_lab_provider_path(self.lab_name, self.provider_name) + sep + 'Vagrantfile'
-            if not os.path.isfile(lab_provider_path):
-                Log.error(f'Lab Provider path {lab_provider_path} not found')
-                raise ProviderPathNotFound('path not found')
-            os.mkdir(self.instance_provider_path, 0o755)
-            instance_vagrant_file = self.instance_provider_path + sep + 'Vagrantfile'
-            shutil.copy(lab_provider_path, instance_vagrant_file)
-            Utils.replace_in_file(instance_vagrant_file, '192.168.56', self.ip_range)
-            return True
-
-        return False
+            self._create_terraform_folder()
 
     def _create_provisioning_inventory(self):
+        Log.info('Create instance provisioning files')
         # create provisioning inventory
-        lab_provider_inventory = GoadPath.get_provider_inventory_file(self.lab_name, self.provider_name)
-        instance_provider_inventory = self.instance_path + sep + 'inventory'
-        if os.path.isfile(lab_provider_inventory):
-            # copy provider inventory
-            shutil.copy(lab_provider_inventory, instance_provider_inventory)
-            # change IP in inventory
-            Utils.replace_in_file(instance_provider_inventory, '192.168.56', self.ip_range)
+        lab_provider_path = GoadPath.get_lab_provider_path(self.lab_name, self.provider_name)
+        environment = Environment(loader=FileSystemLoader(lab_provider_path))
+        # create inventory template
+        inventory_template = environment.get_template("inventory")
+        instance_inventory_content = inventory_template.render(
+            lab_name=self.lab_name,
+            ip_range=self.ip_range
+        )
+        # create instance inventory file
+        instance_inventory_file = self.instance_path + sep + 'inventory'
+        with open(instance_inventory_file, mode="w", encoding="utf-8") as inventory_file:
+            inventory_file.write(instance_inventory_content)
+            Log.success(f'Instance inventory file created : {Utils.get_relative_path(instance_inventory_file)}')
 
     def create_instance_folder(self, force=False):
         instance_exist = False
@@ -176,9 +221,9 @@ class LabInstance:
             return False
 
         self._create_provisioning_inventory()
-        self.status = TO_PROVIDE
+        self.status = CREATED
         self.save_json_instance()
-        Log.success(f'Instance [yellow]{self.instance_id}[/yellow] created')
+        Log.info(f'Instance {self.instance_id} created')
         return True
 
     def set_status(self, status):
