@@ -1,9 +1,12 @@
+import os.path
+
 import ansible_runner
 import time
 import yaml
 from goad.utils import *
 from goad.log import Log
 from goad.provisioner.provisioner import Provisioner
+from goad.goadpath import GoadPath
 from goad.extension import Extension
 
 
@@ -12,20 +15,25 @@ class Ansible(Provisioner):
     def _get_lab_inventory(self, lab_name, provider_name):
         inventory = []
         # Lab inventory
-        lab_inventory = get_lab_inventory_path(lab_name)
+        lab_inventory = GoadPath.get_lab_inventory_file(lab_name)
         if os.path.isfile(lab_inventory):
             inventory.append(lab_inventory)
             Log.success(f'Lab inventory : {lab_inventory} file found')
         # Provider inventory
-        provider_inventory = get_provider_inventory_path(lab_name, provider_name)
-        if os.path.isfile(provider_inventory):
-            inventory.append(provider_inventory)
-            Log.success(f'Provider inventory : {provider_inventory} file found')
+        # provider_inventory = get_provider_inventory_path(lab_name, provider_name)
+        # if os.path.isfile(provider_inventory):
+        #     inventory.append(provider_inventory)
+        #     Log.success(f'Provider inventory : {provider_inventory} file found')
+        # lab instance inventory
+        instance_inventory = self.instance_path + os.path.sep + 'inventory'
+        if os.path.isfile(instance_inventory):
+            inventory.append(instance_inventory)
+            Log.success(f'Provider inventory : {instance_inventory} file found')
         return inventory
 
     def _get_global_inventory(self):
         # Global inventory
-        global_inventory = get_global_inventory_path()
+        global_inventory = GoadPath.get_global_inventory_path()
         if os.path.isfile(global_inventory):
             Log.success(f'Global inventory : {global_inventory} file found')
             return global_inventory
@@ -41,7 +49,7 @@ class Ansible(Provisioner):
 
     def get_playbook_list(self, lab_name):
         Log.info('Loading playbook list')
-        playbook_organisation_file = get_playbooks_lab_config()
+        playbook_organisation_file = GoadPath.get_playbooks_lab_config()
         playbook_list = []
         with open(playbook_organisation_file, 'r') as playbooks:
             data_loaded = yaml.safe_load(playbooks)
@@ -52,7 +60,7 @@ class Ansible(Provisioner):
 
         # validate playbooks
         for playbook in playbook_datas:
-            playbook_path = get_provisioner_path() + os.path.sep + playbook
+            playbook_path = GoadPath.get_provisioner_path() + playbook
             if not os.path.isfile(playbook_path):
                 Log.error(f'{playbook} not valid, file {playbook_path} not found')
             else:

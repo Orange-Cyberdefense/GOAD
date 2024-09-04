@@ -1,5 +1,6 @@
 from goad.extension import Extension
 from goad.utils import *
+from goad.goadpath import GoadPath
 from goad.log import Log
 from goad.exceptions import *
 from goad.provider.terraform.azure import AzureProvider
@@ -12,7 +13,7 @@ from goad.provider.vagrant.vmware import VmwareProvider
 class Labs:
     def __init__(self):
         self.labs = {}
-        for lab_name in Utils.list_folders(get_labs_path()):
+        for lab_name in Utils.list_folders(GoadPath.get_labs_path()):
             if lab_name != 'TEMPLATE':
                 try:
                     self.labs[lab_name] = Lab(lab_name)
@@ -26,6 +27,9 @@ class Labs:
 
     def get_labs_list(self):
         return list(self.labs.values())
+
+    def is_exist(self, lab_name):
+        return lab_name in self.labs.keys()
 
 
 class Lab:
@@ -44,7 +48,7 @@ class Lab:
             pass
 
     def _load_providers(self, lab_name):
-        for provider_name in Utils.list_folders(get_providers_path(lab_name)):
+        for provider_name in Utils.list_folders(GoadPath.get_lab_providers_path(lab_name)):
             provider = None
             if provider_name == VIRTUALBOX:
                 provider = VirtualboxProvider(lab_name)

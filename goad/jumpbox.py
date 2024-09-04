@@ -4,7 +4,7 @@ from goad.command.windows import WindowsCommand
 from goad.exceptions import JumpBoxInitFailed
 from goad.log import Log
 from goad.utils import *
-
+from goad.goadpath import GoadPath
 
 class JumpBox:
 
@@ -32,7 +32,7 @@ class JumpBox:
 
     def prepare_jumpbox(self):
         script_name = self.provider.jumpbox_setup_script
-        script_file = get_script_path(script_name)
+        script_file = GoadPath.get_script_path(script_name)
         if not os.path.isfile(script_file):
             Log.error(f'script file: {script_file} not found !')
             return None
@@ -52,7 +52,7 @@ class JumpBox:
         :return:
         """
         # # rsync -a --exclude-from='.gitignore' -e "ssh -o 'StrictHostKeyChecking no' -i $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" "$CURRENT_DIR/" goad@$public_ip:~/GOAD/
-        source = get_project_path()
+        source = GoadPath.get_project_path()
         destination = f'{self.username}@{self.ip}:~/GOAD/'
         self.command.rsync(source, destination, self.ssh_key)
 

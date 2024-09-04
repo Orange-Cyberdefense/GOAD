@@ -3,14 +3,14 @@ import sys
 from goad.command.cmd import Command
 import subprocess
 from goad.log import Log
-from goad.utils import *
+from goad.utils import Utils
 
 
 class LinuxCommand(Command):
 
     def run_shell(self, command, path):
         try:
-            Log.info('CWD: ' + get_relative_path(str(path)))
+            Log.info('CWD: ' + Utils.get_relative_path(str(path)))
             Log.cmd(command)
             subprocess.run(command, cwd=path, shell=True)
         except subprocess.CalledProcessError as e:
@@ -19,7 +19,7 @@ class LinuxCommand(Command):
     def run_command(self, command, path):
         result = None
         try:
-            Log.info('CWD: ' + get_relative_path(str(path)))
+            Log.info('CWD: ' + Utils.get_relative_path(str(path)))
             Log.cmd(command)
             result = subprocess.run(command, cwd=path, stderr=sys.stderr, stdout=sys.stdout, shell=True)
         except subprocess.CalledProcessError as e:
@@ -51,7 +51,7 @@ class LinuxCommand(Command):
         try:
             command = ['vagrant']
             command += args
-            Log.info('CWD: ' + get_relative_path(str(path)))
+            Log.info('CWD: ' + Utils.get_relative_path(str(path)))
             Log.cmd(' '.join(command))
             result = subprocess.run(command, cwd=path, stderr=sys.stderr, stdout=sys.stdout)
         except subprocess.CalledProcessError as e:
@@ -73,7 +73,7 @@ class LinuxCommand(Command):
         try:
             command = ['terraform']
             command += args
-            Log.info('CWD: ' + get_relative_path(str(path)))
+            Log.info('CWD: ' + Utils.get_relative_path(str(path)))
             Log.cmd(' '.join(command))
             result = subprocess.run(command, cwd=path, stderr=sys.stderr, stdout=sys.stdout)
         except subprocess.CalledProcessError as e:
@@ -85,7 +85,7 @@ class LinuxCommand(Command):
         try:
             command = ['terraform', 'output', '-raw']
             command += args
-            Log.info('CWD: ' + get_relative_path(str(path)))
+            Log.info('CWD: ' + Utils.get_relative_path(str(path)))
             Log.cmd(' '.join(command))
             result = subprocess.run(command, cwd=path,
                                     stdout=subprocess.PIPE,
@@ -106,7 +106,7 @@ class LinuxCommand(Command):
         try:
             command = 'ansible-playbook '
             command += args
-            Log.info('CWD: ' + get_relative_path(str(path)))
+            Log.info('CWD: ' + Utils.get_relative_path(str(path)))
             Log.cmd(command)
             result = subprocess.run(command, cwd=path, stderr=sys.stderr, stdout=sys.stdout, shell=True)
         except subprocess.CalledProcessError as e:

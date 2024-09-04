@@ -4,7 +4,7 @@ import os
 import platform
 from goad.command.linux import LinuxCommand
 from goad.command.windows import WindowsCommand
-from goad.utils import *
+from goad.goadpath import GoadPath
 
 
 class Provisioner(ABC):
@@ -16,11 +16,15 @@ class Provisioner(ABC):
         self.lab_name = lab_name
         self.provider_name = provider.provider_name
         self.provider = provider
-        self.path = get_provisioner_path() + os.path.sep
+        self.path = GoadPath.get_provisioner_path()
+        self.instance_path = ''
         if platform.system() == 'Windows':
             self.command = WindowsCommand()
         else:
             self.command = LinuxCommand()
+
+    def set_instance_path(self, path):
+        self.instance_path = path
 
     def run(self, arg):
         pass

@@ -1,13 +1,9 @@
 import cmd
 import argparse
-from rich import print
-
 from goad.config import Config
 from goad.jumpbox import JumpBox
 from goad.lab_manager import LabManager
 from goad.menu import print_menu, print_logo
-from goad.log import Log
-from goad.utils import *
 from goad.labs import *
 from goad.infos import *
 
@@ -18,20 +14,23 @@ class Goad(cmd.Cmd):
         super().__init__()
         # get the arguments
         self.args = args
-
-        # Prepare all labs objects
-        labs = Labs()
-        # prepare config, read goad.ini and merge with args
+        # prepare config, read configuration file and merge with args
         config = Config().merge_config(args)
-
         # prepare lab controller to manage labs
-        self.lab_manager = LabManager().init(labs, config)
-
+        self.lab_manager = LabManager().init(config)
+        self.welcome()
         # set current lab and provider
         self.refresh_prompt()
 
+    def welcome(self):
+        Log.info('lab instances :')
+        # show instances tables
+        self.lab_manager.lab_instances.show_instances()
+        # show current configuration
+        # self.lab_manager.show_settings()
+
     def refresh_prompt(self):
-        self.prompt = f"\n{self.lab_manager.get_current_lab_name()} @ {self.lab_manager.get_current_provider_name()} > "
+        self.prompt = f"\n{self.lab_manager.inline_settings()} ({self.lab_manager.get_current_instance_id()}) > "
 
     def default(self, line):
         print()
@@ -44,47 +43,49 @@ class Goad(cmd.Cmd):
         return True
 
     # main commands
-    def do_status(self, arg):
-        self.lab_manager.get_current_provider().status()
-
     def do_check(self, arg):
-        self.lab_manager.get_current_provider().check()
+        self.lab_manager.check()
+
+    def do_status(self, arg):
+        self.lab_manager.get_current_instance().provider.status()
 
     def do_install(self, arg):
-        self.lab_manager.get_current_provider().install()
+        self.lab_manager.get_current_instance_provider().install()
 
     def do_start(self, arg):
-        self.lab_manager.get_current_provider().start()
+        self.lab_manager.get_current_instance_provider().start()
 
     def do_start_vm(self, arg):
         if arg == '':
             Log.error('missing virtual machine name')
             Log.info('start_vm <vm>')
         else:
-            self.lab_manager.get_current_provider().start_vm(arg)
+            self.lab_manager.get_current_instance_provider().start_vm(arg)
 
     def do_stop(self, arg):
-        self.lab_manager.get_current_provider().stop()
+        self.lab_manager.get_current_instance_provider().stop()
 
     def do_stop_vm(self, arg):
         if arg == '':
             Log.error('missing virtual machine name')
             Log.info('stop_vm <vm>')
         else:
-            self.lab_manager.get_current_provider().stop_vm(arg)
+            self.lab_manager.get_current_instance_provider().stop_vm(arg)
 
     def do_destroy(self, arg):
-        self.lab_manager.get_current_provider().destroy()
+        self.lab_manager.get_current_instance_provider().destroy()
 
     def do_destroy_vm(self, arg):
         if arg == '':
             Log.error('missing virtual machine name')
             Log.info('destroy_vm <vm>')
         else:
-            self.lab_manager.get_current_provider().destroy_vm(arg)
+            self.lab_manager.get_current_instance_provider().destroy_vm(arg)
 
     def do_provide(self, arg):
-        self.lab_manager.get_current_provider().install()
+        result = self.lab_manager.get_current_instance_provider().install()
+        if result:
+            self.lab_manager.current_instance.set_status(TO_PROVISION)
 
     def do_provision(self, arg):
         if arg == '':
@@ -92,27 +93,27 @@ class Goad(cmd.Cmd):
             Log.info('provision <playbook>')
         else:
             # run playbook
-            self.lab_manager.get_current_provisioner().run(arg)
+            self.lab_manager.get_current_instance_provisioner().run(arg)
 
     def do_provision_lab(self, arg):
-        self.lab_manager.get_current_provisioner().run()
+        self.lab_manager.get_current_instance_provisioner().run()
 
     def do_provision_lab_from(self, arg):
-        self.lab_manager.get_current_provisioner().run_from(arg)
+        self.lab_manager.get_current_instance_provisioner().run_from(arg)
 
     def do_prepare_jumpbox(self, arg):
-        if self.lab_manager.get_current_provisioner().provisioner_name == 'ansible_remote':
-            self.lab_manager.get_current_provisioner().prepare_jumpbox()
+        if self.lab_manager.get_current_instance_provisioner().provisioner_name == 'ansible_remote':
+            self.lab_manager.get_current_instance_provisioner().prepare_jumpbox()
         else:
             Log.error('no remote provisioning')
 
     def do_show_config(self, arg):
-        show_current_config(self.lab_manager)
+        self.lab_manager.show_settings()
 
     def do_ssh_jumpbox(self, arg):
-        if self.lab_manager.get_current_provider().use_jumpbox:
+        if self.lab_manager.get_current_instance_provider().use_jumpbox:
             try:
-                jump_box = JumpBox(self.lab_manager.get_current_lab_name(), self.lab_manager.get_current_provider())
+                jump_box = JumpBox(self.lab_manager.get_current_lab_name(), self.lab_manager.get_current_instance_provider())
                 jump_box.ssh()
             except JumpBoxInitFailed as e:
                 Log.error('Jumpbox retrieve connection info failed, abort')
@@ -131,9 +132,8 @@ class Goad(cmd.Cmd):
             Log.info('set_lab <lab>')
         else:
             try:
-                if self.lab_manager.set_lab(arg):
-                    Log.success(f'Lab {arg} loaded')
-                    self.refresh_prompt()
+                self.lab_manager.set_lab(arg)
+                self.refresh_prompt()
             except ValueError as err:
                 Log.error(err.args[0])
                 Log.info('Available labs :')
@@ -151,14 +151,8 @@ class Goad(cmd.Cmd):
             Log.info(f'set_provider <provider> (allowed values : {",".join(ALLOWED_PROVIDERS)})')
         else:
             try:
-                if self.lab_manager.set_provider(arg):
-                    Log.success(f'Provider {arg} loaded')
-                    self.refresh_prompt()
-                else:
-                    Log.error(f'provider {arg} does not exist on lab {self.lab_manager.get_current_lab_name()}')
-                    Log.info('Available Providers :')
-                    for provider_name in self.lab_manager.get_lab_providers(self.lab_manager.get_current_lab_name()):
-                        Log.info(f' - {provider_name}')
+                self.lab_manager.set_provider(arg)
+                self.refresh_prompt()
             except ValueError as err:
                 Log.error(err.args[0])
 
@@ -168,17 +162,21 @@ class Goad(cmd.Cmd):
             Log.info(f'set_provisioner <provisioner> (allowed values : {",".join(ALLOWED_PROVISIONER)})')
         else:
             try:
-                if self.lab_manager.set_provisioner(arg):
-                    Log.success(f'Provisioner {arg} loaded')
-                    self.refresh_prompt()
-                else:
-                    Log.error(f'provisioner {arg} does not exist on lab {self.lab_manager.get_current_lab_name()}')
-                    Log.info(f'Available Provisioner : {",".join(ALLOWED_PROVISIONER)}')
+                self.lab_manager.set_provisioner(arg)
+                self.refresh_prompt()
             except ValueError as err:
                 Log.error(err.args[0])
 
+    def do_set_ip_range(self, arg):
+        if arg == '':
+            Log.error('missing ip_start argument')
+            Log.info(f'set_ip_start <ip_start>')
+        else:
+            self.lab_manager.set_ip_range(arg)
+            self.refresh_prompt()
+
     def do_list_extensions(self, arg):
-        print(self.lab_manager.get_current_lab().get_list_extensions())
+        print(self.lab_manager.get_current_instance_lab().get_list_extensions())
 
     def do_install_extension(self, arg):
         if arg == '':
@@ -186,9 +184,9 @@ class Goad(cmd.Cmd):
             Log.info(f'provision_extension <extension>')
         else:
             extension_name = arg
-            extension = self.lab_manager.get_current_lab().get_extension(extension_name)
+            extension = self.lab_manager.get_current_instance_lab().get_extension(extension_name)
             if extension is not None:
-                self.lab_manager.get_current_provider().install_extension(extension)
+                self.lab_manager.get_current_instance_provider().install_extension(extension)
             else:
                 Log.error(f'extension {extension_name} not found abort')
 
@@ -198,9 +196,9 @@ class Goad(cmd.Cmd):
             Log.info(f'provision_extension <extension>')
         else:
             extension_name = arg
-            extension = self.lab_manager.get_current_lab().get_extension(extension_name)
+            extension = self.lab_manager.get_current_instance_lab().get_extension(extension_name)
             if extension is not None:
-                self.lab_manager.get_current_provisioner().run_extension(extension)
+                self.lab_manager.get_current_instance_provisioner().run_extension(extension)
             else:
                 Log.error(f'extension {extension_name} not found abort')
 
@@ -210,16 +208,37 @@ class Goad(cmd.Cmd):
     def do_show_list_providers(self, arg):
         show_labs_providers_list(self.lab_manager.get_labs())
 
+    def do_create_instance(self, arg):
+        self.lab_manager.create_instance()
+        self.refresh_prompt()
+
+    def do_load_instance(self, arg):
+        if arg == '':
+            Log.error('missing instance id argument')
+            Log.info(f'use_instance <instance_id>')
+        else:
+            self.lab_manager.load_instance(arg)
+            self.refresh_prompt()
+
+    def do_unload_instance(self, arg):
+        if self.lab_manager.get_current_instance_id() is not None:
+            self.lab_manager.unload_instance()
+            self.refresh_prompt()
+
+    def do_list_instances(self, arg):
+        self.lab_manager.lab_instances.show_instances()
+
 
 def parse_args():
     parser = argparse.ArgumentParser(prog='goad.py',
                                      description='Description : goad lab management console.',
                                      epilog=show_help(), formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("-t", "--task", help="task to do", required=False)
-    parser.add_argument("-l", "--lab", help="lab to use", required=False)
-    parser.add_argument("-p", "--provider", help="provider to use", required=False)
+    parser.add_argument("-l", "--lab", help="lab to use (default: GOAD)", default='GOAD', required=False)
+    parser.add_argument("-p", "--provider", help="provider to use (default: vmware)", default='vmware', required=False)
+    parser.add_argument("-ip", "--ip_range", help="ip range to use (default: 192.168.56)", default='192.168.56', required=False)
+    parser.add_argument("-m", "--method", help="deploy method to use (default: local)", default='local', required=False)
     parser.add_argument("-e", "--extensions", help="extensions to use", action='append', required=False)
-    parser.add_argument("-m", "--method", help="deploy method to use", required=False)
     parser.add_argument("-a", "--ansible_only", help="run only ansible on install", action='store_true', required=False)
     parser.add_argument("-r", "--run_playbook", help="run ansible playbook", action='store_true', required=False)
     args = parser.parse_args()

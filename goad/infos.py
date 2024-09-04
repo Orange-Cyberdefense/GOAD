@@ -2,12 +2,6 @@ from goad.log import *
 from rich.table import Table
 
 
-def show_current_config(lab_manager):
-    Log.info(f'Current Lab         : {lab_manager.get_current_lab_name()}')
-    Log.info(f'Current Provider    : {lab_manager.get_current_provider_name()}')
-    Log.info(f'Current Provisioner : {lab_manager.get_current_provisioner_name()}')
-
-
 def show_labs_providers_list(labs):
     for lab in labs:
         Log.success(f'*** {lab.lab_name} ***')

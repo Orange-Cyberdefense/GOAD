@@ -1,13 +1,8 @@
-import os
-from goad.config import Config
-from goad.provisioner.ansible.docker import DockerAnsibleProvisioner
-from goad.provisioner.ansible.local import LocalAnsibleProvisionerCmd
-from goad.provisioner.ansible.runner import LocalAnsibleProvisionerEmbed
-from goad.provisioner.ansible.remote import RemoteAnsibleProvisioner
-
-from goad.utils import *
-from goad.provisioner.provisioner import *
+from goad.instances import LabInstances
+from goad.instance import LabInstance
+from goad.labs import Labs
 from goad.provisioner.ansible.ansible import *
+from goad.settings import Settings
 
 
 class LabManager(metaclass=SingletonMeta):
@@ -18,99 +13,125 @@ class LabManager(metaclass=SingletonMeta):
         self.current_provider = None
         self.current_provisioner = None
         self.current_extensions = []
-        self.config = None
+        self.current_ip_range = None
 
-    def init(self, labs, config):
-        self.labs = labs
+        self.config = None
+        self.lab_instances = None
+        self.current_instance = None
+        self.current_settings = None
+
+    def init(self, config):
+        # Prepare all labs objects
+        self.labs = Labs()
+        # Prepare all instance objects
+        self.lab_instances = LabInstances()
+        # create current settings object
+        self.current_settings = Settings(self)
+
+        # init lab current config values
         self.config = config
-        # init lab and provider with config values
-        self.set_lab(self.config.get(LAB))
-        self.set_provider(self.config.get(PROVIDER))
-        self.set_provisioner(self.config.get(PROVISIONER))
+        self.current_settings.set_lab_name(self.config.get(LAB), False)
+        self.current_settings.set_provider_name(self.config.get(PROVIDER), False)
+        self.current_settings.set_provisioner_name(self.config.get(PROVISIONER))
+        self.current_settings.set_ip_range(self.config.get(IP_RANGE))
         return self
 
-    def set_lab(self, lab_name):
-        self.current_lab = self.labs.get_lab(lab_name)
-        if self.current_lab is not None:
-            if self.current_provider is not None:
-                # lab changed, change provider if needed
-                old_provider_name = self.current_provider.provider_name
-                # check if previous provider is present in the lab
-                if self.current_lab.get_provider(old_provider_name) is None:
-                    Log.info(f'Provider {old_provider_name} not found in lab {lab_name}')
-                    new_provider_name = self.current_lab.get_first_provider_name()
-                    Log.info(f'Change provider to {new_provider_name}')
-                    self.set_provider(new_provider_name)
-            return self.current_lab
+    def show_settings(self):
+        self.current_settings.show()
+
+    def inline_settings(self):
+        return self.current_settings.inline()
+
+    def create_instance(self):
+        instance = LabInstance(None, self.current_settings.lab_name, self.current_settings.provider_name, self.current_settings.provisioner_name,
+                               self.current_settings.ip_range)
+        result = instance.create_instance_folder()
+        if result:
+            self.lab_instances.add_instance(instance)
+            self.load_instance(instance.instance_id)
         else:
-            Log.error(f'lab {lab_name} not found')
-            Log.info('fallback to GOAD lab')
-            self.set_lab('GOAD')
+            Log.error('Error during creating instance folder')
+
+    def load_instance(self, instance_id):
+        instance = self.lab_instances.get_instance(instance_id)
+        if instance is not None:
+            loading_result = instance.load(self.labs)
+            if loading_result:
+                # unload previous instance if exist
+                self.current_instance = None
+                # load lab instance change current context
+                self.current_settings.update(instance)
+                # load instance
+                self.current_instance = instance
+                Log.success(f'Instance {instance_id} loaded')
+                self.current_instance.show_instance()
+        else:
+            Log.error('Instance not found in workspace')
+
+    def unload_instance(self):
+        self.current_instance = None
+
+    def set_lab(self, lab_name):
+        if self.current_instance is None:
+            self.current_settings.set_lab_name(lab_name)
+        else:
+            Log.error("Can't change lab if instance is selected")
+            Log.info('use unload_instance to quit the current instance')
 
     def set_provider(self, provider_name):
-        if self.current_lab is not None:
-            self.current_provider = self.current_lab.get_provider(provider_name)
-            if self.current_provider is not None:
-                if self.current_provisioner is None:
-                    default_provisioner = self.current_provider.default_provisioner
-                    self.set_provisioner(default_provisioner)
-                else:
-                    self.set_provisioner(self.current_provisioner.provisioner_name)
-                return self.current_provider
-            else:
-                Log.error(f'provider {provider_name} not found')
-                new_provider_name = self.current_lab.get_first_provider_name()
-                Log.info(f'fallback to first provider found: {new_provider_name}, change it with : "set_provider"')
-                self.set_provider(new_provider_name)
+        if self.current_instance is None:
+            self.current_settings.set_provider_name(provider_name)
         else:
-            raise ValueError(f'current_lab not set')
+            Log.error("Can't change provider if instance is selected")
+            Log.info('use unload_instance to quit the current instance')
 
     def set_provisioner(self, provisioner_name):
-        if self.current_lab is None:
-            raise ValueError(f'current_lab not set')
+        self.current_settings.set_provisioner_name(provisioner_name)
 
-        if self.current_provider is None:
-            raise ValueError(f'current provider is not set')
-
-        if provisioner_name not in self.current_provider.allowed_provisioners:
-            Log.info(f'provisioner method {provisioner_name} is not allowed for provider {self.current_provider.provider_name}')
-            Log.info(f'automatic changing provisioner method {provisioner_name} to default for this provider : {self.current_provider.default_provisioner}')
-            provisioner_name = self.current_provider.default_provisioner
-
-        if provisioner_name == PROVISIONING_DOCKER:
-            self.current_provisioner = DockerAnsibleProvisioner(self.current_lab.lab_name, self.current_provider)
-        elif provisioner_name == PROVISIONING_RUNNER:
-            self.current_provisioner = LocalAnsibleProvisionerEmbed(self.current_lab.lab_name, self.current_provider)
-        elif provisioner_name == PROVISIONING_LOCAL:
-            self.current_provisioner = LocalAnsibleProvisionerCmd(self.current_lab.lab_name, self.current_provider)
-        elif provisioner_name == PROVISIONING_REMOTE:
-            self.current_provisioner = RemoteAnsibleProvisioner(self.current_lab.lab_name, self.current_provider)
-
-        if self.current_provisioner is None:
-            raise ValueError(f'error during provisioner set {provisioner_name} not found')
-
-        return self.current_provisioner
+    def set_ip_range(self, ip_range):
+        self.current_settings.set_ip_range(ip_range)
 
     def get_labs(self):
         return self.labs.get_labs_list()
 
-    def get_current_lab(self):
-        return self.current_lab
+    def get_lab(self, lab_name):
+        return self.labs.get_lab(lab_name)
+
+    def is_lab_exist(self, lab_name):
+        return self.labs.is_exist(lab_name)
 
     def get_current_lab_name(self):
-        return self.current_lab.lab_name
-
-    def get_current_provider(self):
-        return self.current_provider
+        return self.current_settings.lab_name
 
     def get_current_provider_name(self):
-        return self.current_provider.provider_name
+        return self.current_settings.provider_name
+    def check(self):
+        lab = self.get_lab(self.get_current_lab_name())
+        provider = lab.get_provider(self.get_current_provider_name())
+        if provider is not None:
+            return provider.check()
+        else:
+            Log.error('error provider not found')
+            return False
 
-    def get_lab_providers(self, lab):
-        return self.labs.get_current_lab(lab).providers.keys()
+    def get_labs(self):
+        return self.labs
 
-    def get_current_provisioner(self):
-        return self.current_provisioner
+    # instance function
+    def get_current_instance_id(self):
+        if self.current_instance is not None:
+            return self.current_instance.instance_id
+        return ''
 
-    def get_current_provisioner_name(self):
-        return self.current_provisioner.provisioner_name
+    def get_current_instance(self):
+        return self.current_instance
+
+    def get_current_instance_lab(self):
+        return self.current_instance.lab
+
+    def get_current_instance_provider(self):
+        return self.current_instance.provider
+
+    def get_current_instance_provisioner(self):
+        return self.current_instance.provisioner
+

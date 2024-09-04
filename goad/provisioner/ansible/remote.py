@@ -33,11 +33,11 @@ class RemoteAnsibleProvisioner(Ansible):
         if playbook_path is None:
             playbook_path = self.remote_project_path + '/ansible/'
         else:
-            playbook_path = transform_path(playbook_path, self.remote_project_path)
+            playbook_path = Utils.transform_local_path_to_remote_path(playbook_path, self.remote_project_path)
 
         remote_inventories = []
         for inventory in inventories:
-            remote_inventories.append(transform_path(inventory, self.remote_project_path))
+            remote_inventories.append(Utils.transform_local_path_to_remote_path(inventory, self.remote_project_path))
         command = f'/home/goad/.local/bin/ansible-playbook -i {" -i ".join(remote_inventories)} {playbook}'
 
         Log.info(f'Run playbook : {playbook} with inventory file(s) : {", ".join(remote_inventories)}')

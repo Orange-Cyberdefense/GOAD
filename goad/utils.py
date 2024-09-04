@@ -1,10 +1,13 @@
 from pathlib import Path
 import os
+import random
+import string
 
 # constants
 LAB = 'lab'
 PROVIDER = 'provider'
 PROVISIONER = 'provisioner'
+IP_RANGE = 'ip_range'
 
 # log level
 INFO = 5
@@ -35,62 +38,26 @@ VIRTUALBOX_ALLOWED_PROVISIONER = [PROVISIONING_LOCAL, PROVISIONING_RUNNER, PROVI
 
 project_path = os.path.normpath(os.path.dirname(os.path.abspath(__file__)) + os.path.sep + '..')
 
+# instance status
+TO_PROVIDE = 'to_provide'
+TO_PROVISION = 'to_provision'
+READY = 'ready'
+
 
 # TODO : create a class PathManager and use it
 
-def get_project_path():
-    return project_path + os.path.sep
-
-
-def get_labs_path():
-    return project_path + os.path.sep + 'ad'
-
-
-def get_relative_path(path):
-    return path[len(project_path):]
-
-
-def transform_path(origin, remote_project_path):
-    return remote_project_path + origin[len(project_path):]
-
-
-def get_providers_path(lab_name):
-    return project_path + os.path.sep + 'ad' + os.path.sep + lab_name + os.path.sep + 'providers'
-
-
-def get_provisioner_path():
-    return project_path + os.path.sep + 'ansible'
-
-
-def get_global_inventory_path():
-    return project_path + os.path.sep + 'globalsettings.ini'
-
-
-def get_lab_inventory_path(lab_name):
-    return project_path + os.path.sep + 'ad' + os.path.sep + lab_name + os.path.sep + 'data' + os.path.sep + 'inventory'
-
-
-def get_provider_inventory_path(lab_name, provider):
-    return project_path + os.path.sep + 'ad' + os.path.sep + lab_name + os.path.sep + 'providers' + os.path.sep + provider + os.path.sep + 'inventory'
 
 
 def get_ubuntu_jumpbox_key(lab_name, provider):
     return project_path + os.path.sep + 'ad' + os.path.sep + lab_name + os.path.sep + 'providers' + os.path.sep + provider + os.path.sep + 'ssh_keys' + os.path.sep + 'ubuntu-jumpbox.pem'
 
 
-def get_script_path(script):
-    return project_path + os.path.sep + 'scripts' + os.path.sep + script
-
-
-def get_playbooks_lab_config():
-    return project_path + os.path.sep + 'playbooks.yml'
-
+# extensions paths
 
 def get_extensions_path():
     return project_path + os.path.sep + 'extensions'
 
 
-# extensions paths
 def get_extension_providers_path(extension_name):
     return project_path + os.path.sep + 'extensions' + os.path.sep + extension_name + os.path.sep + 'providers'
 
@@ -127,3 +94,34 @@ class Utils:
             return [p.name for p in Path(path).iterdir() if p.is_dir()]
         else:
             return []
+
+    @staticmethod
+    def get_relative_path(path):
+        return path[len(project_path):]
+
+    @staticmethod
+    def transform_local_path_to_remote_path(origin, remote_project_path):
+        return remote_project_path + origin[len(project_path):]
+
+    @staticmethod
+    def get_random_string(length):
+        # choose from all lowercase letter
+        letters = string.ascii_lowercase
+        result_str = ''.join(random.choice(letters) for i in range(length))
+        return result_str
+
+    @staticmethod
+    def replace_in_file(filename, search_string, new_string):
+        if os.path.isfile(filename):
+            # Read in the file
+            with open(filename, 'r') as file:
+                filedata = file.read()
+
+            # Replace the target string
+            filedata = filedata.replace(search_string, new_string)
+
+            # Write the file out again
+            with open(filename, 'w') as file:
+                file.write(filedata)
+            return True
+        return False

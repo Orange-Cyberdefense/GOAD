@@ -7,6 +7,7 @@ from goad.command.windows import WindowsCommand
 from goad.utils import *
 from goad.log import Log
 
+
 class Provider(ABC):
     lab_name = ''
     provider_name = None
@@ -16,11 +17,14 @@ class Provider(ABC):
 
     def __init__(self, lab_name):
         self.lab_name = lab_name
-        self.path = get_providers_path(lab_name) + os.path.sep + self.provider_name + os.path.sep
+        self.path = None
         if platform.system() == 'Windows':
             self.command = WindowsCommand()
         else:
             self.command = LinuxCommand()
+
+    def set_instance_path(self, provider_instance_path):
+        self.path = provider_instance_path
 
     def check(self):
         pass
@@ -57,4 +61,3 @@ class Provider(ABC):
         if self.provider_name not in extension.providers_name_list:
             Log.error('Provider not available for this extension')
             return None
-
