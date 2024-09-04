@@ -29,3 +29,4 @@ ad/*/providers/*/extensions/*.rb
 __pycache__/
 *.pyc
 workspace/*
+todo.md
