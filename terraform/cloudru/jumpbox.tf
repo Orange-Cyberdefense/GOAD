@@ -20,6 +20,9 @@ resource "sbercloud_compute_instance" "jumpbox" {
   user_data          = "#!/bin/sh\necho '${tls_private_key.ssh.public_key_openssh}' > /root/.ssh/authorized_keys"
   security_group_ids = [sbercloud_networking_secgroup.secgroup_allow_any.id]
 
+  system_disk_type = "SAS"
+  system_disk_size = 60 # to install tools like exegol
+
   network {
     uuid        = sbercloud_vpc_subnet.goad_subnet.id
     fixed_ip_v4 = "192.168.56.100"
