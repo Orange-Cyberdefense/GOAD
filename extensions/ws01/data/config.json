@@ -1,5 +1,5 @@
 {
-  "lab_ws01_extension" : {
+  "lab_extension" : {
       "hosts" : {
           "ws01" : {
               "hostname" : "casterlyrock",
