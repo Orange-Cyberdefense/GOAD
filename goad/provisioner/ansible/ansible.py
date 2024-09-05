@@ -85,9 +85,10 @@ class Ansible(Provisioner):
     def run_extension(self, extension, install=True):
         inventory = self._get_lab_inventory(self.lab_name, self.provider_name)
 
-        extension_inventory = extension.get_inventory(self.provider_name)
+        extension_inventory = self.instance_path + os.path.sep + extension.name + '_inventory'
+
         if extension_inventory is not None:
-            inventory += extension_inventory
+            inventory.append(extension_inventory)
 
         global_inventory = self._get_global_inventory()
         if global_inventory is not None:

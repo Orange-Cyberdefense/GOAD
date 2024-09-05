@@ -19,23 +19,6 @@ class Extension:
     def list_providers_name(self):
         return self.providers_name_list
 
-    def get_inventory(self, provider_name):
-        inventory = []
-        # main inventory (inside ansible folder)
-        extension_inventory = get_extension_inventory_path(self.name)
-        if os.path.isfile(extension_inventory):
-            inventory.append(extension_inventory)
-            Log.success(f'Extension inventory : {extension_inventory} file found')
-
-        # extension provider inventory
-        if provider_name in self.providers_name_list:
-            extension_provider_inventory = get_extension_provider_inventory_path(self.name, provider_name)
-            if os.path.isfile(extension_provider_inventory):
-                inventory.append(extension_provider_inventory)
-                Log.success(f'Extension provider inventory : {extension_provider_inventory} file found')
-
-        return inventory
-
     def get_playbook(self, install=True):
         if install:
             return 'install.yml'

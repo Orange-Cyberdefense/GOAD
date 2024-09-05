@@ -56,8 +56,3 @@ class Provider(ABC):
     def restart_vm(self, vm_name):
         self.stop_vm(vm_name)
         self.start_vm(vm_name)
-
-    def install_extension(self, extension):
-        if self.provider_name not in extension.providers_name_list:
-            Log.error('Provider not available for this extension')
-            return None

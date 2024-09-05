@@ -112,6 +112,7 @@ class LabManager(metaclass=SingletonMeta):
 
     def get_current_provider_name(self):
         return self.current_settings.provider_name
+
     def check(self):
         lab = self.get_lab(self.get_current_lab_name())
         provider = lab.get_provider(self.get_current_provider_name())
@@ -120,9 +121,6 @@ class LabManager(metaclass=SingletonMeta):
         else:
             Log.error('error provider not found')
             return False
-
-    def get_labs(self):
-        return self.labs
 
     # instance function
     def get_current_instance_id(self):
@@ -141,4 +139,3 @@ class LabManager(metaclass=SingletonMeta):
 
     def get_current_instance_provisioner(self):
         return self.current_instance.provisioner
-

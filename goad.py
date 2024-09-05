@@ -200,12 +200,21 @@ class Goad(cmd.Cmd):
             Log.error('missing extension argument')
             Log.info(f'provision_extension <extension>')
         else:
-            extension_name = arg
-            extension = self.lab_manager.get_current_instance_lab().get_extension(extension_name)
-            if extension is not None:
-                self.lab_manager.get_current_instance_provider().install_extension(extension)
+            Log.info('start install extension')
+            if self.lab_manager.current_instance is not None:
+                extension_name = arg
+                extension = self.lab_manager.get_current_instance_lab().get_extension(extension_name)
+                if extension is not None:
+                    # enable and create files
+                    self.lab_manager.get_current_instance().enable_extension(extension_name)
+                    # # start lab with extensions files
+                    self.lab_manager.get_current_instance_provider().start()
+                    # # provision extension
+                    # self.do_provision_extension(extension_name)
+                else:
+                    Log.error(f'extension {extension_name} not found abort')
             else:
-                Log.error(f'extension {extension_name} not found abort')
+                Log.error('Install extension can only be run from an instance')
 
     def do_provision_extension(self, arg):
         if arg == '':
@@ -213,11 +222,11 @@ class Goad(cmd.Cmd):
             Log.info(f'provision_extension <extension>')
         else:
             extension_name = arg
-            extension = self.lab_manager.get_current_instance_lab().get_extension(extension_name)
-            if extension is not None:
+            if extension_name in self.lab_manager.get_current_instance().extensions:
+                extension = self.lab_manager.get_current_instance_lab().get_extension(extension_name)
                 self.lab_manager.get_current_instance_provisioner().run_extension(extension)
             else:
-                Log.error(f'extension {extension_name} not found abort')
+                Log.error(f'extension {extension_name} not enabled in instance abort')
 
     def do_show_labs_providers(self, arg):
         show_labs_providers_table(self.lab_manager.get_labs())

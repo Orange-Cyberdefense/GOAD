@@ -19,8 +19,8 @@
     - { role: "settings/adjust_rights", tags: 'adjust_rights' }
     - { role: "settings/user_rights", tags: 'adjust_rights' }
   vars:
-    local_admin_password: "{{lab_ws01_extension.hosts[dict_key].local_admin_password}}"
-    hostname: "{{lab_ws01_extension.hosts[dict_key].hostname}}"
-    member_domain: "{{lab_ws01_extension.hosts[dict_key].domain}}"
+    local_admin_password: "{{lab_extension.hosts[dict_key].local_admin_password}}"
+    hostname: "{{lab_extension.hosts[dict_key].hostname}}"
+    member_domain: "{{lab_extension.hosts[dict_key].domain}}"
     domain_password: "{{lab.domains[member_domain].domain_password}}"
-    local_groups: "{{lab_ws01_extension.hosts[dict_key].local_groups  | default({}) }}"
+    local_groups: "{{lab_extension.hosts[dict_key].local_groups  | default({}) }}"

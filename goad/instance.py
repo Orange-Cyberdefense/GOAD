@@ -103,6 +103,19 @@ class LabInstance:
     def is_vagrant(self):
         return self.provider_name == VMWARE or self.provider_name == VIRTUALBOX
 
+    def enable_extension(self, extension_name):
+        if extension_name not in self.extensions:
+            self.extensions.append(extension_name)
+            self.save_json_instance()
+        Log.info('Extension enabled update folders')
+        self.update_instance_folder()
+
+    def disable_extension(self, extension_name):
+        if extension_name in self.extensions:
+            self.extensions.remove(extension_name)
+            self.save_json_instance()
+            self.update_instance_folder()
+
     def save_json_instance(self):
         instance_info = {
             "id": self.instance_id,
@@ -122,14 +135,28 @@ class LabInstance:
         lab_environment = Environment(loader=FileSystemLoader(GoadPath.get_lab_provider_path(self.lab_name, self.provider_name)))
         lab_vagrantfile_template = lab_environment.get_template("Vagrantfile")
         lab_vagrantfile_content = lab_vagrantfile_template.render(
+            lab_name=self.lab_name,
             ip_range=self.ip_range
         )
 
-        # load template folder
+        # load lab extensions
+        lab_extensions_content = ''
+        for extension in self.extensions:
+            extension_provider_folder = GoadPath.get_extension_providers_provider_path(extension, self.provider_name)
+            extension_environment = Environment(loader=FileSystemLoader(extension_provider_folder))
+            lab_extension_vagrantfile_template = extension_environment.get_template("Vagrantfile")
+            lab_extensions_content += lab_extension_vagrantfile_template.render(
+                lab_name=self.lab_name,
+                ip_range=self.ip_range
+            ) + "\n"
+
+        # load extensions Vagrantfile into instance
         environment = Environment(loader=FileSystemLoader(GoadPath.get_template_path(self.provider_name)))
         vagrantfile_template = environment.get_template("Vagrantfile")
         vagrantfile_content = vagrantfile_template.render(
-            lab=lab_vagrantfile_content
+            lab_name=self.lab_name,
+            lab=lab_vagrantfile_content,
+            extensions=lab_extensions_content
         )
 
         # create vagrantfile
@@ -166,10 +193,12 @@ class LabInstance:
     def _create_provider_dir(self):
         # create provider dir
         # workspace/provider
-        os.mkdir(self.instance_provider_path, 0o755)
+        if not os.path.isdir(self.instance_provider_path):
+            os.mkdir(self.instance_provider_path, 0o755)
         # workspace/ssh_keys
         ssh_folder = self.instance_path + sep + 'ssh_keys'
-        os.mkdir(ssh_folder, 0o750)
+        if not os.path.isdir(ssh_folder):
+            os.mkdir(ssh_folder, 0o750)
         Log.info('Create instance providing files')
         if self.is_vagrant():
             self._create_vagrantfile()
@@ -193,6 +222,26 @@ class LabInstance:
         with open(instance_inventory_file, mode="w", encoding="utf-8") as inventory_file:
             inventory_file.write(instance_inventory_content)
             Log.success(f'Instance inventory file created : {Utils.get_relative_path(instance_inventory_file)}')
+
+    def _create_extensions_inventory(self):
+        Log.info('Create instance extensions inventory files')
+
+        instance_extension_inventory_content = ''
+        for extension in self.extensions:
+            extension_folder = GoadPath.get_extension_path(extension)
+            extension_environment = Environment(loader=FileSystemLoader(extension_folder))
+            instance_extension_inventory_template = extension_environment.get_template("inventory")
+            instance_extension_inventory_content += instance_extension_inventory_template.render(
+                lab_name=self.lab_name,
+                ip_range=self.ip_range
+            )
+
+            # create instance extension inventory file
+            instance_extension_inventory_file = self.instance_path + sep + extension + '_inventory'
+            with open(instance_extension_inventory_file, mode="w", encoding="utf-8") as inventory_file:
+                inventory_file.write(instance_extension_inventory_content)
+                Log.success(f'Instance inventory file created : {Utils.get_relative_path(instance_extension_inventory_file)}')
+
 
     def update_instance_folder(self):
         self.create_instance_folder(True)
@@ -224,7 +273,9 @@ class LabInstance:
             return False
 
         self._create_provisioning_inventory()
-        self.status = CREATED
+        self._create_extensions_inventory()
+        if self.status is not None:
+            self.status = CREATED
         self.save_json_instance()
         Log.info(f'Instance {self.instance_id} created')
         return True

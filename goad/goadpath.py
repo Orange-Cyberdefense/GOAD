@@ -124,14 +124,21 @@ class GoadPath:
 
     # EXTENSIONS
     @staticmethod
-    def get_extension_providers_path(extension_name):
+    def get_extension_path(extension_name):
         """
-        :return: <project>/extensions/<extension_name>/providers
+        :return: <project>/extensions/<extension_name>/
         """
-        return project_path + os.path.sep + 'extensions' + os.path.sep + extension_name + os.path.sep + 'providers'
+        return project_path + os.path.sep + 'extensions' + os.path.sep + extension_name + os.path.sep
 
     @staticmethod
-    def get_extension_provider_path(extension_name, provider_name):
+    def get_extension_providers_path(extension_name):
+        """
+        :return: <project>/extensions/<extension_name>/provider
+        """
+        return GoadPath.get_extension_path(extension_name) + 'providers'
+
+    @staticmethod
+    def get_extension_providers_provider_path(extension_name, provider_name):
         """
         :return:  <project>/extensions/<extension_name>/providers/<provider>/
         """
