@@ -38,7 +38,7 @@ variable "password" {
   default = "goadmin"
 }
 
-variable "admin_username" {
+variable "jumpbox_username" {
   type    = string
   default = "goad"
 }

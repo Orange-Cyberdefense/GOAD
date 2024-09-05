@@ -9,7 +9,7 @@ LAB=
 PROVIDER=
 METHOD=
 JOB=
-PROVIDERS="virtualbox vmware azure proxmox"
+PROVIDERS="virtualbox vmware azure cloudru proxmox"
 LABS=$(ls -A ad/ |grep -v 'TEMPLATE')
 TASKS="check install start stop status restart destroy disablevagrant enablevagrant"
 ANSIBLE_PLAYBOOKS="edr.yml build.yml ad-servers.yml ad-parent_domain.yml ad-child_domain.yml ad-members.yml ad-trusts.yml ad-data.yml ad-gmsa.yml laps.yml ad-relations.yml adcs.yml ad-acl.yml servers.yml security.yml vulnerabilities.yml reboot.yml elk.yml sccm-install.yml sccm-config.yml"
@@ -137,20 +137,21 @@ else
 fi
 
 
-print_azure_info() {
-    echo -e "\n\n"
-    echo "Ubuntu jumpbox IP: $public_ip"
+print_jumpbox_info() {
+  echo -e "\n\n"
+  echo "Ubuntu jumpbox IP: $public_ip"
+  echo "Ubuntu jumpbox username: $jumpbox_username"
 
-    echo "You can now connect to the jumpbox using the following command:"
-    echo "ssh -i ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem goad@$public_ip"
-    echo -e "\n\n"
+  echo "You can now connect to the jumpbox using the following command:"
+  echo "ssh -i ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem $jumpbox_username@$public_ip"
+  echo -e "\n\n"
 
-    echo "${OK} ssh/config :"
-    echo "Host goad_azure"
-    echo "    Hostname $public_ip"
-    echo "    User goad"
-    echo "    Port 22"
-    echo "    IdentityFile $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem"
+  echo "${OK} ssh/config :"
+  echo "Host goad_$provider"
+  echo "    Hostname $public_ip"
+  echo "    User $jumpbox_username"
+  echo "    Port 22"
+  echo "    IdentityFile $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem"
 }
 
 install_providing(){
@@ -197,7 +198,7 @@ install_providing(){
         exit 1
       fi
       ;;
-    "azure")
+    "azure"|"cloudru")
       if [ -d "ad/$lab/providers/$provider/terraform" ]; then
           cd "ad/$lab/providers/$provider/terraform"
           echo "${OK} Initializing Terraform..."
@@ -220,14 +221,15 @@ install_providing(){
           # Get the public IP address of the VM
           echo "${OK} Getting jumpbox IP address..."
           public_ip=$(terraform output -raw ubuntu-jumpbox-ip)
-          print_azure_info
+          jumpbox_username=$(terraform output -raw ubuntu-jumpbox-username)
+          print_jumpbox_info
           cd -
 
-          echo "${OK} Rsync goad to jumpbox"
-          rsync -a --exclude-from='.gitignore' -e "ssh -o 'StrictHostKeyChecking no' -i $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" "$CURRENT_DIR/" goad@$public_ip:~/GOAD/
+          echo "${OK} Rsync to jumpbox"
+          rsync -a --exclude-from='.gitignore' -e "ssh -o 'StrictHostKeyChecking no' -i $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" "$CURRENT_DIR/" $jumpbox_username@$public_ip:~/GOAD/
 
           echo "${OK} Running setup script on jumpbox..."
-          ssh -o "StrictHostKeyChecking no" -i "ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" goad@$public_ip 'bash -s' <scripts/setup_azure.sh
+          ssh -o "StrictHostKeyChecking no" -i "ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" $jumpbox_username@$public_ip 'bash -s' <scripts/setup_ubuntu_jumpbox.sh
 
           echo "${OK} Ready to launch provisioning"
       else
@@ -283,34 +285,34 @@ install_provisioning(){
             ;;
         esac
       ;;
-    "azure")
-
+    "azure"|"cloudru")
           cd "ad/$lab/providers/$provider/terraform"
           public_ip=$(terraform output -raw ubuntu-jumpbox-ip)
+          jumpbox_username=$(terraform output -raw ubuntu-jumpbox-username)
           cd -
           
-          rsync -a --exclude-from='.gitignore' -e "ssh -o 'StrictHostKeyChecking no' -i $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" "$CURRENT_DIR/" goad@$public_ip:~/GOAD/
+          rsync -a --exclude-from='.gitignore' -e "ssh -o 'StrictHostKeyChecking no' -i $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" "$CURRENT_DIR/" $jumpbox_username@$public_ip:~/GOAD/
 
            case $method in
             "local")
               if [ -z $ANSIBLE_PLAYBOOK ]; then
-                ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" goad@$public_ip << EOF
-                  cd /home/goad/GOAD/ansible
+                ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" $jumpbox_username@$public_ip << EOF
+                  cd ~/GOAD/ansible
                   export LAB=$lab PROVIDER=$provider
                   ../scripts/provisionning.sh
                   exit
 EOF
               else
-              ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" goad@$public_ip << EOF
-                  cd /home/goad/GOAD/ansible
+              ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" $jumpbox_username@$public_ip << EOF
+                  cd ~/GOAD/ansible
                   ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $ANSIBLE_PLAYBOOK
                   exit
 EOF
               fi
-                print_azure_info
+                print_jumpbox_info
               ;;
             *)
-              echo "${ERROR} $method install on azure not implemented, use local"
+              echo "${ERROR} $method install on $provider not implemented, use local"
               ;;
           esac
       ;;
@@ -358,8 +360,8 @@ disablevagrant(){
             ;;
         esac
       ;;
-    "azure")
-          echo "Vagrant user not used in azure, skip."
+    "azure"|"cloudru")
+          echo "Vagrant user not used in $provider, skip."
       ;;
   esac
 }
@@ -394,8 +396,8 @@ enablevagrant(){
             ;;
         esac
       ;;
-    "azure")
-          echo "Vagrant user not used in azure, skip."
+    "azure"|"cloudru")
+          echo "Vagrant user not used in $provider, skip."
       ;;
   esac
 }
@@ -452,7 +454,11 @@ start(){
       ;;
     "azure")
       az vm start --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
-      status
+      ;;
+    "cloudru")
+      cloudru_config="$(mktemp -d)/config.json"
+      cloud ECS ListServersDetails --name="GOAD_$LAB" --cli-query="{body: {\"os-start\": {servers: servers[].{id: id}}}}" > $cloudru_config
+      cloud ECS BatchStartServers --cli-jsonInput=$cloudru_config
       ;;
   esac
 }
@@ -487,7 +493,11 @@ stop(){
       ;;
     "azure")
       az vm stop --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
-      status
+      ;;
+    "cloudru")
+      cloudru_config="$(mktemp -d)/config.json"
+      cloud ECS ListServersDetails --name="GOAD_$LAB" --cli-query="{body: {\"os-stop\": {servers: servers[].{id: id}, type: 'SOFT'}}}" > $cloudru_config
+      cloud ECS BatchStopServers --cli-jsonInput=$cloudru_config
       ;;
   esac
 }
@@ -524,7 +534,11 @@ restart(){
       ;;
     "azure")
       az vm restart --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
-      status
+      ;;
+    "cloudru")
+      cloudru_config="$(mktemp -d)/config.json"
+      cloud ECS ListServersDetails --name="GOAD_$LAB" --cli-query="{body: {\"reboot\": {servers: servers[].{id: id}, type: 'SOFT'}}}" > $cloudru_config
+      cloud ECS BatchRebootServers --cli-jsonInput=$cloudru_config
       ;;
   esac
 }
@@ -545,7 +559,7 @@ destroy(){
           esac
           cd -
       ;;
-    "proxmox"|"azure")
+    "proxmox"|"azure"|"cloudru")
       if [ -d "ad/$LAB/providers/$PROVIDER/terraform" ]; then
         cd "ad/$LAB/providers/$PROVIDER/terraform"
         echo "${OK} Destroy infrastructure..."
@@ -584,6 +598,9 @@ status(){
       ;;
     "azure")
       az vm list -g $LAB -d --output table
+      ;;
+    "cloudru")
+      cloud ECS ListServersDetails --name="GOAD_$LAB" --cli-output=table --cli-query="servers[].{ID: id, Name: name, Status: status}"
       ;;
   esac
 }

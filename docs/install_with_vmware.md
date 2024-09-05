@@ -194,4 +194,4 @@ ansible-playbook -i ../ad/GOAD/data/inventory -i ../ad/GOAD/providers/vmware/inv
 ```
 
 
-- Details on the provisioning process are here : [provisioning.md](./provisioning.md)
+- Details on the provisioning process are here: [provisioning.md](./provisioning.md)

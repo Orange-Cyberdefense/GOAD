@@ -7,7 +7,7 @@ ERROR=$(tput setaf 1; echo -n "  [!]"; tput sgr0)
 GOODTOGO=$(tput setaf 2; echo -n "  [✓]"; tput sgr0)
 INFO=$(tput setaf 3; echo -n "  [-]"; tput sgr0)
 
-PROVIDERS="virtualbox vmware azure proxmox"
+PROVIDERS="virtualbox vmware azure cloudru proxmox"
 ANSIBLE_HOSTS="docker local"
 print_usage() {
   echo "Usage: ./check.sh <provider> <ansible_host>"
@@ -115,6 +115,17 @@ check_azure_installed() {
     exit 1
   else
     (echo >&2 "${GOODTOGO} azure is installed")
+  fi
+}
+
+check_cloud_installed() {
+  if ! which cloud >/dev/null; then
+    (echo >&2 "${ERROR} cloud was not found in your PATH.")
+    (echo >&2 "${ERROR} Please correct this before continuing. Exiting.")
+    (echo >&2 "${ERROR} Correct this by installing cloud (https://cloud.ru/docs/cloud-cli/ug/topics/guides__install-cli.html)")
+    exit 1
+  else
+    (echo >&2 "${GOODTOGO} cloud is installed")
   fi
 }
 
@@ -435,6 +446,12 @@ main() {
         *)
           ;;
       esac
+      ;;
+    "cloudru")
+      (echo >&2 "[+] Enumerating cloudru")
+      check_cloud_installed
+      check_terraform_path
+      check_rsync_path
       ;;
     "azure")
       (echo >&2 "[+] Enumerating azure")

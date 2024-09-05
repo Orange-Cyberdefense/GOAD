@@ -172,4 +172,4 @@ cd ansible/
 ansible-playbook -i ../ad/GOAD/data/inventory -i ../ad/GOAD/providers/virtualbox/inventory main.yml
 ```
 
-- Details on the provisioning process are here : [provisioning.md](./provisioning.md)
+- Details on the provisioning process are here: [provisioning.md](./provisioning.md)
