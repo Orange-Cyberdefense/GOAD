@@ -31,3 +31,4 @@ __pycache__/
 *.pyc
 workspace/*
 todo.md
+next_extensions/
