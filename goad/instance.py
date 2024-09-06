@@ -226,12 +226,11 @@ class LabInstance:
     def _create_extensions_inventory(self):
         Log.info('Create instance extensions inventory files')
 
-        instance_extension_inventory_content = ''
         for extension in self.extensions:
             extension_folder = GoadPath.get_extension_path(extension)
             extension_environment = Environment(loader=FileSystemLoader(extension_folder))
             instance_extension_inventory_template = extension_environment.get_template("inventory")
-            instance_extension_inventory_content += instance_extension_inventory_template.render(
+            instance_extension_inventory_content = instance_extension_inventory_template.render(
                 lab_name=self.lab_name,
                 ip_range=self.ip_range
             )

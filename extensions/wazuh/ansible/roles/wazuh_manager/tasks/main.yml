@@ -23,6 +23,13 @@
   shell: sudo bash /opt/wazuh/wazuh-install.sh -a -i > /opt/wazuh/wazuh-install-output.txt
   when: not ansible_facts.services['wazuh-manager.service'] is defined
 
+# FIX false positive on  /bin/diff  cf. https://github.com/wazuh/wazuh/issues/19000
+- name: fix rootkit trojan detection due to issue
+  ansible.builtin.lineinfile:
+    path: /var/ossec/etc/rootcheck/rootkit_trojans.txt
+    search_string: 'diff        !bash|^/bin/sh|file\.h|proc\.h|/dev/[^n]|^/bin/.*sh!'
+    line: 'diff        !bash|^/bin/sh|file\.h|proc\.h|/dev/[^nf]|^/bin/.*sh!'
+
 - name: Start Wazuh Manager service
   service:
     name: wazuh-manager
