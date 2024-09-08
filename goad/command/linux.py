@@ -24,7 +24,8 @@ class LinuxCommand(Command):
             result = subprocess.run(command, cwd=path, stderr=sys.stderr, stdout=sys.stdout, shell=True)
         except subprocess.CalledProcessError as e:
             Log.error(f"An error occurred while running the command: {e}")
-        return result
+            return False
+        return result.returncode == 0
 
     def check_vagrant(self):
         command = 'which vagrant >/dev/null'
@@ -56,7 +57,7 @@ class LinuxCommand(Command):
             result = subprocess.run(command, cwd=path, stderr=sys.stderr, stdout=sys.stdout)
         except subprocess.CalledProcessError as e:
             Log.error(f"An error occurred while running the command: {e}")
-        return result
+        return result.returncode == 0
 
     def check_terraform(self):
         command = 'which terraform >/dev/null'
@@ -112,7 +113,7 @@ class LinuxCommand(Command):
         except subprocess.CalledProcessError as e:
             Log.error(f"An error occurred while running the command: {e}")
             return False
-        return result
+        return result.returncode == 0
 
     def get_azure_account_output(self):
         result = subprocess.run(
