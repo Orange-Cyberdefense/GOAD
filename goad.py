@@ -19,6 +19,8 @@ class Goad(cmd.Cmd):
         config = Config().merge_config(args)
         # prepare lab controller to manage labs
         self.lab_manager = LabManager().init(config)
+        # load instance marked as default
+        self.lab_manager.load_default_instance()
         self.welcome()
         # set current lab and provider
         self.refresh_prompt()

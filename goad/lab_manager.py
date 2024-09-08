@@ -34,13 +34,14 @@ class LabManager(metaclass=SingletonMeta):
         self.current_settings.set_provider_name(self.config.get(PROVIDER), False)
         self.current_settings.set_provisioner_name(self.config.get(PROVISIONER))
         self.current_settings.set_ip_range(self.config.get(IP_RANGE))
+        return self
 
+    def load_default_instance(self):
         # load default instance
         for instance_id, instance in self.lab_instances.instances.items():
             if instance.is_default:
                 self.load_instance(instance_id)
                 break
-        return self
 
     def show_settings(self):
         self.current_settings.show()
