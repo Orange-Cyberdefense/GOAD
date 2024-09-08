@@ -27,7 +27,8 @@ class LabInstances:
                     ip_range = instance_info['ip_range']
                     extensions = instance_info['extensions']
                     status = instance_info['status']
-                    self.instances[instance] = LabInstance(instance, lab_name, provider_name, provisioning_method, ip_range, extensions, status)
+                    is_default = instance_info['is_default']
+                    self.instances[instance] = LabInstance(instance, lab_name, provider_name, provisioning_method, ip_range, extensions, status, is_default)
 
     def add_instance(self, instance):
         self.instances[instance.instance_id] = instance
@@ -38,27 +39,30 @@ class LabInstances:
         else:
             return None
 
-    def show_instances(self, lab_name='', provider_name=''):
+    def show_instances(self, lab_name='', provider_name='', current_instance_id=''):
         instance_found = False
         table = Table()
         table.add_column('Instance ID')
         table.add_column('Lab')
         table.add_column('Provider')
         table.add_column('IP Range')
-        table.add_column('Status')
         table.add_column('Extensions')
+        table.add_column('Status')
+        table.add_column('Is Default')
         for instance_id, instance in self.instances.items():
             if lab_name != '' and lab_name != instance.lab_name:
                 continue
             if provider_name != '' and provider_name != instance.provider_name:
                 continue
             instance_found = True
-            table.add_row(instance_id,
+            table.add_row(f'[red]> [/red][green]{instance_id}[/green]' if instance_id == current_instance_id else instance_id,
                           instance.lab_name,
                           instance.provider_name,
                           instance.ip_range + '.0/24',
+                          ", ".join(instance.extensions),
                           instance.status,
-                          ", ".join(instance.extensions))
+                          'Yes' if instance.is_default else 'No'
+                          )
         if instance_found:
             print(table)
         else:

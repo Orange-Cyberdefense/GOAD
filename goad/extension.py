@@ -1,5 +1,4 @@
 from goad.utils import *
-from goad.log import Log
 from goad.goadpath import GoadPath
 
 

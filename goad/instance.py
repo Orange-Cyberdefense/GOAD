@@ -16,7 +16,7 @@ from goad.provisioner.ansible.remote import RemoteAnsibleProvisioner
 
 class LabInstance:
 
-    def __init__(self, instance_id, lab_name, provider_name, provisioner_name, ip_range, extensions=None, status=''):
+    def __init__(self, instance_id, lab_name, provider_name, provisioner_name, ip_range, extensions=None, status='', default=False):
         if instance_id is None:
             self.instance_id = str(uuid.uuid4())
         else:
@@ -29,6 +29,7 @@ class LabInstance:
         if extensions is None:
             extensions = []
         self.extensions = extensions
+        self.is_default = default
 
         # paths
         self.instance_path = GoadPath.get_instance_path(self.instance_id)
@@ -87,14 +88,17 @@ class LabInstance:
         table.add_column('Lab')
         table.add_column('Provider')
         table.add_column('IP Range')
-        table.add_column('Status')
         table.add_column('Extensions')
+        table.add_column('Status')
+        table.add_column('Default')
         table.add_row(self.instance_id,
                       self.lab_name,
                       self.provider_name,
                       self.ip_range + '.0/24',
+                      ", ".join(self.extensions),
                       self.status,
-                      ", ".join(self.extensions))
+                      'Yes' if self.is_default else 'No'
+                      )
         print(table)
 
     def is_terraform(self):
@@ -124,7 +128,8 @@ class LabInstance:
             "provisioner": self.provisioner_name,
             "ip_range": self.ip_range,
             "extensions": self.extensions,
-            "status": self.status
+            "status": self.status,
+            "is_default": self.is_default
         }
         json_object = json.dumps(instance_info, indent=4)
         with open(self.instance_path + sep + "instance.json", "w") as outfile:
@@ -240,7 +245,6 @@ class LabInstance:
             with open(instance_extension_inventory_file, mode="w", encoding="utf-8") as inventory_file:
                 inventory_file.write(instance_extension_inventory_content)
                 Log.success(f'Instance inventory file created : {Utils.get_relative_path(instance_extension_inventory_file)}')
-
 
     def update_instance_folder(self):
         self.create_instance_folder(True)

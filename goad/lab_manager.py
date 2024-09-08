@@ -34,6 +34,12 @@ class LabManager(metaclass=SingletonMeta):
         self.current_settings.set_provider_name(self.config.get(PROVIDER), False)
         self.current_settings.set_provisioner_name(self.config.get(PROVISIONER))
         self.current_settings.set_ip_range(self.config.get(IP_RANGE))
+
+        # load default instance
+        for instance_id, instance in self.lab_instances.instances.items():
+            if instance.is_default:
+                self.load_instance(instance_id)
+                break
         return self
 
     def show_settings(self):
@@ -54,6 +60,7 @@ class LabManager(metaclass=SingletonMeta):
         if result:
             self.lab_instances.add_instance(instance)
             self.load_instance(instance.instance_id)
+            self.current_instance.show_instance()
             return True
         else:
             Log.error('Error during creating instance folder')
@@ -71,9 +78,19 @@ class LabManager(metaclass=SingletonMeta):
                 # load instance
                 self.current_instance = instance
                 Log.success(f'Instance {instance_id} loaded')
-                self.current_instance.show_instance()
         else:
             Log.error('Instance not found in workspace')
+
+    def set_as_default_instance(self):
+        if self.current_instance is not None:
+            for instance_id, instance in self.lab_instances.instances.items():
+                if instance_id == self.current_instance.instance_id:
+                    instance.is_default = True
+                else:
+                    instance.is_default = False
+                instance.save_json_instance()
+        else:
+            Log.error('No instance selected')
 
     def unload_instance(self):
         self.current_instance = None

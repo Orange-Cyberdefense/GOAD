@@ -26,7 +26,7 @@ class Goad(cmd.Cmd):
     def welcome(self):
         Log.info('lab instances :')
         # show instances tables
-        self.lab_manager.lab_instances.show_instances()
+        self.lab_manager.lab_instances.show_instances(current_instance_id=self.lab_manager.get_current_instance_id())
         # show current configuration
         # self.lab_manager.show_settings()
 
@@ -252,12 +252,17 @@ class Goad(cmd.Cmd):
         Log.info('Create instance folder')
         self.lab_manager.create_instance()
 
+    def do_set_as_default(self, arg):
+        self.lab_manager.set_as_default_instance()
+
     def do_load_instance(self, arg):
         if arg == '':
             Log.error('missing instance id argument')
             Log.info(f'use_instance <instance_id>')
         else:
             self.lab_manager.load_instance(arg)
+            if self.lab_manager.current_instance is not None:
+                self.lab_manager.current_instance.show_instance()
             self.refresh_prompt()
 
     def do_unload_instance(self, arg):
@@ -266,7 +271,7 @@ class Goad(cmd.Cmd):
             self.refresh_prompt()
 
     def do_list_instances(self, arg):
-        self.lab_manager.lab_instances.show_instances()
+        self.lab_manager.lab_instances.show_instances(current_instance_id=self.lab_manager.get_current_instance_id())
 
 
 def parse_args():
