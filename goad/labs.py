@@ -64,7 +64,7 @@ class Lab:
                 self.providers[provider_name] = provider
 
     def _load_extensions(self, lab_name):
-        for extension_name in Utils.list_folders(get_extensions_path()):
+        for extension_name in Utils.list_folders(GoadPath.get_extensions_path()):
             self.extensions[extension_name] = Extension(extension_name)
 
     def get_provider(self, provider_name):

@@ -26,4 +26,4 @@ class Extension:
             return 'uninstall.yml'
 
     def get_ansible_path(self):
-        return get_extension_ansible_path(self.name)
+        return GoadPath.get_extension_ansible_path(self.name)

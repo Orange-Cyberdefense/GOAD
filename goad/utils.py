@@ -43,39 +43,6 @@ CREATED = 'ready for providing'
 PROVIDED = 'ready for provisioning'
 READY = 'ready'
 
-# TODO : create a class PathManager and use it
-
-
-
-def get_ubuntu_jumpbox_key(lab_name, provider):
-    return project_path + os.path.sep + 'ad' + os.path.sep + lab_name + os.path.sep + 'providers' + os.path.sep + provider + os.path.sep + 'ssh_keys' + os.path.sep + 'ubuntu-jumpbox.pem'
-
-
-# extensions paths
-
-def get_extensions_path():
-    return project_path + os.path.sep + 'extensions'
-
-
-def get_extension_providers_path(extension_name):
-    return project_path + os.path.sep + 'extensions' + os.path.sep + extension_name + os.path.sep + 'providers'
-
-
-def get_extension_ansible_path(extension_name):
-    return project_path + os.path.sep + 'extensions' + os.path.sep + extension_name + os.path.sep + 'ansible'
-
-
-def get_extension_inventory_path(extension_name):
-    return get_extension_ansible_path(extension_name) + os.path.sep + 'inventory'
-
-
-def get_extension_provider_path(extension_name, provider_name):
-    return get_extension_providers_path(extension_name) + os.path.sep + provider_name + os.path.sep
-
-
-def get_extension_provider_inventory_path(extension_name, provider_name):
-    return get_extension_providers_path(extension_name) + os.path.sep + provider_name + os.path.sep + 'inventory'
-
 
 class SingletonMeta(type):
     _instances = {}
