@@ -88,7 +88,7 @@ class Goad(cmd.Cmd):
     def do_provide(self, arg=''):
         result = self.lab_manager.get_current_instance_provider().install()
         if result:
-            self.lab_manager.current_instance.set_status(PROVIDED)
+            self.lab_manager.get_current_instance().set_status(PROVIDED)
 
     def do_provision(self, arg):
         if arg == '':
@@ -105,7 +105,7 @@ class Goad(cmd.Cmd):
         start = time.time()
         provision_result = self.lab_manager.get_current_instance_provisioner().run()
         if provision_result:
-            self.lab_manager.current_instance.set_status(READY)
+            self.lab_manager.get_current_instance().set_status(READY)
             time_provision = time.ctime(time.time() - start)[11:19]
             Log.info(f'Lab successfully provisioned in {time_provision}')
 
