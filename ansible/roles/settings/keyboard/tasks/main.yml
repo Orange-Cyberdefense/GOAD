@@ -1,3 +1,13 @@
-- name: "Windows | Add the keyboard layouts"
-  win_shell: $langList = Get-WinUserLanguageList; $langList.Add("{{item}}"); Set-WinUserLanguageList -LanguageList $langList -Force
+#- name: "Windows | Add the keyboard layouts"
+#  win_shell: $langList = Get-WinUserLanguageList; $langList.Add("{{item}}"); Set-WinUserLanguageList -LanguageList $langList -Force
+#  loop: "{{layouts}}"
+
+- name: Add Keyboard Layouts registry key
+  win_regedit:
+    path:  HKLM:\SYSTEM\CurrentControlSet\Control\Keyboard Layouts\Preload
+    name: "{{index + 1}}"
+    data: "{{item}}"
+    type: string
   loop: "{{layouts}}"
+  loop_control:
+    index_var: index
