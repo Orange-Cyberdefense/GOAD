@@ -32,3 +32,4 @@ __pycache__/
 workspace/*
 todo.md
 next_extensions/
+/extensions/exchange/ansible/iso/resources/iso/*.ISO
