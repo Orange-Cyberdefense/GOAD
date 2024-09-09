@@ -41,9 +41,9 @@
       when: two_adapters == 'no'
       run_once: true
 
-    - debug:
-        msg: "domain interface : {{domain_adapter}}"
-    - debug:
-        msg: "nat interface : {{nat_adapter}}"
-    - debug:
-        msg: "two_adapters : {{two_adapters}}"
+#    - debug:
+#        msg: "domain interface : {{domain_adapter}}"
+#    - debug:
+#        msg: "nat interface : {{nat_adapter}}"
+#    - debug:
+#        msg: "two_adapters : {{two_adapters}}"
