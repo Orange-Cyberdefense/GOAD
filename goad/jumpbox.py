@@ -57,7 +57,7 @@ class JumpBox:
 
             # workspace
             source = self.instance_path
-            destination = f'{self.username}@{self.ip}:~/GOAD/' + Utils.get_relative_path(source)
+            destination = f'{self.username}@{self.ip}:~/GOAD/workspace/'
             self.command.rsync(source, destination, self.ssh_key, False)
         else:
             Log.error('Can not sync source jumpbox ip is invalid')
@@ -76,6 +76,4 @@ class JumpBox:
     def run_command(self, command, path):
         ssh_cmd = f"ssh -t -o 'StrictHostKeyChecking no' -i {self.ssh_key} {self.username}@{self.ip} 'cd {path} && {command}'"
         result = self.command.run_command(ssh_cmd, project_path)
-        if result is None or result.returncode != 0:
-            return False
-        return True
+        return result
