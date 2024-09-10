@@ -13,8 +13,9 @@ class RemoteAnsibleProvisioner(Ansible):
         self.jumpbox = None
         self.remote_project_path = '/home/goad/GOAD'
 
-    def prepare_jumpbox(self):
+    def prepare_jumpbox(self, jumpbox_ip):
         if self.jumpbox is not None:
+            self.jumpbox.ip = jumpbox_ip
             self.jumpbox.sync_sources()
             self.jumpbox.provision()
         else:

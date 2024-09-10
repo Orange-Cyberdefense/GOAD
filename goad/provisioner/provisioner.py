@@ -34,3 +34,6 @@ class Provisioner(ABC):
 
     def run_from(self, arg):
         pass
+
+    def update_jumpbox_ip(self, ip):
+        pass

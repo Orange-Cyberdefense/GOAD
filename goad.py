@@ -128,7 +128,11 @@ class Goad(cmd.Cmd):
 
     def do_prepare_jumpbox(self, arg=''):
         if self.lab_manager.get_current_instance_provider().use_jumpbox:
-            self.lab_manager.get_current_instance_provisioner().prepare_jumpbox()
+            jumpbox_ip = self.lab_manager.get_current_instance_provider().get_jumpbox_ip()
+            if jumpbox_ip is not None:
+                self.lab_manager.get_current_instance_provisioner().prepare_jumpbox(jumpbox_ip)
+            else:
+                Log.error('cannot find jumpbox ip')
 
     def do_show_config(self, arg):
         self.lab_manager.show_settings()
@@ -248,8 +252,6 @@ class Goad(cmd.Cmd):
         self.lab_manager.create_instance()
         Log.info('Launch providing')
         if self.do_provide():
-            # providing OK refresh instance
-            # TODO refresh instance ip (refresh instance infos)
             Log.info('Prepare jumpbox if needed')
             self.do_prepare_jumpbox()
             Log.info('Launch provisioning')
