@@ -51,13 +51,16 @@ class JumpBox:
         """
         # # rsync -a --exclude-from='.gitignore' -e "ssh -o 'StrictHostKeyChecking no' -i $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" "$CURRENT_DIR/" goad@$public_ip:~/GOAD/
         source = GoadPath.get_project_path()
-        destination = f'{self.username}@{self.ip}:~/GOAD/'
-        self.command.rsync(source, destination, self.ssh_key)
+        if Utils.is_valid_ipv4(self.ip):
+            destination = f'{self.username}@{self.ip}:~/GOAD/'
+            self.command.rsync(source, destination, self.ssh_key)
 
-        # workspace
-        source = self.instance_path
-        destination = f'{self.username}@{self.ip}:~/GOAD/' + Utils.get_relative_path(source)
-        self.command.rsync(source, destination, self.ssh_key, False)
+            # workspace
+            source = self.instance_path
+            destination = f'{self.username}@{self.ip}:~/GOAD/' + Utils.get_relative_path(source)
+            self.command.rsync(source, destination, self.ssh_key, False)
+        else:
+            Log.error('Can not sync source jumpbox ip is invalid')
 
         # # sync sources:
         # # ansible/
