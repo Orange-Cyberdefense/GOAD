@@ -22,7 +22,7 @@ resource "tls_private_key" "linux_ssh" {
 resource "azurerm_linux_virtual_machine" "goad-linux-vm" {
   for_each = var.linux_vm_config
 
-  name                = "{{lab_name}}-vm-${each.value.name}"
+  name                = "goad-vm-${each.value.name}"
   resource_group_name = azurerm_resource_group.resource_group.name
   location            = azurerm_resource_group.resource_group.location
   size                = "${each.value.size}"
