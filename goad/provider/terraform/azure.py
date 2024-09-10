@@ -230,4 +230,7 @@ class AzureProvider(TerraformProvider):
         if jumpbox_ip is None:
             Log.error('Jump box ip not found')
             return None
+        if not Utils.is_valid_ipv4(jumpbox_ip):
+            Log.error('Invalid IP')
+            return None
         return jumpbox_ip

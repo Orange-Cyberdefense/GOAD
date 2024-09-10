@@ -58,6 +58,8 @@ class LabInstance:
 
         if self.provider_name == AZURE:
             self.provider.set_resource_group(self.lab_name + '-' + self.instance_id)
+        if self.provider_name == AWS:
+            self.provider.set_tag(self.lab_name + '-' + self.instance_id)
 
         if not os.path.isdir(self.instance_provider_path):
             Log.error('instance provider path {instance_provider_path} not found')
@@ -178,6 +180,14 @@ class LabInstance:
             ip_range=self.ip_range
         )
 
+        linux_vm = ''
+        if os.path.isfile(GoadPath.get_lab_provider_path(self.lab_name, self.provider_name) + sep + 'linux.tf'):
+            lab_environment = Environment(loader=FileSystemLoader(GoadPath.get_lab_provider_path(self.lab_name, self.provider_name)))
+            lab_windows_template = lab_environment.get_template("linux.tf")
+            linux_vm = lab_windows_template.render(
+                ip_range=self.ip_range
+            )
+
         # load template folder
         environment = Environment(loader=FileSystemLoader(GoadPath.get_template_path(self.provider_name)))
 
@@ -185,7 +195,8 @@ class LabInstance:
             tf_template = environment.get_template(template)
             tf_content = tf_template.render(
                 windows_vms=windows_vm,
-                resource_group=self.lab_name + '-' + self.instance_id,
+                linux_vms=linux_vm,
+                lab_identifier=self.lab_name + '-' + self.instance_id,
                 lab_name=self.lab_name,
                 ip_range=self.ip_range
             )
@@ -277,7 +288,7 @@ class LabInstance:
 
         self._create_provisioning_inventory()
         self._create_extensions_inventory()
-        if self.status is not None:
+        if self.status is not None and not force:
             self.status = CREATED
         self.save_json_instance()
         Log.info(f'Instance {self.instance_id} created')

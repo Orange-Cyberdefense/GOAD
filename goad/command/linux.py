@@ -79,7 +79,7 @@ class LinuxCommand(Command):
             result = subprocess.run(command, cwd=path, stderr=sys.stderr, stdout=sys.stdout)
         except subprocess.CalledProcessError as e:
             Log.error(f"An error occurred while running the command: {e}")
-        return result
+        return result.returncode == 0
 
     def run_terraform_output(self, args, path):
         result = None

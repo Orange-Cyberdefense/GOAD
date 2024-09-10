@@ -7,6 +7,7 @@ variable "vm_config" {
     windows_version    = string
     private_ip_address = string
     password           = string
+    size               = string
   }))
 
   default = {
@@ -20,7 +21,7 @@ resource "azurerm_windows_virtual_machine" "goad-vm" {
   name                = "{{lab_name}}-vm-${each.value.name}"
   location            = azurerm_resource_group.resource_group.location
   resource_group_name = azurerm_resource_group.resource_group.name
-  size                = var.size
+  size                = "${each.value.size}"
   admin_username      = var.username
   admin_password      = "${each.value.password}"
   network_interface_ids = [

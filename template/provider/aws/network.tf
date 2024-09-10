@@ -1,10 +1,9 @@
 # VPC
-
-resource "aws_vpc" "goad_vpc" { 
+resource "aws_vpc" "goad_vpc" {
   cidr_block = var.goad_cidr 
   tags = { 
-    Name = "GOAD" 
-    Lab = "GOAD" 
+    Name = "{{lab_name}}-VPC"
+    Lab = "{{lab_identifier}}"
   } 
 } 
 
@@ -16,8 +15,8 @@ resource "aws_subnet" "goad_private_network" {
   availability_zone = var.zone
   
   tags = {
-    Name = "GOAD-private-network"
-    Lab = "GOAD"
+    Name = "{{lab_name}}-private-network"
+    Lab = "{{lab_identifier}}"
   }
 }
 
@@ -28,8 +27,8 @@ resource "aws_subnet" "goad_public_network" {
   depends_on = [aws_internet_gateway.internet_gateway]
 
   tags = {
-    Name = "GOAD-public-network"
-    Lab = "GOAD"
+    Name = "{{lab_name}}-public-network"
+    Lab = "{{lab_identifier}}"
   }
 }
 
@@ -37,8 +36,8 @@ resource "aws_subnet" "goad_public_network" {
 resource "aws_default_route_table" "goad_default_table" {
   default_route_table_id = aws_vpc.goad_vpc.default_route_table_id
   tags = {
-    Name = "GOAD Default Route table"
-    Lab = "GOAD"
+    Name = "{{lab_name}} Default Route table"
+    Lab = "{{lab_identifier}}"
   }
 }
 
@@ -51,8 +50,8 @@ resource "aws_route_table" "goad_public_table" {
   }
 
   tags = {
-    Name = "GOAD Route table"
-    Lab = "GOAD"
+    Name = "{{lab_name}} Route table"
+    Lab = "{{lab_identifier}}"
   }
 }
 
@@ -65,8 +64,8 @@ resource "aws_route_table" "goad_private_table" {
   }
 
   tags = {
-    Name = "GOAD Private Route table"
-    Lab = "GOAD"
+    Name = "{{lab_name}} Private Route table"
+    Lab = "{{lab_identifier}}"
   }
 }
 
@@ -85,19 +84,19 @@ resource "aws_default_security_group" "goad_default_security_group" {
   vpc_id      = aws_vpc.goad_vpc.id
 
   tags = {
-    Name = "GOAD Default Security Group"
-    Lab = "GOAD"
+    Name = "{{lab_name}} Default Security Group"
+    Lab = "{{lab_identifier}}"
   }
 }
 
 resource "aws_security_group" "goad_security_group" {
-  name        = "GOAD Security Group"
+  name        = "{{lab_name}} Security Group"
   description = "Allow traffic necessary to use GOAD"
   vpc_id      = aws_vpc.goad_vpc.id
 
   tags = {
-    Name = "GOAD Security Group"
-    Lab = "GOAD"
+    Name = "{{lab_name}} Security Group"
+    Lab = "{{lab_identifier}}"
   }
 }
 
@@ -157,11 +156,11 @@ resource "aws_eip" "public_ip" {
   domain = "vpc"
 
   instance                  = aws_instance.goad-vm-jumpbox.id
-  associate_with_private_ip = "192.168.56.100"
+  associate_with_private_ip = "{{ip_range}}.100"
 
   tags = {
-    Name = "GOAD Jumpbox public IP"
-    Lab = "GOAD"
+    Name = "{{lab_name}} Jumpbox public IP"
+    Lab = "{{lab_identifier}}"
   }
 }
 
@@ -174,8 +173,8 @@ resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.goad_vpc.id
 
   tags = {
-    Name = "GOAD Internet Gateway"
-    Lab = "GOAD"
+    Name = "{{lab_name}} Internet Gateway"
+    Lab = "{{lab_identifier}}"
   }
 }
 
@@ -185,8 +184,8 @@ resource "aws_nat_gateway" "nat_gateway" {
   subnet_id     = aws_subnet.goad_public_network.id
 
   tags = {
-    Name = "GOAD NAT Gateway"
-    Lab = "GOAD"
+    Name = "{{lab_name}} NAT Gateway"
+    Lab = "{{lab_identifier}}"
   }
 
   depends_on = [aws_internet_gateway.internet_gateway]

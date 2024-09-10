@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 import random
 import string
+import ipaddress
 
 # constants
 LAB = 'lab'
@@ -43,6 +44,15 @@ CREATED = 'ready for providing'
 PROVIDED = 'ready for provisioning'
 READY = 'ready'
 
+# tasks
+TASK_INSTALL = 'install'
+TASK_CHECK = 'check'
+TASK_START = 'start'
+TASK_STOP = 'stop'
+TASK_RESTART = 'restart'
+TASK_DESTROY = 'destroy'
+TASK_STATUS = 'status'
+
 
 class SingletonMeta(type):
     _instances = {}
@@ -54,6 +64,15 @@ class SingletonMeta(type):
 
 
 class Utils:
+    @staticmethod
+    def is_valid_ipv4(ip):
+        try:
+            # Try to create an IPv4 object from the input
+            ipaddress.IPv4Address(ip)
+            return True
+        except ValueError:
+            return False
+
     @staticmethod
     def list_folders(path):
         if os.path.isdir(path):

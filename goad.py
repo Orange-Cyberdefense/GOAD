@@ -19,8 +19,11 @@ class Goad(cmd.Cmd):
         config = Config().merge_config(args)
         # prepare lab controller to manage labs
         self.lab_manager = LabManager().init(config)
-        # load instance marked as default
-        self.lab_manager.load_default_instance()
+
+        if args == '':
+            # load instance marked as default only if no args are provided
+            self.lab_manager.load_default_instance()
+
         self.welcome()
         # set current lab and provider
         self.refresh_prompt()
@@ -55,7 +58,7 @@ class Goad(cmd.Cmd):
     def do_install(self, arg=''):
         self.do_create_instance()
 
-    def do_start(self, arg):
+    def do_start(self, arg=''):
         self.lab_manager.get_current_instance_provider().start()
 
     def do_start_vm(self, arg):
@@ -65,7 +68,7 @@ class Goad(cmd.Cmd):
         else:
             self.lab_manager.get_current_instance_provider().start_vm(arg)
 
-    def do_stop(self, arg):
+    def do_stop(self, arg=''):
         self.lab_manager.get_current_instance_provider().stop()
 
     def do_stop_vm(self, arg):
@@ -75,7 +78,7 @@ class Goad(cmd.Cmd):
         else:
             self.lab_manager.get_current_instance_provider().stop_vm(arg)
 
-    def do_destroy(self, arg):
+    def do_destroy(self, arg=''):
         self.lab_manager.get_current_instance_provider().destroy()
 
     def do_destroy_vm(self, arg):
@@ -89,6 +92,7 @@ class Goad(cmd.Cmd):
         result = self.lab_manager.get_current_instance_provider().install()
         if result:
             self.lab_manager.get_current_instance().set_status(PROVIDED)
+        return result
 
     def do_provision(self, arg):
         if arg == '':
@@ -212,7 +216,7 @@ class Goad(cmd.Cmd):
                     # # start lab with extensions files
                     self.lab_manager.get_current_instance_provider().start()
                     # # provision extension
-                    # self.do_provision_extension(extension_name)
+                    self.do_provision_extension(extension_name)
                 else:
                     Log.error(f'extension {extension_name} not found abort')
             else:
@@ -243,12 +247,16 @@ class Goad(cmd.Cmd):
         Log.info('Create instance folder')
         self.lab_manager.create_instance()
         Log.info('Launch providing')
-        self.do_provide()
-        Log.info('Prepare jumpbox if needed')
-        self.do_prepare_jumpbox()
-        Log.info('Launch provisioning')
-        self.do_provision_lab()
-        self.refresh_prompt()
+        if self.do_provide():
+            # providing OK refresh instance
+            # TODO refresh instance ip (refresh instance infos)
+            Log.info('Prepare jumpbox if needed')
+            self.do_prepare_jumpbox()
+            Log.info('Launch provisioning')
+            self.do_provision_lab()
+            self.refresh_prompt()
+        else:
+            Log.error('Providing error stop')
 
     def do_create_empty_instance(self, arg=''):
         Log.info('Create instance folder')
@@ -308,3 +316,21 @@ if __name__ == '__main__':
 
     if args is None or args.task != '':
         goad.cmdloop()
+
+    # Command line args like the old goad.sh commands
+    if args.task != '':
+        if args.task == 'install':
+            goad.do_install()
+        elif args.task == 'check':
+            goad.do_check()
+        elif args.task == 'start':
+            goad.do_start()
+        elif args.task == 'stop':
+            goad.do_stop()
+        elif args.task == 'restart':
+            goad.do_stop()
+            goad.do_start()
+        elif args.task == 'destroy':
+            goad.do_destroy()
+        elif args.task == 'status':
+            goad.do_status()

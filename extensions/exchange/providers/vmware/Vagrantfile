@@ -4,6 +4,6 @@ boxes.append(
     :box => "StefanScherer/windows_2019",
     :os => "windows",
     :cpus => 4,
-    :mem => 8000
+    :mem => 10000
   }
 )

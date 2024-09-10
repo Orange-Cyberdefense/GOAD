@@ -9,33 +9,33 @@ variable "region" {
 variable "zone" {
   description = "Where you want to deploy GOAD"
   type      = string
-  default   = "eu-west-1c"
+  default   = "eu-west-3c"
 }
 
 # CIDRs
 variable "goad_cidr" {
   description = "Default CIDR for GOAD"
   type    = string
-  default = "192.168.56.0/24"
+  default = "{{ip_range}}.0/24"
 }
 
 variable "goad_public_cidr" {
   description = "Private CIDR for GOAD"
   type    = string
-  default = "192.168.56.64/26"
+  default = "{{ip_range}}.64/26"
 }
 
 variable "goad_private_cidr" {
   description = "Private CIDR for GOAD"
   type    = string
-  default = "192.168.56.0/26"
+  default = "{{ip_range}}.0/26"
 }
 
 # Define a CIDR for access to the jumphost!
 variable "whitelist_cidr" {
   description = "Whitelisted table IP that can access the Ubuntu jumpbox"
   type    = set(string)
-  default = ["127.0.0.1/32"]
+  default = ["0.0.0.0/0"]
 }
 
 # Credentials
@@ -59,11 +59,16 @@ variable "jumpbox_disk_size" {
 
 # Keys are automagically generated and written in the ssh_keys folder. You can provide your own if you like.
 resource "aws_key_pair" "goad-windows-keypair" {
-  key_name   = "GOAD-windows-keypair"
+  key_name   = "{{lab_identifier}}-windows-keypair"
   public_key = tls_private_key.windows.public_key_openssh
 }
 
 resource "aws_key_pair" "goad-jumpbox-keypair" {
-  key_name   = "GOAD-jumpbox-keypair"
+  key_name   = "{{lab_identifier}}-jumpbox-keypair"
+  public_key = tls_private_key.ssh.public_key_openssh
+}
+
+resource "aws_key_pair" "goad-linux-keypair" {
+  key_name   = "{{lab_identifier}}-linux-keypair"
   public_key = tls_private_key.ssh.public_key_openssh
 }

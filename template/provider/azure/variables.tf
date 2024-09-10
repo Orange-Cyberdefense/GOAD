@@ -3,6 +3,7 @@ variable "location" {
   default = "westeurope"
 }
 
+# default size : 2cpu / 4GB
 variable "size" {
   type    = string
   default = "Standard_B2s"

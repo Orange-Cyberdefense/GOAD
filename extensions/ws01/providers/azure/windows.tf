@@ -4,4 +4,5 @@
   windows_version    = "latest"
   private_ip_address = "{{ip_range}}.31"
   password           = "EP+xh7Rk6j90"
+  size               = "Standard_B2s"
 }

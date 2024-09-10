@@ -1,24 +1,27 @@
 "dc01" = {
   name               = "dc01"
+  domain             = "sevenkingdoms.local"
   windows_sku        = "2019-Datacenter"
-  windows_version    = "17763.4377.230505" # deprecated : "2019.0.20181122"
+  ami                = "ami-018ebfbd6b0a4c605"
+  instance_type      = "t2.medium"
   private_ip_address = "{{ip_range}}.10"
   password           = "8dCT-DJjgScp"
-  size               = "Standard_B2s"
 }
 "dc02" = {
   name               = "dc02"
+  domain             = "north.sevenkingdoms.local"
   windows_sku        = "2019-Datacenter"
-  windows_version    = "17763.4377.230505" # deprecated : "2019.0.20181122"
+  ami                = "ami-018ebfbd6b0a4c605"
+  instance_type      = "t2.medium"
   private_ip_address = "{{ip_range}}.11"
   password           = "NgtI75cKV+Pu"
-  size               = "Standard_B2s"
 }
 "srv02" = {
   name               = "srv02"
+  domain             = "north.sevenkingdoms.local"
   windows_sku        = "2019-Datacenter"
-  windows_version    = "17763.4377.230505" # deprecated : "2019.0.20181122"
+  ami                = "ami-018ebfbd6b0a4c605"
+  instance_type      = "t2.medium"
   private_ip_address = "{{ip_range}}.22"
   password           = "NgtI75cKV+Pu"
-  size               = "Standard_B2s"
 }

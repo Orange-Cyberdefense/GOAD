@@ -5,10 +5,10 @@ resource "tls_private_key" "ssh" {
 
 resource "aws_network_interface" "goad-vm-nic-jumpbox" {
   subnet_id   = aws_subnet.goad_public_network.id
-  private_ips = ["192.168.56.100"]
+  private_ips = ["{{ip_range}}.100"]
   security_groups = [aws_security_group.goad_security_group.id]
   tags = {
-    Lab = "GOAD"
+    Lab = "{{lab_identifier}}"
   }
 }
 
@@ -21,21 +21,21 @@ resource "aws_instance" "goad-vm-jumpbox" {
     device_index = 0
   }
 
-  user_data = templatefile("${path.module}/user_data/instance-init.sh.tpl", {
+  user_data = templatefile("${path.module}/jumpbox-init.sh.tpl", {
                                 username = var.jumpbox_username
                            })
 
-  key_name = "GOAD-jumpbox-keypair"
+  key_name = "{{lab_identifier}}-jumpbox-keypair"
   tags = {
-    Name = "GOAD-jumpbox"
-    Lab = "GOAD"
+    Name = "{{lab_name}}-jumpbox"
+    Lab = "{{lab_identifier}}"
   }
 
   root_block_device {
     volume_size = var.jumpbox_disk_size
     tags = {
-      Name = "JumpBox-root"
-      Lab = "GOAD"
+      Name = "{{lab_name}}-JumpBox-root"
+      Lab = "{{lab_identifier}}"
     }
   }
 

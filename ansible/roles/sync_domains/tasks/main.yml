@@ -1,0 +1,8 @@
+# https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/cc835086(v=ws.11)
+- name: "synchronizes all domains before change schema"
+  win_shell: repadmin /syncall /AdePq
+  vars:
+    ansible_become: true
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"

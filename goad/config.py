@@ -35,6 +35,10 @@ provider = vmware
 provisioner = local
 ;ip_range (3 first ip digits)
 ip_range = 192.168.56
+
+; AWS configuration
+aws_region = eu-west-3
+aws_zone = eu-west-3c
 """
         f = open(GoadPath.get_config_file(), "w")
         f.write(conf_file_content)
@@ -57,11 +61,6 @@ ip_range = 192.168.56
                 self.set(PROVISIONER, args.method)
             if args.ip_range:
                 self.set(IP_RANGE, args.ip_range)
-            # if args.extensions:
-            #     for extension in args.extensions:
-            #         lab_extensions_key = self.current_lab() + '-extensions'
-            #         if self.get(extension, lab_extensions_key) is not None:
-            #             self.set(extension, 'true', lab_extensions_key)
         return self
 
     def get(self, key, section='default'):
