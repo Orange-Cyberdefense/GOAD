@@ -45,5 +45,5 @@
     - name: confirm nat_adapter
       set_fact:
        nat_adapter="{{domain_adapter}}"
-      when: two_adapters == 'no'
+      when: not two_adapters
       run_once: true

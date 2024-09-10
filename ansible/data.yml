@@ -38,12 +38,14 @@
     - name: confirm nat_adapter
       set_fact:
        nat_adapter="{{domain_adapter}}"
-      when: two_adapters == 'no'
+      when: not two_adapters
       run_once: true
 
 #    - debug:
 #        msg: "domain interface : {{domain_adapter}}"
 #    - debug:
-#        msg: "nat interface : {{nat_adapter}}"
+#        msg: "number_of_interfaces : {{number_of_interfaces}}"
 #    - debug:
 #        msg: "two_adapters : {{two_adapters}}"
+#    - debug:
+#        msg: "nat interface : {{nat_adapter}}"
