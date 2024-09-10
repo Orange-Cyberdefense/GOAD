@@ -49,10 +49,9 @@ class LabManager(metaclass=SingletonMeta):
     def inline_settings(self):
         return self.current_settings.inline()
 
-    def update_instance_files(self, arg):
-        instance = self.lab_instances.get_instance(arg)
-        if instance is not None:
-            instance.update_instance_folder()
+    def update_instance_files(self, arg=''):
+        if self.current_instance is not None:
+            self.current_instance.update_instance_folder()
 
     def create_instance(self):
         instance = LabInstance(None, self.current_settings.lab_name, self.current_settings.provider_name, self.current_settings.provisioner_name,
