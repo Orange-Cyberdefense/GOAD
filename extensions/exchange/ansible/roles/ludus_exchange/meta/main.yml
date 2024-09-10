@@ -1,0 +1,29 @@
+---
+dependencies: []
+
+galaxy_info:
+  role_name: ludus_exchange
+  author: aleemladha
+  description: Install Exchange 2019 or Exchange 2016 to a Windows server
+  company: aleemladha
+  license: GPLv3
+  min_ansible_version: "2.10"
+  platforms:
+    - name: Windows
+      versions:
+        - "2012R2"
+        - "2019"
+        - "2022"
+
+  galaxy_tags:
+    - windows
+    - security
+    - adcs
+    - active directory
+    - exchange server
+    - server
+
+collections:
+  - ansible.windows
+  - community.windows
+  - community.general

@@ -1,0 +1,39 @@
+- name: Get Exchange 2016 ISO if needed
+  run_once: true
+  block:
+    - name:  "Create {{ ludus_install_directory }}/resources/iso directory if it doesn't exist"
+      ansible.builtin.file:
+        path: "{{ ludus_install_directory }}/resources/iso"
+        state: directory
+        recurse: true
+      delegate_to: localhost
+
+    - name: Check if Exchange 2016 ISO exists
+      ansible.builtin.stat:
+        path: "{{ ludus_install_directory }}/resources/iso/{{ ludus_exchange2016_iso_url.split('/') | last }}"
+      delegate_to: localhost
+      register: exchange_iso_check
+
+    - name: Downloading EXCHANGE 2016 ISO - This will take a while
+      ansible.builtin.get_url:
+        url: "{{ ludus_exchange2016_iso_url }}"
+        dest: "{{ ludus_install_directory }}/resources/iso/{{ ludus_exchange2016_iso_url.split('/') | last }}"
+        mode: "660"
+      delegate_to: localhost
+      when: not exchange_iso_check.stat.exists
+
+- name: create EXCHANGE folder
+  ansible.windows.win_file:
+    path: "{{ ludus_exchange_iso_directory }}"
+    state: directory
+
+- name: Check if EXCHANGE 2016 ISO exists on host
+  ansible.windows.win_stat:
+    path: "{{ ludus_exchange_iso_directory }}\\{{ ludus_exchange2016_iso_url.split('/') | last }}"
+  register: exchange_iso_host_check
+
+- name: Copy Exchange ISO to windows host
+  ansible.windows.win_copy:
+    src: "{{ ludus_install_directory }}/resources/iso/{{ ludus_exchange2016_iso_url.split('/') | last }}"
+    dest: "{{ ludus_exchange_iso_directory }}\\{{ ludus_exchange2016_iso_url.split('/') | last }}"
+  when: not exchange_iso_host_check.stat.exists

@@ -1,0 +1,22 @@
+#Exchange Details
+ludus_install_directory: /opt/ludus
+exchange_dotnet_install_path: "https://download.visualstudio.microsoft.com/download/pr/2d6bb6b2-226a-4baa-bdec-798822606ff1/8494001c276a4b96804cde7829c04d7f/ndp48-x86-x64-allos-enu.exe"
+vcredist2013_install_path: "https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe"
+rewrite_module_path: "https://download.microsoft.com/download/1/2/8/128E2E22-C1B9-44A4-BE2A-5859ED1D4592/rewrite_amd64_en-US.msi"
+ucma_runtime_path: "https://download.microsoft.com/download/2/C/4/2C47A5C1-A1F3-4843-B9FE-84C0032C61EC/UcmaRuntimeSetup.exe"
+ludus_exchange_iso_url: "https://download.microsoft.com/download/d/7/b/d7bcf78a-00d2-4a46-a3d2-7d506116bcd2/ExchangeServer2019-x64-CU9.ISO"
+ludus_exchange2016_iso_url: "https://download.microsoft.com/download/2/5/8/258D30CF-CA4C-433A-A618-FB7E6BCC4EEE/ExchangeServer2016-x64-cu12.iso"
+# This pulls the netbios_name out of the domain assigned to this machine in the ludus range config
+ludus_exchange_domain: "{{ (ludus | selectattr('vm_name', 'match', inventory_hostname))[0].domain.fqdn.split('.')[0] }}"
+# This pulls the vm_name of the primary-dc for the domain assigned to this machine in the ludus range config
+ludus_exchange_dc: "{{ (ludus | selectattr('domain', 'defined') | selectattr('domain.fqdn', 'match', ludus_exchange_domain) | selectattr('domain.role', 'match', 'primary-dc'))[0].hostname }}"
+# This pulls the hostname from the ludus config for this host
+ludus_exchange_host: "{{ (ludus | selectattr('vm_name', 'match', inventory_hostname))[0].hostname }}"
+ludus_exchange_domain_username: "{{ ludus_exchange_domain }}\\{{ defaults.ad_domain_admin }}"
+ludus_exchange_domain_password: "{{ defaults.ad_domain_admin_password }}"
+#SendConnector Details
+send_connector_name: ""  # Default of the send connector
+send_connector_smtpserver: ""  # Smart hosts for the send connector
+send_connector_address_spaces:
+  - "SMTP:*;1"                        # Address spaces for the send connector
+send_connector_source_transport_servers: "{{ (ludus | selectattr('vm_name', 'match', inventory_hostname))[0].hostname }}"  # Source transport servers for the send connector

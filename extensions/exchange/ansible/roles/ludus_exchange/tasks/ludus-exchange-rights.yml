@@ -1,0 +1,37 @@
+- name: Ensure domainadmin is part of Enterprise Admins
+  ansible.windows.win_shell: |
+    & net group "Enterprise Admins" domainadmin /add /domain
+  vars:
+    ansible_become: true
+    ansible_become_method: runas
+    ansible_become_user: "{{ ludus_exchange_domain_username }}"
+    ansible_become_password: "{{ ludus_exchange_domain_password }}"
+
+- name: Ensure domainadmin is part of Schema Admins
+  ansible.windows.win_shell: |
+    & net group "Schema Admins" domainadmin /add /domain
+  vars:
+    ansible_become: true
+    ansible_become_method: runas
+    ansible_become_user: "{{ ludus_exchange_domain_username }}"
+    ansible_become_password: "{{ ludus_exchange_domain_password }}"
+#- name: Ensure domainadmin is part of Enterprise Admins
+#  win_domain_group_membership:
+#    name: "Enterprise Admins"
+#    members:
+#      - domainadmin
+#    state: present
+#
+#- name: Ensure domainadmin is part of Domain Admins
+#  win_domain_group_membership:
+#    name: "Domain Admins"
+#    members:
+#      - domainadmin
+#    state: present
+#
+#- name: Ensure domainadmin has the right membership for exchange server
+#  win_domain_group_membership:
+#    name: "Schema Admins"
+#    members:
+#      - domainadmin
+#    state: present
