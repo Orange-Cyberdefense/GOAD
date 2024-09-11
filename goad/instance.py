@@ -169,6 +169,23 @@ class LabInstance:
                 ip_range=self.ip_range
             )
 
+        # load lab extensions content
+        for extension in self.extensions:
+            extension_provider_folder = GoadPath.get_extension_providers_provider_path(extension, self.provider_name)
+            extension_environment = Environment(loader=FileSystemLoader(extension_provider_folder))
+            if os.path.isfile(extension_provider_folder + sep + 'linux.tf'):
+                lab_extension_linux_template = extension_environment.get_template("linux.tf")
+                linux_vm += "\n" + lab_extension_linux_template.render(
+                    lab_name=self.lab_name,
+                    ip_range=self.ip_range
+                ) + "\n"
+            if os.path.isfile(extension_provider_folder + sep + 'windows.tf'):
+                lab_extension_windows_template = extension_environment.get_template("windows.tf")
+                windows_vm += "\n" + lab_extension_windows_template.render(
+                    lab_name=self.lab_name,
+                    ip_range=self.ip_range
+                ) + "\n"
+
         # load template folder
         environment = Environment(loader=FileSystemLoader(GoadPath.get_template_path(self.provider_name)))
 
