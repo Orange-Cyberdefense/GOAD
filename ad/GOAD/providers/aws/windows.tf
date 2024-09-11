@@ -1,3 +1,6 @@
+# t2.medium = 2cpu / 4GB
+# t2.large  = 2cpu / 8GB
+# t2.xlarge = 4cpu / 16GB
 "dc01" = {
   name               = "dc01"
   domain             = "sevenkingdoms.local"
