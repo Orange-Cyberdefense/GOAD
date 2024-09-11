@@ -1,6 +1,7 @@
 import json
 import shutil
-import uuid
+import string
+import random
 from jinja2 import Template, Environment, FileSystemLoader
 from rich.table import Table
 from rich import print
@@ -18,7 +19,8 @@ class LabInstance:
 
     def __init__(self, instance_id, lab_name, provider_name, provisioner_name, ip_range, extensions=None, status='', default=False):
         if instance_id is None:
-            self.instance_id = str(uuid.uuid4())
+            random_id = ''.join(random.choices(string.hexdigits, k=6))
+            self.instance_id = f'{random_id}-{lab_name}-{provider_name}-{ip_range.replace(".","-")}'.lower()
         else:
             self.instance_id = instance_id
         self.lab_name = lab_name
@@ -144,7 +146,8 @@ class LabInstance:
         vagrantfile_content = vagrantfile_template.render(
             lab_name=self.lab_name,
             lab=lab_vagrantfile_content,
-            extensions=lab_extensions_content
+            extensions=lab_extensions_content,
+            provider_name=self.provider_name
         )
 
         # create vagrantfile
@@ -189,6 +192,7 @@ class LabInstance:
         # load template folder
         environment = Environment(loader=FileSystemLoader(GoadPath.get_template_path(self.provider_name)))
 
+        # TODO add aws region and zone in template
         for template in Utils.list_files(GoadPath.get_template_path(self.provider_name)):
             tf_template = environment.get_template(template)
             tf_content = tf_template.render(
@@ -196,7 +200,8 @@ class LabInstance:
                 linux_vms=linux_vm,
                 lab_identifier=self.lab_name + '-' + self.instance_id,
                 lab_name=self.lab_name,
-                ip_range=self.ip_range
+                ip_range=self.ip_range,
+                provider_name=self.provider_name
             )
             # create terraform files
             instance_tf_file = self.instance_provider_path + sep + template
@@ -229,7 +234,8 @@ class LabInstance:
         inventory_template = environment.get_template("inventory")
         instance_inventory_content = inventory_template.render(
             lab_name=self.lab_name,
-            ip_range=self.ip_range
+            ip_range=self.ip_range,
+            provider_name=self.provider_name
         )
         # create instance inventory file
         instance_inventory_file = self.instance_path + sep + 'inventory'
@@ -246,7 +252,8 @@ class LabInstance:
             instance_extension_inventory_template = extension_environment.get_template("inventory")
             instance_extension_inventory_content = instance_extension_inventory_template.render(
                 lab_name=self.lab_name,
-                ip_range=self.ip_range
+                ip_range=self.ip_range,
+                provider_name=self.provider_name
             )
 
             # create instance extension inventory file
@@ -297,4 +304,5 @@ class LabInstance:
         self.save_json_instance()
 
     def delete_instance(self):
+        # TODO
         pass

@@ -1,5 +1,5 @@
-"dc01" = {
-  name               = "dc01"
+"srv01" = {
+  name               = "srv01"
   domain             = "sevenkingdoms.local"
   windows_sku        = "2019-Datacenter"
   ami                = "ami-018ebfbd6b0a4c605"

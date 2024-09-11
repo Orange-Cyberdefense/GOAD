@@ -37,7 +37,10 @@ class Goad(cmd.Cmd):
         # self.lab_manager.show_settings()
 
     def refresh_prompt(self):
-        self.prompt = f"\n{self.lab_manager.inline_settings()} ({self.lab_manager.get_current_instance_id()}) > "
+        if self.lab_manager.get_current_instance_id() == '':
+            self.prompt = f"\n{self.lab_manager.inline_settings()} > "
+        else:
+            self.prompt = f"\n{self.lab_manager.inline_settings()} (\033[32m{self.lab_manager.get_current_instance_id()}\033[0m) > "
 
     def default(self, line):
         print()
@@ -121,11 +124,9 @@ class Goad(cmd.Cmd):
             time_provision = time.ctime(time.time() - start)[11:19]
             Log.info(f'Provisioned from {arg} in {time_provision}')
 
-    def do_sync_source_jumpbox(self, arg):
+    def do_sync_source_jumpbox(self, arg=''):
         if self.lab_manager.get_current_instance_provider().use_jumpbox:
             self.lab_manager.get_current_instance_provisioner().sync_source_jumpbox()
-        else:
-            Log.error('no remote provisioning')
 
     def do_prepare_jumpbox(self, arg=''):
         if self.lab_manager.get_current_instance_provider().use_jumpbox:
@@ -218,8 +219,8 @@ class Goad(cmd.Cmd):
                 if extension is not None:
                     # enable and create files
                     self.lab_manager.get_current_instance().enable_extension(extension_name)
-                    # # start lab with extensions files
-                    self.lab_manager.get_current_instance_provider().start()
+                    # # start lab with extensions files (vagrant up / terraform plan)
+                    self.lab_manager.get_current_instance_provider().install()
                     # # provision extension
                     self.do_provision_extension(extension_name)
                 else:
@@ -234,6 +235,7 @@ class Goad(cmd.Cmd):
         else:
             extension_name = arg
             if extension_name in self.lab_manager.get_current_instance().extensions:
+                self.do_sync_source_jumpbox()
                 extension = self.lab_manager.get_current_instance_lab().get_extension(extension_name)
                 self.lab_manager.get_current_instance_provisioner().run_extension(extension)
             else:
