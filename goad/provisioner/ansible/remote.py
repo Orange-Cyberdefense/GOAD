@@ -31,7 +31,7 @@ class RemoteAnsibleProvisioner(Ansible):
         if self.jumpbox is None:
             Log.error('Jumpbox not set')
             return False
-        super().run(playbook)
+        return super().run(playbook)
 
     def run_playbook(self, playbook, inventories, tries=3, timeout=30, playbook_path=None):
         if playbook_path is None:
