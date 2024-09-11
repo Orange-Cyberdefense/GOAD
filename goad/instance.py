@@ -84,25 +84,6 @@ class LabInstance:
         self.provisioner.set_instance_path(instance_path)
         return True
 
-    def show_instance(self):
-        table = Table()
-        table.add_column('Instance ID')
-        table.add_column('Lab')
-        table.add_column('Provider')
-        table.add_column('IP Range')
-        table.add_column('Status')
-        table.add_column('Default')
-        table.add_column('Extensions')
-        table.add_row(self.instance_id,
-                      self.lab_name,
-                      self.provider_name,
-                      self.ip_range + '.0/24',
-                      self.status,
-                      'Yes' if self.is_default else 'No',
-                      ", ".join(self.extensions)
-                      )
-        print(table)
-
     def is_terraform(self):
         return self.provider_name == AWS or self.provider_name == AZURE or self.provider_name == PROXMOX
 

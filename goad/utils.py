@@ -40,9 +40,9 @@ VIRTUALBOX_ALLOWED_PROVISIONER = [PROVISIONING_LOCAL, PROVISIONING_RUNNER, PROVI
 project_path = os.path.normpath(os.path.dirname(os.path.abspath(__file__)) + os.path.sep + '..')
 
 # instance status
-CREATED = 'ready for providing'
+CREATED = 'not provided'
 PROVIDED = 'ready for provisioning'
-READY = 'ready'
+READY = 'installed'
 
 # tasks
 TASK_INSTALL = 'install'

@@ -38,8 +38,31 @@ class LabInstances:
             return self.instances[instance_id]
         else:
             return None
+    @staticmethod
+    def color_status(status):
+        if status == CREATED:
+            status = f'[red]{status}[/red]'
+        elif status == PROVIDED:
+            status = f'[yellow]{status}[/yellow]'
+        elif status == READY:
+            status = f'[green]{status}[/green]'
+        return status
 
-    def show_instances(self, lab_name='', provider_name='', current_instance_id=''):
+    @staticmethod
+    def color_provider(provider):
+        if provider == AWS:
+            provider = f'[orange1]{provider}[/orange1]'
+        elif provider == AZURE:
+            provider = f'[deep_sky_blue1]{provider}[/deep_sky_blue1]'
+        elif provider == VIRTUALBOX:
+            provider = f'[dodger_blue3]{provider}[/dodger_blue3]'
+        elif provider == VMWARE:
+            provider = f'[cyan3]{provider}[/cyan3]'
+        elif provider == PROXMOX:
+            provider = f'[dark_orange3]{provider}[/dark_orange3]'
+        return provider
+
+    def show_instances(self, lab_name='', provider_name='', current_instance_id='', filter_instance_id=''):
         instance_found = False
         table = Table()
         table.add_column('Instance ID')
@@ -50,6 +73,11 @@ class LabInstances:
         table.add_column('Is Default')
         table.add_column('Extensions')
         for instance_id, instance in self.instances.items():
+            # if filter enabled continue only if instance match the filter
+            if filter_instance_id != '':
+                if instance_id != filter_instance_id:
+                    continue
+
             if lab_name != '' and lab_name != instance.lab_name:
                 continue
             if provider_name != '' and provider_name != instance.provider_name:
@@ -57,9 +85,9 @@ class LabInstances:
             instance_found = True
             table.add_row(f'[red]> [/red][green]{instance_id}[/green]' if instance_id == current_instance_id else instance_id,
                           instance.lab_name,
-                          instance.provider_name,
+                          self.color_provider(instance.provider_name),
                           instance.ip_range + '.0/24',
-                          instance.status,
+                          self.color_status(instance.status),
                           'Yes' if instance.is_default else 'No',
                           ", ".join(instance.extensions)
                           )

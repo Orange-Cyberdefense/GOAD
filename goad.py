@@ -20,7 +20,8 @@ class Goad(cmd.Cmd):
         # prepare lab controller to manage labs
         self.lab_manager = LabManager().init(config)
 
-        if args == '':
+        if args.task == '' or args.task is None:
+            Log.info('Start Loading default instance')
             # load instance marked as default only if no args are provided
             self.lab_manager.load_default_instance()
 
@@ -274,7 +275,7 @@ class Goad(cmd.Cmd):
         else:
             self.lab_manager.load_instance(arg)
             if self.lab_manager.current_instance is not None:
-                self.lab_manager.current_instance.show_instance()
+                self.lab_manager.lab_instances.show_instances(current_instance_id=self.lab_manager.get_current_instance_id(), filter_instance_id=self.lab_manager.get_current_instance_id())
             self.refresh_prompt()
 
     def do_unload_instance(self, arg):
