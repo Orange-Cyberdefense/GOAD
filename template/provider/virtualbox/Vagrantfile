@@ -3,7 +3,9 @@ Vagrant.configure("2") do |config|
 # Uncomment this depending on the provider you want to use
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
 
-{{boxes]}
+{{lab}}
+
+{{extensions}}
 
 # Load extension files if exist
 extension_path = "./extensions"

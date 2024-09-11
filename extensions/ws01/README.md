@@ -23,6 +23,9 @@
     - block lsass stealing
     - block PSExec and WMI
 
+- Providers:
+  - aws doesn't provide windows10 ami. you can still install ws01 but a windows server 2019 will be used instead
+
 ## Install
 
 ```
