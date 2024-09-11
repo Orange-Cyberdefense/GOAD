@@ -40,7 +40,7 @@ class LabInstance:
         self.provider = None
         self.provisioner = None
 
-    def load(self, labs):
+    def load(self, labs, creation=False):
         instance_path = GoadPath.get_instance_path(self.instance_id)
         if not os.path.isdir(instance_path):
             Log.error('instance path not found abort')
@@ -75,7 +75,7 @@ class LabInstance:
             self.provisioner = LocalAnsibleProvisionerCmd(self.lab_name, self.provider)
         elif self.provisioner_name == PROVISIONING_REMOTE:
             self.provisioner = RemoteAnsibleProvisioner(self.lab_name, self.provider)
-            self.provisioner.jumpbox = JumpBox(self)
+            self.provisioner.jumpbox = JumpBox(self, creation)
 
         if self.provisioner is None:
             Log.error('instance provisioner does not exist')

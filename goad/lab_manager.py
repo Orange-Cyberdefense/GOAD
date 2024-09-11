@@ -59,17 +59,17 @@ class LabManager(metaclass=SingletonMeta):
         result = instance.create_instance_folder()
         if result:
             self.lab_instances.add_instance(instance)
-            self.load_instance(instance.instance_id)
+            self.load_instance(instance.instance_id, creation=True)
             self.current_instance.show_instance()
             return True
         else:
             Log.error('Error during creating instance folder')
             return False
 
-    def load_instance(self, instance_id):
+    def load_instance(self, instance_id, creation=False):
         instance = self.lab_instances.get_instance(instance_id)
         if instance is not None:
-            loading_result = instance.load(self.labs)
+            loading_result = instance.load(self.labs, creation)
             if loading_result:
                 # unload previous instance if exist
                 self.current_instance = None

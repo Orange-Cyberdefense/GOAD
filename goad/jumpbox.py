@@ -9,21 +9,25 @@ from goad.goadpath import GoadPath
 
 class JumpBox:
 
-    def __init__(self, instance):
+    def __init__(self, instance, creation=False):
         self.lab_name = instance.lab_name
         self.instance_path = instance.instance_path
         self.provider = instance.provider
         self.ssh_key = self.get_jumpbox_key()
-        self.ip = self.provider.get_jumpbox_ip()
         self.username = 'goad'
         if platform.system() == 'Windows':
             self.command = WindowsCommand()
         else:
             self.command = LinuxCommand()
-        if os.path.isfile(self.ssh_key) is None:
-            Log.error('Missing ssh file JumpBox remote connection')
-        if self.ip is None:
-            Log.error('Missing ip for JumpBox remote connection')
+
+        if not creation:
+            self.ip = self.provider.get_jumpbox_ip()
+            if os.path.isfile(self.ssh_key) is None:
+                Log.error('Missing ssh file JumpBox remote connection')
+            if self.ip is None:
+                Log.error('Missing ip for JumpBox remote connection')
+        else:
+            self.ip = None
 
     def provision(self):
         script_name = self.provider.jumpbox_setup_script
