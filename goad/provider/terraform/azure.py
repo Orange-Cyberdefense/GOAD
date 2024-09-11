@@ -146,7 +146,6 @@ class AzureProvider(TerraformProvider):
         try:
             # Initialize the ComputeManagementClient with the credential
             compute_client = ComputeManagementClient(credential, subscription_id)
-
             Log.info('Start the lab  vms')
             # List all VMs in the specified resource group
             for vm in compute_client.virtual_machines.list(self.resource_group):
@@ -164,7 +163,6 @@ class AzureProvider(TerraformProvider):
         except AuthenticationFailed as e:
             Log.error(e)
             return False
-
         try:
             # Initialize the ComputeManagementClient with the credential
             compute_client = ComputeManagementClient(credential, subscription_id)
@@ -180,16 +178,79 @@ class AzureProvider(TerraformProvider):
             return False
 
     def start_vm(self, vm_name):
-        # TODO
-        pass
+        try:
+            credential, subscription_id = self._auth()
+        except AuthenticationFailed as e:
+            Log.error(e)
+            return False
+        try:
+            # Initialize the ComputeManagementClient with the credential
+            compute_client = ComputeManagementClient(credential, subscription_id)
+            Log.info(f'Start vm {vm_name}')
+            found = False
+            # List all VMs in the specified resource group
+            for vm in compute_client.virtual_machines.list(self.resource_group):
+                if vm_name == vm.name:
+                    found = True
+                    async_vm_stop = compute_client.virtual_machines.begin_start(self.resource_group, vm.name)
+                    async_vm_stop.wait()
+                    Log.success(f'vm {vm.name} started')
+        except Exception as e:
+            Log.error(f'Error starting vm {vm_name}')
+            return False
+        if not found:
+            Log.error('vm not found')
+        return found
 
     def stop_vm(self, vm_name):
-        # TODO
-        pass
+        try:
+            credential, subscription_id = self._auth()
+        except AuthenticationFailed as e:
+            Log.error(e)
+            return False
+        try:
+            # Initialize the ComputeManagementClient with the credential
+            compute_client = ComputeManagementClient(credential, subscription_id)
+            Log.info(f'Stopping vm {vm_name}')
+            found = False
+            # List all VMs in the specified resource group
+            for vm in compute_client.virtual_machines.list(self.resource_group):
+                if vm_name == vm.name:
+                    found = True
+                    async_vm_stop = compute_client.virtual_machines.begin_power_off(self.resource_group, vm.name)
+                    async_vm_stop.wait()
+                    Log.success(f'vm {vm.name} power off (still billed)')
+        except Exception as e:
+            Log.error(f'Error stopping vm {vm_name}')
+            return False
+        if not found:
+            Log.error('vm not found')
+        return found
 
     def destroy_vm(self, vm_name):
-        # TODO
-        pass
+        try:
+            credential, subscription_id = self._auth()
+        except AuthenticationFailed as e:
+            Log.error(e)
+            return False
+        try:
+            # Initialize the ComputeManagementClient with the credential
+            compute_client = ComputeManagementClient(credential, subscription_id)
+            Log.info(f'Deleting vm {vm_name}')
+            found = False
+            # List all VMs in the specified resource group
+            for vm in compute_client.virtual_machines.list(self.resource_group):
+                if vm_name == vm.name:
+                    found = True
+                    async_vm_destroy = compute_client.virtual_machines.begin_delete(self.resource_group, vm.name)
+                    async_vm_destroy.wait()
+                    Log.success(f'vm {vm.name} deleted')
+        except Exception as e:
+            Log.error(f'Error deleting vm {vm_name}')
+            return False
+        if not found:
+            Log.error('vm not found')
+        return found
 
     def _get_az_jumpbox_ip(self):
         try:
