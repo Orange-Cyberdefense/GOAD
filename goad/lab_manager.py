@@ -22,12 +22,12 @@ class LabManager(metaclass=SingletonMeta):
 
     def init(self, config):
         # Prepare all labs objects
-        self.labs = Labs()
+        self.labs = Labs(config)
         # Prepare all instance objects
         self.lab_instances = LabInstances()
+
         # create current settings object
         self.current_settings = Settings(self)
-
         # init lab current config values
         self.config = config
         self.current_settings.set_lab_name(self.config.get(LAB), False)

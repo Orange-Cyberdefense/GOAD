@@ -11,12 +11,12 @@ from goad.provider.vagrant.vmware import VmwareProvider
 
 
 class Labs:
-    def __init__(self):
+    def __init__(self, config):
         self.labs = {}
         for lab_name in Utils.list_folders(GoadPath.get_labs_path()):
             if lab_name != 'TEMPLATE':
                 try:
-                    self.labs[lab_name] = Lab(lab_name)
+                    self.labs[lab_name] = Lab(lab_name, config)
                 except ProviderPathNotFound as e:
                     Log.warning(f'lab {lab_name} not loaded provider path not found')
 
@@ -33,12 +33,12 @@ class Labs:
 
 
 class Lab:
-    def __init__(self, lab_name):
+    def __init__(self, lab_name, config):
         self.lab_name = lab_name
         self.providers = {}
         self.extensions = {}
         try:
-            self._load_providers(lab_name)
+            self._load_providers(lab_name, config)
         except FileNotFoundError as e:
             raise ProviderPathNotFound(e)
         try:
@@ -47,7 +47,7 @@ class Lab:
             # no extensions
             pass
 
-    def _load_providers(self, lab_name):
+    def _load_providers(self, lab_name, config):
         for provider_name in Utils.list_folders(GoadPath.get_lab_providers_path(lab_name)):
             provider = None
             if provider_name == VIRTUALBOX:
@@ -59,7 +59,7 @@ class Lab:
             elif provider_name == AZURE:
                 provider = AzureProvider(lab_name)
             elif provider_name == AWS:
-                provider = AwsProvider(lab_name)
+                provider = AwsProvider(lab_name, config)
             if provider is not None:
                 self.providers[provider_name] = provider
 
