@@ -6,10 +6,10 @@
     account_disabled: false
     state: present
 
-- name: Create administrator home directory
-  ansible.windows.win_command: whoami
-  vars:
-    ansible_become: yes
-    ansible_become_method: runas
-    ansible_become_user: "Administrator"
-    ansible_become_password: "{{local_admin_password}}"
+#- name: Create administrator home directory
+#  ansible.windows.win_command: whoami
+#  vars:
+#    ansible_become: yes
+#    ansible_become_method: runas
+#    ansible_become_user: "Administrator"
+#    ansible_become_password: "{{local_admin_password}}"
