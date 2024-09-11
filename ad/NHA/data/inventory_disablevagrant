@@ -1,0 +1,28 @@
+[default]
+dc01 ansible_host={{ip_range}}.10 dns_domain=dc01 dict_key=dc01 ansible_user=ninja.hack\administrator ansible_password=8dCT-6546541qsdDJjgScp
+dc02 ansible_host={{ip_range}}.20 dns_domain=dc02 dict_key=dc02 ansible_user=academy.ninja.lan\administrator ansible_password=Ufe-qsdaz789bVXSx9rk
+srv01 ansible_host={{ip_range}}.21 dns_domain=dc02 dict_key=srv01 ansible_user=academy.ninja.lan\administrator ansible_password=Ufe-qsdaz789bVXSx9rk
+srv02 ansible_host={{ip_range}}.22 dns_domain=dc02 dict_key=srv02 ansible_user=academy.ninja.lan\administrator ansible_password=Ufe-qsdaz789bVXSx9rk
+srv03 ansible_host={{ip_range}}.23 dns_domain=dc02 dict_key=srv03 ansible_user=academy.ninja.lan\administrator ansible_password=Ufe-qsdaz789bVXSx9rk
+
+[all:vars]
+; domain_name : folder inside ad/
+domain_name=NHA
+
+force_dns_server=no
+dns_server=x.x.x.x
+
+; winrm connection (windows)
+ansible_user=vagrant
+ansible_password=vagrant
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+ansible_winrm_operation_timeout_sec=400
+ansible_winrm_read_timeout_sec=500
+
+[domain]
+dc01
+dc02
+srv01
+srv02
+srv03
