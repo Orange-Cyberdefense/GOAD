@@ -46,9 +46,9 @@ class LabInstances:
         table.add_column('Lab')
         table.add_column('Provider')
         table.add_column('IP Range')
-        table.add_column('Extensions')
         table.add_column('Status')
         table.add_column('Is Default')
+        table.add_column('Extensions')
         for instance_id, instance in self.instances.items():
             if lab_name != '' and lab_name != instance.lab_name:
                 continue
@@ -59,9 +59,9 @@ class LabInstances:
                           instance.lab_name,
                           instance.provider_name,
                           instance.ip_range + '.0/24',
-                          ", ".join(instance.extensions),
                           instance.status,
-                          'Yes' if instance.is_default else 'No'
+                          'Yes' if instance.is_default else 'No',
+                          ", ".join(instance.extensions)
                           )
         if instance_found:
             print(table)

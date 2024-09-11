@@ -90,16 +90,16 @@ class LabInstance:
         table.add_column('Lab')
         table.add_column('Provider')
         table.add_column('IP Range')
-        table.add_column('Extensions')
         table.add_column('Status')
         table.add_column('Default')
+        table.add_column('Extensions')
         table.add_row(self.instance_id,
                       self.lab_name,
                       self.provider_name,
                       self.ip_range + '.0/24',
-                      ", ".join(self.extensions),
                       self.status,
-                      'Yes' if self.is_default else 'No'
+                      'Yes' if self.is_default else 'No',
+                      ", ".join(self.extensions)
                       )
         print(table)
 
