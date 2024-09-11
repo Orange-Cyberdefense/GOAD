@@ -12,7 +12,7 @@
                     "ninja\\hokage"
                 ]
             },
-            "vulns" : ["directory","files","adcs_templates","acls"],
+            "vulns" : ["administrator_folder","directory","files","adcs_templates","acls"],
             "vulns_vars" : {
                 "directory": {
                     "setup": "c:\\setup"
@@ -57,7 +57,7 @@
             "scripts" : [
                 "constrained_delegation_use_any.ps1"
             ],
-            "vulns" : ["files"],
+            "vulns" : ["administrator_folder","files"],
             "vulns_vars" : {
                 "files" : {
                     "flag":{
@@ -80,7 +80,7 @@
                     "academy\\Teacher"
                 ]
             },
-            "vulns" : ["files", "enable_credssp_server"],
+            "vulns" : ["administrator_folder","files", "enable_credssp_server"],
             "vulns_vars" : {
                 "files" : {
                     "website" : {
@@ -116,7 +116,7 @@
                 "executeasuser" : {},
                 "linked_servers": {}
             },
-            "vulns" : ["files", "mssql", "disable_firewall"],
+            "vulns" : ["administrator_folder","files", "mssql", "disable_firewall"],
             "vulns_vars" : {
                 "files" : {
                     "sql" : {
@@ -151,7 +151,7 @@
                     "academy\\Sensei"
                 ]
             },
-            "vulns" : ["files", "enable_credssp_client", "schedule"],
+            "vulns" : ["administrator_folder","files", "enable_credssp_client", "schedule"],
             "vulns_vars" : {
                 "files" : {
                     "csp" : {
