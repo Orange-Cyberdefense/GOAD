@@ -115,15 +115,15 @@ class AwsProvider(TerraformProvider):
         session = boto3.Session(profile_name=self.profile_name)
         ec2_client = session.client('ec2', self.aws_region)
         instances_ids = self._get_vm_instance_id_list(ec2_client)
-        ec2_client.start_instances(InstanceIds=[instances_ids])
+        ec2_client.start_instances(InstanceIds=instances_ids)
         Log.info('lab start in progres')
 
     def stop(self):
         session = boto3.Session(profile_name=self.profile_name)
         ec2_client = session.client('ec2', self.aws_region)
         instances_ids = self._get_vm_instance_id_list(ec2_client)
-        ec2_client.start_instances(InstanceIds=[instances_ids])
-        Log.info('lab start in progres')
+        ec2_client.stop_instances(InstanceIds=instances_ids)
+        Log.info('lab stop in progres')
 
     def start_vm(self, vm_id):
         session = boto3.Session(profile_name=self.profile_name)
