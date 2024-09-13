@@ -40,7 +40,7 @@ class Goad(cmd.Cmd):
         if self.lab_manager.get_current_instance_id() == '':
             self.prompt = f"\n{self.lab_manager.inline_settings()} > "
         else:
-            self.prompt = f"\n{self.lab_manager.inline_settings()} (\033[32m{self.lab_manager.get_current_instance_id()}\033[0m) > "
+            self.prompt = f"\n{self.lab_manager.inline_settings()} ({self.lab_manager.get_current_instance_id()}) > "
 
     def default(self, line):
         print()
