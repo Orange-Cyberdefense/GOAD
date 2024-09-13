@@ -149,6 +149,19 @@ class Goad(cmd.Cmd):
         else:
             Log.error('No jump box for this provider')
 
+    def do_ssh_jumpbox_proxy(self, arg):
+        if self.lab_manager.get_current_instance_provider().use_jumpbox:
+            try:
+                jump_box = self.lab_manager.get_current_instance_provisioner().jumpbox
+                if arg.isnumeric() and 1024 < int(arg) <= 65535:
+                    jump_box.ssh_proxy(arg)
+                else:
+                    Log.error(f'Port value invalid : {arg}')
+            except JumpBoxInitFailed as e:
+                Log.error('Jumpbox retrieve connection info failed, abort')
+        else:
+            Log.error('No jump box for this provider')
+
     # configuration
     def do_set_lab(self, arg):
         """

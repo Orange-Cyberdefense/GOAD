@@ -57,6 +57,7 @@ def print_menu(lab_manager, advanced=True, debug=False):
                 print_menu_entry('prepare_jumpbox', 'install package on the jumpbox for provisioning')
                 print_menu_entry('sync_source_jumpbox', 'sync source of the jumpbox')
             print_menu_entry('ssh_jumpbox', 'connect to jump box with ssh')
+            print_menu_entry('ssh_jumpbox_proxy <proxy_port>', 'connect to jump box with ssh and start a socks proxy')
 
         if advanced:
             print_menu_title('Providing (Vagrant/Terrafom)')
