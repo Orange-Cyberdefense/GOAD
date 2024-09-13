@@ -9,7 +9,7 @@
     - { role: 'sccm/install/prerequistes', tags: 'sccm_prerequistes', when: sccm_server != ''}
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
-    domain_username: "{{domain}}\\Administrator"
+    domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
     site_code: "{{lab.domains[domain].sccm.site_code}}"
     sccm_server: "{{lab.domains[domain].sccm.sccm_server | default('')}}"
@@ -25,7 +25,7 @@
     - { role: 'sccm/install/mecm', tags: 'sccm_mecm'}
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
-    domain_username: "{{domain}}\\Administrator"
+    domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
     site_code: "{{lab.domains[domain].sccm.site_code}}"
     sccm_server: "{{lab.domains[domain].sccm.sccm_server | default('')}}"

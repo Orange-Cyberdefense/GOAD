@@ -1,6 +1,8 @@
 [all:vars]
 ; domain_name : folder inside ad/
 domain_name=GOAD-Light
+; administrator user
+admin_user=administrator
 
 force_dns_server=no
 dns_server=x.x.x.x

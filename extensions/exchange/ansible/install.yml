@@ -12,7 +12,7 @@
   vars:
     hostname: "{{lab.hosts[dict_key].hostname}}"
     domain: "{{lab.hosts[dict_key].domain}}"
-    domain_username: "{{domain}}\\Administrator"
+    domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
     domain_server: "{{lab.hosts[dict_key].hostname}}.{{domain}}"
     ad_users: "{{lab_extension.domains[lab.hosts[dict_key].domain].users}}"
@@ -46,7 +46,7 @@
     - { role: 'sync_domains', tags: 'sync' }
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
-    domain_username: "{{domain}}\\Administrator"
+    domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
 
 - name: Install exchange
@@ -58,10 +58,12 @@
     ludus_exchange_domain: "{{domain.split('.')[0]}}"
     ludus_exchange_dc: "{{lab.hosts[dict_key].hostname}}.{{domain}}"
     ludus_exchange_host: "{{lab_extension.hosts[dict_key].hostname}}"
-    ludus_exchange_domain_username: "{{domain}}\\Administrator"
+    ludus_exchange_domain_username: "{{domain}}\\goadmin"
     ludus_exchange_domain_password: "{{lab.domains[domain].domain_password}}"
     ludus_os_version: "2019"
     ludus_exchange_iso_directory: "C:\\exchange"
     exchange_prereqs_complete_file: "{{ ludus_exchange_iso_directory }}\\exchange_prereqs_complete.txt"
     send_connector_source_transport_servers: "{{ludus_exchange_host}}"
     ludus_install_directory: "./iso"
+
+

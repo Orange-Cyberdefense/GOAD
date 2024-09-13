@@ -13,7 +13,7 @@
       vars:
         vulns_vars : "{{ lab.hosts[dict_key].vulns_vars[vuln] | default({}) }}"
         domain: "{{lab.hosts[dict_key].domain}}"
-        domain_username: "{{domain}}\\Administrator"
+        domain_username: "{{domain}}\\{{admin_user}}"
         domain_password: "{{lab.domains[domain].domain_password}}"
       loop: "{{lab.hosts[dict_key].vulns | default([]) }}"
       loop_control:

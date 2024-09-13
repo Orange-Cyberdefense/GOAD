@@ -10,7 +10,7 @@
     - { role: 'sccm/pxe', tags: 'sccm_pxe' }
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
-    domain_username: "{{domain}}\\Administrator"
+    domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
     site_code: "{{lab.domains[domain].sccm.site_code}}"
     pxe_pass: "{{lab.domains[domain].sccm.pxe_pass| default('')}}"

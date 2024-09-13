@@ -3,6 +3,9 @@
 ; domain_name : folder inside ad/
 domain_name=GOAD
 
+; administrator user
+admin_user=administrator
+
 ; global settings inventory default value
 keyboard_layouts=["en-US", "da-DK", "fr-FR"]
 

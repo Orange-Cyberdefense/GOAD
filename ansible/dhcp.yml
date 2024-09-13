@@ -9,7 +9,7 @@
     - { role: 'dhcp', tags: 'dhcp_install'}
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
-    domain_username: "{{domain}}\\Administrator"
+    domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
     sccm_server: "{{lab.domains[domain].sccm.sccm_server | default('')}}"
     dc_key: "{{lab.domains[domain].dc}}"

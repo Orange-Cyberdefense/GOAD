@@ -15,7 +15,7 @@
     - { role: 'sccm/config/users', tags: 'sccm_users'}
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
-    domain_username: "{{domain}}\\Administrator"
+    domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
     sccm_server: "{{lab.domains[domain].sccm.sccm_server | default('')}}"
     sccm_mssql_server: "{{lab.domains[domain].sccm.sccm_mssql_server | default('')}}"

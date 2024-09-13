@@ -14,7 +14,7 @@
 - name: "Add workstation to {{member_domain}}"
   win_domain_membership:
     dns_domain_name: "{{member_domain}}"
-    domain_admin_user: "Administrator@{{member_domain}}"
+    domain_admin_user: "{{domain_username}}"
     domain_admin_password: "{{domain_password}}"
 #    domain_ou_path: "{{member_domain_ou_path}}"
     state: domain

@@ -23,7 +23,7 @@
     SQLSVCACCOUNT: "{{SQLSVCACCOUNT_NAME if SQLSVCACCOUNT_NAME == 'NT AUTHORITY\\NETWORK SERVICE' else SQLSVCACCOUNT_NAMEDOMAIN }}"
     SQLSVCPASSWORD: "{{lab.domains[domain].users[SQLSVCACCOUNT_NAME].password| default('')}}"
     SQLYSADMIN: "{{SQLSVCACCOUNT}}"
-    domain_admin: "{{domain}}\\Administrator"
+    domain_admin: "{{domain}}\\{{admin_user}}"
     domain_admin_password: "{{lab.domains[domain].domain_password}}"
     sql_sysadmins: "{{lab.hosts[dict_key].mssql.sysadmins | default([]) }}"
     executeaslogin: "{{lab.hosts[dict_key].mssql.executeaslogin  | default({}) }}"
@@ -42,7 +42,7 @@
     - { role: 'mssql_reporting', tags: 'mssql_reporting'}
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
-    domain_admin: "{{domain}}\\Administrator"
+    domain_admin: "{{domain}}\\{{admin_user}}"
     domain_admin_password: "{{lab.domains[domain].domain_password}}"
 
 - name: "Install Webdav"

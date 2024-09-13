@@ -23,7 +23,7 @@
 - name: Ensure the server is a domain controller
   win_domain_controller:
     dns_domain_name: "{{domain}}"
-    domain_admin_user: "Administrator@{{domain}}"
+    domain_admin_user: "{{domain_username}}"
     domain_admin_password: "{{domain_password}}"
     safe_mode_password: "{{domain_password}}"
     state: domain_controller

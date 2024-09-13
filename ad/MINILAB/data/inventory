@@ -1,6 +1,8 @@
 [all:vars]
 ; domain_name : folder inside ad/
 domain_name=MINILAB
+; administrator user
+admin_user=administrator
 
 ;use to setup a dns server in the start of provisioning
 force_dns_server=no

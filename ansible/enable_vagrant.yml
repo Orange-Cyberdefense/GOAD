@@ -12,5 +12,5 @@
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
     member_domain: "{{lab.hosts[dict_key].domain}}"
-    domain_username: "{{domain}}\\Administrator"
+    domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[member_domain].domain_password}}"

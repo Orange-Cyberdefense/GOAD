@@ -15,3 +15,6 @@ srv02 ansible_host={{ip_range}}.22 dns_domain=dc02 dict_key=srv02 ansible_user=a
 ; ------------------------------------------------
 dc03 ansible_host={{ip_range}}.12 dns_domain=dc03 dict_key=dc03 ansible_user=ansible ansible_password=Ufe-bVXSx9rk
 srv03 ansible_host={{ip_range}}.23 dns_domain=dc03 dict_key=srv03 ansible_user=ansible ansible_password=978i2pF43UJ-
+
+[all:vars]
+admin_user=goadmin

@@ -12,6 +12,7 @@
     - { role: 'member_server', tags: 'server'}
   vars:
     member_domain: "{{lab.hosts[dict_key].domain}}"
+    domain_username: "{{admin_user}}@{{member_domain}}"
     domain_password: "{{lab.domains[member_domain].domain_password}}"
 
 - name: "play workstations AD configuration"
@@ -20,4 +21,5 @@
     - { role: 'commonwkstn', tags: 'workstation'}
   vars:
     member_domain: "{{lab.hosts[dict_key].domain}}"
+    domain_username: "{{admin_user}}@{{member_domain}}"
     domain_password: "{{lab.domains[member_domain].domain_password}}"

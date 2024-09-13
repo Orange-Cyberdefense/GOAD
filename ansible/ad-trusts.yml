@@ -26,7 +26,7 @@
   - { role: 'trusts', tags: 'trust' }
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
-    domain_username: "{{domain}}\\Administrator"
+    domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
     remote_forest: "{{lab.domains[domain].trust}}"
     remote_admin: "Administrator@{{remote_forest}}"
@@ -49,7 +49,7 @@
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
     replication: "forest"
-    domain_username: "{{domain}}\\Administrator"
+    domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
     parent_domain: "{{'.'.join(domain.split('.')[1:]) | default('')}}"
     trust: "{{lab.domains[domain].trust | default('')}}"

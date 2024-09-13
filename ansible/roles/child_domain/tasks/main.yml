@@ -71,7 +71,7 @@
     parameters:
       Password: "{{parent_domain_password}}"
       DomSafePassword: "{{domain_password}}"
-      DomainAdmin: "Administrator@{{parent_domain}}"
+      DomainAdmin: "{{parent_domain_user}}"
       ParentDomainName: "{{parent_domain}}"
       ReplicationSourceDC: "{{source_dc}}"
       NewDomainNetbiosName: "{{netbios_name}}"

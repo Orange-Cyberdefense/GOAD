@@ -3,6 +3,9 @@
 sql_instance_name=MSSQLSERVER
 sql_version=MSSQL_2022
 
+; administrator user
+admin_user=administrator
+
 ; domain_name : folder inside ad/
 domain_name=SCCM
 
