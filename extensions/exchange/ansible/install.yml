@@ -37,6 +37,7 @@
     local_admin_password: "{{lab_extension.hosts[dict_key].local_admin_password}}"
     hostname: "{{lab_extension.hosts[dict_key].hostname}}"
     member_domain: "{{lab_extension.hosts[dict_key].domain}}"
+    domain_username: "{{member_domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[member_domain].domain_password}}"
     local_groups: "{{lab_extension.hosts[dict_key].local_groups  | default({}) }}"
 
@@ -58,7 +59,7 @@
     ludus_exchange_domain: "{{domain.split('.')[0]}}"
     ludus_exchange_dc: "{{lab.hosts[dict_key].hostname}}.{{domain}}"
     ludus_exchange_host: "{{lab_extension.hosts[dict_key].hostname}}"
-    ludus_exchange_domain_username: "{{domain}}\\goadmin"
+    ludus_exchange_domain_username: "{{domain}}\\{{admin_user}}"
     ludus_exchange_domain_password: "{{lab.domains[domain].domain_password}}"
     ludus_os_version: "2019"
     ludus_exchange_iso_directory: "C:\\exchange"
