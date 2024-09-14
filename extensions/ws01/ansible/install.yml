@@ -22,5 +22,6 @@
     local_admin_password: "{{lab_extension.hosts[dict_key].local_admin_password}}"
     hostname: "{{lab_extension.hosts[dict_key].hostname}}"
     member_domain: "{{lab_extension.hosts[dict_key].domain}}"
+    domain_username: "{{member_domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[member_domain].domain_password}}"
     local_groups: "{{lab_extension.hosts[dict_key].local_groups  | default({}) }}"
