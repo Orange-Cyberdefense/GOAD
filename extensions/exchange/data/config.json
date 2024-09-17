@@ -14,17 +14,12 @@
                     "Remote Desktop Users": [
                         "sevenkingdoms\\Arryn"
                     ]
-                },
-                "scripts": [],
-                "vulns": [],
-                "security": [],
-                "security_vars": {
                 }
             }
         },
         "domains": {
             "sevenkingdoms.local": {
-                "organisation_units" : {},
+                "organisation_units": {},
                 "groups": {
                     "universal": {},
                     "global": {

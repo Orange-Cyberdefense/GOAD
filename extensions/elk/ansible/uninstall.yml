@@ -1,4 +1,0 @@
-- name: Uninstall log agent on windows vms
-  hosts: elk_log
-  roles:
-    - { role: 'uninstall_logs_windows', tags: 'agent' }

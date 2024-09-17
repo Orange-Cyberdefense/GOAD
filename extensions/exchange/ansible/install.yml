@@ -1,9 +1,20 @@
 ---
-- import_playbook: "data.yml"
+# read global configuration file and set up adapters
+- import_playbook: "../../../ansible/data.yml"
   vars:
-    data_path: "../../../ad/{{domain_name}}/data/"
+    data_path: "../ad/{{domain_name}}/data/"
   tags: 'data'
 
+# read local configuration file
+- name: "Read local config file"
+  hosts: domain:extensions
+  connection: local
+  vars_files:
+    - "../data/config.json"
+  tasks:
+    - name: merge lab variable with local config
+      set_fact:
+        lab: "{{ lab|combine(lab_extension, recursive=True) }}"
 
 - name: Update AD data
   hosts: dc01
@@ -15,9 +26,9 @@
     domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
     domain_server: "{{lab.hosts[dict_key].hostname}}.{{domain}}"
-    ad_users: "{{lab_extension.domains[lab.hosts[dict_key].domain].users}}"
-    ad_ou: "{{lab_extension.domains[lab.hosts[dict_key].domain].organisation_units  | default({}) }}"
-    ad_groups: "{{lab_extension.domains[lab.hosts[dict_key].domain].groups}}"
+    ad_users: "{{lab.domains[lab.hosts[dict_key].domain].users}}"
+    ad_ou: "{{lab.domains[lab.hosts[dict_key].domain].organisation_units  | default({}) }}"
+    ad_groups: "{{lab.domains[lab.hosts[dict_key].domain].groups}}"
 
 - name: Install new server
   hosts: srv01
@@ -34,12 +45,12 @@
     - { role: "settings/adjust_rights", tags: 'adjust_rights' }
     - { role: "settings/user_rights", tags: 'adjust_rights' }
   vars:
-    local_admin_password: "{{lab_extension.hosts[dict_key].local_admin_password}}"
-    hostname: "{{lab_extension.hosts[dict_key].hostname}}"
-    member_domain: "{{lab_extension.hosts[dict_key].domain}}"
+    local_admin_password: "{{lab.hosts[dict_key].local_admin_password}}"
+    hostname: "{{lab.hosts[dict_key].hostname}}"
+    member_domain: "{{lab.hosts[dict_key].domain}}"
     domain_username: "{{member_domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[member_domain].domain_password}}"
-    local_groups: "{{lab_extension.hosts[dict_key].local_groups  | default({}) }}"
+    local_groups: "{{lab.hosts[dict_key].local_groups  | default({}) }}"
 
 - name: Synchronize all domains
   hosts: dc
@@ -55,10 +66,10 @@
   roles:
     - { role: 'ludus_exchange', tags: 'exchange' }
   vars:
-    domain: "{{lab_extension.hosts[dict_key].domain}}"
+    domain: "{{lab.hosts[dict_key].domain}}"
     ludus_exchange_domain: "{{domain.split('.')[0]}}"
     ludus_exchange_dc: "{{lab.hosts[dict_key].hostname}}.{{domain}}"
-    ludus_exchange_host: "{{lab_extension.hosts[dict_key].hostname}}"
+    ludus_exchange_host: "{{lab.hosts[dict_key].hostname}}"
     ludus_exchange_domain_username: "{{domain}}\\{{admin_user}}"
     ludus_exchange_domain_password: "{{lab.domains[domain].domain_password}}"
     ludus_os_version: "2019"
@@ -66,5 +77,3 @@
     exchange_prereqs_complete_file: "{{ ludus_exchange_iso_directory }}\\exchange_prereqs_complete.txt"
     send_connector_source_transport_servers: "{{ludus_exchange_host}}"
     ludus_install_directory: "./iso"
-
-
