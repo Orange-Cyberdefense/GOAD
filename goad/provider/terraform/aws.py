@@ -36,9 +36,11 @@ class AwsProvider(TerraformProvider):
         return f'[yellow]{state}[/yellow]'
 
     def check(self):
-        check = True
         # check terraform bin
-        check &= super().check()
+        check = super().check()
+        check_aws = self.command.check_aws()
+        check = check and check_aws
+
         try:
             session = boto3.Session(profile_name=self.profile_name)
             # Create an STS client using the session
@@ -51,7 +53,7 @@ class AwsProvider(TerraformProvider):
             Log.info(f"  Account: {response['Account']}")
             Log.info(f"  User ARN: {response['Arn']}")
             Log.info(f"  User ID: {response['UserId']}")
-            check &= True
+            check = check and True
         except NoCredentialsError:
             Log.error("Credentials not available.")
             check = False

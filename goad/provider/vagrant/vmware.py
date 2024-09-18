@@ -8,5 +8,7 @@ class VmwareProvider(VagrantProvider):
     allowed_provisioners = [PROVISIONING_LOCAL, PROVISIONING_RUNNER, PROVISIONING_DOCKER]
 
     def check(self):
-        super().check()
-        self.command.check_vmware()
+        super_check = super().check()
+        check_vmware = self.command.check_vmware()
+        check_vagrant_plugin = self.command.check_vagrant_plugin('vagrant-vmware-desktop')
+        return super_check and check_vmware and check_vagrant_plugin

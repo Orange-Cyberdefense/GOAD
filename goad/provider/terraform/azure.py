@@ -40,7 +40,9 @@ class AzureProvider(TerraformProvider):
 
     def check(self):
         # check terraform bin
-        super().check()
+        check = super().check()
+        check_az = self.command.check_azure()
+        check = check and check_az
         # check azure login
         try:
             credential = DefaultAzureCredential()
@@ -58,12 +60,15 @@ class AzureProvider(TerraformProvider):
                             Log.info(f'Tenant ID : {subscription.get("tenantId")}')
                             Log.info(f'State : {subscription.get("state")}')
                             Log.info('If you want to change subscription use: az account set --subscription "<subscription id>" ')
-
+                            check = check and True
         except ClientAuthenticationError as error:
             Log.error(f'Azure authentication error : {error.message}')
             Log.info('Please login before launching the app with "az login"')
+            check = False
         except Exception as error:
             Log.error(f'Exception during the azure check : {error.message}')
+            check = False
+        return check
 
     def _auth(self):
         # Initialize DefaultAzureCredential

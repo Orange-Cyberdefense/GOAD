@@ -1,5 +1,5 @@
 import sys
-
+import psutil
 from goad.command.cmd import Command
 import subprocess
 from goad.log import Log
@@ -7,6 +7,16 @@ from goad.utils import Utils
 
 
 class LinuxCommand(Command):
+
+    def is_in_path(self, bin_file):
+        command = f'which {bin_file} >/dev/null'
+        try:
+            subprocess.run(command, shell=True, check=True)
+            Log.success(f'{bin_file} found in PATH')
+            return True
+        except subprocess.CalledProcessError as e:
+            Log.error(f'{bin_file} not found in PATH')
+            return False
 
     def run_shell(self, command, path):
         try:
@@ -28,24 +38,72 @@ class LinuxCommand(Command):
         return result.returncode == 0
 
     def check_vagrant(self):
-        command = 'which vagrant >/dev/null'
+        return self.is_in_path('vagrant')
+
+    def check_vagrant_plugin(self, plugin_name):
         try:
-            subprocess.run(command, shell=True, check=True)
-            Log.success('vagrant found in PATH')
-            return True
-        except subprocess.CalledProcessError as e:
-            Log.error('vagrant not found in PATH')
+            result = subprocess.run(['vagrant', 'plugin', 'list'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if plugin_name in result.stdout:
+                Log.success(f'vagrant plugin {plugin_name} is installed')
+                return True
+            else:
+                Log.error(f'Missing vagrant plugin {plugin_name}')
+                return False
+        except FileNotFoundError:
+            Log.error("Vagrant is not installed or not found in PATH.")
+            return False
+
+    def check_gem(self, gem_name):
+        try:
+            result = subprocess.run(['gem', 'list'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if gem_name in result.stdout:
+                Log.success(f'ruby gem {gem_name} is installed')
+                return True
+            else:
+                Log.warning(f'ruby gem {gem_name} not installed')
+                return False
+        except FileNotFoundError:
+            Log.error("Ruby or gem is not installed or not found in PATH.")
             return False
 
     def check_vmware(self):
-        command = 'which vmrun >/dev/null'
-        try:
-            subprocess.run(command, shell=True, check=True)
-            Log.success('vmware workstation found in PATH')
-            return True
-        except subprocess.CalledProcessError as e:
-            Log.error('vmware workstation not found in PATH')
+        return self.is_in_path('vmrun')
+
+    def check_virtualbox(self):
+        return self.is_in_path('VBoxManage')
+
+    def check_terraform(self):
+        return self.is_in_path('terraform')
+
+    def check_aws(self):
+        return self.is_in_path('aws')
+
+    def check_azure(self):
+        return self.is_in_path('az')
+
+    def check_rsync(self):
+        return self.is_in_path('rsync')
+
+    def check_docker(self):
+        return self.is_in_path('docker')
+
+    def check_ansible(self):
+        return self.is_in_path('ansible-playbook')
+
+    def check_disk(self, min_disk_gb=120):
+        disk_usage = psutil.disk_usage('/')
+        free_disk_gb = disk_usage.free / (1024 ** 3)  # Convert bytes to GB
+        if free_disk_gb < min_disk_gb:
+            Log.warning(f'not enought disk space, only {str(free_disk_gb)} Gb available')
             return False
+        return True
+
+    def check_ram(self, min_ram_gb=24):
+        total_ram_gb = psutil.virtual_memory().total / (1024 ** 3)  # Convert bytes to GB
+        if total_ram_gb < min_ram_gb:
+            Log.error('not enough ram on the system')
+            return False
+        return True
 
     def run_vagrant(self, args, path):
         result = None
@@ -58,16 +116,6 @@ class LinuxCommand(Command):
         except subprocess.CalledProcessError as e:
             Log.error(f"An error occurred while running the command: {e}")
         return result.returncode == 0
-
-    def check_terraform(self):
-        command = 'which terraform >/dev/null'
-        try:
-            subprocess.run(command, shell=True, check=True)
-            Log.success('terraform found in PATH')
-            return True
-        except subprocess.CalledProcessError as e:
-            Log.error('terraform not found in PATH')
-            return False
 
     def run_terraform(self, args, path):
         result = None

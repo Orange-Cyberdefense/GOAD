@@ -1,5 +1,8 @@
 class Command:
 
+    def is_in_path(self, bin_file):
+        pass
+
     def run(self, cmd, args, path):
         pass
 
@@ -26,4 +29,3 @@ class Command:
 
     def get_azure_account_output(self):
         pass
-
