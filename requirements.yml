@@ -1,4 +1,5 @@
 rich
+psutil
 # Ansible
 ansible_runner
 ansible-core==2.12.6
