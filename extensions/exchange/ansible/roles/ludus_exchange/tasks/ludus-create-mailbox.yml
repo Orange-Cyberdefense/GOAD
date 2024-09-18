@@ -3,11 +3,20 @@
   ansible.windows.win_shell: |
     Add-PSSnapin Microsoft.Exchange.Management.PowerShell.SnapIn
     $users = Get-User -RecipientTypeDetails User -ResultSize Unlimited | Where-Object { $_.RecipientTypeDetails -ne 'MailboxUser' }
-    $excludedUsers = @("administrator", "ansible", "goadmin")
+    $excludedUsers = @("administrator", "ansible", "goadmin", "vagrant")
     foreach ($user in $users) {
-        if (-not $excludedUsers -contains $user.samAccountName ) {
+        if ($excludedUsers -contains $user.samAccountName) {
+          Write-Host "user skipped: $user.samAccountName"
+        } else {
           if (-not $user.samAccountName.EndsWith('$')) {
-            Enable-Mailbox -Identity $user.SamAccountName
+            Write-Host "create mailbox: $user.samAccountName"
+            try {
+              Enable-Mailbox -Identity $user.SamAccountName
+            } catch {
+              Write-Host "error during mailbox creation"
+            }
+          } else {
+            Write-Host "user skipped: $user.samAccountName"
           }
         }
     }
@@ -22,7 +31,11 @@
     Add-PSSnapin Microsoft.Exchange.Management.PowerShell.SnapIn
     $users = Get-Mailbox -ResultSize Unlimited
     foreach ($user in $users) {
+      try {
         Set-MailboxRegionalConfiguration -Identity $user.Alias -Language en-US -TimeZone "Romance Standard Time"
+      } catch {
+        Write-Host "error during MailboxRegionalConfiguration"
+      }
     }
   vars:
     ansible_become: true

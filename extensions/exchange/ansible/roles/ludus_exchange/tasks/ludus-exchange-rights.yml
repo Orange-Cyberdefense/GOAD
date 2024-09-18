@@ -15,6 +15,7 @@
     ansible_become_method: runas
     ansible_become_user: "{{ ludus_exchange_domain_username }}"
     ansible_become_password: "{{ ludus_exchange_domain_password }}"
+
 #- name: Ensure domainadmin is part of Enterprise Admins
 #  win_domain_group_membership:
 #    name: "Enterprise Admins"
