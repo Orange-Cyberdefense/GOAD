@@ -27,6 +27,9 @@
 - name: Create ad users mailbox
   ansible.builtin.include_tasks: ludus-create-mailbox.yml
 
+- name: Setup internal dns adapter
+  ansible.builtin.include_tasks: ludus-exchange-dns.yml
+
 #- name: Run the send connector task
 #  ansible.builtin.include_tasks: ludus_sendconnector.yml
 #  when: exchange_installed.exists or send_connector_name is defined
