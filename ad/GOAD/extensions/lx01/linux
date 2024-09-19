@@ -1,8 +1,0 @@
-[default]
-lx01 ansible_host=192.168.56.24 ansible_connection=ssh ansible_ssh_common_args='-o StrictHostKeyChecking=no'
-
-[enroll_linux]
-lx01
-
-[extensions]
-lx01

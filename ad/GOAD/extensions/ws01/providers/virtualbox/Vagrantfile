@@ -1,3 +1,0 @@
-boxes.append(
-    { :name => "GOAD-WS01", :ip => "192.168.56.30", :box => "mayfly/windows10", :os => "windows"}
-)
