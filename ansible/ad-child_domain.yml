@@ -30,7 +30,7 @@
 - name: Parent DC ADD DNS configuration
   hosts: parent_dc
   roles:
-    - { role: 'child_dns', tags: 'child_dns'}
+    - { role: 'parent_child_dns', tags: 'parent_child_dns'}
   vars:
     lab: "{{lab}}"
     domains: "{{lab.domains.keys()}}"
