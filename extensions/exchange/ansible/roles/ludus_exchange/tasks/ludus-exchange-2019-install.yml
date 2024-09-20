@@ -37,7 +37,6 @@
     image_path: "{{ ludus_exchange_iso_directory }}\\{{ ludus_exchange_iso_url.split('/') | last }}"
     state: absent
 
-
 - name: Remove ISO file
   ansible.windows.win_file:
     path: "{{ ludus_exchange_iso_directory }}\\{{ ludus_exchange_iso_url.split('/') | last }}"

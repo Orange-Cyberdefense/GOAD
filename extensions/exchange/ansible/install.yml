@@ -36,6 +36,7 @@
     # build.yml
     - { role: 'common', tags: 'common', http_proxy: "{{enable_http_proxy}}" }
     - { role: 'settings/keyboard', tags: 'keyboard', layouts: "{{keyboard_layouts}}" }
+    - { role: 'settings/no_updates', tags: 'no_updates' }
     # ad-servers.yml
     - { role: 'settings/admin_password', tags: 'admin_password' }
     - { role: 'settings/hostname', tags: 'hostname' }
