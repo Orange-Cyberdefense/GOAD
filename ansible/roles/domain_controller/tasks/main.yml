@@ -63,8 +63,7 @@
     IsSingleInstance: "yes"
     UseRootHint: false
     IPAddresses:
-      - "1.1.1.1"
-      - "9.9.9.9"
+      - "{{dns_server_forwarder}}"
 
 #- name: install nuget
 #  win_shell: install-packageprovider -name nuget -force

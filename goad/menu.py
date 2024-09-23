@@ -5,11 +5,11 @@ from goad.utils import *
 def print_logo():
     logo = """[white]
    _____   _____          _____ 
-  / ____| / ||| \  [blue] /\\\\[/blue]   |  __ \ 
+  / ____| / ||| \\  [blue] /\\\\[/blue]   |  __ \\ 
  | |  __||  |||  | [blue]/  \\\\[/blue]  | |  | |
- | | |_ ||  |||  |[blue]/ /\ \\\\[/blue] | |  | |
- | |__| ||  |||  [blue]/ /__\ \\\\[/blue]| |__| |
-  \_____| \_|||_[blue]/________\\\\[/blue]_____/
+ | | |_ ||  |||  |[blue]/ /\\ \\\\[/blue] | |  | |
+ | |__| ||  |||  [blue]/ /__\\ \\\\[/blue]| |__| |
+  \\_____| \\_|||_[blue]/________\\\\[/blue]_____/
     [bold]Game Of Active Directory[/bold]
       [yellow][italic]Pwning is comming[/italic][/yellow]
 [/white]

@@ -6,7 +6,11 @@ then
   python3 -m virtualenv .venv
   source .venv/bin/activate
   python3 -m pip install --upgrade pip
-  python3 -m pip install -r requirements.txt
+  export SETUPTOOLS_USE_DISTUTILS=stdlib
+  python3 -m pip install -r requirements.yml
+  cd ansible
+  ansible-galaxy install -r requirements.yml
+  cd -
   exit 0
 fi
 

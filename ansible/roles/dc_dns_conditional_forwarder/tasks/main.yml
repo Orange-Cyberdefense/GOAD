@@ -14,4 +14,4 @@
   loop: "{{ domains }}"
   when: item != domain and item != trust and item != parent_domain and '.'.join(item.split('.')[1:]) != domain
 
-# when not same domain, not parent or child and not already direct trusted domain
+# when not same domain, not parent or child and not already direct trusted domain

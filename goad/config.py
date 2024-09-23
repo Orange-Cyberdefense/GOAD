@@ -39,6 +39,20 @@ ip_range = 192.168.56
 ; AWS configuration
 aws_region = eu-west-3
 aws_zone = eu-west-3c
+
+; proxmox configuration
+pm_api_url = https://192.168.1.1:8006/api2/json
+pm_user = infra_as_code@pve
+pm_password = CHANGEME
+pm_node = GOAD
+pm_pool = GOAD
+pm_full_clone = false
+pm_template_WinServer2019_x64 = 102
+pm_template_WinServer2016_x64 = 103
+pm_template_Windows10_22h2_x64 = xxx
+pm_template_WinServer2019_x64_utd = xxx
+pm_storage = local
+pm_vlan = 10
 """
         f = open(GoadPath.get_config_file(), "w")
         f.write(conf_file_content)

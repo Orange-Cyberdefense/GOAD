@@ -4,8 +4,7 @@
 ; ------------------------------------------------
 ; sevenkingdoms.local
 ; ------------------------------------------------
-dc01 ansible_host{{ip_range}}.10 dns_domain=dc01 dict_key=dc01
-;ws01 ansible_host={{ip_range}}.30 dns_domain=dc01 dict_key=ws01
+dc01 ansible_host={{ip_range}}.10 dns_domain=dc01 dict_key=dc01
 ; ------------------------------------------------
 ; north.sevenkingdoms.local
 ; ------------------------------------------------
