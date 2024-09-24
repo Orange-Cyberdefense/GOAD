@@ -5,6 +5,6 @@
   memory             = 12000
   clone              = "WinServer2019_x64"
   dns                = "{{ip_range}}.1"
-  ip                 = "{{ip_range}}.10/24"
+  ip                 = "{{ip_range}}.21/24"
   gateway            = "{{ip_range}}.1"
 }
