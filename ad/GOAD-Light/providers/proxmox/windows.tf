@@ -22,7 +22,7 @@
   name               = "SRV02"
   desc               = "SRV02 - windows server 2019 - {{ip_range}}.22"
   cores              = 2
-  memory             = 5120
+  memory             = 6240
   clone              = "WinServer2019_x64"
   dns                = "{{ip_range}}.1"
   ip                 = "{{ip_range}}.22/24"
