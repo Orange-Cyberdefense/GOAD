@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 import string
 import random
@@ -20,7 +21,7 @@ class LabInstance:
     def __init__(self, instance_id, lab_name, provider_name, provisioner_name, ip_range, extensions=None, status='', default=False):
         if instance_id is None:
             random_id = ''.join(random.choices(string.hexdigits, k=6))
-            self.instance_id = f'{random_id}-{lab_name}-{provider_name}-{ip_range.replace(".","-")}'.lower()
+            self.instance_id = f'{random_id}-{lab_name}-{provider_name}-{ip_range.replace(".", "-")}'.lower()
         else:
             self.instance_id = instance_id
         self.lab_name = lab_name
@@ -288,7 +289,6 @@ class LabInstance:
         except ProviderPathNotFound as e:
             # delete instance
             self.delete_instance()
-            Log.info('instance deleted')
             return False
 
         self._create_provisioning_inventory()
@@ -304,5 +304,18 @@ class LabInstance:
         self.save_json_instance()
 
     def delete_instance(self):
-        # TODO
-        pass
+        if not os.path.isdir(self.instance_path):
+            Log.error('Instance does not exist abort')
+            return False
+        Log.info(f'Instance id {self.instance_id} will be deleted.')
+        Log.info(f'Instance folder {self.instance_path} will be deleted.')
+        Log.warning(f'Are you sure ?')
+        if Utils.confirm('(y/N)'):
+            lab_destroyed = self.provider.destroy()
+            if lab_destroyed:
+                shutil.rmtree(self.instance_path, ignore_errors=False, onerror=None)
+                Log.success('instance deleted')
+                return True
+            else:
+                Log.error('Error during lab destruction')
+        return False

@@ -53,17 +53,19 @@ class Goad(cmd.Cmd):
         return True
 
     # main commands
-    def do_check(self, arg):
+    def do_check(self, arg=''):
         self.lab_manager.check()
 
-    def do_status(self, arg):
-        self.lab_manager.get_current_instance().provider.status()
+    def do_status(self, arg=''):
+        if self.lab_manager.get_current_instance():
+            self.lab_manager.get_current_instance().provider.status()
 
     def do_install(self, arg=''):
         self.do_create_instance()
 
     def do_start(self, arg=''):
-        self.lab_manager.get_current_instance_provider().start()
+        if self.lab_manager.get_current_instance_provider():
+            self.lab_manager.get_current_instance_provider().start()
 
     def do_start_vm(self, arg):
         if arg == '':
@@ -73,7 +75,8 @@ class Goad(cmd.Cmd):
             self.lab_manager.get_current_instance_provider().start_vm(arg)
 
     def do_stop(self, arg=''):
-        self.lab_manager.get_current_instance_provider().stop()
+        if self.lab_manager.get_current_instance_provider():
+            self.lab_manager.get_current_instance_provider().stop()
 
     def do_stop_vm(self, arg):
         if arg == '':
@@ -83,7 +86,8 @@ class Goad(cmd.Cmd):
             self.lab_manager.get_current_instance_provider().stop_vm(arg)
 
     def do_destroy(self, arg=''):
-        self.lab_manager.get_current_instance_provider().destroy()
+        if self.lab_manager.get_current_instance_provider():
+            self.lab_manager.get_current_instance_provider().destroy()
 
     def do_destroy_vm(self, arg):
         if arg == '':
@@ -298,32 +302,40 @@ class Goad(cmd.Cmd):
             self.lab_manager.unload_instance()
             self.refresh_prompt()
 
-    def do_list_instances(self, arg):
+    def do_delete_instance(self, arg):
+        if self.lab_manager.get_current_instance_id() is not None:
+            deleted = self.lab_manager.delete_instance()
+            if deleted:
+                self.refresh_prompt()
+
+    def do_list_instances(self, arg=''):
         self.lab_manager.lab_instances.show_instances(current_instance_id=self.lab_manager.get_current_instance_id())
 
 
 def parse_args():
+    task_help = 'tasks available : (install/start/stop/restart/destroy/status/show)'
     parser = argparse.ArgumentParser(prog='goad.py',
                                      description='Description : goad lab management console.',
                                      epilog=show_help(), formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("-t", "--task", help="task to do", required=False)
+    parser.add_argument("-t", "--task", help=f"{task_help}", required=False)
     parser.add_argument("-l", "--lab", help="lab to use (default: GOAD)", default='GOAD', required=False)
     parser.add_argument("-p", "--provider", help="provider to use (default: vmware)", default='vmware', required=False)
     parser.add_argument("-ip", "--ip_range", help="ip range to use (default: 192.168.56)", default='192.168.56', required=False)
     parser.add_argument("-m", "--method", help="deploy method to use (default: local)", default='local', required=False)
-    parser.add_argument("-e", "--extensions", help="extensions to use", action='append', required=False)
-    parser.add_argument("-a", "--ansible_only", help="run only ansible on install", action='store_true', required=False)
-    parser.add_argument("-r", "--run_playbook", help="run ansible playbook", action='store_true', required=False)
+    parser.add_argument("-i", "--instance", help="use a specific instance (use default if not selected)", required=False)
+
+    # parser.add_argument("-e", "--extensions", help="extensions to use", action='append', required=False)
+    # parser.add_argument("-a", "--ansible_only", help="run only ansible on install", action='store_true', required=False)
+    # parser.add_argument("-r", "--run_playbook", help="run ansible playbook", action='store_true', required=False)
     args = parser.parse_args()
     return args
 
 
 def show_help():
     return '''
-   python3 goad.py  -t <task> -l <lab> -p <provider> -m <method>
-
-   Example :
-   - Install GOAD on virtualbox : python3 goad.py -t install -l GOAD -p virtualbox
+Example :
+ - Install GOAD on virtualbox : python3 goad.py -t install -l GOAD -p virtualbox
+ - Launch GOAD interactive console : python3 goad.py
 '''
 
 
@@ -332,11 +344,14 @@ if __name__ == '__main__':
     args = parse_args()
     goad = Goad(args)
 
-    if args is None or args.task != '':
+    if args is None or args.task is None:
         goad.cmdloop()
 
+    if args.instance is not None:
+        goad.do_load_instance(args.instance)
+
     # Command line args like the old goad.sh commands
-    if args.task != '':
+    if args.task is not None:
         if args.task == 'install':
             goad.do_install()
         elif args.task == 'check':
@@ -352,3 +367,5 @@ if __name__ == '__main__':
             goad.do_destroy()
         elif args.task == 'status':
             goad.do_status()
+        elif args.task == 'show':
+            pass

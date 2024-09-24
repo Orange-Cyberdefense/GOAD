@@ -61,6 +61,10 @@ class LabManager(metaclass=SingletonMeta):
             self.lab_instances.add_instance(instance)
             self.load_instance(instance.instance_id, creation=True)
             self.lab_instances.show_instances(current_instance_id=instance.instance_id, filter_instance_id=instance.instance_id)
+
+            if len(self.lab_instances) == 1:
+                # only instance, set as default
+                self.set_as_default_instance()
             return True
         else:
             Log.error('Error during creating instance folder')
@@ -94,6 +98,15 @@ class LabManager(metaclass=SingletonMeta):
 
     def unload_instance(self):
         self.current_instance = None
+
+    def delete_instance(self):
+        deleted = False
+        if self.current_instance is not None:
+            deleted = self.current_instance.delete_instance()
+            if deleted:
+                self.lab_instances.del_instance(self.current_instance.instance_id)
+                self.unload_instance()
+        return deleted
 
     def set_lab(self, lab_name):
         if self.current_instance is None:
@@ -152,7 +165,10 @@ class LabManager(metaclass=SingletonMeta):
         return self.current_instance.lab
 
     def get_current_instance_provider(self):
-        return self.current_instance.provider
+        if self.current_instance:
+            return self.current_instance.provider
+        else:
+            return None
 
     def get_current_instance_provisioner(self):
         return self.current_instance.provisioner

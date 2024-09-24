@@ -46,10 +46,10 @@ def print_menu(lab_manager, advanced=True, debug=False):
 
         print_menu_title('Extensions')
         print_menu_entry('list_extensions', 'list extensions')
-        print_menu_entry('install_extension <extension>', 'install extension')
+        print_menu_entry('install_extension <extension>', 'install extension (providing + provisioning)')
 
         if advanced:
-            print_menu_entry('provision_extension <extension>', 'provision extension')
+            print_menu_entry('provision_extension <extension>', 'provision extension (provisioning only)')
 
         if provider == AZURE or provider == AWS:
             print_menu_title('JumpBox')
@@ -80,9 +80,8 @@ def print_menu(lab_manager, advanced=True, debug=False):
     print_menu_title('Lab Instances')
     print_menu_entry('check', 'check dependencies before creation')
     if lab_manager.get_current_instance() is None:
-        print_menu_entry('install', 'alias for create_instance')
-        print_menu_entry('create_instance', 'create a lab instance')
-        print_menu_entry('create_empty_instance', 'create a lab instance without providing and provisioning')
+        print_menu_entry('install / create_instance', 'install the selected lab and create a lab instance')
+        print_menu_entry('create_empty_instance', 'prepare a lab instance folder without providing and provisioning')
     if lab_manager.get_current_instance() is not None:
         print_menu_entry('set_as_default', 'set instance as default')
         print_menu_entry('update_instance_files', 'update lab instance files')

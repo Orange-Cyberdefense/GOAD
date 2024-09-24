@@ -64,6 +64,14 @@ class SingletonMeta(type):
 
 
 class Utils:
+
+    @staticmethod
+    def confirm(message):
+        result = input(f"{message}")
+        if result == "y" or result == "Y" or result == "Yes":
+            return True
+        return False
+
     @staticmethod
     def is_valid_ipv4(ip):
         try:

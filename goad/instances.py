@@ -33,11 +33,15 @@ class LabInstances:
     def add_instance(self, instance):
         self.instances[instance.instance_id] = instance
 
+    def del_instance(self, instance_id):
+        del self.instances[instance_id]
+
     def get_instance(self, instance_id):
         if instance_id in self.instances.keys():
             return self.instances[instance_id]
         else:
             return None
+
     @staticmethod
     def color_status(status):
         if status == CREATED:
