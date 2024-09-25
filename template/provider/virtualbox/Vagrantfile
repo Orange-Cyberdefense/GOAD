@@ -7,20 +7,6 @@ ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
 
 {{extensions}}
 
-# Load extension files if exist
-extension_path = "./extensions"
-if File.directory?(extension_path)
-  for extension_file in Dir.entries(extension_path)
-    if extension_file.end_with?('rb')
-        extension_function = extension_file[0, extension_file.length - 3]
-        # load every file finishing by .rb in the extension folder
-        load "#{extension_path}/#{extension_file}"
-        # call extension function
-        boxes = send(extension_function, boxes)
-    end
-  end
-end
-
   # disable rdp forwarded port inherited from StefanScherer box
   config.vm.network :forwarded_port, guest: 3389, host: 3389, id: "rdp", auto_correct: true, disabled: true
 

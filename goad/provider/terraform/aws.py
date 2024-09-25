@@ -19,8 +19,8 @@ class AwsProvider(TerraformProvider):
         super().__init__(lab_name)
         self.jumpbox_setup_script = 'setup_aws.sh'
         self.tag = lab_name
-        self.aws_region = config.get('aws_region')
-        self.aws_zone = config.get('aws_zone')
+        self.aws_region = config.get_value('aws', 'aws_region', 'eu-west-3')
+        self.aws_zone = config.get_value('aws', 'aws_zone', 'eu-west-3c')
         self.profile_name = 'goad'
 
     def set_tag(self, tag):

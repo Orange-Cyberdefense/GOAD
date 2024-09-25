@@ -2,14 +2,14 @@
 variable "region" {
   description = "Where you want to deploy GOAD"
   type      = string
-  default   = "eu-west-3"
+  default   = "{{config.get_value('aws', 'aws_region', 'eu-west-3')}}"
 }
 
 # Zone
 variable "zone" {
   description = "Where you want to deploy GOAD"
   type      = string
-  default   = "eu-west-3c"
+  default   = "{{config.get_value('aws', 'aws_zone', 'eu-west-3c')}}"
 }
 
 # CIDRs

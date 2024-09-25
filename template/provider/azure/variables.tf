@@ -1,6 +1,6 @@
 variable "location" {
   type    = string
-  default = "westeurope"
+  default = "{{config.get_value('azure', 'az_location', 'westeurope')}}"
 }
 
 # default size : 2cpu / 4GB

@@ -1,8 +1,5 @@
-import configparser
-import os
-
 from rich import print
-
+import configparser
 from goad.goadpath import GoadPath
 from goad.utils import *
 from goad.log import Log
@@ -19,44 +16,52 @@ class Config:
             Log.info(f'goad config file not found, create file {GoadPath.get_config_file()}')
             self.create_config_file()
 
+    def get_config_parser(self):
+        return self.config
+
     def create_config_file(self):
-        # TODO change with config parser write : https://martin-thoma.com/configuration-files-in-python/
-        conf_file_content = """[default]
-; lab: GOAD / GOAD-Light / MINILAB / NHA / SCCM
-lab = GOAD
-; provider : virtualbox / vmware / aws / azure
-provider = vmware
-; provisioning method :
-; local (default) : use subprocess to run ansible playbook
-; runner : use ansible runner locally to run ansible playbook
-; docker : use docker container to run ansible
-; remote : launch ansible with ssh through the jump box (azure/aws only)
-; if provisioner is not compatible it will be force to default
-provisioner = local
-;ip_range (3 first ip digits)
-ip_range = 192.168.56
+        cfgfile = open(GoadPath.get_config_file(), "w")
+        config = configparser.ConfigParser(allow_no_value=True)
 
-; AWS configuration
-aws_region = eu-west-3
-aws_zone = eu-west-3c
+        config.add_section('default')
+        config.set('default', '; lab: GOAD / GOAD-Light / MINILAB / NHA / SCCM')
+        config.set('default', 'lab', 'GOAD')
 
-; proxmox configuration
-pm_api_url = https://192.168.1.1:8006/api2/json
-pm_user = infra_as_code@pve
-pm_password = CHANGEME
-pm_node = GOAD
-pm_pool = GOAD
-pm_full_clone = false
-pm_template_WinServer2019_x64 = 102
-pm_template_WinServer2016_x64 = 103
-pm_template_Windows10_22h2_x64 = xxx
-pm_template_WinServer2019_x64_utd = xxx
-pm_storage = local
-pm_vlan = 10
-"""
-        f = open(GoadPath.get_config_file(), "w")
-        f.write(conf_file_content)
-        f.close()
+        config.set('default', '; provider : virtualbox / vmware / aws / azure / proxmox')
+        config.set('default', 'provider', 'vmware')
+
+        config.set('default', "; provisioner method : local / runner / remote")
+        config.set('default', 'provisioner', 'local')
+
+        config.set('default', '; ip_range (3 first ip digits)')
+        config.set('default', 'ip_range', '192.168.56')
+
+        config.add_section('aws')
+        config.set('aws', 'aws_region', 'eu-west-3')
+        config.set('aws', 'aws_zone', 'eu-west-3c')
+
+        config.add_section('azure')
+        config.set('azure', 'az_location', 'westeurope')
+
+        config.add_section('proxmox')
+        config.set('proxmox', 'pm_api_url', 'https://192.168.1.1:8006/api2/json')
+        config.set('proxmox', 'pm_user', 'infra_as_code@pve')
+        config.set('proxmox', 'pm_node', 'GOAD')
+        config.set('proxmox', 'pm_pool', 'GOAD')
+        config.set('proxmox', 'pm_full_clone', 'false')
+        config.set('proxmox', 'pm_storage', 'local')
+        config.set('proxmox', 'pm_vlan', '10')
+        config.set('proxmox', 'pm_network_bridge', 'vmbr3')
+        config.set('proxmox', 'pm_network_model', 'e1000')
+
+        config.add_section('proxmox_templates_id')
+        config.set('proxmox_templates_id', 'WinServer2019_x64', '102')
+        config.set('proxmox_templates_id', 'WinServer2016_x64', '103')
+        config.set('proxmox_templates_id', 'WinServer2019_x64_utd', '104')
+        config.set('proxmox_templates_id', 'Windows10_22h2_x64', '105')
+
+        config.write(cfgfile)
+        cfgfile.close()
 
     def merge_config(self, args):
         """
@@ -68,17 +73,24 @@ pm_vlan = 10
         self.config.read(GoadPath.get_config_file())
         if args is not None:
             if args.lab:
-                self.set(LAB, args.lab)
+                self.set_value('default', LAB, args.lab)
             if args.provider:
-                self.set(PROVIDER, args.provider)
+                self.set_value('default', PROVIDER, args.provider)
             if args.method:
-                self.set(PROVISIONER, args.method)
+                self.set_value('default', PROVISIONER, args.method)
             if args.ip_range:
-                self.set(IP_RANGE, args.ip_range)
+                self.set_value('default', IP_RANGE, args.ip_range)
         return self
 
-    def get(self, key, section='default'):
-        return self.config.get(section, key, fallback=None)
+    def get_value(self, section, key, fallback=None):
+        return self.config.get(section, key, fallback=fallback)
 
-    def set(self, key, value, section='default'):
+    def set_value(self, section, key, value):
         return self.config.set(section, key, value)
+
+    def show(self):
+        for section in self.config.sections():
+            Log.basic(f'[yellow]\\[{section}][/yellow]')
+            for key in self.config[section]:
+                Log.basic(f' {key} : {self.config[section][key]}')
+            Log.basic('')

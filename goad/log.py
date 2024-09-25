@@ -28,6 +28,11 @@ class Log:
             print(f'[cyan][*] [/cyan]{message}')
 
     @staticmethod
+    def basic(message, level=INFO):
+        if level >= log_level:
+            print(f'{message}')
+
+    @staticmethod
     def cmd(message, level=INFO):
         if level >= log_level:
             print(f'[cyan][*] [/cyan]Running command : [yellow]{message}[/yellow]')

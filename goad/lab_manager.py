@@ -24,16 +24,16 @@ class LabManager(metaclass=SingletonMeta):
         # Prepare all labs objects
         self.labs = Labs(config)
         # Prepare all instance objects
-        self.lab_instances = LabInstances()
+        self.lab_instances = LabInstances(config)
 
         # create current settings object
         self.current_settings = Settings(self)
         # init lab current config values
         self.config = config
-        self.current_settings.set_lab_name(self.config.get(LAB), False)
-        self.current_settings.set_provider_name(self.config.get(PROVIDER), False)
-        self.current_settings.set_provisioner_name(self.config.get(PROVISIONER))
-        self.current_settings.set_ip_range(self.config.get(IP_RANGE))
+        self.current_settings.set_lab_name(self.config.get_value('default', LAB), False)
+        self.current_settings.set_provider_name(self.config.get_value('default', PROVIDER), False)
+        self.current_settings.set_provisioner_name(self.config.get_value('default', PROVISIONER))
+        self.current_settings.set_ip_range(self.config.get_value('default', IP_RANGE))
         return self
 
     def load_default_instance(self):
@@ -44,7 +44,11 @@ class LabManager(metaclass=SingletonMeta):
                 break
 
     def show_settings(self):
+        Log.success('Current Settings : ')
         self.current_settings.show()
+        print()
+        Log.success(f'Configuration File content : {GoadPath.get_config_file()} (merged with args for the default section)')
+        self.config.show()
 
     def inline_settings(self):
         return self.current_settings.inline()
@@ -54,7 +58,7 @@ class LabManager(metaclass=SingletonMeta):
             self.current_instance.update_instance_folder()
 
     def create_instance(self):
-        instance = LabInstance(None, self.current_settings.lab_name, self.current_settings.provider_name, self.current_settings.provisioner_name,
+        instance = LabInstance(None, self.current_settings.lab_name, self.config, self.current_settings.provider_name, self.current_settings.provisioner_name,
                                self.current_settings.ip_range)
         result = instance.create_instance_folder()
         if result:
@@ -62,7 +66,7 @@ class LabManager(metaclass=SingletonMeta):
             self.load_instance(instance.instance_id, creation=True)
             self.lab_instances.show_instances(current_instance_id=instance.instance_id, filter_instance_id=instance.instance_id)
 
-            if len(self.lab_instances) == 1:
+            if self.lab_instances.nb_instances() == 1:
                 # only instance, set as default
                 self.set_as_default_instance()
             return True

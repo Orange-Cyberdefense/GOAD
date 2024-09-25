@@ -16,7 +16,8 @@ class Goad(cmd.Cmd):
         # get the arguments
         self.args = args
         # prepare config, read configuration file and merge with args
-        config = Config().merge_config(args)
+        config = Config()
+        config.merge_config(args)
         # prepare lab controller to manage labs
         self.lab_manager = LabManager().init(config)
 
