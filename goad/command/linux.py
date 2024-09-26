@@ -84,9 +84,6 @@ class LinuxCommand(Command):
     def check_rsync(self):
         return self.is_in_path('rsync')
 
-    def check_docker(self):
-        return self.is_in_path('docker')
-
     def check_ansible(self):
         return self.is_in_path('ansible-playbook')
 

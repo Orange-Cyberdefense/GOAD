@@ -83,6 +83,7 @@ def print_menu(lab_manager, advanced=True, debug=False):
         print_menu_entry('install / create_instance', 'install the selected lab and create a lab instance')
         print_menu_entry('create_empty_instance', 'prepare a lab instance folder without providing and provisioning')
     if lab_manager.get_current_instance() is not None:
+        print_menu_entry('install_instance', 'install the current instance (provide + prepare_jumpbox + provision_lab')
         print_menu_entry('set_as_default', 'set instance as default')
         print_menu_entry('update_instance_files', 'update lab instance files')
     print_menu_entry('list_instances', 'list lab instances')

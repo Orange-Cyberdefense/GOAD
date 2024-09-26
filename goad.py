@@ -1,5 +1,6 @@
 import cmd
 import argparse
+import sys
 import time
 from goad.config import Config
 from goad.jumpbox import JumpBox
@@ -298,6 +299,21 @@ class Goad(cmd.Cmd):
         else:
             Log.error('Providing error stop')
 
+    def do_install_instance(self, arg=''):
+        Log.info('Launch providing')
+        if self.do_provide():
+            Log.info('Prepare jumpbox if needed')
+            self.do_prepare_jumpbox()
+            Log.info('Launch provisioning')
+            provision_result = self.do_provision_lab()
+            if provision_result:
+                for extension_name in self.lab_manager.current_settings.extensions_name:
+                    Log.info(f'Start installation of extension : {extension_name}')
+                    self.do_install_extension(extension_name)
+            self.refresh_prompt()
+        else:
+            Log.error('Providing error stop')
+
     def do_create_empty_instance(self, arg=''):
         Log.info('Create instance folder')
         self.lab_manager.create_instance()
@@ -342,8 +358,8 @@ def parse_args():
     parser.add_argument("-m", "--method", help="deploy method to use (default: local)", default='local', required=False)
     parser.add_argument("-i", "--instance", help="use a specific instance (use default if not selected)", required=False)
     parser.add_argument("-e", "--extensions", help="extensions to use", action='append', required=False)
-    # parser.add_argument("-a", "--ansible_only", help="run only ansible on install", action='store_true', required=False)
-    # parser.add_argument("-r", "--run_playbook", help="run ansible playbook", action='store_true', required=False)
+    parser.add_argument("-a", "--ansible_only", help="run only provisioning (ansible) on instance (-i) (for task install only)", action='store_true', required=False)
+    parser.add_argument("-r", "--run_playbook", help="run only one ansible playbook on instance (-i) (for task install only)", required=False)
     args = parser.parse_args()
     return args
 
@@ -363,26 +379,39 @@ if __name__ == '__main__':
 
     if args is None or args.task is None:
         goad.cmdloop()
+    else:
+        if args.instance is not None:
+            goad.do_load_instance(args.instance)
 
-    if args.instance is not None:
-        goad.do_load_instance(args.instance)
+        if args.run_playbook is not None or args.ansible_only is not None:
+            if args.instance is None:
+                Log.error('Instance must be selected (-i) to use --run_playbook (-r) or --ansible_only (-a)')
+                sys.exit(1)
 
-    # Command line args like the old goad.sh commands
-    if args.task is not None:
-        if args.task == 'install':
-            goad.do_install()
-        elif args.task == 'check':
-            goad.do_check()
-        elif args.task == 'start':
-            goad.do_start()
-        elif args.task == 'stop':
-            goad.do_stop()
-        elif args.task == 'restart':
-            goad.do_stop()
-            goad.do_start()
-        elif args.task == 'destroy':
-            goad.do_destroy()
-        elif args.task == 'status':
-            goad.do_status()
-        elif args.task == 'show':
-            pass
+        # Command line args like the old goad.sh commands
+        if args.task is not None:
+            if args.task == 'install':
+                if args.instance is not None:
+                    if args.run_playbook is not None:
+                        goad.do_provision(args.run_playbook)
+                    elif args.ansible_only:
+                        goad.do_provision_lab()
+                    else:
+                        goad.do_install_instance()
+                else:
+                    goad.do_install()
+            elif args.task == 'check':
+                goad.do_check()
+            elif args.task == 'start':
+                goad.do_start()
+            elif args.task == 'stop':
+                goad.do_stop()
+            elif args.task == 'restart':
+                goad.do_stop()
+                goad.do_start()
+            elif args.task == 'destroy':
+                goad.do_destroy()
+            elif args.task == 'status':
+                goad.do_status()
+            elif args.task == 'show':
+                pass

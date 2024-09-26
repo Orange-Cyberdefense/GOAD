@@ -12,7 +12,7 @@ class Provider(ABC):
     lab_name = ''
     provider_name = None
     default_provisioner = PROVISIONING_LOCAL
-    allowed_provisioners = [PROVISIONING_LOCAL, PROVISIONING_RUNNER, PROVISIONING_DOCKER, PROVISIONING_REMOTE]
+    allowed_provisioners = [PROVISIONING_LOCAL, PROVISIONING_RUNNER, PROVISIONING_REMOTE]
     use_jumpbox = False
 
     def __init__(self, lab_name):
