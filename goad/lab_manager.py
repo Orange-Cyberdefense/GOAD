@@ -20,12 +20,11 @@ class LabManager(metaclass=SingletonMeta):
         self.current_instance = None
         self.current_settings = None
 
-    def init(self, config):
+    def init(self, config, args):
         # Prepare all labs objects
         self.labs = Labs(config)
         # Prepare all instance objects
         self.lab_instances = LabInstances(config)
-
         # create current settings object
         self.current_settings = Settings(self)
         # init lab current config values
@@ -34,6 +33,8 @@ class LabManager(metaclass=SingletonMeta):
         self.current_settings.set_provider_name(self.config.get_value('default', PROVIDER), False)
         self.current_settings.set_provisioner_name(self.config.get_value('default', PROVISIONER))
         self.current_settings.set_ip_range(self.config.get_value('default', IP_RANGE))
+        if args.extensions:
+            self.current_settings.set_extensions(args.extensions)
         return self
 
     def load_default_instance(self):
@@ -59,7 +60,7 @@ class LabManager(metaclass=SingletonMeta):
 
     def create_instance(self):
         instance = LabInstance(None, self.current_settings.lab_name, self.config, self.current_settings.provider_name, self.current_settings.provisioner_name,
-                               self.current_settings.ip_range)
+                               self.current_settings.ip_range, extensions=self.current_settings.extensions_name)
         result = instance.create_instance_folder()
         if result:
             self.lab_instances.add_instance(instance)
@@ -132,6 +133,9 @@ class LabManager(metaclass=SingletonMeta):
     def set_ip_range(self, ip_range):
         self.current_settings.set_ip_range(ip_range)
 
+    def set_extensions(self, extensions_name):
+        self.current_settings.set_extensions(extensions_name)
+
     def get_labs(self):
         return self.labs.get_labs_list()
 
@@ -166,6 +170,8 @@ class LabManager(metaclass=SingletonMeta):
         return self.current_instance
 
     def get_current_instance_lab(self):
+        if self.current_instance is None:
+            return None
         return self.current_instance.lab
 
     def get_current_instance_provider(self):

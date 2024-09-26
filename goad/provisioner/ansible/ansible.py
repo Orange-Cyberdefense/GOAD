@@ -1,13 +1,9 @@
 import os.path
-
-import ansible_runner
-import time
 import yaml
 from goad.utils import *
 from goad.log import Log
 from goad.provisioner.provisioner import Provisioner
 from goad.goadpath import GoadPath
-from goad.extension import Extension
 
 
 class Ansible(Provisioner):

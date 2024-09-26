@@ -19,7 +19,7 @@ class Goad(cmd.Cmd):
         config = Config()
         config.merge_config(args)
         # prepare lab controller to manage labs
-        self.lab_manager = LabManager().init(config)
+        self.lab_manager = LabManager().init(config, args)
 
         if args.task == '' or args.task is None:
             Log.info('Start Loading default instance')
@@ -121,6 +121,7 @@ class Goad(cmd.Cmd):
             self.lab_manager.get_current_instance().set_status(READY)
             time_provision = time.ctime(time.time() - start)[11:19]
             Log.info(f'Lab successfully provisioned in {time_provision}')
+        return provision_result
 
     def do_provision_lab_from(self, arg):
         start = time.time()
@@ -222,8 +223,20 @@ class Goad(cmd.Cmd):
             self.lab_manager.set_ip_range(arg)
             self.refresh_prompt()
 
+    def do_set_extensions(self, arg):
+        if arg == '':
+            Log.error('missing extensions arguments')
+            Log.info(f'set_extensions <extension1> <extension2> ...')
+        else:
+            extensions_name = arg.split(' ')
+            self.lab_manager.set_extensions(extensions_name)
+            self.refresh_prompt()
+
     def do_list_extensions(self, arg):
-        print(self.lab_manager.get_current_instance_lab().get_list_extensions())
+        if self.lab_manager.get_current_instance_lab() is not None:
+            self.lab_manager.get_current_instance_lab().show_extensions()
+        else:
+            self.lab_manager.get_lab(self.lab_manager.get_current_lab_name()).show_extensions()
 
     def do_install_extension(self, arg):
         if arg == '':
@@ -276,7 +289,11 @@ class Goad(cmd.Cmd):
             Log.info('Prepare jumpbox if needed')
             self.do_prepare_jumpbox()
             Log.info('Launch provisioning')
-            self.do_provision_lab()
+            provision_result = self.do_provision_lab()
+            if provision_result:
+                for extension_name in self.lab_manager.current_settings.extensions_name:
+                    Log.info(f'Start installation of extension : {extension_name}')
+                    self.do_install_extension(extension_name)
             self.refresh_prompt()
         else:
             Log.error('Providing error stop')
@@ -324,8 +341,7 @@ def parse_args():
     parser.add_argument("-ip", "--ip_range", help="ip range to use (default: 192.168.56)", default='192.168.56', required=False)
     parser.add_argument("-m", "--method", help="deploy method to use (default: local)", default='local', required=False)
     parser.add_argument("-i", "--instance", help="use a specific instance (use default if not selected)", required=False)
-
-    # parser.add_argument("-e", "--extensions", help="extensions to use", action='append', required=False)
+    parser.add_argument("-e", "--extensions", help="extensions to use", action='append', required=False)
     # parser.add_argument("-a", "--ansible_only", help="run only ansible on install", action='store_true', required=False)
     # parser.add_argument("-r", "--run_playbook", help="run ansible playbook", action='store_true', required=False)
     args = parser.parse_args()

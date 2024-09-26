@@ -135,6 +135,13 @@ class GoadPath:
         return GoadPath.get_extensions_path() + os.path.sep + extension_name + os.path.sep
 
     @staticmethod
+    def get_extension_config_file(extension_name):
+        """
+        :return: <project>/extensions/<extension_name>/
+        """
+        return GoadPath.get_extensions_path() + os.path.sep + extension_name + os.path.sep + 'extension.json'
+
+    @staticmethod
     def get_extension_providers_path(extension_name):
         """
         :return: <project>/extensions/<extension_name>/provider

@@ -65,7 +65,9 @@ class Lab:
 
     def _load_extensions(self, lab_name):
         for extension_name in Utils.list_folders(GoadPath.get_extensions_path()):
-            self.extensions[extension_name] = Extension(extension_name)
+            extension = Extension(extension_name)
+            if extension.is_available(lab_name):
+                self.extensions[extension_name] = extension
 
     def get_provider(self, provider_name):
         if provider_name not in self.providers.keys():
@@ -81,5 +83,9 @@ class Lab:
         else:
             return None
 
-    def get_list_extensions(self):
+    def get_list_extensions_name(self):
         return list(self.extensions.keys())
+
+    def show_extensions(self):
+        for extension_name in self.extensions.keys():
+            self.extensions[extension_name].show()

@@ -1,0 +1,11 @@
+{
+    "name": "elk",
+    "description": "Add an ELK to the current lab",
+    "machines": [
+        "elk"
+    ],
+    "compatibility": [
+        "*"
+    ],
+    "impact": "add a linux machine and add a logbeat agent on all windows machine"
+}

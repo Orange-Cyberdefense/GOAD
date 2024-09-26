@@ -23,12 +23,16 @@ class Settings:
         self.provider_name = instance.provider_name
         self.provisioner_name = instance.provisioner_name
         self.ip_range = instance.ip_range
+        self.extensions_name = instance.extensions
 
     def show(self):
         Log.info(f'Current Lab         : {self.lab_name}')
         Log.info(f'Current Provider    : {self.provider_name}')
         Log.info(f'Current Provisioner : {self.provisioner_name}')
         Log.info(f'Current IP range    : {self.ip_range}.X')
+        Log.info(f'Extension(s)        :')
+        for extension in self.extensions_name:
+            Log.info(f' - {extension}')
 
     def inline(self):
         return f'{self.lab_name}/{self.provider_name}/{self.provisioner_name}/{self.ip_range}.X'
@@ -130,3 +134,15 @@ class Settings:
             Log.info(f'fallback to default ip range: 192.168.56.x')
             self.ip_range = '192.168.56'
         return self.ip_range
+
+    def set_extensions(self, extensions_name):
+        if self.lab_name is not None:
+            lab = self.lab_manager.get_lab(self.lab_name)
+            for extension_name in extensions_name:
+                if lab.get_extension(extension_name) is not None:
+                    self.extensions_name.append(extension_name)
+                else:
+                    Log.error(f'Extension {extension_name} is not available for this lab.')
+        else:
+            raise ValueError(f"can't set extension because lab_name is not set")
+        return self.extensions_name
