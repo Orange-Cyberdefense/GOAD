@@ -136,6 +136,7 @@ class Settings:
         return self.ip_range
 
     def set_extensions(self, extensions_name):
+        self.extensions_name = []
         if self.lab_name is not None:
             lab = self.lab_manager.get_lab(self.lab_name)
             for extension_name in extensions_name:

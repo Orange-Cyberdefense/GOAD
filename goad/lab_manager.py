@@ -103,6 +103,7 @@ class LabManager(metaclass=SingletonMeta):
 
     def unload_instance(self):
         self.current_instance = None
+        self.current_settings.set_extensions([])
 
     def delete_instance(self):
         deleted = False
