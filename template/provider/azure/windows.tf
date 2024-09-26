@@ -3,6 +3,8 @@
 variable "vm_config" {
   type = map(object({
     name               = string
+    publisher          = string
+    offer              = string
     windows_sku        = string
     windows_version    = string
     private_ip_address = string
@@ -34,8 +36,8 @@ resource "azurerm_windows_virtual_machine" "goad-vm" {
   }
 
   source_image_reference {
-    publisher = "MicrosoftWindowsServer"
-    offer     = "WindowsServer"
+    publisher = each.value.publisher
+    offer     = each.value.offer
     sku       = each.value.windows_sku
     version   = each.value.windows_version # "latest"
   }

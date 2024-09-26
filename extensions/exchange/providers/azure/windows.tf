@@ -1,5 +1,7 @@
 "srv01" = {
   name               = "srv01"
+  publisher          = "MicrosoftWindowsServer"
+  offer              = "WindowsServer"
   windows_sku        = "2019-Datacenter"
   windows_version    = "latest"
   private_ip_address = "{{ip_range}}.21"

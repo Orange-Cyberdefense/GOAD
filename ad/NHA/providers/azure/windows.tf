@@ -1,5 +1,7 @@
 "dc01" = {
   name               = "dc01"
+  publisher          = "MicrosoftWindowsServer"
+  offer              = "WindowsServer"
   windows_sku        = "2019-Datacenter"
   windows_version    = "latest"
   private_ip_address = "{{ip_range}}.10"
@@ -8,6 +10,8 @@
 }
 "dc02" = {
   name               = "dc02"
+  publisher          = "MicrosoftWindowsServer"
+  offer              = "WindowsServer"
   windows_sku        = "2019-Datacenter"
   windows_version    = "latest"
   private_ip_address = "{{ip_range}}.20"
@@ -16,6 +20,8 @@
 }
 "srv01" = {
   name               = "srv01"
+  publisher          = "MicrosoftWindowsServer"
+  offer              = "WindowsServer"
   windows_sku        = "2019-Datacenter"
   windows_version    = "latest"
   private_ip_address = "{{ip_range}}.21"
@@ -24,6 +30,8 @@
 }
 "srv02" = {
   name               = "srv02"
+  publisher          = "MicrosoftWindowsServer"
+  offer              = "WindowsServer"
   windows_sku        = "2019-Datacenter"
   windows_version    = "latest"
   private_ip_address = "{{ip_range}}.22"
@@ -32,6 +40,8 @@
 }
 "srv03" = {
   name               = "srv03"
+  publisher          = "MicrosoftWindowsServer"
+  offer              = "WindowsServer"
   windows_sku        = "2019-Datacenter"
   windows_version    = "latest"
   private_ip_address = "{{ip_range}}.23"
