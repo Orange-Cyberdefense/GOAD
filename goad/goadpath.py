@@ -60,6 +60,13 @@ class GoadPath:
         return GoadPath.get_labs_path() + sep + lab_name
 
     @staticmethod
+    def get_lab_data_path(lab_name):
+        """
+        :return: <project>/ad/<lab_name>/data
+        """
+        return GoadPath.get_lab_path(lab_name) + sep + 'data'
+
+    @staticmethod
     def get_lab_providers_path(lab_name):
         """
         :return: <project>/ad/<lab_name>/providers

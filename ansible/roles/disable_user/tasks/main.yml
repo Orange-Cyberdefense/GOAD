@@ -1,0 +1,4 @@
+- name: "Disable the user {{username}}"
+  ansible.windows.win_user:
+    name: "{{username}}"
+    account_disabled: true

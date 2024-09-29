@@ -225,7 +225,25 @@ class LabInstance:
         if self.is_terraform():
             self._create_terraform_folder()
 
-    def _create_provisioning_inventory(self):
+    def _create_provisioning_lab_inventory(self, inventory_file):
+        Log.info(f'Create lab provisioning file {inventory_file}')
+        # create lab inventory
+        lab_provider_path = GoadPath.get_lab_data_path(self.lab_name)
+        environment = Environment(loader=FileSystemLoader(lab_provider_path))
+        # create inventory template
+        inventory_template = environment.get_template(inventory_file)
+        instance_inventory_content = inventory_template.render(
+            lab_name=self.lab_name,
+            ip_range=self.ip_range,
+            provider_name=self.provider_name
+        )
+        # create instance inventory file
+        instance_inventory_file = self.instance_path + sep + inventory_file
+        with open(instance_inventory_file, mode="w", encoding="utf-8") as instance_inventory_file_open:
+            instance_inventory_file_open.write(instance_inventory_content)
+            Log.success(f'Lab inventory file created : {Utils.get_relative_path(instance_inventory_file)}')
+
+    def _create_provisioning_provider_inventory(self):
         Log.info('Create instance provisioning files')
         # create provisioning inventory
         lab_provider_path = GoadPath.get_lab_provider_path(self.lab_name, self.provider_name)
@@ -290,7 +308,8 @@ class LabInstance:
             self.delete_instance()
             return False
 
-        self._create_provisioning_inventory()
+        self._create_provisioning_lab_inventory('inventory_disable_vagrant')
+        self._create_provisioning_provider_inventory()
         self._create_extensions_inventory()
         if self.status is not None and not force:
             self.status = CREATED

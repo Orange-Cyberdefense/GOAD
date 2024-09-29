@@ -128,6 +128,7 @@ class Goad(cmd.Cmd):
         start = time.time()
         provision_result = self.lab_manager.get_current_instance_provisioner().run_from(arg)
         if provision_result:
+            self.lab_manager.get_current_instance().set_status(READY)
             time_provision = time.ctime(time.time() - start)[11:19]
             Log.info(f'Provisioned from {arg} in {time_provision}')
 
@@ -266,10 +267,14 @@ class Goad(cmd.Cmd):
             Log.info(f'provision_extension <extension>')
         else:
             extension_name = arg
+            start = time.time()
             if extension_name in self.lab_manager.get_current_instance().extensions:
                 self.do_sync_source_jumpbox()
                 extension = self.lab_manager.get_current_instance_lab().get_extension(extension_name)
-                self.lab_manager.get_current_instance_provisioner().run_extension(extension)
+                provision_result = self.lab_manager.get_current_instance_provisioner().run_extension(extension)
+                if provision_result:
+                    time_provision = time.ctime(time.time() - start)[11:19]
+                    Log.info(f'Provision extension done in {time_provision}')
             else:
                 Log.error(f'extension {extension_name} not enabled in instance abort')
 
@@ -341,6 +346,23 @@ class Goad(cmd.Cmd):
             deleted = self.lab_manager.delete_instance()
             if deleted:
                 self.refresh_prompt()
+
+    def do_disable_vagrant(self,arg):
+        start = time.time()
+        provision_result = self.lab_manager.get_current_instance_provisioner().run_disable_vagrant(disable_vagrant=True)
+        if provision_result:
+            time_provision = time.ctime(time.time() - start)[11:19]
+            Log.info(f'Disable vagrant done in {time_provision}')
+            Log.info(f'Please restart the lab to avoid administrator NT hash in lsass')
+        return provision_result
+
+    def do_enable_vagrant(self, arg):
+        start = time.time()
+        provision_result = self.lab_manager.get_current_instance_provisioner().run_disable_vagrant(disable_vagrant=False)
+        if provision_result:
+            time_provision = time.ctime(time.time() - start)[11:19]
+            Log.info(f'Enable vagrant done in {time_provision}')
+        return provision_result
 
     def do_list_instances(self, arg=''):
         self.lab_manager.lab_instances.show_instances(current_instance_id=self.lab_manager.get_current_instance_id())

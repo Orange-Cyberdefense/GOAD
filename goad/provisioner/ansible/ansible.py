@@ -15,11 +15,6 @@ class Ansible(Provisioner):
         if os.path.isfile(lab_inventory):
             inventory.append(lab_inventory)
             Log.success(f'Lab inventory : {lab_inventory} file found')
-        # Provider inventory
-        # provider_inventory = get_provider_inventory_path(lab_name, provider_name)
-        # if os.path.isfile(provider_inventory):
-        #     inventory.append(provider_inventory)
-        #     Log.success(f'Provider inventory : {provider_inventory} file found')
         # lab instance inventory
         instance_inventory = self.instance_path + os.path.sep + 'inventory'
         if os.path.isfile(instance_inventory):
@@ -126,3 +121,27 @@ class Ansible(Provisioner):
     def run_playbook(self, playbook, inventories, tries=3, timeout=30, playbook_path=None):
         # abstract
         pass
+
+    def get_disable_vagrant_inventory(self):
+        Log.info('Loading inventory')
+        inventory = []
+        lab_inventory = self.instance_path + os.path.sep + 'inventory_disable_vagrant'
+        if os.path.isfile(lab_inventory):
+            inventory.append(lab_inventory)
+            Log.success(f'Lab inventory disable_vagrant : {lab_inventory} file found')
+        global_inventory = self._get_global_inventory()
+        if global_inventory is not None:
+            inventory.append(global_inventory)
+        return inventory
+
+    def run_disable_vagrant(self, disable_vagrant=True):
+        inventory = self.get_disable_vagrant_inventory()
+        if disable_vagrant:
+            playbook = 'disable_vagrant.yml'
+        else:
+            playbook = 'enable_vagrant.yml'
+        provision_result = self.run_playbook(playbook, inventory)
+        if not provision_result:
+            Log.error(f'Something wrong during the provisioning task : {playbook}')
+            return False
+        return provision_result

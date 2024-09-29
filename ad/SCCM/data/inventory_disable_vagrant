@@ -1,0 +1,25 @@
+[default]
+dc01 ansible_host={{ip_range}}.10 dns_domain=dc01 dict_key=dc01 ansible_user=administrator@sccm.lab ansible_password=AZERTY*qsdfg
+srv01 ansible_host={{ip_range}}.11 dns_domain=dc01 dict_key=srv01 ansible_user=administrator@sccm.lab ansible_password=AZERTY*qsdfg
+srv02 ansible_host={{ip_range}}.12 dns_domain=dc01 dict_key=srv02 ansible_user=administrator@sccm.lab ansible_password=AZERTY*qsdfg
+ws01 ansible_host={{ip_range}}.13 dns_domain=dc01 dict_key=ws01 ansible_user=administrator@sccm.lab ansible_password=AZERTY*qsdfg
+
+
+[all:vars]
+; domain_name : folder inside ad/
+domain_name=SCCM
+
+; winrm connection (windows)
+ansible_winrm_transport=ntlm
+ansible_user=notused
+ansible_password=notused
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+ansible_winrm_operation_timeout_sec=400
+ansible_winrm_read_timeout_sec=500
+
+[domain]
+dc01
+srv01
+srv02
+ws01
