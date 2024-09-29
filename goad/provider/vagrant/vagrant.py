@@ -43,5 +43,5 @@ class VagrantProvider(Provider):
         return self.command.run_vagrant(['halt', vm_name], self.path)
 
     def remove_extension(self, extension_name):
-        # TODO
+        # TODO one day if possible
         pass

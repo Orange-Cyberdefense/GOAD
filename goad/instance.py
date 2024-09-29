@@ -191,7 +191,6 @@ class LabInstance:
         # load template folder
         environment = Environment(loader=FileSystemLoader(GoadPath.get_template_path(self.provider_name)))
 
-        # TODO add aws region and zone in template
         for template in Utils.list_files(GoadPath.get_template_path(self.provider_name)):
             tf_template = environment.get_template(template)
             tf_content = tf_template.render(
