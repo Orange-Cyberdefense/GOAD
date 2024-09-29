@@ -1,17 +1,12 @@
 import json
-import os
 import shutil
-import string
-import random
 from jinja2 import Template, Environment, FileSystemLoader
-from rich.table import Table
-from rich import print
 from goad.goadpath import *
 from goad.jumpbox import JumpBox
 from goad.log import Log
 from goad.exceptions import ProviderPathNotFound, JumpBoxInitFailed
 from goad.provisioner.ansible.local import LocalAnsibleProvisionerCmd
-from goad.provisioner.ansible.runner import LocalAnsibleProvisionerEmbed
+# from goad.provisioner.ansible.runner import LocalAnsibleProvisionerEmbed
 from goad.provisioner.ansible.remote import RemoteAnsibleProvisioner
 
 
@@ -70,13 +65,13 @@ class LabInstance:
 
         self.provider.set_instance_path(self.instance_provider_path)
 
-        if self.provisioner_name == PROVISIONING_RUNNER:
-            self.provisioner = LocalAnsibleProvisionerEmbed(self.lab_name, self.provider)
-        elif self.provisioner_name == PROVISIONING_LOCAL:
+        if self.provisioner_name == PROVISIONING_LOCAL:
             self.provisioner = LocalAnsibleProvisionerCmd(self.lab_name, self.provider)
         elif self.provisioner_name == PROVISIONING_REMOTE:
             self.provisioner = RemoteAnsibleProvisioner(self.lab_name, self.provider)
             self.provisioner.jumpbox = JumpBox(self, creation)
+        # elif self.provisioner_name == PROVISIONING_RUNNER:
+        #     self.provisioner = LocalAnsibleProvisionerEmbed(self.lab_name, self.provider)
 
         if self.provisioner is None:
             Log.error('instance provisioner does not exist')

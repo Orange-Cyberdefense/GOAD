@@ -5,7 +5,7 @@ from goad.utils import *
 class VmwareProvider(VagrantProvider):
     provider_name = VMWARE
     default_provisioner = PROVISIONING_LOCAL
-    allowed_provisioners = [PROVISIONING_LOCAL, PROVISIONING_RUNNER]
+    allowed_provisioners = VMWARE_ALLOWED_PROVISIONER
 
     def check(self):
         super_check = super().check()

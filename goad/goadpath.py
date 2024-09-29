@@ -1,5 +1,3 @@
-import os
-from pathlib import Path
 from goad.utils import *
 
 sep = os.path.sep

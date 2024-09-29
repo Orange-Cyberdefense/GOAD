@@ -1,7 +1,3 @@
-import time
-
-import ansible_runner
-
 from goad.log import Log
 from goad.utils import *
 from goad.provisioner.ansible.ansible import Ansible

@@ -1,7 +1,6 @@
 import platform
 from goad.command.linux import LinuxCommand
 from goad.command.windows import WindowsCommand
-from goad.exceptions import JumpBoxInitFailed
 from goad.log import Log
 from goad.utils import *
 from goad.goadpath import GoadPath
@@ -69,17 +68,6 @@ class JumpBox:
             self.command.rsync(source, destination, self.ssh_key, False)
         else:
             Log.error('Can not sync source jumpbox ip is invalid')
-
-        # # sync sources:
-        # # ansible/
-        # # ad/<lab>/
-        # # scripts/
-        # # workspace/<instance_id>/
-        # # globalsettings.ini
-        # sources = [GoadPath.get_provisioner_path(), GoadPath.get_lab_path(self.lab_name), GoadPath.get_script_path(), self.instance_path, GoadPath.get_global_inventory_path()]
-        # destination = f'{self.username}@{self.ip}:~/GOAD/'
-        # for source in sources:
-        #     self.command.scp(source, destination + Utils.get_relative_path(source), self.ssh_key)
 
     def run_command(self, command, path):
         ssh_cmd = f"ssh -t -o 'StrictHostKeyChecking no' -i {self.ssh_key} {self.username}@{self.ip} 'cd {path} && {command}'"

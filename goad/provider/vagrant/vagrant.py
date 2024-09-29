@@ -1,8 +1,4 @@
-import os
-import shutil
 from goad.provider.provider import Provider
-from goad.log import Log
-from goad.goadpath import GoadPath
 
 
 class VagrantProvider(Provider):

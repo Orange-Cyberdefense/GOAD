@@ -7,7 +7,6 @@ from goad.exceptions import *
 from rich import print
 from azure.identity import DefaultAzureCredential
 from azure.core.exceptions import ClientAuthenticationError
-from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.compute import ComputeManagementClient
 from azure.mgmt.network import NetworkManagementClient
 

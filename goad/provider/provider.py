@@ -1,18 +1,15 @@
 from abc import ABC
-from goad.config import Config
-import os
 import platform
 from goad.command.linux import LinuxCommand
 from goad.command.windows import WindowsCommand
 from goad.utils import *
-from goad.log import Log
 
 
 class Provider(ABC):
     lab_name = ''
     provider_name = None
     default_provisioner = PROVISIONING_LOCAL
-    allowed_provisioners = [PROVISIONING_LOCAL, PROVISIONING_RUNNER, PROVISIONING_REMOTE]
+    allowed_provisioners = ALLOWED_PROVISIONER
     use_jumpbox = False
 
     def __init__(self, lab_name):

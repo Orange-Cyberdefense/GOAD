@@ -1,6 +1,4 @@
 from abc import ABC
-from goad.config import Config
-import os
 import platform
 from goad.command.linux import LinuxCommand
 from goad.command.windows import WindowsCommand

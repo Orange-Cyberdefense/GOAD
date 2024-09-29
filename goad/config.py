@@ -1,4 +1,3 @@
-from rich import print
 import configparser
 from goad.goadpath import GoadPath
 from goad.utils import *
@@ -30,7 +29,7 @@ class Config:
         config.set('default', '; provider : virtualbox / vmware / aws / azure / proxmox')
         config.set('default', 'provider', 'vmware')
 
-        config.set('default', "; provisioner method : local / runner / remote")
+        config.set('default', "; provisioner method : local / remote")
         config.set('default', 'provisioner', 'local')
 
         config.set('default', '; ip_range (3 first ip digits)')

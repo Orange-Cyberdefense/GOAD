@@ -6,7 +6,6 @@ ansible-core==2.12.6
 pywinrm
 # AZURE
 azure-identity
-azure-mgmt-resource
 azure-mgmt-compute
 azure-mgmt-network
 # AWS

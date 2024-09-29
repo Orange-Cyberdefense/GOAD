@@ -1,7 +1,5 @@
-from goad.jumpbox import JumpBox
 from goad.log import Log
 from goad.provisioner.ansible.ansible import Ansible
-from goad.exceptions import JumpBoxInitFailed
 from goad.utils import *
 
 

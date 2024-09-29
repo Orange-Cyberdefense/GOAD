@@ -3,7 +3,6 @@ import argparse
 import sys
 import time
 from goad.config import Config
-from goad.jumpbox import JumpBox
 from goad.lab_manager import LabManager
 from goad.menu import print_menu, print_logo
 from goad.labs import *
