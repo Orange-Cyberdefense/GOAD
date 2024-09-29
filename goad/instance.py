@@ -6,8 +6,14 @@ from goad.jumpbox import JumpBox
 from goad.log import Log
 from goad.exceptions import ProviderPathNotFound, JumpBoxInitFailed
 from goad.provisioner.ansible.local import LocalAnsibleProvisionerCmd
-# from goad.provisioner.ansible.runner import LocalAnsibleProvisionerEmbed
 from goad.provisioner.ansible.remote import RemoteAnsibleProvisioner
+from goad.utils import *
+from goad.dependencies import *
+
+if provisioner_runner_enabled:
+    from goad.provisioner.ansible.runner import LocalAnsibleProvisionerEmbed
+if provisioner_docker_enabled:
+    from goad.provisioner.ansible.docker import DockerAnsibleProvisionerCmd
 
 
 class LabInstance:
@@ -70,8 +76,10 @@ class LabInstance:
         elif self.provisioner_name == PROVISIONING_REMOTE:
             self.provisioner = RemoteAnsibleProvisioner(self.lab_name, self.provider)
             self.provisioner.jumpbox = JumpBox(self, creation)
-        # elif self.provisioner_name == PROVISIONING_RUNNER:
-        #     self.provisioner = LocalAnsibleProvisionerEmbed(self.lab_name, self.provider)
+        elif self.provisioner_name == PROVISIONING_RUNNER and provisioner_runner_enabled:
+            self.provisioner = LocalAnsibleProvisionerEmbed(self.lab_name, self.provider)
+        elif self.provisioner_name == PROVISIONING_DOCKER and provisioner_docker_enabled:
+            self.provisioner = DockerAnsibleProvisionerCmd(self.lab_name, self.provider)
 
         if self.provisioner is None:
             Log.error('instance provisioner does not exist')

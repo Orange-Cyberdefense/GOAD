@@ -3,11 +3,18 @@ from goad.utils import *
 from goad.goadpath import GoadPath
 from goad.log import Log
 from goad.exceptions import *
-from goad.provider.terraform.azure import AzureProvider
-from goad.provider.terraform.aws import AwsProvider
-from goad.provider.terraform.proxmox import ProxmoxProvider
-from goad.provider.vagrant.virtualbox import VirtualboxProvider
-from goad.provider.vagrant.vmware import VmwareProvider
+from goad.dependencies import *
+
+if vmware_enabled:
+    from goad.provider.vagrant.vmware import VmwareProvider
+if virtualbox_enabled:
+    from goad.provider.vagrant.virtualbox import VirtualboxProvider
+if azure_enabled:
+    from goad.provider.terraform.azure import AzureProvider
+if aws_enabled:
+    from goad.provider.terraform.aws import AwsProvider
+if proxmox_enabled:
+    from goad.provider.terraform.proxmox import ProxmoxProvider
 
 
 class Labs:
@@ -50,15 +57,15 @@ class Lab:
     def _load_providers(self, lab_name, config):
         for provider_name in Utils.list_folders(GoadPath.get_lab_providers_path(lab_name)):
             provider = None
-            if provider_name == VIRTUALBOX:
+            if provider_name == VIRTUALBOX and virtualbox_enabled:
                 provider = VirtualboxProvider(lab_name)
-            elif provider_name == VMWARE:
+            elif provider_name == VMWARE and vmware_enabled:
                 provider = VmwareProvider(lab_name)
-            elif provider_name == PROXMOX:
+            elif provider_name == PROXMOX and proxmox_enabled:
                 provider = ProxmoxProvider(lab_name)
-            elif provider_name == AZURE:
+            elif provider_name == AZURE and azure_enabled:
                 provider = AzureProvider(lab_name)
-            elif provider_name == AWS:
+            elif provider_name == AWS and aws_enabled:
                 provider = AwsProvider(lab_name, config)
             if provider is not None:
                 self.providers[provider_name] = provider

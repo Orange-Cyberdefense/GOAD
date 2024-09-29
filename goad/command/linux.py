@@ -2,6 +2,8 @@ import sys
 import psutil
 from goad.command.cmd import Command
 import subprocess
+
+from goad.goadpath import GoadPath
 from goad.log import Log
 from goad.utils import Utils
 
@@ -153,6 +155,19 @@ class LinuxCommand(Command):
             command = 'ansible-playbook '
             command += args
             Log.info('CWD: ' + Utils.get_relative_path(str(path)))
+            Log.cmd(command)
+            result = subprocess.run(command, cwd=path, stderr=sys.stderr, stdout=sys.stdout, shell=True)
+        except subprocess.CalledProcessError as e:
+            Log.error(f"An error occurred while running the command: {e}")
+            return False
+        return result.returncode == 0
+
+    def run_docker_ansible(self, args, path, sudo):
+        result = None
+        try:
+            ansible_command = 'ansible-playbook '
+            ansible_command += args
+            command = f"{sudo} docker run -ti --rm --network host -h goadansible -v {GoadPath.get_project_path()}:/goad -w /goad/ansible goadansible /bin/bash -c '{ansible_command}'"
             Log.cmd(command)
             result = subprocess.run(command, cwd=path, stderr=sys.stderr, stdout=sys.stdout, shell=True)
         except subprocess.CalledProcessError as e:

@@ -287,21 +287,25 @@ class Goad(cmd.Cmd):
         self.lab_manager.update_instance_files()
 
     def do_create_instance(self, arg=''):
-        Log.info('Create instance folder')
-        self.lab_manager.create_instance()
-        Log.info('Launch providing')
-        if self.do_provide():
-            Log.info('Prepare jumpbox if needed')
-            self.do_prepare_jumpbox()
-            Log.info('Launch provisioning')
-            provision_result = self.do_provision_lab()
-            if provision_result:
-                for extension_name in self.lab_manager.current_settings.extensions_name:
-                    Log.info(f'Start installation of extension : {extension_name}')
-                    self.do_install_extension(extension_name)
-            self.refresh_prompt()
-        else:
-            Log.error('Providing error stop')
+        Log.success('Current Settings')
+        self.lab_manager.current_settings.show()
+        print()
+        if Utils.confirm('Create lab with theses settings ? (y/N)'):
+            Log.info('Create instance folder')
+            self.lab_manager.create_instance()
+            Log.info('Launch providing')
+            if self.do_provide():
+                Log.info('Prepare jumpbox if needed')
+                self.do_prepare_jumpbox()
+                Log.info('Launch provisioning')
+                provision_result = self.do_provision_lab()
+                if provision_result:
+                    for extension_name in self.lab_manager.current_settings.extensions_name:
+                        Log.info(f'Start installation of extension : {extension_name}')
+                        self.do_install_extension(extension_name)
+                self.refresh_prompt()
+            else:
+                Log.error('Providing error stop')
 
     def do_install_instance(self, arg=''):
         Log.info('Launch providing')
@@ -346,14 +350,13 @@ class Goad(cmd.Cmd):
             if deleted:
                 self.refresh_prompt()
 
-    def do_disable_vagrant(self,arg):
+    def do_disable_vagrant(self, arg):
         start = time.time()
         provision_result = self.lab_manager.get_current_instance_provisioner().run_disable_vagrant(disable_vagrant=True)
         if provision_result:
             time_provision = time.ctime(time.time() - start)[11:19]
             Log.info(f'Disable vagrant done in {time_provision}')
             Log.info(f'Please restart the lab to avoid administrator NT hash in lsass')
-        return provision_result
 
     def do_enable_vagrant(self, arg):
         start = time.time()
@@ -361,7 +364,6 @@ class Goad(cmd.Cmd):
         if provision_result:
             time_provision = time.ctime(time.time() - start)[11:19]
             Log.info(f'Enable vagrant done in {time_provision}')
-        return provision_result
 
     def do_list_instances(self, arg=''):
         self.lab_manager.lab_instances.show_instances(current_instance_id=self.lab_manager.get_current_instance_id())
