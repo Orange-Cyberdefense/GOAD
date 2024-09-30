@@ -20,7 +20,7 @@ variable "pm_pool" {
 }
 
 variable "pm_full_clone" {
-  default = {{config.get_value('proxmox', 'pm_pool', false)}}
+  default = "{{config.get_value('proxmox', 'pm_full_clone', 'false')}}"
 }
 
 # change this value with the id of your templates (win10 can be ignored if not used)
