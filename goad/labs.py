@@ -62,7 +62,7 @@ class Lab:
             elif provider_name == VMWARE and vmware_enabled:
                 provider = VmwareProvider(lab_name)
             elif provider_name == PROXMOX and proxmox_enabled:
-                provider = ProxmoxProvider(lab_name)
+                provider = ProxmoxProvider(lab_name, config)
             elif provider_name == AZURE and azure_enabled:
                 provider = AzureProvider(lab_name)
             elif provider_name == AWS and aws_enabled:
