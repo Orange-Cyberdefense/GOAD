@@ -1,0 +1,14 @@
+---
+# Load datas
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+# set local users ==================================================================================================
+- name: Local Users
+  hosts: domain
+  roles:
+    - { role: 'localusers', tags: 'localusers' }
+  vars:
+    local_users: "{{ lab.hosts[dict_key].local_users | default({}) }}"
