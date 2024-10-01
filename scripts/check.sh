@@ -384,7 +384,7 @@ main() {
 
   case $PROVIDER in
     "virtualbox")
-      (echo >&2 "[+] Enumerating virtulabox")
+      (echo >&2 "[+] Enumerating virtualbox")
       check_virtualbox_installed
       check_vagrant_path
       check_vagrant_reload_plugin
