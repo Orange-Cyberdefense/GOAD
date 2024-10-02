@@ -101,7 +101,18 @@ class Goad(cmd.Cmd):
         result = self.lab_manager.get_current_instance_provider().install()
         if result:
             self.lab_manager.get_current_instance().set_status(PROVIDED)
-        return result
+            # if ip range change after provisioning
+            if self.lab_manager.get_current_instance_provider().update_ip_range:
+                Log.info('Update IP range')
+                new_range = self.lab_manager.get_current_instance_provider().get_ip_range()
+                if new_range is not None:
+                    Log.info(f'new range : {new_range}')
+                    self.lab_manager.get_current_instance().update_ip_range(new_range)
+                    Log.info(f'reload instance')
+                    # reload instance
+                    instance_id = self.lab_manager.get_current_instance_id()
+                    self.do_load_instance(instance_id)
+                    self.refresh_prompt()
 
     def do_provision(self, arg):
         if arg == '':
@@ -294,7 +305,8 @@ class Goad(cmd.Cmd):
             Log.info('Create instance folder')
             self.lab_manager.create_instance()
             Log.info('Launch providing')
-            if self.do_provide():
+            self.do_provide()
+            if self.lab_manager.get_current_instance().get_status == PROVIDED:
                 Log.info('Prepare jumpbox if needed')
                 self.do_prepare_jumpbox()
                 Log.info('Launch provisioning')
@@ -309,7 +321,8 @@ class Goad(cmd.Cmd):
 
     def do_install_instance(self, arg=''):
         Log.info('Launch providing')
-        if self.do_provide():
+        self.do_provide()
+        if self.lab_manager.get_current_instance().get_status == PROVIDED:
             Log.info('Prepare jumpbox if needed')
             self.do_prepare_jumpbox()
             Log.info('Launch provisioning')

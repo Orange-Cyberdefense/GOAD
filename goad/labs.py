@@ -15,6 +15,8 @@ if aws_enabled:
     from goad.provider.terraform.aws import AwsProvider
 if proxmox_enabled:
     from goad.provider.terraform.proxmox import ProxmoxProvider
+if ludus_enabled:
+    from goad.provider.ludus.ludus import LudusProvider
 
 
 class Labs:
@@ -67,6 +69,8 @@ class Lab:
                 provider = AzureProvider(lab_name)
             elif provider_name == AWS and aws_enabled:
                 provider = AwsProvider(lab_name, config)
+            elif provider_name == LUDUS and ludus_enabled:
+                provider = LudusProvider(lab_name, config)
             if provider is not None:
                 self.providers[provider_name] = provider
 

@@ -11,6 +11,7 @@ class Provider(ABC):
     default_provisioner = PROVISIONING_LOCAL
     allowed_provisioners = ALLOWED_PROVISIONER
     use_jumpbox = False
+    update_ip_range = False
 
     def __init__(self, lab_name):
         self.lab_name = lab_name

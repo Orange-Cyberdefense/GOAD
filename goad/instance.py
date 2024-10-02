@@ -21,7 +21,7 @@ class LabInstance:
     def __init__(self, instance_id, lab_name, config, provider_name, provisioner_name, ip_range, extensions=None, status='', default=False):
         if instance_id is None:
             random_id = ''.join(random.choices(string.hexdigits, k=6))
-            self.instance_id = f'{random_id}-{lab_name}-{provider_name}-{ip_range.replace(".", "-")}'.lower()
+            self.instance_id = f'{random_id}-{lab_name}-{provider_name}'.lower()
         else:
             self.instance_id = instance_id
         self.lab_name = lab_name
@@ -94,6 +94,9 @@ class LabInstance:
     def is_vagrant(self):
         return self.provider_name == VMWARE or self.provider_name == VIRTUALBOX
 
+    def is_ludus(self):
+        return self.provider_name == LUDUS
+
     def enable_extension(self, extension_name):
         if extension_name not in self.extensions:
             self.extensions.append(extension_name)
@@ -157,6 +160,44 @@ class LabInstance:
         with open(instance_vagrant_file, mode="w", encoding="utf-8") as vagrantfile:
             vagrantfile.write(vagrantfile_content)
             Log.info(f'Instance vagrantfile created : {Utils.get_relative_path(instance_vagrant_file)}')
+
+    def _create_ludus_config_file(self):
+        # load lab vagrantfile
+        lab_environment = Environment(loader=FileSystemLoader(GoadPath.get_lab_provider_path(self.lab_name, self.provider_name)))
+        lab_ludus_config_file_template = lab_environment.get_template("config.yml")
+        lab_ludus_config_file_content = lab_ludus_config_file_template.render(
+            lab_name=self.lab_name,
+            range_id="{{ range_id }}",
+            ip_range=self.ip_range
+        )
+
+        # load lab extensions
+        lab_extensions_ludus_config_file_content = ''
+        for extension in self.extensions:
+            extension_provider_folder = GoadPath.get_extension_providers_provider_path(extension, self.provider_name)
+            extension_environment = Environment(loader=FileSystemLoader(extension_provider_folder))
+            lab_extension_ludus_config_file_template = extension_environment.get_template("config.yml")
+            lab_extensions_ludus_config_file_content += lab_extension_ludus_config_file_template.render(
+                lab_name=self.lab_name,
+                range_id="{{ range_id }}",
+                ip_range=self.ip_range
+            ) + "\n"
+
+        # load lab + extension into instance config
+        environment = Environment(loader=FileSystemLoader(GoadPath.get_template_path(self.provider_name)))
+        ludus_config_file_template = environment.get_template("config.yml")
+        ludus_config_file_template_content = ludus_config_file_template.render(
+            lab_name=self.lab_name,
+            lab=lab_ludus_config_file_content,
+            extensions=lab_extensions_ludus_config_file_content,
+            provider_name=self.provider_name
+        )
+
+        # create vagrantfile
+        instance_ludus_file = self.instance_provider_path + sep + 'config.yml'
+        with open(instance_ludus_file, mode="w", encoding="utf-8") as ludusfile:
+            ludusfile.write(ludus_config_file_template_content)
+            Log.info(f'Instance vagrantfile created : {Utils.get_relative_path(instance_ludus_file)}')
 
     def _create_terraform_folder(self):
         # load lab files
@@ -223,7 +264,8 @@ class LabInstance:
         Log.info('Create instance providing files')
         if self.is_vagrant():
             self._create_vagrantfile()
-
+        if self.is_ludus():
+            self._create_ludus_config_file()
         if self.is_terraform():
             self._create_terraform_folder()
 
@@ -323,6 +365,9 @@ class LabInstance:
         self.status = status
         self.save_json_instance()
 
+    def get_status(self):
+        return self.status
+
     def delete_instance(self):
         if not os.path.isdir(self.instance_path):
             Log.error('Instance does not exist abort')
@@ -339,3 +384,7 @@ class LabInstance:
             else:
                 Log.error('Error during lab destruction')
         return False
+
+    def update_ip_range(self, ip_range):
+        self.ip_range = ip_range
+        self.update_instance_folder()

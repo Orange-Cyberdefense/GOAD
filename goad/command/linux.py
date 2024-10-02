@@ -1,4 +1,5 @@
 import sys
+import os
 import psutil
 from goad.command.cmd import Command
 import subprocess
@@ -139,6 +140,44 @@ class LinuxCommand(Command):
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE,
                                     text=True
+                                    )
+            if result.returncode != 0:
+                print(f"Error: {result.stderr}")
+                return None
+
+            return result.stdout
+        except subprocess.CalledProcessError as e:
+            Log.error(f"An error occurred while running the command: {e}")
+        return None
+
+    def run_ludus(self, args, path, api_key):
+        env = os.environ.copy()
+        env["LUDUS_API_KEY"] = api_key
+        result = None
+        try:
+            command = 'ludus '
+            command += args
+            Log.info('CWD: ' + Utils.get_relative_path(str(path)))
+            Log.cmd(command)
+            result = subprocess.run(command, cwd=path, stderr=sys.stderr, stdout=sys.stdout, shell=True, env=env)
+        except subprocess.CalledProcessError as e:
+            Log.error(f"An error occurred while running the command: {e}")
+        return result.returncode == 0
+
+    def run_ludus_status(self, path, api_key, do_log=True):
+        result = None
+        env = os.environ.copy()
+        env["LUDUS_API_KEY"] = api_key
+        try:
+            command = ['ludus', 'range', 'status', '--json']
+            if do_log:
+                Log.info('CWD: ' + Utils.get_relative_path(str(path)))
+                Log.cmd(' '.join(command))
+            result = subprocess.run(command, cwd=path,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    text=True,
+                                    env=env
                                     )
             if result.returncode != 0:
                 print(f"Error: {result.stderr}")

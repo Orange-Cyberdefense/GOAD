@@ -29,3 +29,6 @@ class Command:
 
     def get_azure_account_output(self):
         pass
+
+    def run_ludus(self, args, path, api_key):
+        pass

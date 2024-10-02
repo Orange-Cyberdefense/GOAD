@@ -59,6 +59,8 @@ class Config:
         config.set('proxmox_templates_id', 'WinServer2019_x64_utd', '104')
         config.set('proxmox_templates_id', 'Windows10_22h2_x64', '105')
 
+        config.add_section('ludus')
+        config.set('ludus', 'ludus_api_key', 'change me')
         config.write(cfgfile)
         cfgfile.close()
 
