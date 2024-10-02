@@ -12,7 +12,7 @@ from rich import print
 class ProxmoxProvider(TerraformProvider):
     provider_name = PROXMOX
     default_provisioner = PROVISIONING_LOCAL
-    allowed_provisioners = PROXMOX_ALLOWED_PROVISIONER
+    allowed_provisioners =  [PROVISIONING_LOCAL, PROVISIONING_RUNNER]
 
     def __init__(self, lab_name, config):
         super().__init__(lab_name)
