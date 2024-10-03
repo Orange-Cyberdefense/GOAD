@@ -9,7 +9,7 @@ LAB=
 PROVIDER=
 METHOD=
 JOB=
-PROVIDERS="virtualbox vmware azure proxmox"
+PROVIDERS="virtualbox vmware azure proxmox oci"
 LABS=$(ls -A ad/ |grep -v 'TEMPLATE')
 TASKS="check install start stop status restart destroy disablevagrant enablevagrant"
 ANSIBLE_PLAYBOOKS="edr.yml build.yml ad-servers.yml ad-parent_domain.yml ad-child_domain.yml ad-members.yml ad-trusts.yml ad-data.yml ad-gmsa.yml laps.yml ad-relations.yml adcs.yml ad-acl.yml servers.yml security.yml vulnerabilities.yml reboot.yml elk.yml sccm-install.yml sccm-config.yml"
@@ -153,6 +153,22 @@ print_azure_info() {
     echo "    IdentityFile $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem"
 }
 
+print_oci_info() {
+  echo -e "\n\n"
+  echo "Ubuntu jumpbox IP: $public_ip"
+
+  echo "You can now connect to the jumpbox using the following command:"
+  echo "ssh -i ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem ubuntu@$public_ip"
+  echo -e "\n\n"
+
+  echo "${OK} ssh/config :"
+  echo "Host goad_oci"
+  echo "    Hostname $public_ip"
+  echo "    User ubuntu"
+  echo "    Port 22"
+  echo "    IdentityFile $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem"
+}
+
 install_providing(){
   lab=$1
   provider=$2
@@ -235,6 +251,45 @@ install_providing(){
         exit 1
       fi
       ;;
+      "oci")
+      if [ -d "ad/$lab/providers/$provider/terraform" ]; then
+          cd "ad/$lab/providers/$provider/terraform"
+          echo "${OK} Initializing Terraform..."
+          terraform init
+
+          result=$?
+          if [ ! $result -eq 0 ]; then
+            echo "${ERROR} terraform init finish with error abort"
+            exit 1
+          fi
+
+          echo "${OK} Apply Terraform..."
+          terraform apply
+          result=$?
+          if [ ! $result -eq 0 ]; then
+            echo "${ERROR} terraform apply finish with error abort"
+            exit 1
+          fi
+
+          # Get the public IP address of the VM
+          echo "${OK} Getting jumpbox IP address..."
+          public_ip=$(terraform output -raw ubuntu_jumpbox_ip)
+          print_oci_info
+          cd -
+
+          echo "${OK} Rsync goad to jumpbox"
+          rsync -a --exclude-from='.gitignore' -e "ssh -o 'StrictHostKeyChecking no' -i $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" "$CURRENT_DIR/" ubuntu@$public_ip:~/GOAD/
+
+          echo "${OK} Running setup script on jumpbox..."
+          ssh -o "StrictHostKeyChecking no" -i "ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" ubuntu@$public_ip 'bash -s' <scripts/setup_oci.sh
+
+          echo "${OK} Ready to launch provisioning"
+      else
+        echo "${ERROR} folder ad/$lab/providers/$provider/terraform not found"
+        exit 1
+      fi
+      ;;
+
   esac
 }
 
@@ -295,7 +350,7 @@ install_provisioning(){
             "local")
               if [ -z $ANSIBLE_PLAYBOOK ]; then
                 ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" goad@$public_ip << EOF
-                  cd /home/goad/GOAD/ansible
+                  cd /home/ubuntu/GOAD/ansible
                   export LAB=$lab PROVIDER=$provider
                   ../scripts/provisionning.sh
                   exit
@@ -311,6 +366,37 @@ EOF
               ;;
             *)
               echo "${ERROR} $method install on azure not implemented, use local"
+              ;;
+          esac
+      ;;
+      "oci")
+
+          cd "ad/$lab/providers/$provider/terraform"
+          public_ip=$(terraform output -raw ubuntu_jumpbox_ip)
+          cd -
+          
+          rsync -a --exclude-from='.gitignore' -e "ssh -o 'StrictHostKeyChecking no' -i $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" "$CURRENT_DIR/" ubuntu@$public_ip:~/GOAD/
+
+           case $method in
+            "local")
+              if [ -z $ANSIBLE_PLAYBOOK ]; then
+                ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" ubuntu@$public_ip << EOF
+                  cd /home/ubuntu/GOAD/ansible
+                  export LAB=$lab PROVIDER=$provider
+                  ../scripts/provisionning.sh
+                  exit
+EOF
+              else
+              ssh -tt -o "StrictHostKeyChecking no" -i "$CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" ubuntu@$public_ip << EOF
+                  cd /home/ubuntu/GOAD/ansible
+                  ansible-playbook -i ../ad/$lab/data/inventory -i ../ad/$lab/providers/$provider/inventory $ANSIBLE_PLAYBOOK
+                  exit
+EOF
+              fi
+                print_oci_info
+              ;;
+            *)
+              echo "${ERROR} $method install on OCI not implemented, use local"
               ;;
           esac
       ;;
@@ -358,7 +444,7 @@ disablevagrant(){
             ;;
         esac
       ;;
-    "azure")
+    "azure"|"oci")
           echo "Vagrant user not used in azure, skip."
       ;;
   esac
@@ -394,7 +480,7 @@ enablevagrant(){
             ;;
         esac
       ;;
-    "azure")
+    "azure"|"oci")
           echo "Vagrant user not used in azure, skip."
       ;;
   esac
@@ -454,6 +540,8 @@ start(){
       az vm start --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
       status
       ;;
+    "oci")
+
   esac
 }
 
@@ -488,6 +576,32 @@ stop(){
     "azure")
       az vm stop --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
       status
+      ;;
+    "oci")
+# Function to restart instances
+restart_instances() {
+  echo "${INFO} Listing instances in compartment ${COMPARTMENT_OCID}..."
+  INSTANCE_OCIDS=$(oci compute instance list --compartment-id $COMPARTMENT_OCID --query "data[*].id" --raw-output)
+
+  if [ -z "$INSTANCE_OCIDS" ]; then
+    echo "${ERROR} No instances found in compartment ${COMPARTMENT_OCID}"
+    exit 1
+  fi
+
+  echo "${INFO} Restarting instances..."
+  for INSTANCE_ID in $INSTANCE_OCIDS; do
+    echo "${INFO} Restarting instance $INSTANCE_ID"
+    oci compute instance action --instance-id $INSTANCE_ID --action RESET
+    if [ $? -eq 0 ]; then
+      echo "${OK} Instance $INSTANCE_ID restarted successfully"
+    else
+      echo "${ERROR} Failed to restart instance $INSTANCE_ID"
+    fi
+  done
+}
+      restart_instances
+    
+        status
       ;;
   esac
 }
@@ -526,6 +640,43 @@ restart(){
       az vm restart --ids $(az vm list --resource-group $LAB --query "[].id" -o tsv)
       status
       ;;
+    "oci")
+# Function to stop instances
+stop_instances() {
+  echo "${INFO} Listing instances in compartment ${COMPARTMENT_OCID}..."
+  INSTANCE_OCIDS=$(oci compute instance list --compartment-id $COMPARTMENT_OCID --query "data[*].id" --raw-output)
+
+  if [ -z "$INSTANCE_OCIDS" ]; then
+    echo "${ERROR} No instances found in compartment ${COMPARTMENT_OCID}"
+    exit 1
+  fi
+
+  echo "${INFO} Stopping instances..."
+  for INSTANCE_ID in $INSTANCE_OCIDS; do
+    echo "${INFO} Stopping instance $INSTANCE_ID"
+    oci compute instance action --instance-id $INSTANCE_ID --action STOP
+    if [ $? -eq 0 ]; then
+      echo "${OK} Instance $INSTANCE_ID stopped successfully"
+    else
+      echo "${ERROR} Failed to stop instance $INSTANCE_ID"
+    fi
+  done
+}
+
+# Function to check instance status
+check_status() {
+  echo "${INFO} Checking instance status..."
+  for INSTANCE_ID in $INSTANCE_OCIDS; do
+    STATUS=$(oci compute instance get --instance-id $INSTANCE_ID --query "data.lifecycle-state" --raw-output)
+    echo "${INFO} Instance $INSTANCE_ID is $STATUS"
+  done
+}
+    stop_instances
+    check_status
+    ;;
+  *)
+    echo "${ERROR} $method install on $provider not implemented, use local"
+      ;;
   esac
 }
 
@@ -545,7 +696,7 @@ destroy(){
           esac
           cd -
       ;;
-    "proxmox"|"azure")
+    "oci"|"proxmox"|"azure")
       if [ -d "ad/$LAB/providers/$PROVIDER/terraform" ]; then
         cd "ad/$LAB/providers/$PROVIDER/terraform"
         echo "${OK} Destroy infrastructure..."
@@ -585,8 +736,14 @@ status(){
     "azure")
       az vm list -g $LAB -d --output table
       ;;
+    "oci")
+      oci compute instance list --query "data[?contains(\"display-name\", 'kafka')].{ocid:id}" --compartment-id $COMPARTMENT_OCID
+      ;;
+    *)
+      echo "${ERROR} Provider $PROVIDER not recognized"
+      ;;
   esac
-}
+} 
 
 snapshot() {
   # TODO : snapshot
