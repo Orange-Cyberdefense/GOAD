@@ -1,0 +1,37 @@
+ludus:
+  - vm_name: "{{ range_id }}-SCCM-DC"
+    hostname: "{{ range_id }}-DC01"
+    template: win2019-server-x64-template
+    vlan: 10
+    ip_last_octet: 40
+    ram_gb: 4
+    cpus: 2
+    windows:
+      sysprep: true
+  - vm_name: "{{ range_id }}-SCCM-MECM"
+    hostname: "{{ range_id }}-SRV01"
+    template: win2019-server-x64-template
+    vlan: 10
+    ip_last_octet: 41
+    ram_gb: 4
+    cpus: 2
+    windows:
+      sysprep: true
+  - vm_name: "{{ range_id }}-SCCM-MSSQL"
+    hostname: "{{ range_id }}-SRV02"
+    template: win2019-server-x64-template
+    vlan: 10
+    ip_last_octet: 42
+    ram_gb: 4
+    cpus: 4
+    windows:
+      sysprep: true
+  - vm_name: "{{ range_id }}-SCCM-CLIENT"
+    hostname: "{{ range_id }}-WS01"
+    template: win2019-server-x64-template
+    vlan: 10
+    ip_last_octet: 43
+    ram_gb: 4
+    cpus: 2
+    windows:
+      sysprep: true
