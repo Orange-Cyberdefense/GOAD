@@ -1,5 +1,5 @@
 from goad.log import Log
-
+from goad.utils import *
 
 class Settings:
     """
@@ -29,13 +29,17 @@ class Settings:
         Log.info(f'Current Lab         : {self.lab_name}')
         Log.info(f'Current Provider    : {self.provider_name}')
         Log.info(f'Current Provisioner : {self.provisioner_name}')
-        Log.info(f'Current IP range    : {self.ip_range}.X')
+        if self.provider_name != LUDUS:
+            Log.info(f'Current IP range    : {self.ip_range}.X')
         Log.info(f'Extension(s)        :')
         for extension in self.extensions_name:
             Log.info(f' - {extension}')
 
     def inline(self):
-        return f'{self.lab_name}/{self.provider_name}/{self.provisioner_name}/{self.ip_range}.X'
+        if self.provider_name == LUDUS:
+            return f'{self.lab_name}/{self.provider_name}/{self.provisioner_name}'
+        else:
+            return f'{self.lab_name}/{self.provider_name}/{self.provisioner_name}/{self.ip_range}.X'
 
     def set_lab_name(self, lab_name, refresh=True):
         """
