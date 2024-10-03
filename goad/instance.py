@@ -64,6 +64,10 @@ class LabInstance:
             self.provider.set_resource_group(self.lab_name + '-' + self.instance_id)
         if self.provider_name == AWS:
             self.provider.set_tag(self.lab_name + '-' + self.instance_id)
+        if self.provider_name == LUDUS:
+            user_id = self.lab_name + self.instance_id.split('-')[0]
+            user_id = user_id.replace('-', '').replace('_', '')
+            self.provider.set_lab_user(user_id[:19])
 
         if not os.path.isdir(self.instance_provider_path):
             Log.error('instance provider path {instance_provider_path} not found')

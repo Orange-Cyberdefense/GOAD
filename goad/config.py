@@ -60,7 +60,9 @@ class Config:
         config.set('proxmox_templates_id', 'Windows10_22h2_x64', '105')
 
         config.add_section('ludus')
-        config.set('ludus', 'ludus_api_key', 'change me')
+        config.set('ludus', '; api key must not have % if you have a % in it, change it by a %%')
+        config.set('ludus', 'ludus_api_key', 'change_me')
+        config.set('ludus', 'use_impersonation', 'yes')
         config.write(cfgfile)
         cfgfile.close()
 

@@ -13,36 +13,97 @@ class LudusProvider(Provider):
 
     def __init__(self, lab_name, config):
         super().__init__(lab_name)
-        self.api_key = config.get_value('ludus', 'ludus_api_key')
+        self.api_key = config.get_value('ludus', 'ludus_api_key', 'not_set')
+        if config.get_value('ludus', 'use_impersonation', 'no') == 'yes':
+            self.use_impersonation = True
+        else:
+            self.use_impersonation = False
+        self.lab_user = 'GOAD'
+
+    def set_lab_user(self, lab_user):
+        # user is <LAB>-<randomid>
+        if self.use_impersonation:
+            self.lab_user = lab_user
+
+    def get_ludus_user(self):
+        ludus_user = None
+        ludus_version = self.command.run_ludus_result(["version"], self.path, self.api_key)
+        if 'No API key loaded' in ludus_version:
+            Log.error('Please add the ludus api key to HOME/.goad/goad.ini file')
+        else:
+            Log.success('Api key is set')
+            if self.use_impersonation:
+                command = ['--url', 'https://127.0.0.1:8081', 'user', 'list', '--json']
+                ludus_users = self.command.run_ludus_result(command, self.path, self.api_key)
+                print(ludus_users)
+                users = json.loads(ludus_users)
+                if len(users) > 0:
+                    Log.info(f'Current user name : {users[0]["name"]}')
+                    Log.info(f'Current user ID   : {users[0]["userID"]}')
+                    Log.info(f'User is admin     : {users[0]["isAdmin"]}')
+                    if not users[0]["isAdmin"]:
+                        Log.error('User must be admin')
+                    else:
+                        ludus_user = users[0]["userID"]
+            else:
+                ludus_user = 'ok'
+        return ludus_user
 
     def check(self):
+        check = super().check()
         check_ludus = self.command.check_ludus()
-
         if check_ludus:
-            ludus_version = self.command.get_ludus_version_output(self.api_key)
-            if 'No API key loaded' in ludus_version:
-                Log.error('Please add the ludus api key to HOME/.goad/goad.ini file')
-                check_ludus = False
+            current_ludus_user = self.get_ludus_user()
+            if current_ludus_user is not None:
+                check_ludus = True
 
         check_disk = self.command.check_disk()
         check_ram = self.command.check_ram()
         check_ansible = self.command.check_ansible()
-        check_gem_winrm = self.command.check_gem('winrm')
-        check_gem_winrmfs = self.command.check_gem('winrm-fs')
-        check_gem_winrme = self.command.check_gem('winrm-elevated')
-        return check_ludus and check_disk and check_ram and check_ansible and check_gem_winrm and check_gem_winrmfs and check_gem_winrme
+        return check and check_ludus and check_disk and check_ram and check_ansible
+
+    def user_exist(self, user_to_test):
+        user_exist = False
+        command = ['--url', 'https://127.0.0.1:8081', 'user', 'list', 'all', '--json']
+        ludus_users = self.command.run_ludus_result(command, self.path, self.api_key)
+        users = json.loads(ludus_users)
+        for user in users:
+            if user['userID'] == user_to_test:
+                Log.success(f'User {user_to_test} already exist')
+                user_exist = True
+                break
+        return user_exist
 
     def install(self):
-        set_config_result = self.command.run_ludus('range config set -f config.yml', self.path, self.api_key)
+        current_ludus_user = ''
+        if self.use_impersonation:
+            # check current ludus user
+            current_ludus_user = self.get_ludus_user()
+            if current_ludus_user is None:
+                return False
+
+            # check ludus user exist
+            if not self.user_exist(self.lab_user):
+                Log.info('Lab user does not exist create it')
+                command = ['--url', 'https://127.0.0.1:8081', 'user', 'add', '-n', self.lab_user, '-i', self.lab_user]
+                user_creation = self.command.run_ludus_result(command, self.path, self.api_key)
+                Log.info(user_creation)
+
+            if not self.user_exist(self.lab_user):
+                Log.error('User creation error')
+                return False
+
+        set_config_result = self.command.run_ludus(f'range config set -f config.yml', self.path, self.api_key, self.lab_user, self.use_impersonation)
         if not set_config_result:
             return False
 
-        deploy_result = self.command.run_ludus('range deploy', self.path, self.api_key)
+        deploy_result = self.command.run_ludus(f'range deploy', self.path, self.api_key, self.lab_user, self.use_impersonation)
         if not deploy_result:
             return False
 
         while True:
-            ludus_status = self.command.run_ludus_status(self.path, self.api_key, do_log=False)
+            command = ['range', 'status', '--json']
+            ludus_status = self.command.run_ludus_result(command, self.path, self.api_key, do_log=False, user_id=self.lab_user, impersonation=self.use_impersonation)
             if ludus_status is None:
                 return False
             try:
@@ -50,7 +111,7 @@ class LudusProvider(Provider):
                 range_state = range_status['rangeState']
                 if range_state == 'ERROR':
                     Log.error('Error during deployment')
-                    self.command.run_ludus('range errors', self.path, self.api_key)
+                    self.command.run_ludus('range errors', self.path, self.api_key, self.lab_user, self.use_impersonation)
                     return False
                 elif range_state == 'DEPLOYING':
                     Log.info('deploying...be patient')
@@ -64,11 +125,17 @@ class LudusProvider(Provider):
                 Log.error('')
                 return False
             time.sleep(30)
+
+        if self.use_impersonation:
+            # deployment finish add grant access to our user
+            Log.info(f'Add access to lab range {self.lab_user} for your user {current_ludus_user}')
+            self.command.run_ludus(f'range access grant --target {self.lab_user} --source {current_ludus_user}', self.path, self.api_key)
         return True
 
     def get_ip_range(self):
         try:
-            ludus_status = self.command.run_ludus_status(self.path, self.api_key)
+            command = ['range', 'status', '--json']
+            ludus_status = self.command.run_ludus_result(command, self.path, self.api_key, do_log=True, user_id=self.lab_user, impersonation=self.use_impersonation)
             range_status = json.loads(ludus_status)
             range_number = range_status['rangeNumber']
             Log.info(f'Ludus ip range : {range_number}')
@@ -77,25 +144,24 @@ class LudusProvider(Provider):
             Log.error('Error during ludus status')
             return None
 
-
     def destroy(self):
-        return self.command.run_ludus('range rm', self.path, self.api_key)
+        return self.command.run_ludus(f'range rm', self.path, self.api_key, self.lab_user, self.use_impersonation)
 
     def start(self):
-        return self.command.run_ludus('power on', self.path, self.api_key)
+        return self.command.run_ludus(f'power on', self.path, self.api_key, self.lab_user, self.use_impersonation)
 
     def stop(self):
-        return self.command.run_ludus('power off', self.path, self.api_key)
+        return self.command.run_ludus(f'power off', self.path, self.api_key, self.lab_user, self.use_impersonation)
 
     def status(self):
-        return self.command.run_ludus('range status', self.path, self.api_key)
+        return self.command.run_ludus(f'range status', self.path, self.api_key, self.lab_user, self.use_impersonation)
 
     def destroy_vm(self, vm_name):
         # not implemented
         pass
 
     def start_vm(self, vm_name):
-        return self.command.run_ludus(f'power on -n {vm_name}', self.path, self.api_key)
+        return self.command.run_ludus(f'power on -n {vm_name}', self.path, self.api_key, self.lab_user, self.use_impersonation)
 
     def stop_vm(self, vm_name):
-        return self.command.run_ludus(f'power off -n {vm_name}', self.path, self.api_key)
+        return self.command.run_ludus(f'power off -n {vm_name}', self.path, self.api_key, self.lab_user, self.use_impersonation)

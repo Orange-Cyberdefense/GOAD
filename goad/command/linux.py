@@ -153,12 +153,14 @@ class LinuxCommand(Command):
             Log.error(f"An error occurred while running the command: {e}")
         return None
 
-    def run_ludus(self, args, path, api_key):
+    def run_ludus(self, args, path, api_key, user_id='', impersonation=False):
         env = os.environ.copy()
         env["LUDUS_API_KEY"] = api_key
         result = None
         try:
             command = 'ludus '
+            if impersonation:
+                command += f'--user {user_id} '
             command += args
             Log.info('CWD: ' + Utils.get_relative_path(str(path)))
             Log.cmd(command)
@@ -167,16 +169,19 @@ class LinuxCommand(Command):
             Log.error(f"An error occurred while running the command: {e}")
         return result.returncode == 0
 
-    def run_ludus_status(self, path, api_key, do_log=True):
+    def run_ludus_result(self, command, path, api_key, do_log=True, user_id='', impersonation=False):
         result = None
         env = os.environ.copy()
         env["LUDUS_API_KEY"] = api_key
         try:
-            command = ['ludus', 'range', 'status', '--json']
+            cmd = ['ludus']
+            if impersonation:
+                cmd += ['--user', user_id]
+            cmd += command
             if do_log:
                 Log.info('CWD: ' + Utils.get_relative_path(str(path)))
-                Log.cmd(' '.join(command))
-            result = subprocess.run(command, cwd=path,
+                Log.cmd(' '.join(cmd))
+            result = subprocess.run(cmd, cwd=path,
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE,
                                     text=True,
@@ -190,22 +195,6 @@ class LinuxCommand(Command):
         except subprocess.CalledProcessError as e:
             Log.error(f"An error occurred while running the command: {e}")
         return None
-
-    def get_ludus_version_output(self, api_key):
-        env = os.environ.copy()
-        env["LUDUS_API_KEY"] = api_key
-        result = subprocess.run(
-            ["ludus", "version"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            env=env
-        )
-        if result.returncode != 0:
-            print(f"Error: {result.stderr}")
-            return None
-
-        return result.stdout
 
     def run_ansible(self, args, path):
         result = None
