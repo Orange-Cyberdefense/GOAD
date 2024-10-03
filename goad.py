@@ -306,7 +306,7 @@ class Goad(cmd.Cmd):
             self.lab_manager.create_instance()
             Log.info('Launch providing')
             self.do_provide()
-            if self.lab_manager.get_current_instance().get_status == PROVIDED:
+            if self.lab_manager.get_current_instance().get_status() == PROVIDED:
                 Log.info('Prepare jumpbox if needed')
                 self.do_prepare_jumpbox()
                 Log.info('Launch provisioning')
@@ -322,7 +322,7 @@ class Goad(cmd.Cmd):
     def do_install_instance(self, arg=''):
         Log.info('Launch providing')
         self.do_provide()
-        if self.lab_manager.get_current_instance().get_status == PROVIDED:
+        if self.lab_manager.get_current_instance().get_status() == PROVIDED:
             Log.info('Prepare jumpbox if needed')
             self.do_prepare_jumpbox()
             Log.info('Launch provisioning')
