@@ -5,6 +5,14 @@
 - Machine name : {{lab_name}}-ELK
 - Compatible with labs : *
 
+## prerequisites
+
+On ludus prepare template :
+```
+ludus templates add -d ubuntu-22.04-x64-server
+ludus templates build
+```
+
 ## Install
 
 ```

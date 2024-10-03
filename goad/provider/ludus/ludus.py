@@ -148,17 +148,17 @@ class LudusProvider(Provider):
         return self.command.run_ludus(f'range rm', self.path, self.api_key, self.lab_user, self.use_impersonation)
 
     def start(self):
-        return self.command.run_ludus(f'power on', self.path, self.api_key, self.lab_user, self.use_impersonation)
+        return self.command.run_ludus(f'power on -n all', self.path, self.api_key, self.lab_user, self.use_impersonation)
 
     def stop(self):
-        return self.command.run_ludus(f'power off', self.path, self.api_key, self.lab_user, self.use_impersonation)
+        return self.command.run_ludus(f'power off -n all', self.path, self.api_key, self.lab_user, self.use_impersonation)
 
     def status(self):
         return self.command.run_ludus(f'range status', self.path, self.api_key, self.lab_user, self.use_impersonation)
 
     def destroy_vm(self, vm_name):
-        # not implemented
-        pass
+        Log.error('Not implememnted')
+        return False
 
     def start_vm(self, vm_name):
         return self.command.run_ludus(f'power on -n {vm_name}', self.path, self.api_key, self.lab_user, self.use_impersonation)

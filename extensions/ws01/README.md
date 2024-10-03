@@ -26,6 +26,14 @@
 - Providers:
   - aws doesn't provide windows10 ami. you can still install ws01 but a windows server 2019 will be used instead
 
+## prerequisites
+
+On ludus prepare template :
+```
+ludus templates add -d win10-21h1-x64-enterprise
+ludus templates build
+```
+
 ## Install
 
 ```

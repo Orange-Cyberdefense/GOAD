@@ -1,0 +1,9 @@
+  - vm_name: "{{ range_id }}-GOAD-SRV01"
+    hostname: "{{ range_id }}-SRV01"
+    template: win2019-server-x64-template
+    vlan: 10
+    ip_last_octet: 21
+    ram_gb: 12
+    cpus: 4
+    windows:
+      sysprep: true

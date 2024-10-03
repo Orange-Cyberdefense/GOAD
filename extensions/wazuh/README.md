@@ -5,15 +5,19 @@
 - Machine name : {{lab_name}}-WAZUH
 - Compatible with labs : *
 
-## Install
+## prerequisites
 
+On ludus prepare template :
+```
+ludus templates add -d ubuntu-22.04-x64-server
+ludus templates build
+```
+
+## Install
 ```
 instance_id> install_extension wazuh
 ```
 
-## Uninstall
-
-- Not implemented yet
 
 ## credits
 - https://github.com/aleemladha (https://github.com/Orange-Cyberdefense/GOAD/pull/215)
