@@ -135,3 +135,27 @@ vagrant up   # will start the lab
 ```
 
 - If you got some errors see the troubleshooting section at the end of the document, but in most case if you get errors during install, don't think and just replay the main playbook (most of the errors which could came up are due to windows latency during installation, wait few minutes and replay the playbook)
+
+Additionally, all of the above features are nicelly wrapped into a `goad.sh` script that makes provisioning a breeze. Additionally there are `check.sh` script and various `setup.sh` scripts inside `scripts/` that makes preparing the environment easier.
+
+## Enabling and disabling default vagrant user
+
+*It is again important to mention that all the environments are deployed with default credentials of `vagrant:vagrant` because of the underlying templates. This is a lab environment which is inherently insecure.*
+
+However you might not want this default credentials to be available so there are no unintended solutions for the lab. This was made easier with ansible roles that disable this.
+
+```bash
+ansible-playbook -i ../ad/<LAB>/data/inventory -i ../ad/<LAB>/providers/<PROVIDER>/inventory disable_vagrant.yml
+```
+
+If you want again to manage the lab you can reenable the user.
+
+```bash
+ansible-playbook -i ../ad/<LAB>/data/inventory -i ../ad/<LAB>/providers/<PROVIDER>/inventory enable_vagrant.yml
+```
+
+The same can be also achieved with the `goad.sh` wrapper for example:
+
+```bash
+./goad.sh -t disablevagrant -l GOAD -p vmware_esxi -m local
+```
