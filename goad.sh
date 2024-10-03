@@ -17,7 +17,6 @@ then
   cd ansible
   ansible-galaxy install -r requirements.yml
   cd -
-  exit 0
 fi
 
 # launch the app
