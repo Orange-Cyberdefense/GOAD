@@ -1,3 +1,15 @@
+# Download Microsoft Visual C++ 2017 Redistributable 
+- name: download VC_redist
+  ansible.windows.win_get_url:
+    url: https://aka.ms/vs/15/release/vc_redist.x64.exe
+    dest: C:\setup\vc_redist.x64.exe
+
+# Install Microsoft Visual C++ 2017 Redistributable 
+- name: installing VC_redist
+  win_shell: .\vc_redist.x64.exe /install /quiet
+  args:
+    chdir: C:\setup
+
 - name: Install ODBC Mssql 18 driver
   ansible.windows.win_package:
     arguments: "IACCEPTMSODBCSQLLICENSETERMS=YES ALLUSERS=1"
