@@ -16,8 +16,21 @@ class LudusProvider(Provider):
         self.api_key = config.get_value('ludus', 'ludus_api_key')
 
     def check(self):
-        # TODO
-        return True
+        check_ludus = self.command.check_ludus()
+
+        if check_ludus:
+            ludus_version = self.command.get_ludus_version_output(self.api_key)
+            if 'No API key loaded' in ludus_version:
+                Log.error('Please add the ludus api key to HOME/.goad/goad.ini file')
+                check_ludus = False
+
+        check_disk = self.command.check_disk()
+        check_ram = self.command.check_ram()
+        check_ansible = self.command.check_ansible()
+        check_gem_winrm = self.command.check_gem('winrm')
+        check_gem_winrmfs = self.command.check_gem('winrm-fs')
+        check_gem_winrme = self.command.check_gem('winrm-elevated')
+        return check_ludus and check_disk and check_ram and check_ansible and check_gem_winrm and check_gem_winrmfs and check_gem_winrme
 
     def install(self):
         set_config_result = self.command.run_ludus('range config set -f config.yml', self.path, self.api_key)

@@ -90,6 +90,9 @@ class LinuxCommand(Command):
     def check_ansible(self):
         return self.is_in_path('ansible-playbook')
 
+    def check_ludus(self):
+        return self.is_in_path('ludus')
+
     def check_disk(self, min_disk_gb=120):
         disk_usage = psutil.disk_usage('/')
         free_disk_gb = disk_usage.free / (1024 ** 3)  # Convert bytes to GB
@@ -187,6 +190,22 @@ class LinuxCommand(Command):
         except subprocess.CalledProcessError as e:
             Log.error(f"An error occurred while running the command: {e}")
         return None
+
+    def get_ludus_version_output(self, api_key):
+        env = os.environ.copy()
+        env["LUDUS_API_KEY"] = api_key
+        result = subprocess.run(
+            ["ludus", "version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            env=env
+        )
+        if result.returncode != 0:
+            print(f"Error: {result.stderr}")
+            return None
+
+        return result.stdout
 
     def run_ansible(self, args, path):
         result = None
