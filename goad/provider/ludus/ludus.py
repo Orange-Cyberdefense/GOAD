@@ -28,6 +28,9 @@ class LudusProvider(Provider):
     def get_ludus_user(self):
         ludus_user = None
         ludus_version = self.command.run_ludus_result(["version"], self.path, self.api_key)
+        if ludus_version is None:
+            Log.error('Error to contact ludus.')
+            return None
         if 'No API key loaded' in ludus_version:
             Log.error('Please add the ludus api key to HOME/.goad/goad.ini file')
         else:
