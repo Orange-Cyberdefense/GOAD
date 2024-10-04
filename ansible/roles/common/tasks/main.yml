@@ -2,8 +2,8 @@
   ansible.windows.win_dns_client:
     adapter_names: "{{nat_adapter}}"
     dns_servers: 
-      - "{{dns_server}}"
       - "{{hostvars[dns_domain].ansible_host}}"
+      - "{{dns_server}}"
   when: force_dns_server == "yes"
 
 - name: Set a proxy for specific protocols
