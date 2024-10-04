@@ -7,6 +7,9 @@ admin_user=administrator
 force_dns_server=no
 dns_server=x.x.x.x
 
+;dns server forwarder
+dns_server_forwarder=1.1.1.1
+
 ; winrm connection (windows)
 ansible_user=vagrant
 ansible_password=vagrant

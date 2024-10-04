@@ -13,6 +13,9 @@ force_dns_server=no
 dns_server=x.x.x.x
 two_adapters=yes
 
+;dns server forwarder
+dns_server_forwarder=1.1.1.1
+
 ; winrm connection (windows)
 ansible_user=vagrant
 ansible_password=vagrant

@@ -23,6 +23,9 @@ ad_https_proxy=http://x.x.x.x:xxxx
 force_dns_server=no
 dns_server=1.1.1.1
 
+;dns server forwarder
+dns_server_forwarder=1.1.1.1
+
 ; winrm connection (windows)
 ansible_user=vagrant
 ansible_password=vagrant
