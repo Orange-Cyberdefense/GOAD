@@ -17,8 +17,10 @@ dc03 ansible_host={{ip_range}}.12 dns_domain=dc03 dict_key=dc03
 srv03 ansible_host={{ip_range}}.23 dns_domain=dc03 dict_key=srv03
 
 [all:vars]
-force_dns_server=yes
+force_dns_server=no
 dns_server={{ip_range}}.254
+
+dns_server_forwarder={{ip_range}}.254
 
 ansible_user=localuser
 ansible_password=password
