@@ -2,7 +2,7 @@
   win_dns_client:
     adapter_names: "{{domain_adapter}}"
     ipv4_addresses:
-    - "{{hostvars[dns_domain}.ansible_host}"
+    - "{{hostvars[dns_domain].ansible_host}}"
     log_path: C:\dns_log.txt
 
 - name: Promote the server to aditionnal DC
