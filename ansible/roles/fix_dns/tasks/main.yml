@@ -1,0 +1,42 @@
+# ONE INTERFACE
+# nat adapter == domain adapter => DC and next web
+- name: "Change DNS on the adapter {{nat_adapter}}"
+  ansible.windows.win_dns_client:
+    adapter_names: "{{nat_adapter}}"
+    dns_servers:
+      - "{{hostvars[dns_domain].ansible_host}}"
+      - "{{dns_server}}"
+  when: force_dns_server == "yes" and not two_adapters
+
+- name: "Change DNS on the adapter {{nat_adapter}}"
+  ansible.windows.win_dns_client:
+    adapter_names: "{{nat_adapter}}"
+    dns_servers:
+      - "{{hostvars[dns_domain].ansible_host}}"
+      - "{{dns_server_forwarder}}"
+  when: force_dns_server != "yes" and not two_adapters
+
+
+# TWO INTERFACES
+# domain adapter => dc
+# nat adapter => web
+- name: "Change DNS on the adapter {{nat_adapter}}"
+  ansible.windows.win_dns_client:
+    adapter_names: "{{nat_adapter}}"
+    dns_servers:
+      - "{{dns_server}}"
+  when: force_dns_server == "yes" and two_adapters
+
+- name: "Change DNS on the adapter {{nat_adapter}}"
+  ansible.windows.win_dns_client:
+    adapter_names: "{{nat_adapter}}"
+    dns_servers:
+      - "{{dns_server_forwarder}}"
+  when: force_dns_server != "yes" and two_adapters
+
+- name: "Change DNS on the adapter {{domain_adapter}}"
+  ansible.windows.win_dns_client:
+    adapter_names: "{{domain_adapter}}"
+    dns_servers:
+      - "{{hostvars[dns_domain].ansible_host}}"
+  when: two_adapters
