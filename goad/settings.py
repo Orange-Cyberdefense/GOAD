@@ -1,5 +1,6 @@
 from goad.log import Log
 from goad.utils import *
+from goad.dependencies import *
 
 class Settings:
     """
@@ -113,11 +114,16 @@ class Settings:
         provider = lab.get_provider(self.provider_name)
 
         if provisioner_name not in provider.allowed_provisioners:
-            Log.info(f'provisioner method {provisioner_name} is not allowed for provider {self.provider_name}')
+            Log.warning(f'provisioner method {provisioner_name} is not allowed for provider {self.provider_name}')
             Log.info(f'automatic changing provisioner method {provisioner_name} to default for this provider : {provider.default_provisioner}')
             self.provisioner_name = provider.default_provisioner
         else:
-            self.provisioner_name = provisioner_name
+            if (provisioner_name == PROVISIONING_RUNNER and not provisioner_runner_enabled) or (provisioner_name == PROVISIONING_DOCKER and not provisioner_docker_enabled):
+                Log.warning(f'provisioner method {provisioner_name} is not enabled')
+                Log.info(f'automatic changing provisioner method {provisioner_name} to default for this provider : {provider.default_provisioner}')
+                self.provisioner_name = provider.default_provisioner
+            else:
+                self.provisioner_name = provisioner_name
         return self.provisioner_name
 
     def set_ip_range(self, ip_range):

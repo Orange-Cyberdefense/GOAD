@@ -450,7 +450,7 @@ def parse_args():
     parser.add_argument("-m", "--method", help="deploy method to use (default: local)", default='local', required=False)
     parser.add_argument("-i", "--instance", help="use a specific instance (use default if not selected)", required=False)
     parser.add_argument("-e", "--extensions", help="extensions to use", action='append', required=False)
-    parser.add_argument("-a", "--ansible_only", help="run only provisioning (ansible) on instance (-i) (for task install only)", action='store_true', required=False)
+    parser.add_argument("-a", "--ansible_only", help="run only provisioning (ansible) on instance (-i) (for task install only)", required=False)
     parser.add_argument("-r", "--run_playbook", help="run only one ansible playbook on instance (-i) (for task install only)", required=False)
     args = parser.parse_args()
     return args
