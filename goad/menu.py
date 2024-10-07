@@ -68,30 +68,30 @@ def print_menu(lab_manager, advanced=True, debug=False):
             print_menu_entry('provision_lab', 'run all the current lab ansible playbooks')
             print_menu_entry('provision_lab_from <playbook>', 'run all the current lab ansible playbooks from specific playbook to the end')
 
-    print_menu_title('Configuration')
-    print_menu_entry('show_config', 'show current configuration')
-    if lab_manager.get_current_instance() is None:
-        print_menu_entry('show_labs_providers', 'show all labs and available providers')
-        print_menu_entry('set_lab <lab>', 'set the lab to use')
-        print_menu_entry('set_provider <provider>', 'set the provider to use')
-        print_menu_entry('set_provisioning_method <method>', 'set the provisioning method')
-        print_menu_entry('set_ip_range <range>', 'set the 3 first digit of the ip to use (ex: 192.168.56)')
-
     print_menu_title('Lab Instances')
     print_menu_entry('check', 'check dependencies before creation')
     if lab_manager.get_current_instance() is None:
-        print_menu_entry('install / create_instance', 'install the selected lab and create a lab instance')
-        print_menu_entry('create_empty_instance', 'prepare a lab instance folder without providing and provisioning')
+        print_menu_entry('install / create', 'install the selected lab and create a lab instance')
+        print_menu_entry('create_empty', 'prepare a lab instance folder without providing and provisioning')
     if lab_manager.get_current_instance() is not None:
-        print_menu_entry('install_instance', 'install the current instance (provide + prepare_jumpbox + provision_lab')
+        print_menu_entry('install', 'install the current instance (provide + prepare_jumpbox + provision_lab')
         print_menu_entry('set_as_default', 'set instance as default')
         print_menu_entry('update_instance_files', 'update lab instance files')
         if provider != AZURE and provider != AWS:
             print_menu_entry('disable_vagrant', 'disable vagrant user')
             print_menu_entry('enable_vagrant', 'enable vagrant user')
-    print_menu_entry('list_instances', 'list lab instances')
-    print_menu_entry('load_instance <instance_id>', 'load a lab instance')
+    print_menu_entry('list', 'list lab instances')
+    print_menu_entry('load <instance_id>', 'load a lab instance')
+
+    print_menu_title('Configuration')
+    print_menu_entry('config', 'show current configuration')
+    if lab_manager.get_current_instance() is None:
+        print_menu_entry('labs', 'show all labs and available providers')
+        print_menu_entry('set_lab <lab>', 'set the lab to use')
+        print_menu_entry('set_provider <provider>', 'set the provider to use')
+        print_menu_entry('set_provisioning_method <method>', 'set the provisioning method')
+        print_menu_entry('set_ip_range <range>', 'set the 3 first digit of the ip to use (ex: 192.168.56)')
 
     if lab_manager.get_current_instance() is not None:
-        print_menu_entry('unload_instance', 'unload current instance')
-        print_menu_entry('delete_instance', 'delete the currently selected lab instance')
+        print_menu_entry('unload', 'unload current instance')
+        print_menu_entry('delete', 'delete the currently selected lab instance')

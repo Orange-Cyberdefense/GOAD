@@ -62,7 +62,7 @@ class Goad(cmd.Cmd):
             self.lab_manager.get_current_instance().provider.status()
 
     def do_install(self, arg=''):
-        self.do_create_instance()
+        self.do_create()
 
     def do_start(self, arg=''):
         if self.lab_manager.get_current_instance_provider():
@@ -111,7 +111,7 @@ class Goad(cmd.Cmd):
                     Log.info(f'reload instance')
                     # reload instance
                     instance_id = self.lab_manager.get_current_instance_id()
-                    self.do_load_instance(instance_id)
+                    self.do_load(instance_id)
                     self.refresh_prompt()
 
     def do_provision(self, arg):
@@ -154,7 +154,7 @@ class Goad(cmd.Cmd):
             else:
                 Log.error('cannot find jumpbox ip')
 
-    def do_show_config(self, arg):
+    def do_config(self, arg):
         self.lab_manager.show_settings()
 
     def do_ssh_jumpbox(self, arg):
@@ -288,7 +288,7 @@ class Goad(cmd.Cmd):
             else:
                 Log.error(f'extension {extension_name} not enabled in instance abort')
 
-    def do_show_labs_providers(self, arg):
+    def do_labs(self, arg):
         show_labs_providers_table(self.lab_manager.get_labs())
 
     def do_show_list_providers(self, arg):
@@ -297,27 +297,30 @@ class Goad(cmd.Cmd):
     def do_update_instance_files(self, arg):
         self.lab_manager.update_instance_files()
 
-    def do_create_instance(self, arg=''):
-        Log.success('Current Settings')
-        self.lab_manager.current_settings.show()
-        print()
-        if Utils.confirm('Create lab with theses settings ? (y/N)'):
-            Log.info('Create instance folder')
-            self.lab_manager.create_instance()
-            Log.info('Launch providing')
-            self.do_provide()
-            if self.lab_manager.get_current_instance().get_status() == PROVIDED:
-                Log.info('Prepare jumpbox if needed')
-                self.do_prepare_jumpbox()
-                Log.info('Launch provisioning')
-                provision_result = self.do_provision_lab()
-                if provision_result:
-                    for extension_name in self.lab_manager.current_settings.extensions_name:
-                        Log.info(f'Start installation of extension : {extension_name}')
-                        self.do_install_extension(extension_name)
-                self.refresh_prompt()
-            else:
-                Log.error('Providing error stop')
+    def do_create(self, arg=''):
+        if self.lab_manager.get_current_instance() is not None:
+            self.do_install_instance()
+        else:
+            Log.success('Current Settings')
+            self.lab_manager.current_settings.show()
+            print()
+            if Utils.confirm('Create lab with theses settings ? (y/N)'):
+                Log.info('Create instance folder')
+                self.lab_manager.create_instance()
+                Log.info('Launch providing')
+                self.do_provide()
+                if self.lab_manager.get_current_instance().get_status() == PROVIDED:
+                    Log.info('Prepare jumpbox if needed')
+                    self.do_prepare_jumpbox()
+                    Log.info('Launch provisioning')
+                    provision_result = self.do_provision_lab()
+                    if provision_result:
+                        for extension_name in self.lab_manager.current_settings.extensions_name:
+                            Log.info(f'Start installation of extension : {extension_name}')
+                            self.do_install_extension(extension_name)
+                    self.refresh_prompt()
+                else:
+                    Log.error('Providing error stop')
 
     def do_install_instance(self, arg=''):
         Log.info('Launch providing')
@@ -335,14 +338,17 @@ class Goad(cmd.Cmd):
         else:
             Log.error('Providing error stop')
 
-    def do_create_empty_instance(self, arg=''):
+    def do_create_empty(self, arg=''):
         Log.info('Create instance folder')
         self.lab_manager.create_instance()
 
     def do_set_as_default(self, arg):
         self.lab_manager.set_as_default_instance()
 
-    def do_load_instance(self, arg):
+    def do_use(self,arg):
+        self.do_load()
+
+    def do_load(self, arg):
         if arg == '':
             Log.error('missing instance id argument')
             Log.info(f'use_instance <instance_id>')
@@ -352,12 +358,12 @@ class Goad(cmd.Cmd):
                 self.lab_manager.lab_instances.show_instances(current_instance_id=self.lab_manager.get_current_instance_id(), filter_instance_id=self.lab_manager.get_current_instance_id())
             self.refresh_prompt()
 
-    def do_unload_instance(self, arg):
+    def do_unload(self, arg):
         if self.lab_manager.get_current_instance_id() is not None:
             self.lab_manager.unload_instance()
             self.refresh_prompt()
 
-    def do_delete_instance(self, arg):
+    def do_delete(self, arg):
         if self.lab_manager.get_current_instance_id() is not None:
             deleted = self.lab_manager.delete_instance()
             if deleted:
@@ -378,7 +384,7 @@ class Goad(cmd.Cmd):
             time_provision = time.ctime(time.time() - start)[11:19]
             Log.info(f'Enable vagrant done in {time_provision}')
 
-    def do_list_instances(self, arg=''):
+    def do_list(self, arg=''):
         self.lab_manager.lab_instances.show_instances(current_instance_id=self.lab_manager.get_current_instance_id())
 
 
@@ -417,7 +423,7 @@ if __name__ == '__main__':
         goad.cmdloop()
     else:
         if args.instance is not None:
-            goad.do_load_instance(args.instance)
+            goad.do_load(args.instance)
 
         if args.run_playbook is not None or args.ansible_only is not None:
             if args.instance is None:
