@@ -181,5 +181,26 @@ class LabManager(metaclass=SingletonMeta):
         else:
             return None
 
+    def get_instance_options(self):
+        return list(self.lab_instances.instances.keys())
+
     def get_current_instance_provisioner(self):
         return self.current_instance.provisioner
+
+    def get_labs_options(self):
+        return list(self.labs.labs.keys())
+
+    def get_provider_options(self):
+        lab_name = self.current_settings.lab_name
+        options = []
+        for lab in self.labs.get_labs_list():
+            if lab.lab_name == lab_name:
+                options = list(lab.providers.keys())
+                break
+        return options
+
+    def provisioning_method_options(self):
+        lab_name = self.current_settings.lab_name
+        lab = self.get_lab(lab_name)
+        provider = lab.get_provider(self.current_settings.provider_name)
+        return provider.allowed_provisioners

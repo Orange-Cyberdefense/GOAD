@@ -200,6 +200,14 @@ class Goad(cmd.Cmd):
                 for lab in self.lab_manager.labs:
                     Log.info(f' - {lab}')
 
+    def complete_set_lab(self, text, line, begidx, endidx):
+        options = self.lab_manager.get_labs_options()
+        if not text:
+            completions = options
+        else:
+            completions = [option for option in options if option.startswith(text)]
+        return completions
+
     def do_set_provider(self, arg):
         """
         Change/Set the provider to use
@@ -216,6 +224,14 @@ class Goad(cmd.Cmd):
             except ValueError as err:
                 Log.error(err.args[0])
 
+    def complete_set_provider(self, text, line, begidx, endidx):
+        options = self.lab_manager.get_provider_options()
+        if not text:
+            completions = options
+        else:
+            completions = [option for option in options if option.startswith(text)]
+        return completions
+
     def do_set_provisioning_method(self, arg):
         if arg == '':
             Log.error('missing provisioner argument')
@@ -226,6 +242,14 @@ class Goad(cmd.Cmd):
                 self.refresh_prompt()
             except ValueError as err:
                 Log.error(err.args[0])
+
+    def complete_set_provisioning_method(self, text, line, begidx, endidx):
+        options = self.lab_manager.provisioning_method_options()
+        if not text:
+            completions = options
+        else:
+            completions = [option for option in options if option.startswith(text)]
+        return completions
 
     def do_set_ip_range(self, arg):
         if arg == '':
@@ -345,8 +369,22 @@ class Goad(cmd.Cmd):
     def do_set_as_default(self, arg):
         self.lab_manager.set_as_default_instance()
 
-    def do_use(self,arg):
-        self.do_load()
+    # load alias
+    def do_use(self, arg):
+        self.do_load(arg)
+
+    def complete_use(self, text, line, begidx, endidx):
+        return self.complete_load(text, line, begidx, endidx)
+
+    # load alias
+    def do_cd(self, arg):
+        if arg == '..':
+            self.do_unload()
+        else:
+            self.do_load(arg)
+
+    def complete_cd(self, text, line, begidx, endidx):
+        return self.complete_load(text, line, begidx, endidx)
 
     def do_load(self, arg):
         if arg == '':
@@ -358,7 +396,15 @@ class Goad(cmd.Cmd):
                 self.lab_manager.lab_instances.show_instances(current_instance_id=self.lab_manager.get_current_instance_id(), filter_instance_id=self.lab_manager.get_current_instance_id())
             self.refresh_prompt()
 
-    def do_unload(self, arg):
+    def complete_load(self, text, line, begidx, endidx):
+        options = self.lab_manager.get_instance_options()
+        if not text:
+            completions = options
+        else:
+            completions = [option for option in options if option.startswith(text)]
+        return completions
+
+    def do_unload(self, arg=''):
         if self.lab_manager.get_current_instance_id() is not None:
             self.lab_manager.unload_instance()
             self.refresh_prompt()
@@ -383,6 +429,10 @@ class Goad(cmd.Cmd):
         if provision_result:
             time_provision = time.ctime(time.time() - start)[11:19]
             Log.info(f'Enable vagrant done in {time_provision}')
+
+    # alias to list
+    def do_ls(self, arg=''):
+        self.do_list(arg)
 
     def do_list(self, arg=''):
         self.lab_manager.lab_instances.show_instances(current_instance_id=self.lab_manager.get_current_instance_id())
