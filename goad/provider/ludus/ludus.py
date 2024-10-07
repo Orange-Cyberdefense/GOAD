@@ -92,10 +92,10 @@ class LudusProvider(Provider):
                 Log.info('Lab user does not exist create it')
                 command = ['--url', 'https://127.0.0.1:8081', 'user', 'add', '-n', self.lab_user, '-i', self.lab_user]
                 user_creation = self.command.run_ludus_result(command, self.path, self.api_key)
-                Log.info(user_creation)
+                Log.info('Lab user created')
 
             if not self.user_exist(self.lab_user):
-                Log.error('User creation error')
+                Log.error('Lab user creation error')
                 return False
 
         set_config_result = self.command.run_ludus(f'range config set -f config.yml', self.path, self.api_key, self.lab_user, self.use_impersonation)
