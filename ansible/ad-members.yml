@@ -11,7 +11,7 @@
   roles:
     - { role: 'member_server', tags: 'server'}
   vars:
-    member_domain: "{{lab.hosts[dict_key].domain}}"
+    member_domain: "{{lab.hosts[inventory_hostname].domain}}"
     domain_password: "{{lab.domains[member_domain].domain_password}}"
 
 - name: "play workstations AD configuration"
@@ -19,5 +19,5 @@
   roles:
     - { role: 'commonwkstn', tags: 'workstation'}
   vars:
-    member_domain: "{{lab.hosts[dict_key].domain}}"
+    member_domain: "{{lab.hosts[inventory_hostname].domain}}"
     domain_password: "{{lab.domains[member_domain].domain_password}}"

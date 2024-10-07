@@ -13,6 +13,6 @@
   roles:
   - { role: 'domain_controller', tags: 'dc_main_domains' }
   vars:
-    domain: "{{lab.hosts[dict_key].domain}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
     netbios_name: "{{lab.domains[domain].netbios_name}}"

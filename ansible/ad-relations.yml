@@ -13,7 +13,7 @@
     - { role: "settings/adjust_rights", tags: 'adjust_rights'}
     - { role: "settings/user_rights", tags: 'adjust_rights'}
   vars:
-    local_groups: "{{lab.hosts[dict_key].local_groups  | default({}) }}"
+    local_groups: "{{lab.hosts[inventory_hostname].local_groups  | default({}) }}"
 
 
 # doesen't work see : https://github.com/ansible-collections/community.windows/blob/main/plugins/modules/win_domain_group_membership.ps1
@@ -23,8 +23,8 @@
   roles:
   - { role: 'groups_domains', tags: 'groups_domains'}
   vars:
-    domain: "{{lab.hosts[dict_key].domain}}"
-    domain_server: "{{lab.hosts[dict_key].hostname}}.{{domain}}"
+    domain: "{{lab.hosts[inventory_hostname].domain}}"
+    domain_server: "{{lab.hosts[inventory_hostname].hostname}}.{{domain}}"
     domain_username: "{{domain}}\\Administrator"
     domain_password: "{{lab.domains[domain].domain_password}}"
     domain_groups_members: "{{lab.domains[domain].multi_domain_groups_member | default({}) }}"

@@ -14,5 +14,5 @@
   - { role: 'settings/admin_password', tags: 'admin_password' }
   - { role: 'settings/hostname', tags: 'hostname' }
   vars:
-    local_admin_password: "{{lab.hosts[dict_key].local_admin_password}}"
-    hostname: "{{lab.hosts[dict_key].hostname}}"
+    local_admin_password: "{{lab.hosts[inventory_hostname].local_admin_password}}"
+    hostname: "{{lab.hosts[inventory_hostname].hostname}}"

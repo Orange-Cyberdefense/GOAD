@@ -54,7 +54,7 @@
     state: present
 
 - name: enable only the {{domain_adapter}} interface (local) for DNS client requests
-  ansible.windows.win_shell: dnscmd . /resetlistenaddresses {{ hostvars[dict_key].ansible_host }}
+  ansible.windows.win_shell: dnscmd . /resetlistenaddresses {{ hostvars[inventory_hostname].ansible_host }}
   when: two_adapters == "yes"
 
 - name: Configure DNS Forwarders
