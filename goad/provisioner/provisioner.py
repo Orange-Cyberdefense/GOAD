@@ -1,8 +1,8 @@
 from abc import ABC
-import platform
 from goad.command.linux import LinuxCommand
-from goad.command.windows import WindowsCommand
+from goad.command.wsl import WslCommand
 from goad.goadpath import GoadPath
+from goad.utils import Utils
 
 
 class Provisioner(ABC):
@@ -16,8 +16,8 @@ class Provisioner(ABC):
         self.provider = provider
         self.path = GoadPath.get_provisioner_path()
         self.instance_path = ''
-        if platform.system() == 'Windows':
-            self.command = WindowsCommand()
+        if Utils.is_wsl():
+            self.command = WslCommand()
         else:
             self.command = LinuxCommand()
 

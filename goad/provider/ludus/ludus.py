@@ -60,10 +60,12 @@ class LudusProvider(Provider):
             if current_ludus_user is not None:
                 check_ludus = True
 
-        check_disk = self.command.check_disk()
-        check_ram = self.command.check_ram()
-        check_ansible = self.command.check_ansible()
-        return check and check_ludus and check_disk and check_ram and check_ansible
+        checks = [
+            self.command.check_disk(),
+            self.command.check_ram(),
+            self.command.check_ansible()
+        ]
+        return check and check_ludus and all(checks)
 
     def user_exist(self, user_to_test):
         user_exist = False

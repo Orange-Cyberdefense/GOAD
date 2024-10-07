@@ -39,13 +39,11 @@ class ProxmoxProvider(TerraformProvider):
         return None
 
     def check(self):
-        check_disk = self.command.check_disk()
-        check_ram = self.command.check_ram()
-        check_ansible = self.command.check_ansible()
-        check_gem_winrm = self.command.check_gem('winrm')
-        check_gem_winrmfs = self.command.check_gem('winrm-fs')
-        check_gem_winrme = self.command.check_gem('winrm-elevated')
-        return check_disk and check_ram and check_ansible and check_gem_winrm and check_gem_winrmfs and check_gem_winrme
+        checks = [
+            self.command.check_terraform(),
+            self.command.check_ansible()
+        ]
+        return all(checks)
 
     @staticmethod
     def _color_vm_state(state):

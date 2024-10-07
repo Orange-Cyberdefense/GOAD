@@ -1,7 +1,6 @@
 from abc import ABC
-import platform
 from goad.command.linux import LinuxCommand
-from goad.command.windows import WindowsCommand
+from goad.command.wsl import WslCommand
 from goad.utils import *
 
 
@@ -16,8 +15,8 @@ class Provider(ABC):
     def __init__(self, lab_name):
         self.lab_name = lab_name
         self.path = None
-        if platform.system() == 'Windows':
-            self.command = WindowsCommand()
+        if Utils.is_wsl():
+            self.command = WslCommand()
         else:
             self.command = LinuxCommand()
 

@@ -4,15 +4,14 @@ from goad.provider.provider import Provider
 class VagrantProvider(Provider):
 
     def check(self):
-        check_vagrant = self.command.check_vagrant()
-        check_disk = self.command.check_disk()
-        check_ram = self.command.check_ram()
-        check_ansible = self.command.check_ansible()
-        check_vagrant_reload = self.command.check_vagrant_plugin('vagrant-reload')
-        check_gem_winrm = self.command.check_gem('winrm')
-        check_gem_winrmfs = self.command.check_gem('winrm-fs')
-        check_gem_winrme = self.command.check_gem('winrm-elevated')
-        return check_vagrant and check_disk and check_ram and check_ansible and check_vagrant_reload and check_gem_winrm and check_gem_winrmfs and check_gem_winrme
+        checks = [
+            self.command.check_vagrant(),
+            self.command.check_disk(),
+            self.command.check_ram(),
+            self.command.check_ansible(),
+            self.command.check_vagrant_plugin('vagrant-reload')
+        ]
+        return all(checks)
 
     def install(self):
         return self.command.run_vagrant(['up'], self.path)

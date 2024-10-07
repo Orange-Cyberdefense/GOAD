@@ -3,6 +3,7 @@ import os
 import random
 import string
 import ipaddress
+import platform
 
 # constants
 LAB = 'lab'
@@ -66,6 +67,15 @@ class SingletonMeta(type):
 
 
 class Utils:
+
+    @staticmethod
+    def is_wsl():
+        version = platform.uname().release
+        if version.endswith("-Microsoft"):
+            return True
+        elif version.endswith("microsoft-standard-WSL2"):
+            return True
+        return False
 
     @staticmethod
     def confirm(message):

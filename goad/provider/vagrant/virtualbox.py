@@ -8,6 +8,8 @@ class VirtualboxProvider(VagrantProvider):
     allowed_provisioners = [PROVISIONING_LOCAL, PROVISIONING_RUNNER, PROVISIONING_DOCKER]
 
     def check(self):
-        super_check = super().check()
-        check_vbox = self.command.check_virtualbox()
-        return super_check and check_vbox
+        checks = [
+            super().check(),
+            self.command.check_virtualbox()
+        ]
+        return all(checks)

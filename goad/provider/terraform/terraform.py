@@ -8,9 +8,11 @@ from goad.log import Log
 class TerraformProvider(Provider):
 
     def check(self):
-        check_tf = self.command.check_terraform()
-        check_rsync = self.command.check_rsync()
-        return check_tf and check_rsync
+        checks = [
+            self.command.check_terraform(),
+            self.command.check_rsync()
+        ]
+        return all(checks)
 
     def install(self):
         self.command.run_terraform(['init'], self.path)

@@ -5,7 +5,9 @@ then
   if python3 -m venv --help > /dev/null 2>&1; then
       echo "venv module is installed. continue"
   else
-      echo "venv module is not installed. exit"
+      echo "venv module is not installed."
+      echo "please install python-venv according to your system"
+      echo "exit"
       exit 0
   fi
   echo '[+] venv not found, start python venv creation'
