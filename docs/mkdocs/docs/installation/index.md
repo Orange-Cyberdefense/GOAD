@@ -60,3 +60,67 @@ The goad management script is now written in :simple-python: python to permit mo
     - `-l`  : the lab to install (GOAD/GOAD-Light/SCCM/NHA/MINILAB)
     - `-m`  : the method of installation (local/runner/docker/remote), most of the time don't change it
     - `-ip` : the ip range to use
+
+- The easy way is just launch `./goad.sh` and use help `?`in the interactive prompt
+
+## Configuration files
+
+### $HOME/.goad/goad.ini
+
+- On the first launch goad create a global configuration file at : `$HOME/.goad/goad.ini` this file contains some default configuration and some parameters needed by some providers.
+
+- If you change the `[default]` config it will change the default selection when goad start
+- Others configurations are related to specific providers
+
+```
+[default]
+; lab: goad / goad-light / minilab / nha / sccm
+lab = GOAD
+; provider : virtualbox / vmware / aws / azure / proxmox
+provider = vmware
+; provisioner method : local / remote
+provisioner = local
+; ip_range (3 first ip digits)
+ip_range = 192.168.56
+
+[aws]
+aws_region = eu-west-3
+aws_zone = eu-west-3c
+
+[azure]
+az_location = westeurope
+
+[proxmox]
+pm_api_url = https://192.168.1.1:8006/api2/json
+pm_user = infra_as_code@pve
+pm_node = GOAD
+pm_pool = GOAD
+pm_full_clone = false
+pm_storage = local
+pm_vlan = 10
+pm_network_bridge = vmbr3
+pm_network_model = e1000
+
+[proxmox_templates_id]
+winserver2019_x64 = 102
+winserver2016_x64 = 103
+winserver2019_x64_utd = 104
+windows10_22h2_x64 = 105
+
+[ludus]
+; api key must not have % if you have a % in it, change it by a %%
+ludus_api_key = change_me
+use_impersonation = yes
+```
+
+### Global configuration : globalsettings.ini
+
+- Goad got a global configuration file : `globalsettings.ini` used by the ansible provisioning
+- This file is an ansible inventory file.
+- This file is always added at the end of the ansible inventory file list so you can override values here
+- You can change it before running the installation to modify :
+    - keyboard_layouts
+    - proxy configuration
+    - add a route to the vm
+    - change the default dns_forwarder
+    - disable ssl for winrm communication
