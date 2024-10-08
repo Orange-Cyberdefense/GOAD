@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://orange-cyberdefense.github.io/GOAD/provisioning/">
       
       
-        <link rel="prev" href="../usage/goad_console/">
+        <link rel="prev" href="../instances/">
       
       
         <link rel="next" href="../troobleshoot/">
@@ -999,6 +999,26 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../instances/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    🇮 instances
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -1011,6 +1031,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    🛠️ provisioning
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1020,6 +1051,70 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lab-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lab data
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extension-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extension data
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inventories" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inventories
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#playbooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      playbooks
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#labs-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      labs build
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1145,6 +1240,59 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lab-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lab data
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extension-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extension data
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inventories" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inventories
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#playbooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      playbooks
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#labs-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      labs build
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1162,7 +1310,76 @@
 
 
 <h1 id="provisioning">🛠️ provisioning</h1>
-<p>🚧 TODO</p>
+<p>This page describe how the provisioning is done with goad.
+The provisioning of the LABS is done with Ansible for all providers.</p>
+<ul>
+<li>First the GOAD install script create an instance folder in the workspace folder.</li>
+</ul>
+<h2 id="lab-data">Lab data</h2>
+<p>The data of each lab are stored in the json file : <code>ad/&lt;lab&gt;/data/config.json</code>, this file is loaded by each playbook to get all the lab variables (this is done by the data.yml playbook call by all the over playbooks)</p>
+<h2 id="extension-data">Extension data</h2>
+<p>If an extension need data it will be stored in <code>extensions/&lt;extension&gt;/data/config.json</code> but the loading must be done by extension install.yml playbook.</p>
+<ul>
+<li>Example with the exchange install.yml file :</li>
+</ul>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a># read local configuration file
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>- name: &quot;Read local config file&quot;
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  hosts: domain:extensions
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  connection: local
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  vars_files:
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    - &quot;../data/config.json&quot;
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>  tasks:
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    - name: merge lab variable with local config
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>      set_fact:
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        lab: &quot;{{ lab|combine(lab_extension, recursive=True) }}&quot;
+</span></code></pre></div>
+<h2 id="inventories">Inventories</h2>
+<p>Ansible work with inventories. Inventories files contains all the hosts declaration and some variables.</p>
+<ul>
+<li>
+<p>The lab inventory file (<code>ad/&lt;lab&gt;/data/inventory</code>) is not modified/moved and contain all the main variables and hosts association, this file stay as this and is not modified. It contains the lab building logic.</p>
+</li>
+<li>
+<p>The provider inventory file (<code>ad/&lt;lab&gt;/provider/&lt;provider&gt;/inventory</code>) is modified with the settings and copied into the workspace folder (<code>workspace/&lt;instance_id&gt;/inventory</code>) , this file contains variable specific to the provider and the host ip declaration</p>
+</li>
+<li>
+<p>The extension(s) inventory file(s) (<code>extensions/&lt;extension&gt;/inventory</code>) is modified with the settings and copied into the workspace folder (<code>workspace/&lt;instance_id&gt;/inventory_&lt;extension&gt;</code>) , this file contains variable specific to the extension and the extension host ip declaration</p>
+</li>
+<li>
+<p>The global inventory file <code>globalsettings.ini</code>contains some global variable with some user settings.</p>
+</li>
+</ul>
+<p>The inventory files are given to ansible in this order :
+- lab inventory file
+- workspace provider inventory file
+- workspace extension(s) inventory file(s)
+- globalsettings.ini file</p>
+<p>The order is important as it determine the override order. hosts declarations are merged between all inventory and variables with the same name are override if the same variable is declared. </p>
+<ul>
+<li>Example : if i setup dns_server_forwarder=8.8.8.8 in the lab inventory file and dns_server_forwarder=1.1.1.1 in the globalsettings.ini file, the final value for ansible wll be dns_server_forwarder=1.1.1.1</li>
+</ul>
+<h2 id="playbooks">playbooks</h2>
+<ul>
+<li>Labs playbook are stored on the ansible/ folder</li>
+<li>Extension playbook is stored in <code>extension/&lt;extension&gt;/ansible/install.yml</code></li>
+<li>
+<p>The extension folder can call the main goad roles by using a special ansible.cfg file.</p>
+</li>
+<li>
+<p>Example of the exchange ansible.cfg file
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>[defaults]
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>...
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>; add default roles folder into roles_path
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>roles_path = ./roles:../../../ansible/roles
+</span></code></pre></div></p>
+</li>
+</ul>
+<h2 id="labs-build">labs build</h2>
+<ul>
+<li>Instead of call a global main.yml playbook with all the different tasks to do the goad script call each playbook one by one.</li>
+<li>In this way, there is a fallback mecanism to retry each playbook 3 times before consider it as failed.</li>
+<li>The list and order of the playbooks played are stored in the playbooks.yml file at the start of the project.</li>
+</ul>
 
 
 
