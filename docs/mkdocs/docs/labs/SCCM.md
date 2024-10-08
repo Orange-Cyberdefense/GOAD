@@ -1,5 +1,8 @@
 # SCCM lab
 
+!!! success "Thanks!"
+    Thanks a lot to my colleague Issam (@KenjiEndo15), who start the project and provide me a lot of ansible roles to start from !
+
 ![SCCM overview](../img/SCCMLAB_overview.png)
 
 ## Servers
@@ -17,6 +20,10 @@ All vms got defender activated
 - The lab take 16GB for the vagrant image + 100GB for the 4 vms
 - The installation take environ 2,5 hours (with fiber connection)
 - The lab download multiple files during the install (windows iso, mecm installation package, mssql installation package, ...), be sure to have a good internet connection.
+
+## Writeup
+
+- A writeup on SCCM exploitation is available here : [https://mayfly277.github.io/categories/sccm/](https://mayfly277.github.io/categories/sccm/)
 
 ## proxmox installation
 - In order to use the proxmox provider follow this :
