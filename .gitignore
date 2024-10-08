@@ -34,3 +34,4 @@ todo.md
 next_extensions/
 /extensions/exchange/ansible/iso/resources/iso/*.ISO
 docs/site/
+docs/mkdocs/site/
