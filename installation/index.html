@@ -1161,6 +1161,39 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#configuration-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration files
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#homegoadgoadini" class="md-nav__link">
+    <span class="md-ellipsis">
+      $HOME/.goad/goad.ini
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#global-configuration-globalsettingsini" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global configuration : globalsettings.ini
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1251,6 +1284,73 @@ The goad management script is now written in <span class="twemoji"><svg xmlns="h
 <li><code>-l</code>  : the lab to install (GOAD/GOAD-Light/SCCM/NHA/MINILAB)</li>
 <li><code>-m</code>  : the method of installation (local/runner/docker/remote), most of the time don't change it</li>
 <li><code>-ip</code> : the ip range to use</li>
+</ul>
+</li>
+<li>
+<p>The easy way is just launch <code>./goad.sh</code> and use help <code>?</code>in the interactive prompt</p>
+</li>
+</ul>
+<h2 id="configuration-files">Configuration files</h2>
+<h3 id="homegoadgoadini">$HOME/.goad/goad.ini</h3>
+<ul>
+<li>
+<p>On the first launch goad create a global configuration file at : <code>$HOME/.goad/goad.ini</code> this file contains some default configuration and some parameters needed by some providers.</p>
+</li>
+<li>
+<p>If you change the <code>[default]</code> config it will change the default selection when goad start</p>
+</li>
+<li>Others configurations are related to specific providers</li>
+</ul>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>[default]
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>; lab: goad / goad-light / minilab / nha / sccm
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>lab = GOAD
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>; provider : virtualbox / vmware / aws / azure / proxmox
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>provider = vmware
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>; provisioner method : local / remote
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>provisioner = local
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>; ip_range (3 first ip digits)
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>ip_range = 192.168.56
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>[aws]
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>aws_region = eu-west-3
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>aws_zone = eu-west-3c
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>[azure]
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>az_location = westeurope
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>[proxmox]
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>pm_api_url = https://192.168.1.1:8006/api2/json
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>pm_user = infra_as_code@pve
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>pm_node = GOAD
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>pm_pool = GOAD
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>pm_full_clone = false
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>pm_storage = local
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>pm_vlan = 10
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>pm_network_bridge = vmbr3
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>pm_network_model = e1000
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>[proxmox_templates_id]
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>winserver2019_x64 = 102
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>winserver2016_x64 = 103
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>winserver2019_x64_utd = 104
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>windows10_22h2_x64 = 105
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>[ludus]
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>; api key must not have % if you have a % in it, change it by a %%
+</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>ludus_api_key = change_me
+</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>use_impersonation = yes
+</span></code></pre></div>
+<h3 id="global-configuration-globalsettingsini">Global configuration : globalsettings.ini</h3>
+<ul>
+<li>Goad got a global configuration file : <code>globalsettings.ini</code> used by the ansible provisioning</li>
+<li>This file is an ansible inventory file.</li>
+<li>This file is always added at the end of the ansible inventory file list so you can override values here</li>
+<li>You can change it before running the installation to modify :<ul>
+<li>keyboard_layouts</li>
+<li>proxy configuration</li>
+<li>add a route to the vm</li>
+<li>change the default dns_forwarder</li>
+<li>disable ssl for winrm communication</li>
 </ul>
 </li>
 </ul>
