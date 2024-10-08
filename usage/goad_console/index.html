@@ -1646,67 +1646,123 @@
 </span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>set_ip_range &lt;range&gt; .................... set the 3 first digit of the ip to use (ex: 192.168.56)
 </span></code></pre></div>
 <h3 id="check">check</h3>
+<p>Will check the lab dependencies</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>check
+</span></code></pre></div>
+<p><img alt="cmd_check" src="../../img/cmd_check.png" /></p>
 <h3 id="install">install</h3>
+<p>Install the lab with the current select <code>config</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>install
+</span></code></pre></div>
+<ul>
+<li>This will:<ul>
+<li>create an instance folder into workspaces/</li>
+<li>run vagrant/terraform/ludus depending on the provider to create the machines</li>
+<li>synchronize source to jumpbox if provider is aws or azure</li>
+<li>provision jumpbox if provider is aws or azure</li>
+<li>run the ansible provisioning </li>
+</ul>
+</li>
+</ul>
+<p><img alt="cmd_install" src="../../img/cmd_install.png" /></p>
 <h3 id="create_empty">create_empty</h3>
+<p>Create an empty instance folder (into the workspaces/ folder)</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>create_empty
+</span></code></pre></div>
+<p><img alt="create_empty" src="../../img/cmd_create_empty.png" /></p>
 <h3 id="list">list</h3>
+<p>List instances</p>
+<blockquote>
+<p>alias : <code>ls</code></p>
+</blockquote>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>list
+</span></code></pre></div>
+<p><img alt="list" src="../../img/cmd_list.png" /></p>
 <h3 id="load">load</h3>
 <p>Select an instance by his name</p>
 <blockquote>
-<p>alias : <code>use</code></p>
+<p>alias : <code>use</code>, <code>cd</code></p>
 </blockquote>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>load &lt;instance name&gt;
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>load &lt;instance name&gt;
 </span></code></pre></div>
+<p><img alt="load" src="../../img/cmd_load.png" /></p>
 <h3 id="config">config</h3>
+<p>show current configuration</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>config
+</span></code></pre></div>
+<p><img alt="config" src="../../img/cmd_config.png" /></p>
 <h3 id="labs">labs</h3>
+<p>show available labs</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>labs
+</span></code></pre></div>
+<p><img alt="cmd_labs.png" src="../../img/cmd_labs.png" /></p>
 <h3 id="set_lab">set_lab</h3>
+<p>Choose the lab to use (GOAD/GOAD-Light/NHA/SCCM/MINILAB)</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>set_lab &lt;lab_name&gt;
+</span></code></pre></div>
 <h3 id="set_provider">set_provider</h3>
+<p>Choose the provider to use (virtualbox/vmware/aws/azure/ludus/proxmox)</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>set_provider &lt;lab_name&gt;
+</span></code></pre></div>
 <h3 id="set_provisioning_method">set_provisioning_method</h3>
+<p>Choose the provisioning method (local/runner/docker/remote) (most of the time you don't have to change it)</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>set_provisioning &lt;provisioning_method&gt;
+</span></code></pre></div>
+<ul>
+<li>local : launch ansible with subprocess (default for vbox/vmware/proxmox/ludus)</li>
+<li>runner : launch ansible with ansible runner</li>
+<li>remote : launch ansible through ssh using jumpbox (default for azure/aws)</li>
+<li>docker : user the docker container to launch ansible (docker container must be built first <code>sudo docker build -t goadansible .</code>)</li>
+</ul>
 <h3 id="set_ip_range">set_ip_range</h3>
+<p>Set the ip range you want to use (Three first digit, example : 192.168.10)</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>set_ip_range &lt;ip_range&gt;
+</span></code></pre></div>
 <h2 id="instance-selected">Instance selected</h2>
 <p><img alt="console" src="../../img/console2.png" /></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>*** Manage Lab instance commands ***
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>status .................................. show current status
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>start ................................... start lab
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>stop .................................... stop lab
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>destroy ................................. destroy lab
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>*** Manage one vm commands ***
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>start_vm &lt;vm_name&gt; ...................... start selected virtual machine
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>stop_vm &lt;vm_name&gt; ....................... stop selected virtual machine
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>restart_vm &lt;vm_name&gt; .................... restart selected virtual machine
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>destroy_vm &lt;vm_name&gt; .................... destroy selected virtual machine
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>*** Extensions ***
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>list_extensions ......................... list extensions
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>install_extension &lt;extension&gt; ........... install extension (providing + provisioning)
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>provision_extension &lt;extension&gt; ......... provision extension (provisioning only)
-</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
-</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>*** JumpBox ***
-</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>prepare_jumpbox ......................... install package on the jumpbox for provisioning
-</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>sync_source_jumpbox ..................... sync source of the jumpbox
-</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>ssh_jumpbox ............................. connect to jump box with ssh
-</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>ssh_jumpbox_proxy &lt;proxy_port&gt; .......... connect to jump box with ssh and start a socks proxy
-</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>
-</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>*** Providing (Vagrant/Terrafom) ***
-</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>provide ................................. run only the providing (vagrant/terraform)
-</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>
-</span><span id="__span-3-27"><a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>*** Provisioning (Ansible) ***
-</span><span id="__span-3-28"><a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>provision &lt;playbook&gt; .................... run specific ansible playbook
-</span><span id="__span-3-29"><a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>provision_lab ........................... run all the current lab ansible playbooks
-</span><span id="__span-3-30"><a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>provision_lab_from &lt;playbook&gt; ........... run all the current lab ansible playbooks from specific playbook to the end
-</span><span id="__span-3-31"><a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>
-</span><span id="__span-3-32"><a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>*** Lab Instances ***
-</span><span id="__span-3-33"><a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a>check ................................... check dependencies before creation
-</span><span id="__span-3-34"><a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a>install ................................. install the current instance (provide + prepare_jumpbox + provision_lab
-</span><span id="__span-3-35"><a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>set_as_default .......................... set instance as default
-</span><span id="__span-3-36"><a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>update_instance_files ................... update lab instance files
-</span><span id="__span-3-37"><a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>list .................................... list lab instances
-</span><span id="__span-3-38"><a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a>load &lt;instance_id&gt; ...................... load a lab instance
-</span><span id="__span-3-39"><a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a>
-</span><span id="__span-3-40"><a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a>*** Configuration ***
-</span><span id="__span-3-41"><a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a>config .................................. show current configuration
-</span><span id="__span-3-42"><a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a>unload .................................. unload current instance
-</span><span id="__span-3-43"><a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a>delete .................................. delete the currently selected lab instance
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>*** Manage Lab instance commands ***
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>status .................................. show current status
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>start ................................... start lab
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>stop .................................... stop lab
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>destroy ................................. destroy lab
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>*** Manage one vm commands ***
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>start_vm &lt;vm_name&gt; ...................... start selected virtual machine
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>stop_vm &lt;vm_name&gt; ....................... stop selected virtual machine
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>restart_vm &lt;vm_name&gt; .................... restart selected virtual machine
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>destroy_vm &lt;vm_name&gt; .................... destroy selected virtual machine
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>*** Extensions ***
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>list_extensions ......................... list extensions
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>install_extension &lt;extension&gt; ........... install extension (providing + provisioning)
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>provision_extension &lt;extension&gt; ......... provision extension (provisioning only)
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>
+</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>*** JumpBox ***
+</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a>prepare_jumpbox ......................... install package on the jumpbox for provisioning
+</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a>sync_source_jumpbox ..................... sync source of the jumpbox
+</span><span id="__span-13-21"><a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a>ssh_jumpbox ............................. connect to jump box with ssh
+</span><span id="__span-13-22"><a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a>ssh_jumpbox_proxy &lt;proxy_port&gt; .......... connect to jump box with ssh and start a socks proxy
+</span><span id="__span-13-23"><a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a>
+</span><span id="__span-13-24"><a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a>*** Providing (Vagrant/Terrafom) ***
+</span><span id="__span-13-25"><a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a>provide ................................. run only the providing (vagrant/terraform)
+</span><span id="__span-13-26"><a id="__codelineno-13-26" name="__codelineno-13-26" href="#__codelineno-13-26"></a>
+</span><span id="__span-13-27"><a id="__codelineno-13-27" name="__codelineno-13-27" href="#__codelineno-13-27"></a>*** Provisioning (Ansible) ***
+</span><span id="__span-13-28"><a id="__codelineno-13-28" name="__codelineno-13-28" href="#__codelineno-13-28"></a>provision &lt;playbook&gt; .................... run specific ansible playbook
+</span><span id="__span-13-29"><a id="__codelineno-13-29" name="__codelineno-13-29" href="#__codelineno-13-29"></a>provision_lab ........................... run all the current lab ansible playbooks
+</span><span id="__span-13-30"><a id="__codelineno-13-30" name="__codelineno-13-30" href="#__codelineno-13-30"></a>provision_lab_from &lt;playbook&gt; ........... run all the current lab ansible playbooks from specific playbook to the end
+</span><span id="__span-13-31"><a id="__codelineno-13-31" name="__codelineno-13-31" href="#__codelineno-13-31"></a>
+</span><span id="__span-13-32"><a id="__codelineno-13-32" name="__codelineno-13-32" href="#__codelineno-13-32"></a>*** Lab Instances ***
+</span><span id="__span-13-33"><a id="__codelineno-13-33" name="__codelineno-13-33" href="#__codelineno-13-33"></a>check ................................... check dependencies before creation
+</span><span id="__span-13-34"><a id="__codelineno-13-34" name="__codelineno-13-34" href="#__codelineno-13-34"></a>install ................................. install the current instance (provide + prepare_jumpbox + provision_lab
+</span><span id="__span-13-35"><a id="__codelineno-13-35" name="__codelineno-13-35" href="#__codelineno-13-35"></a>set_as_default .......................... set instance as default
+</span><span id="__span-13-36"><a id="__codelineno-13-36" name="__codelineno-13-36" href="#__codelineno-13-36"></a>update_instance_files ................... update lab instance files
+</span><span id="__span-13-37"><a id="__codelineno-13-37" name="__codelineno-13-37" href="#__codelineno-13-37"></a>list .................................... list lab instances
+</span><span id="__span-13-38"><a id="__codelineno-13-38" name="__codelineno-13-38" href="#__codelineno-13-38"></a>load &lt;instance_id&gt; ...................... load a lab instance
+</span><span id="__span-13-39"><a id="__codelineno-13-39" name="__codelineno-13-39" href="#__codelineno-13-39"></a>
+</span><span id="__span-13-40"><a id="__codelineno-13-40" name="__codelineno-13-40" href="#__codelineno-13-40"></a>*** Configuration ***
+</span><span id="__span-13-41"><a id="__codelineno-13-41" name="__codelineno-13-41" href="#__codelineno-13-41"></a>config .................................. show current configuration
+</span><span id="__span-13-42"><a id="__codelineno-13-42" name="__codelineno-13-42" href="#__codelineno-13-42"></a>unload .................................. unload current instance
+</span><span id="__span-13-43"><a id="__codelineno-13-43" name="__codelineno-13-43" href="#__codelineno-13-43"></a>delete .................................. delete the currently selected lab instance
 </span></code></pre></div>
 <h3 id="status">status</h3>
 <h3 id="start">start</h3>
