@@ -25,7 +25,7 @@
         - Install the following vagrant plugins:
 
         ```
-        vagrant plugin install vagrant-reload vagrant-vbguest winrm winrm-fs winrm-elevated
+        vagrant.exe plugin install vagrant-reload vagrant-vbguest winrm winrm-fs winrm-elevated
         ```
 
     !!! warning "Disk space"
@@ -64,7 +64,7 @@
         - Install the following vagrant plugins:
 
         ```
-        vagrant plugin install vagrant-reload vagrant-vmware-desktop winrm winrm-fs winrm-elevated
+        vagrant.exe plugin install vagrant-reload vagrant-vmware-desktop winrm winrm-fs winrm-elevated
         ```
 
     !!! warning "Disk space"

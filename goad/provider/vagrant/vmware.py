@@ -12,9 +12,6 @@ class VmwareProvider(VagrantProvider):
             super().check(),
             self.command.check_vmware(),
             self.command.check_vmware_utility(),
-            self.command.check_vagrant_plugin('vagrant-vmware-desktop', True),
-            self.command.check_vagrant_plugin('winrm', False),
-            self.command.check_vagrant_plugin('winrm-fs', False),
-            self.command.check_vagrant_plugin('winrm-elevated', False)
+            self.command.check_vagrant_plugin('vagrant-vmware-desktop', True)
         ]
         return all(checks)

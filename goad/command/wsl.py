@@ -15,7 +15,10 @@ class WslCommand(Command):
         self.terraform_bin = 'terraform.exe'
 
     def file_exist(self, file):
-        return os.path.isfile(file)
+        exist = os.path.isfile(file)
+        if exist:
+            Log.success(f'File {file} present in the file system')
+        return exist
 
     # CHECK
     def check_gem(self, gem_name):
