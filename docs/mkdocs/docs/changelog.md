@@ -1,8 +1,6 @@
 # Road Map
 
-- [X] Password reuse between computer (PTH)
-- [X] Spray User = Password
-- [X] Password in description
+## v1
 - [X] SMB share anonymous
 - [X] SMB not signed
 - [X] Responder
@@ -13,6 +11,11 @@
 - [X] AD Acl abuse 
 - [X] Unconstraint delegation
 - [X] Ntlm relay
+
+## v2
+- [X] Password reuse between computer (PTH)
+- [X] Spray User = Password
+- [X] Password in description
 - [X] Constrained delegation
 - [X] Install MSSQL
 - [X] MSSQL trusted link
@@ -45,22 +48,23 @@
 - [X] Add Gmsa
 - [X] Groups inside groups
 - [X] Shares with secrets (all, sysvol)
+- [X] Sccm (see SCCM lab)
+
+## v3
+- [X] aws support
+- [X] ludus support
+- [X] windows install compatibility
+- [X] extension support
+- [X] multiple instance management
+- [X] extension exchange
+- [X] extension ludus
+- [ ] extension elk (need test)
+- [ ] extension ws01 (need test)
+- [ ] extension exchange bot
+- [ ] extension attackbox
+- [ ] extension VPN
+- [ ] extension guacamole
+- [ ] extension linux VM enrolled
+- [ ] Wsus (to add on sccm)
 - [ ] ADCS add vulns
 - [ ] Add Applocker
-- [ ] Add optional EDR install on goad
-- [ ] Add attackbox + guacamole and openvpn creation
-
-# SCCM
-- [X] Sccm (see SCCM lab)
-- [ ] Wsus (not complete)
-
-# Extensions
-- [X] elk
-- [X] exchange
-- [X] ludus
-- [ ] ws01 (need more tests)
-- [ ] exchange bot
-- [ ] attackbox
-- [ ] linux VM enrolled
-- [ ] VPN
-- [ ] guacamole
