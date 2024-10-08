@@ -3,7 +3,9 @@
   <br>
 </div>
 
-**INSTABLE VERSION NOT READY, DO NOT USE**
+**BETA VERSION NOT READY, DO NOT USE**
+
+:bookmark: GOADv3 Documentation : [https://orange-cyberdefense.github.io/GOAD/](https://orange-cyberdefense.github.io/GOAD/)
 
 ## Description
 GOAD is a pentest active directory LAB project.

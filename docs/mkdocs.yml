@@ -1,5 +1,5 @@
 site_name: Game Of Active Directory
-site_url: https://docs.goad.tech/
+site_url: https://orange-cyberdefense.github.io/GOAD/
 repo_url: https://github.com/Orange-Cyberdefense/GOAD
 nav:
   - GOAD: index.md
