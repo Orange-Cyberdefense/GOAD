@@ -881,6 +881,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    wazuh
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -890,6 +901,43 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1147,6 +1195,32 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1164,7 +1238,46 @@
 
 
 <h1 id="wazuh">wazuh</h1>
-<p>🚧 TODO</p>
+<div class="admonition success">
+<p class="admonition-title">Thanks!</p>
+<p>Credits and huge thanks to <a href="https://github.com/aleemladha">aleemladha</a> for the ansible role. <a href="https://github.com/Orange-Cyberdefense/GOAD/pull/215">https://github.com/Orange-Cyberdefense/GOAD/pull/215</a></p>
+</div>
+<ul>
+<li>Extension name : <code>wazuh</code></li>
+<li>Description : Add wazuh free EDR server and agent on all the domain computers + soc fortress rules (https://github.com/socfortress/Wazuh-Rules)</li>
+<li>Compatibility  : *</li>
+<li>Providers : virtualbox/azure/vmware/aws/ludus </li>
+<li>Add a machine  : wazuh (ip_range.51)</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">impacts</p>
+<p>add a wazuh machine and a wazuh agent on all windows machine"</p>
+</div>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>
+<p>On ludus prepare template :
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ludus templates add -d ubuntu-22.04-x64-server
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>ludus templates build
+</span></code></pre></div></p>
+</li>
+<li>
+<p>A lab installed</p>
+</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<ul>
+<li>
+<p>select your instance
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>load &lt;instance_id&gt;
+</span></code></pre></div></p>
+</li>
+<li>
+<p>install the exchange extension
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>install_extension wazuh
+</span></code></pre></div></p>
+</li>
+</ul>
 
 
 
