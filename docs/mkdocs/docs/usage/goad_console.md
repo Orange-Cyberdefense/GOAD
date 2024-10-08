@@ -1,7 +1,5 @@
 # :material-console-line: GOAD interactive mode
 
-🚧 TODO complete me
-
 Launch goad interactive mode
 
 ![console](./../img/console.png)
@@ -206,17 +204,232 @@ delete .................................. delete the currently selected lab inst
 
 ### status
 
+Give the current lab status
+
+```
+status
+```
+
 ### start
+
+Start the current lab instance
+
+```
+start
+```
 
 ### stop
 
+Stop the current lab instance
+
+```
+stop
+```
+
 ### destroy
+
+!!! danger
+    Destroy the current lab instance vms
+
+```
+destroy
+```
 
 ### start_vm
 
+Start a vm
+
+```
+start_vm <vm_name>
+```
+
 ### stop_vm
+
+Stop a vm
+
+```
+stop_vm <vm_name>
+```
 
 ### restart_vm
 
+Restart a vm (start and stop)
+
+```
+restart_vm <vm_name>
+```
+
 ### destroy_vm
 
+!!! danger
+    Destroy a vm
+
+```
+destroy_vm <vm_name>
+```
+
+### list_extensions
+
+List available extensions
+
+```
+list_extensions
+```
+
+### install_extension
+
+Add an extension to the lab (providing + provisioning)
+
+!!! warning
+    An installed extension can be deleted
+
+```
+install_extension <extension_name>
+```
+
+### provision_extension
+
+Launch provisioning (ansible) for the extension
+
+```
+provision_extension <extension_name>
+```
+
+### prepare_jumpbox
+
+Prepare jumpbox : run the preparation script on the jumpbox (install dependencies)
+
+```
+prepare_jumpbox
+```
+
+### sync_source_jumpbox
+
+Rsync goad source with the jumpbox
+
+```
+sync_source_jumpbox
+```
+
+### ssh_jumpbox
+
+
+SSH into the jumpbox
+
+```
+ssh_jumpbox
+```
+
+### ssh_jumpbox_proxy
+
+SSH into the jumpbox with a socks proxy option (-D)
+
+```
+ssh_jumpbox_proxy <socks_proxy_port>
+```
+
+### provide
+
+Launch providing (machine creation)
+
+```
+provide
+```
+
+### provision
+
+Launch specific playbook  (use playbook in ansible/ folder) 
+
+```
+provision <playbook.yml>
+```
+
+### provision_lab
+
+Launch all the lab provisioning  (install labs on machines with ansible)
+
+```
+provision_lab
+```
+
+### provision_lab_from
+
+Launch the lab provisioning from a specific playbook (use playbook in ansible/ folder)
+
+!!! tip
+    useful if the install crash to not redo all the provisioning
+
+```
+provision_lab_from <playbook.yml>
+```
+
+### check
+
+Launch the check (same as without instance)
+```
+check
+```
+
+### install
+
+Launch the install (useful if you created an empty instance)
+```
+install
+```
+
+### set_as_defualt
+
+Set the current instance as default (automatically loaded on goad start)
+```
+set_as_defualt
+```
+
+### update_instance_files
+
+Recreate the files inside the workspace folder
+```
+update_instance_files
+```
+
+### list
+
+List instances
+
+> alias : `ls`
+
+```
+list
+```
+
+### load
+
+Select an instance by his name (here change the current instance)
+
+> alias : `use`, `cd`
+
+```
+load <instance name>
+```
+
+### config
+
+Show current configuration
+```
+config
+```
+
+### unload
+
+Unload the instance (alias `cd ..`)
+```
+unload
+```
+
+### delete
+
+!!! danger
+    delete the current instance lab and vms
+
+```
+delete
+```
