@@ -1,143 +1,143 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://docs.goad.tech/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/changelog/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/changelog/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/provisioning/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/provisioning/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/questions/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/questions/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/references/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/references/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/thx/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/thx/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/troobleshoot/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/troobleshoot/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/vulnerabilities/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/vulnerabilities/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/developpers/provisioning/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/developpers/provisioning/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/developpers/structure/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/developpers/structure/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/extensions/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/extensions/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/extensions/elk/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/extensions/elk/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/extensions/exchange/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/extensions/exchange/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/extensions/wazuh/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/extensions/wazuh/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/extensions/ws01/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/extensions/ws01/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/installation/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/installation/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/installation/linux/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/installation/linux/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/installation/windows/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/installation/windows/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/labs/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/labs/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/labs/GOAD-Light/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/labs/GOAD-Light/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/labs/GOAD/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/labs/GOAD/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/labs/MINILAB/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/labs/MINILAB/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/labs/NHA/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/labs/NHA/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/labs/SCCM/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/labs/SCCM/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/packer/packer/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/packer/packer/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/providers/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/providers/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/providers/aws/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/providers/aws/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/providers/azure/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/providers/azure/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/providers/ludus/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/providers/ludus/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/providers/proxmox/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/providers/proxmox/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/providers/virtualbox/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/providers/virtualbox/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/providers/vmware/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/providers/vmware/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/usage/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/usage/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/usage/goad_args/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/usage/goad_args/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
     <url>
-         <loc>https://docs.goad.tech/usage/goad_console/</loc>
+         <loc>https://orange-cyberdefense.github.io/GOAD/usage/goad_console/</loc>
          <lastmod>2024-10-08</lastmod>
     </url>
 </urlset>
