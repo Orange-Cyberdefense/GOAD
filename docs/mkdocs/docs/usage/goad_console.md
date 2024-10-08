@@ -281,7 +281,7 @@ list_extensions
 Add an extension to the lab (providing + provisioning)
 
 !!! warning
-    An installed extension can be deleted
+    An installed extension can't be deleted
 
 ```
 install_extension <extension_name>

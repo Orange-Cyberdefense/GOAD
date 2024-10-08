@@ -33,6 +33,7 @@ nav:
     - index : usage/index.md
     - Arguments: usage/goad_args.md
     - Interactive: usage/goad_console.md
+  - 🇮 instances: instances.md
   - 🛠️ provisioning: provisioning.md
   - ⚠️ Troubleshoot :  troobleshoot.md
   - ❓ FAQ :  questions.md
