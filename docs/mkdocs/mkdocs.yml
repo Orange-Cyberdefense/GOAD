@@ -5,8 +5,8 @@ nav:
   - GOAD: index.md
   - 🚀 Installation:
     - index: installation/index.md
-    - Windows: installation/windows.md
     - Linux: installation/linux.md
+    - Windows: installation/windows.md
   - 🏗 Providers:
     - index: providers/index.md
     - Virtualbox: providers/virtualbox.md
