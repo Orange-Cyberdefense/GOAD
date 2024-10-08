@@ -35,11 +35,11 @@
                 "Administrators" : [
                     "sevenkingdoms\\tywin.lannister",
                     "sevenkingdoms\\jaime.lannister"
+                ],
+                "Remote Desktop Users" : [
+                    "sevenkingdoms\\Lanister"
                 ]
             },
-            "Remote Desktop Users" : [
-                "sevenkingdoms\\Lanister"
-            ],
             "scripts" : [],
             "vulns" : ["disable_firewall"]
         },
