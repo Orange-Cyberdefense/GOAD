@@ -1,5 +1,5 @@
 <div align="center">
-  <h1><img alt="GOAD (Game Of Active Directory)" src="./docs/img/logo_GOAD.png"></h1>
+  <h1><img alt="GOAD (Game Of Active Directory)" src="./docs/img/logo_GOAD3.png"></h1>
   <br>
 </div>
 
