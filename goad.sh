@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-py=python3.8
+py=python3
 if [ ! -d "$HOME/.goad/.venv" ]
 then
   if $py -m venv --help > /dev/null 2>&1; then
