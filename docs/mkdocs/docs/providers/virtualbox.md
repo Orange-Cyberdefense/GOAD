@@ -34,7 +34,7 @@ GOAD/virtualbox/local/192.168.56.X > check
 ![vbox_check_example.png](./../img/vbox_check_example.png)
 
 !!! info
-    If there is some missing dependencies goes to the [installation](/installation/) chapter and follow the guide according to your os.
+    If there is some missing dependencies goes to the [installation](../installation/index.md) chapter and follow the guide according to your os.
 
 !!! note
     check give mandatory dependencies in red and non mandatory in yellow (but you should be compliant with them too depending one your operating system)

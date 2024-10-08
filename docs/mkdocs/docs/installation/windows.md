@@ -76,16 +76,16 @@
 
 
 === ":simple-amazon: Aws"
-    Nothing to prepare on windows host, install and prepare wsl and next follow linux install from your wsl console : [see aws linux install](/installation/linux/#__tabbed_1_4)
+    Nothing to prepare on windows host, install and prepare wsl and next follow linux install from your wsl console : [see aws linux install](linux.md/#__tabbed_1_4)
 
 === ":material-microsoft-azure: Azure"
-    Nothing to prepare on windows host, install and prepare wsl and next linux install from your wsl console [see azure linux install](/installation/linux/#__tabbed_1_3)
+    Nothing to prepare on windows host, install and prepare wsl and next linux install from your wsl console [see azure linux install](linux.md/#__tabbed_1_3)
 
 === ":simple-proxmox: Promox"
-    Not supported, you will have to create a provisioning machine on your proxmox and run goad from then ([see proxmox linux install](/installation/linux/#__tabbed_1_5))
+    Not supported, you will have to create a provisioning machine on your proxmox and run goad from then ([see proxmox linux install](linux.md/#__tabbed_1_5))
 
 === "🏟️  Ludus"
-    Not supported, you will have to act from your ludus server ([see ludus linux install](/installation/linux/#__tabbed_1_6))
+    Not supported, you will have to act from your ludus server ([see ludus linux install](linux.md/#__tabbed_1_6))
 
 ## Prepare WSL environment
 

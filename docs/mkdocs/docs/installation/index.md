@@ -4,16 +4,16 @@ In the last version, GOAD use no more bash for the installation/management scrip
 The goad management script is now written in :simple-python: python to permit more flexibility and cover the needs to create a Windows WSL support.
 
 - First prepare you system for GOAD execution:
-    - :material-linux: [Linux](/GOAD/installation/linux/)
-    - :material-microsoft-windows: [Windows](/GOAD/installation/windows/)
+    - :material-linux: [Linux](linux.md)
+    - :material-microsoft-windows: [Windows](windows.md)
 
 - Installation depend of the provider you use, please follow the appropriate guide :
-    - :simple-virtualbox: [Install with Virtualbox](/GOAD/providers/virtualbox/)
-    - :simple-vmware: [Install with VmWare](/GOAD/providers/vmware/)
-    - :simple-proxmox: [Install with Proxmox](/GOAD/providers/proxmox/)
-    - :material-microsoft-azure: [Install with Azure](/GOAD/providers/azure/)
-    - :simple-amazon: [Install with Aws](/GOAD/providers/aws/)
-    - 🏟️ [Install with Ludus](/GOAD/providers/ludus/)
+    - :simple-virtualbox: [Install with Virtualbox](../providers/virtualbox.md)
+    - :simple-vmware: [Install with VmWare](../providers/vmware.md)
+    - :simple-proxmox: [Install with Proxmox](../providers/proxmox.md)
+    - :material-microsoft-azure: [Install with Azure](../providers/azure.md)
+    - :simple-amazon: [Install with Aws](../providers/aws.md)
+    - 🏟️ [Install with Ludus](../providers/ludus.md)
 
 ## TLDR - quick install
 

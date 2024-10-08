@@ -57,7 +57,7 @@ load <instance name>
 
 ## Instance selected
 
-![console](./img/console2.png)
+![console](../img/console2.png)
 
 ```
 *** Manage Lab instance commands ***
