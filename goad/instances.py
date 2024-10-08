@@ -101,4 +101,4 @@ class LabInstances:
         if instance_found:
             print(table)
         else:
-            Log.warning('No instance found, use [italic][blue]create_instance[/blue][/italic] to create a lab instance')
+            Log.warning('No instance found, change your config and use [italic][blue]install[/blue][/italic] to create a lab instance')
