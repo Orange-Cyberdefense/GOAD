@@ -1,0 +1,103 @@
+site_name: Game Of Active Directory
+site_url: https://docs.goad.tech/
+repo_url: https://github.com/Orange-Cyberdefense/GOAD
+nav:
+  - GOAD: index.md
+  - 🚀 Installation:
+    - index: installation/index.md
+    - Windows: installation/windows.md
+    - Linux: installation/linux.md
+  - 🏗 Providers:
+    - index: providers/index.md
+    - Virtualbox: providers/virtualbox.md
+    - Vmware: providers/vmware.md
+    - Aws: providers/aws.md
+    - Azure: providers/azure.md
+    - Proxmox: providers/proxmox.md
+    - Ludus: providers/ludus.md    
+  - 🏰 Labs:
+    - index: labs/index.md
+    - GOAD: labs/GOAD.md
+    - GOAD-Light: labs/GOAD-Light.md
+    - NHA: labs/NHA.md
+    - SCCM: labs/SCCM.md
+    - MINILAB: labs/MINILAB.md
+  - 📈 Extensions:
+    - index: extensions/index.md
+    - exchange: extensions/exchange.md
+    - ws01: extensions/ws01.md
+    - elk: extensions/elk.md
+    - wazuh: extensions/wazuh.md
+  - 💻 Usage: 
+    - index : usage/index.md
+    - Arguments: usage/goad_args.md
+    - Interactive: usage/goad_console.md
+  - 🛠️ provisioning: provisioning.md
+  - ⚠️ Troubleshoot :  troobleshoot.md
+  - ❓ FAQ :  questions.md
+  - 📋 Roadmap :  changelog.md
+  - 📣 References : references.md
+  - 🙏 Thanks :  thx.md
+theme:
+  name: material
+  logo: assets/logo.png
+  palette:
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+      primary: black
+      accent: indigo
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+      primary: black
+      accent: indigo
+  features:
+#    - navigation.tabs
+    - navigation.indexes
+    - content.tabs.link
+extra_css:
+  - stylesheets/extra.css
+#extra_javascript:
+#  - javascripts/extra.js
+extra:
+  consent:
+    title: Cookie consent
+    description: >- 
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Orange-Cyberdefense/GOAD
+    - icon: fontawesome/brands/x-twitter
+      link: https://github.com/mayfly277
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/NYy7rsMf3u
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg

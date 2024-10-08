@@ -10,6 +10,7 @@ class VirtualboxProvider(VagrantProvider):
     def check(self):
         checks = [
             super().check(),
-            self.command.check_virtualbox()
+            self.command.check_virtualbox(),
+            self.command.check_vagrant_plugin('vagrant-vbguest', False)
         ]
         return all(checks)
