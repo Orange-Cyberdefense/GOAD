@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
 
-py=python3.8
+py=python3
 venv="$HOME/.goad/.venv"
-
-# Get the Python version (removes 'Python' from output)
-version=$($py --version 2>&1 | awk '{print $2}')
-# Convert the version to comparable format (removes the dot and treats it as an integer)
-version_numeric=$(echo $version | awk -F. '{printf "%d%02d%02d\n", $1, $2, $3}')
-# Check if the version is >= 3.8.0 and < 3.12.0
-if [ "$version_numeric" -ge 30800 ] && [ "$version_numeric" -lt 31200 ]; then
-    # echo "Python version is >= 3.8.0 and < 3.12.0"
-    echo 'python version ok'
-else
-    echo "Python version is outside the range 3.8.0 to 3.12.0"
-    exit
-fi
 
 if [ ! -d "$venv" ]
 then
+  # Get the Python version (removes 'Python' from output)
+  version=$($py --version 2>&1 | awk '{print $2}')
+  # Convert the version to comparable format (removes the dot and treats it as an integer)
+  version_numeric=$(echo $version | awk -F. '{printf "%d%02d%02d\n", $1, $2, $3}')
+  # Check if the version is >= 3.8.0 and < 3.12.0
+  if [ "$version_numeric" -ge 30800 ] && [ "$version_numeric" -lt 31200 ]; then
+      # echo "Python version is >= 3.8.0 and < 3.12.0"
+      echo 'python version ok'
+  else
+      echo "Python version is outside the range 3.8.0 to 3.12.0"
+      exit
+  fi
+
   if $py -m venv --help > /dev/null 2>&1; then
       echo "venv module is installed. continue"
   else
