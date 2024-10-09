@@ -1,4 +1,4 @@
-# 🛠️ provisioning
+# :material-ansible: provisioning
 
 This page describe how the provisioning is done with goad.
 The provisioning of the LABS is done with Ansible for all providers.

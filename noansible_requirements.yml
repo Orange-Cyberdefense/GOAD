@@ -2,10 +2,6 @@ rich
 psutil
 Jinja2
 pyyaml
-# Ansible
-ansible_runner
-ansible-core==2.12.6
-pywinrm
 # AZURE
 azure-identity
 azure-mgmt-compute

@@ -3,7 +3,7 @@ import psutil
 import sys
 from goad.log import Log
 from goad.utils import Utils
-
+from goad.dependencies import Dependencies
 
 class Command:
 
@@ -66,6 +66,9 @@ class Command:
         return self.is_in_path('rsync')
 
     def check_ansible(self):
+        if not Dependencies.provisioner_local_enabled and not Dependencies.provisioner_runner_enabled:
+            Log.info('skip ansible check as no local and runner provisionner enabled')
+            return True
         checks = [
             self.is_in_path('ansible-playbook'),
             self.check_ansible_galaxy('ansible.windows'),

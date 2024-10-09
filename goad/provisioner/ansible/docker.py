@@ -2,6 +2,8 @@ from goad.log import Log
 from goad.utils import *
 from goad.goadpath import GoadPath
 from goad.provisioner.ansible.ansible import Ansible
+import subprocess
+import os
 
 
 class DockerAnsibleProvisionerCmd(Ansible):
@@ -10,8 +12,26 @@ class DockerAnsibleProvisionerCmd(Ansible):
     def __init__(self, lab_name, provider):
         super().__init__(lab_name, provider)
         self.remote_project_path = '/goad'
-        self.sudo = 'sudo'
+        if self.is_current_user_in_sudo_group():
+            self.sudo = ''
+        else:
+            self.sudo = 'sudo'
         self.check_docker_image()
+
+    def is_current_user_in_sudo_group(self):
+        try:
+            # Get the current logged-in user
+            user = os.getlogin()
+            # Run the 'groups' command to get the groups the user belongs to
+            output = subprocess.check_output(['groups', user], text=True)
+            # Check if 'sudo' is in the output
+            if 'sudo' in output.split():
+                return True
+            else:
+                return False
+        except subprocess.CalledProcessError:
+            # If the command fails, return False
+            return False
 
     def check_docker_image(self):
         if not self.command.run_command(f'{self.sudo} docker images |grep -c "goadansible"', GoadPath.get_project_path()):

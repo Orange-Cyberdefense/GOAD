@@ -17,7 +17,7 @@ The goad management script is now written in :simple-python: python to permit mo
 
 ## TLDR - quick install
 
-??? info "TLDR : ubuntu 22.04 quick install"
+??? info "TLDR : :material-ubuntu: ubuntu 22.04 quick install"
 
     ```bash
     # Install vbox
@@ -45,6 +45,64 @@ The goad management script is now written in :simple-python: python to permit mo
     # launch goad in interactive mode
     ./goad.sh
     ```
+
+## Dependencies
+
+- Goad in :simple-python: python come with a lot of dependencies as you can see in the `requirements.yml` file on the root of the project.
+- If you don't want to run the provisioning from your python venv but only from docker you can use `goad_docker.sh` script instead of `goad.sh`. This will run the ansible with the docker method instead of local or runner.
+
+This are the python dependencies used by goad :
+
+- Mandatory for :simple-python: goad.py:
+```
+rich
+psutil
+Jinja2
+pyyaml
+```
+
+- Mandatory for :material-ansible: ansible inside goad (for provisioning method local or runner) :
+```
+# Ansible
+ansible_runner
+ansible-core==2.12.6
+pywinrm
+```
+
+- Mandatory for :material-microsoft-azure: azure provider :
+```
+# AZURE
+azure-identity
+azure-mgmt-compute
+azure-mgmt-network
+```
+
+- Mandatory for :simple-amazon: aws provider :
+```
+# AWS
+boto3
+```
+
+- Mandatory for :simple-proxmox: proxmox provider:
+```
+# Proxmox
+proxmoxer
+requests
+```
+
+- You can launch goad without installing all the pip package but for that you will have to disable some dependencies with the `-d` arguments:
+```
+-d vmware     : disable vmware provider
+-d virtualbox : disable virtualbox provider
+-d azure      : disable azure provider
+-d aws        : disable azure provider
+-d proxmox    : disable proxmox provider
+-d ludus      : disable ludus provider
+-d local      : disable local provisioning method (if you use docker only)
+-d runner     : disable ansible runner provisioning method (if you use docker only)
+-d remote     : disable remote provisioning method
+-d docker     : disable docker provisioning method
+```
 
 ## Installation
 

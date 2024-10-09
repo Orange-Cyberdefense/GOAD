@@ -1,6 +1,7 @@
 from goad.log import Log
 from goad.utils import *
-from goad.dependencies import *
+from goad.dependencies import Dependencies
+
 
 class Settings:
     """
@@ -118,7 +119,10 @@ class Settings:
             Log.info(f'automatic changing provisioner method {provisioner_name} to default for this provider : {provider.default_provisioner}')
             self.provisioner_name = provider.default_provisioner
         else:
-            if (provisioner_name == PROVISIONING_RUNNER and not provisioner_runner_enabled) or (provisioner_name == PROVISIONING_DOCKER and not provisioner_docker_enabled):
+            if ((provisioner_name == PROVISIONING_RUNNER and not Dependencies.provisioner_runner_enabled) or
+                    (provisioner_name == PROVISIONING_DOCKER and not Dependencies.provisioner_docker_enabled) or (
+                    provisioner_name == PROVISIONING_LOCAL and not Dependencies.provisioner_local_enabled) or (
+                    provisioner_name == PROVISIONING_REMOTE and not Dependencies.provisioner_remote_enabled)):
                 Log.warning(f'provisioner method {provisioner_name} is not enabled')
                 Log.info(f'automatic changing provisioner method {provisioner_name} to default for this provider : {provider.default_provisioner}')
                 self.provisioner_name = provider.default_provisioner

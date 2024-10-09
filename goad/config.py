@@ -2,6 +2,7 @@ import configparser
 from goad.goadpath import GoadPath
 from goad.utils import *
 from goad.log import Log
+from goad.dependencies import Dependencies
 
 
 class Config:
@@ -83,6 +84,28 @@ class Config:
                 self.set_value('default', PROVISIONER, args.method)
             if args.ip_range:
                 self.set_value('default', IP_RANGE, args.ip_range)
+            if args.disable_dependencies:
+                for disable_dependence in args.disable_dependencies:
+                    if disable_dependence == 'vmware':
+                        Dependencies.vmware_enabled = False
+                    elif disable_dependence == 'virtualbox':
+                        Dependencies.virtualbox_enabled = False
+                    elif disable_dependence == 'azure':
+                        Dependencies.azure_enabled = False
+                    elif disable_dependence == 'aws':
+                        Dependencies.aws_enabled = False
+                    elif disable_dependence == 'ludus':
+                        Dependencies.ludus_enabled = False
+                    elif disable_dependence == 'proxmox':
+                        Dependencies.proxmox_enabled_enabled = False
+                    elif disable_dependence == 'local':
+                        Dependencies.provisioner_local_enabled = False
+                    elif disable_dependence == 'runner':
+                        Dependencies.provisioner_runner_enabled = False
+                    elif disable_dependence == 'remote':
+                        Dependencies.provisioner_remote_enabled = False
+                    elif disable_dependence == 'docker':
+                        Dependencies.provisioner_docker_enabled = False
         return self
 
     def get_value(self, section, key, fallback=None):

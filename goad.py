@@ -3,9 +3,7 @@ import argparse
 import sys
 import time
 from goad.config import Config
-from goad.lab_manager import LabManager
 from goad.menu import print_menu, print_logo
-from goad.labs import *
 from goad.infos import *
 
 
@@ -19,6 +17,8 @@ class Goad(cmd.Cmd):
         config = Config()
         config.merge_config(args)
         # prepare lab controller to manage labs
+        # import lab manager after the loading of the dependencies to allow disabling some provider and provisioning method
+        from goad.lab_manager import LabManager
         self.lab_manager = LabManager().init(config, args)
 
         if args.task == '' or args.task is None:
@@ -452,6 +452,7 @@ def parse_args():
     parser.add_argument("-e", "--extensions", help="extensions to use", action='append', required=False)
     parser.add_argument("-a", "--ansible_only", help="run only provisioning (ansible) on instance (-i) (for task install only)", required=False)
     parser.add_argument("-r", "--run_playbook", help="run only one ansible playbook on instance (-i) (for task install only)", required=False)
+    parser.add_argument("-d", "--disable_dependencies", help="disable_dependencies", action='append', required=False)
     args = parser.parse_args()
     return args
 
