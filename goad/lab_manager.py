@@ -119,14 +119,14 @@ class LabManager(metaclass=SingletonMeta):
             self.current_settings.set_lab_name(lab_name)
         else:
             Log.error("Can't change lab if instance is selected")
-            Log.info('use unload_instance to quit the current instance')
+            Log.info('use unload to quit the current instance')
 
     def set_provider(self, provider_name):
         if self.current_instance is None:
             self.current_settings.set_provider_name(provider_name)
         else:
             Log.error("Can't change provider if instance is selected")
-            Log.info('use unload_instance to quit the current instance')
+            Log.info('use unload to quit the current instance')
 
     def set_provisioner(self, provisioner_name):
         self.current_settings.set_provisioner_name(provisioner_name)
