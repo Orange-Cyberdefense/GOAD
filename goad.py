@@ -3,6 +3,7 @@ import argparse
 import sys
 import time
 from goad.config import Config
+from goad.exceptions import JumpBoxInitFailed
 from goad.menu import print_menu, print_logo
 from goad.infos import *
 
