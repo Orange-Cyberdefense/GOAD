@@ -839,6 +839,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    ws01
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -848,6 +859,61 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lab-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lab info
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thanks" class="md-nav__link">
+    <span class="md-ellipsis">
+      thanks
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1167,6 +1233,50 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lab-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lab info
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thanks" class="md-nav__link">
+    <span class="md-ellipsis">
+      thanks
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1184,7 +1294,87 @@
 
 
 <h1 id="ws01">ws01</h1>
-<p>🚧 TODO</p>
+<ul>
+<li>Extension name : <code>ws01</code></li>
+<li>Description : Add a Windows 10 workstation to the lab GOAD or GOAD Light in the domain sevenkingdoms.local</li>
+<li>Compatibility  : GOAD, GOAD-Light</li>
+<li>
+<p>Providers : virtualbox/azure/vmware/aws/ludus/proxmox</p>
+</li>
+<li>
+<p>Add a machine  : {{lab_name}}-WS01 (casterlyrock.sevenkingdoms.local)  (ip_range.31)</p>
+</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">rearm</p>
+<p>The vm is not armed by default (90 days trials), connect to the vm with vagrant/vagrant and run as admin <code>slmgr -rearm</code> to rearm the box. (need a restart)</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">aws</p>
+<p>AWS doesn't got any windows 10 so for aws the vm is a windows server 2019</p>
+</div>
+<h2 id="lab-info">Lab info</h2>
+<ul>
+<li>
+<p>Lab infos:</p>
+<ul>
+<li>hostname: casterlyrock </li>
+<li>Users:<ul>
+<li>Administrators :<ul>
+<li>tywin.lannister</li>
+<li>jaime.lannister</li>
+</ul>
+</li>
+<li>RDP Users:<ul>
+<li>Lannister group</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Features :</p>
+<ul>
+<li>run_as_ppl</li>
+<li>powershell restricted</li>
+<li>asr rules :<ul>
+<li>block lsass stealing</li>
+<li>block PSExec and WMI</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>
+<p>GOAD or GOAD-Light installation</p>
+</li>
+<li>
+<p>On ludus prepare template :
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ludus templates add -d win10-21h1-x64-enterprise
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>ludus templates build
+</span></code></pre></div></p>
+</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<ul>
+<li>
+<p>select your instance
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>load &lt;instance_id&gt;
+</span></code></pre></div></p>
+</li>
+<li>
+<p>install the ws01 extension
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>install_extension ws01
+</span></code></pre></div></p>
+</li>
+</ul>
+<h2 id="thanks">thanks</h2>
+<ul>
+<li>asr rules implementation : https://github.com/zuesdevil (https://github.com/Orange-Cyberdefense/GOAD/pull/172)</li>
+</ul>
 
 
 
