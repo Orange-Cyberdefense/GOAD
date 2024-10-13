@@ -16,7 +16,7 @@
                       "sevenkingdoms\\Lannister"
                   ]
               },
-              "security": ["enable_run_as_ppl","powershell_restrict", "asr"],
+              "security": ["enable_run_as_ppl", "asr", "powershell_restrict"],
               "security_vars": {
                   "asr" : { "block lsass stealing": {"ruleid" : "9e6c4e1f-7d60-472f-ba1a-a39ef669e4b2"},
                             "block PSExec and WMI": {"ruleid" : "d1e49aac-8f56-4280-b9ba-993a6d77406c"}}

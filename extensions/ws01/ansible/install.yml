@@ -16,6 +16,13 @@
       set_fact:
         lab: "{{ lab|combine(lab_extension, recursive=True) }}"
 
+- name: "Set execution policy unrestricted (in cas of re-run)"
+  hosts: ws01
+  tasks:
+    - name: "Change execution policy before running"
+      win_shell: |
+        Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force
+
 - name: prepare workstation
   hosts: ws01
   roles:
