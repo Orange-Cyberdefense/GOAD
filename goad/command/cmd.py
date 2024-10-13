@@ -178,7 +178,7 @@ class Command:
         # linux only
         pass
 
-    def run_docker_ansible(self, args, path, sudo):
+    def run_docker_ansible(self, args, path, ansible_path, sudo):
         # linux only
         pass
 

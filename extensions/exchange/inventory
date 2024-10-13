@@ -5,5 +5,8 @@ srv01 ansible_host={{ip_range}}.21 dns_domain=dc01 dict_key=srv01 ansible_user=a
 srv01 ansible_host={{ip_range}}.21 dns_domain=dc01 dict_key=srv01
 {% endif %}
 
+[domain]
+srv01
+
 [extensions]
 srv01

@@ -73,11 +73,18 @@ class Ansible(Provisioner):
             provision_result = self.run_playbook(playbook, inventory)
         return provision_result
 
-    def run_extension(self, extension, install=True):
+    def run_extension(self, extension, current_instance_extensions_name, install=True):
         inventory = self._get_lab_inventory(self.lab_name, self.provider_name)
 
-        extension_inventory = self.instance_path + os.path.sep + extension.name + '_inventory'
+        # add the inventory of other enabled extensions
+        for instances_extension_name in current_instance_extensions_name:
+            if instances_extension_name != extension.name:
+                other_extension_inventory = self.instance_path + os.path.sep + instances_extension_name + '_inventory'
+                if other_extension_inventory is not None:
+                    inventory.append(other_extension_inventory)
 
+        # add the current extension inventory at the end
+        extension_inventory = self.instance_path + os.path.sep + extension.name + '_inventory'
         if extension_inventory is not None:
             inventory.append(extension_inventory)
 

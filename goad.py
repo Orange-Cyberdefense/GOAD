@@ -303,10 +303,11 @@ class Goad(cmd.Cmd):
         else:
             extension_name = arg
             start = time.time()
-            if extension_name in self.lab_manager.get_current_instance().extensions:
+            current_instance_extensions_name = self.lab_manager.get_current_instance().extensions
+            if extension_name in current_instance_extensions_name:
                 self.do_sync_source_jumpbox()
                 extension = self.lab_manager.get_current_instance_lab().get_extension(extension_name)
-                provision_result = self.lab_manager.get_current_instance_provisioner().run_extension(extension)
+                provision_result = self.lab_manager.get_current_instance_provisioner().run_extension(extension, current_instance_extensions_name)
                 if provision_result:
                     time_provision = time.ctime(time.time() - start)[11:19]
                     Log.info(f'Provision extension done in {time_provision}')

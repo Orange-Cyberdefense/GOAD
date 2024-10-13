@@ -48,9 +48,10 @@ class DockerAnsibleProvisionerCmd(Ansible):
         Log.info(f'Run playbook : {playbook} with inventory file(s) : {", ".join(remote_inventories)}')
         run_complete = False
         nb_try = 0
+        ansible_path = Utils.transform_local_path_to_remote_path(playbook_path, self.remote_project_path)
         while not run_complete:
             nb_try += 1
-            run_complete = self.command.run_docker_ansible(command, GoadPath.get_project_path(), self.sudo)
+            run_complete = self.command.run_docker_ansible(command, GoadPath.get_project_path(), ansible_path, self.sudo)
             if not run_complete and nb_try > tries:
                 Log.error('3 fails abort.')
                 break
