@@ -1,22 +1,37 @@
 # elk
 
-🚧 TODO rewrite and retest for v3
+- Extension name : `elk`
+- Compatibility  : `*`
+- Providers : virtualbox/azure/vmware/aws/ludus
+- Add a machine  : elk  (ip_range.50)
 
-## elk
+- Kibana is configured on http://{{ip_range}}.50:5601 to follow the lab events
+- Infos : log encyclopedia : https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/
+- Install filebeat agent on domain computer machines
 
-- **elk** a kibana is configured on http://192.168.56.50:5601 to follow the lab events
-- infos : log encyclopedia : https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/
-- the elk is not installed by default due to resources reasons. 
+## prerequisites
 
-- prerequistes: 
-- you need `sshpass` for the elk installation
+- You need `sshpass` for the elk installation
 ```bash
 sudo apt install sshpass
 ```
 
-- Chocolatey is needed to use elk. To install it run:
-```bash
-cd ansible-galaxy
-ansible-galaxy collection install chocolatey.chocolatey 
+- On ludus prepare template :
 ```
+ludus templates add -d ubuntu-22.04-x64-server
+ludus templates build
+```
+
+## Install
+
+- select your instance
+```
+load <instance_id>
+```
+
+- install the elk extension
+```
+install_extension elk
+```
+
 

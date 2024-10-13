@@ -58,13 +58,13 @@
 - [X] multiple instance management
 - [X] extension exchange
 - [X] extension ludus
-- [ ] extension elk (need test)
-- [ ] extension ws01 (need test)
-- [ ] extension exchange bot
+- [X] extension elk
+- [X] extension ws01
+- [ ] extension exchange add a bot to read mails
 - [ ] extension attackbox
 - [ ] extension VPN
 - [ ] extension guacamole
 - [ ] extension linux VM enrolled
+- [ ] Add Applocker to ws01
 - [ ] Wsus (to add on sccm)
 - [ ] ADCS add vulns
-- [ ] Add Applocker
