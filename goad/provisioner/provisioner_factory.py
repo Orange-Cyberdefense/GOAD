@@ -31,7 +31,7 @@ class ProvisionerFactory:
             provisioner = LocalAnsibleProvisionerEmbed(lab_name, provider)
         elif provisioner_name == PROVISIONING_DOCKER and Dependencies.provisioner_docker_enabled:
             provisioner = DockerAnsibleProvisionerCmd(lab_name, provider)
-        elif provisioner_name == PROVISIONING_VM and Dependencies.provisioner_local_enabled:
+        elif provisioner_name == PROVISIONING_VM and Dependencies.provisioner_vm_enabled:
             provisioner = VmAnsibleProvisioner(lab_name, provider)
             provisioner.jumpbox = LocalJumpBox(instance, is_instance_creation)
         return provisioner
