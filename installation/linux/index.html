@@ -395,15 +395,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#prepare-your-python-environment-for-goadpy-and-provisioning-with-docker" class="md-nav__link">
-    <span class="md-ellipsis">
-      Prepare your python environment for goad.py and provisioning with docker
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1248,15 +1239,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#prepare-your-python-environment-for-goadpy-and-provisioning-with-docker" class="md-nav__link">
-    <span class="md-ellipsis">
-      Prepare your python environment for goad.py and provisioning with docker
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1440,6 +1422,9 @@ The total space needed for the lab is ~115 GB (depend on the lab you use and it 
 </div>
 </div>
 <h2 id="prepare-your-python-environment-for-goadpy">Prepare your python environment for goad.py</h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Classic</label><label for="__tabbed_2_2">Provisioning with docker</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
 <ul class="task-list">
 <li class="task-list-item">
 <p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> To run the Goad installation/management script you will need :</p>
@@ -1462,7 +1447,8 @@ The total space needed for the lab is ~115 GB (depend on the lab you use and it 
 <p class="admonition-title">Python version</p>
 <p>Be sure to use a python version between <strong>python3.8</strong> and python <strong>3.11</strong>. Others python versions are not supported by now due to incompatibility with the fixed version in the requirements.</p>
 </div>
-<h2 id="prepare-your-python-environment-for-goadpy-and-provisioning-with-docker">Prepare your python environment for goad.py and provisioning with docker</h2>
+</div>
+<div class="tabbed-block">
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>With this method ansible-core will not be installed locally on your venv</p>
@@ -1489,6 +1475,9 @@ The total space needed for the lab is ~115 GB (depend on the lab you use and it 
 <ul>
 <li>Run goad with <code>./goad_docker.sh</code> instead of <code>./goad.sh</code> to install the dependencies without the ansible part (local and runner provisioning method will not be available)</li>
 </ul>
+</div>
+</div>
+</div>
 
 
 
