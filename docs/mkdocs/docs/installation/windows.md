@@ -4,12 +4,14 @@
     To use GOAD on windows you will need WSL.
 
 - First you will prepare your windows host for an hypervisor
-- Second you will install debian 12 with WSL to run goad install script
+- Second you will choose between 
+    - install debian 12 with WSL to run goad install script
+    - Or prepare your windows host (install with a provisioning machine)
 
 ## Prepare Windows Host
 
 === ":simple-virtualbox: Virtualbox"
-    If you want to use virtualbox as an hypervisor to create your vm.
+    If you want to use virtualbox as a hypervisor to create your vm.
 
     - VAGRANT
 
@@ -87,34 +89,69 @@
 === "🏟️  Ludus"
     Not supported, you will have to act from your ludus server ([see ludus linux install](linux.md/#__tabbed_1_6))
 
-## Prepare WSL environment
+## :simple-python: Prepare python environment
 
-Now your host environment is ready for virtual machine creation. Now we will install WSL to run the goad installation script.
+=== "With WSL"
+    Now your host environment is ready for virtual machine creation. Now we will install WSL to run the goad installation script.
 
-### Install WSL
+    !!! info "wsl version"
+        New Linux installations, installed using the wsl --install command, will be set to WSL 2 by default.
+        The wsl --set-version command can be used to downgrade from WSL 2 to WSL 1 or to update previously installed Linux distributions from WSL 1 to WSL 2.
+        To see whether your Linux distribution is set to WSL 1 or WSL 2, use the command: `wsl -l -v`.
+        To change versions, use the command: `wsl --set-version <distro name> <wsl_version>` replacing <distro name> with the name of the Linux distribution that you want to update. 
+        As an example: `wsl --set-version Debian 1` will set your Debian distribution to use WSL 1.
 
-- First install wsl on your environment [https://learn.microsoft.com/en-us/windows/wsl/install](https://learn.microsoft.com/en-us/windows/wsl/install)
-- Next go to the microsoft store and install debian (debian12)
+    !!! tip "use wsl version1"
+        by now wsl was tested succefully with version 1 
 
-### Prepare WSL distribution
-- Open debian console then :
+    ### Install WSL
 
-    - Verify you are using python version <= 11
+    - First install wsl on your environment [https://learn.microsoft.com/en-us/windows/wsl/install](https://learn.microsoft.com/en-us/windows/wsl/install)
+    - Next go to the microsoft store and install debian (debian12)
+
+    ### Prepare WSL distribution
+    - Open debian console then :
+
+        - Verify you are using python version <= 11
+        ```bash
+        python3 --version
+        ```
+
+        - Install python packages
+        ```bash
+        sudo apt update
+        sudo apt install python3 python3-pip python3-venv libpython3-dev
+        ```
+
+    - Next you can clone and run goad
+
     ```bash
-    python3 --version
+    cd /mnt/c/whatever_folder_you_want
+    git clone https://github.com/Orange-Cyberdefense/GOAD.git
+    cd GOAD
+    ./goad.sh
     ```
 
-    - Install python packages
-    ```bash
-    sudo apt update
-    sudo apt install python3 python3-pip python3-venv libpython3-dev
-    ```
+=== "With Python on windows host"
 
-- Next you can clone and run goad
+    !!! info "For vmware or virtualbox only"
+        This mode doesn't need WSL but it is only if you plan to install goad locally on vmware or virtualbox
 
-```bash
-cd /mnt/c/whatever_folder_you_want
-git clone https://github.com/Orange-Cyberdefense/GOAD.git
-cd GOAD
-./goad.sh
-```
+    - Prerequistes:
+        - :simple-python: [python](https://www.python.org/downloads/windows/) on your windows (tested ok with python 3.10) 
+        - :simple-git: [git](https://git-scm.com/downloads/win)
+    
+    - Clone the goad project: `git clone https://github.com/Orange-Cyberdefense/GOAD`
+    - Checkout the v3-beta branch : 
+        ```
+        cd GOAD
+        git checkout -b v3-beta origin/v3-beta
+        ```
+    - Install python dependencies (choose the noansible file) : 
+        ```
+        pip install -r noansible_requirements.yml
+        ```
+    - Launch goad with vm provisioning method : 
+        ```
+        py goad.py -m vm
+        ```
