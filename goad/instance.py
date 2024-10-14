@@ -2,23 +2,11 @@ import json
 import shutil
 from jinja2 import Template, Environment, FileSystemLoader
 from goad.goadpath import *
-from goad.jumpbox import JumpBox
-from goad.local_jumpbox import LocalJumpBox
 from goad.log import Log
 from goad.exceptions import ProviderPathNotFound, JumpBoxInitFailed
+from goad.provisioner.provisioner_factory import ProvisionerFactory
 from goad.utils import *
-from goad.dependencies import Dependencies
 
-if Dependencies.provisioner_local_enabled:
-    from goad.provisioner.ansible.local import LocalAnsibleProvisionerCmd
-if Dependencies.provisioner_runner_enabled:
-    from goad.provisioner.ansible.runner import LocalAnsibleProvisionerEmbed
-if Dependencies.provisioner_remote_enabled:
-    from goad.provisioner.ansible.remote import RemoteAnsibleProvisioner
-if Dependencies.provisioner_docker_enabled:
-    from goad.provisioner.ansible.docker import DockerAnsibleProvisionerCmd
-if Dependencies.provisioner_vm_enabled:
-    from goad.provisioner.ansible.vm import VmAnsibleProvisioner
 
 class LabInstance:
 
@@ -79,18 +67,7 @@ class LabInstance:
 
         self.provider.set_instance_path(self.instance_provider_path)
 
-        if self.provisioner_name == PROVISIONING_LOCAL and Dependencies.provisioner_local_enabled:
-            self.provisioner = LocalAnsibleProvisionerCmd(self.lab_name, self.provider)
-        elif self.provisioner_name == PROVISIONING_REMOTE and Dependencies.provisioner_remote_enabled:
-            self.provisioner = RemoteAnsibleProvisioner(self.lab_name, self.provider)
-            self.provisioner.jumpbox = JumpBox(self, creation)
-        elif self.provisioner_name == PROVISIONING_RUNNER and Dependencies.provisioner_runner_enabled:
-            self.provisioner = LocalAnsibleProvisionerEmbed(self.lab_name, self.provider)
-        elif self.provisioner_name == PROVISIONING_DOCKER and Dependencies.provisioner_docker_enabled:
-            self.provisioner = DockerAnsibleProvisionerCmd(self.lab_name, self.provider)
-        elif self.provisioner_name == PROVISIONING_VM and Dependencies.provisioner_local_enabled:
-            self.provisioner = VmAnsibleProvisioner(self.lab_name, self.provider)
-            self.provisioner.jumpbox = LocalJumpBox(self, creation)
+        self.provisioner = ProvisionerFactory.get_provisioner(self.provisioner_name, self, creation)
 
         if self.provisioner is None:
             Log.error('instance provisioner does not exist')

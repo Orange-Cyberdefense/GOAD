@@ -3,6 +3,7 @@ from goad.command.linux import LinuxCommand
 from goad.command.wsl import WslCommand
 from goad.goadpath import GoadPath
 from goad.utils import Utils
+from goad.command.cmd_factory import CommandFactory
 
 
 class Provisioner(ABC):
@@ -17,10 +18,7 @@ class Provisioner(ABC):
         self.provider = provider
         self.path = GoadPath.get_provisioner_path()
         self.instance_path = ''
-        if Utils.is_wsl():
-            self.command = WslCommand()
-        else:
-            self.command = LinuxCommand()
+        self.command = CommandFactory.get_command()
 
     def set_instance_path(self, path):
         self.instance_path = path

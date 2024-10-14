@@ -1,6 +1,5 @@
 from abc import ABC
-from goad.command.linux import LinuxCommand
-from goad.command.wsl import WslCommand
+from goad.command.cmd_factory import CommandFactory
 from goad.utils import *
 
 
@@ -14,10 +13,7 @@ class Provider(ABC):
     def __init__(self, lab_name):
         self.lab_name = lab_name
         self.path = None
-        if Utils.is_wsl():
-            self.command = WslCommand()
-        else:
-            self.command = LinuxCommand()
+        self.command = CommandFactory.get_command()
 
     def set_instance_path(self, provider_instance_path):
         self.path = provider_instance_path

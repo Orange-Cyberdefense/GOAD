@@ -217,7 +217,7 @@ class Command:
         Log.info(f'Launch scp {source} -> {destination}')
         scp_command = f"scp -o 'StrictHostKeyChecking no' -i {ssh_key}"
         command = f'{scp_command} {source} {destination}'
-        self.run_shell(command,  path)
+        self.run_shell(command, path)
 
     def rsync(self, source, destination, ssh_key, exclude=True):
         # rsync = f'rsync -a --exclude-from='.gitignore' -e "ssh -o 'StrictHostKeyChecking no' -i $CURRENT_DIR/ad/$lab/providers/$provider/ssh_keys/ubuntu-jumpbox.pem" "$CURRENT_DIR/" goad@$public_ip:~/GOAD/'

@@ -1,5 +1,4 @@
-from goad.command.linux import LinuxCommand
-from goad.command.wsl import WslCommand
+from goad.command.cmd_factory import CommandFactory
 from goad.log import Log
 from goad.utils import *
 from goad.goadpath import GoadPath
@@ -14,10 +13,7 @@ class JumpBox:
         self.provider = instance.provider
         self.ssh_key = self.get_jumpbox_key()
         self.username = 'goad'
-        if Utils.is_wsl():
-            self.command = WslCommand()
-        else:
-            self.command = LinuxCommand()
+        self.command = CommandFactory.get_command()
 
         if not creation:
             self.ip = self.provider.get_jumpbox_ip(instance.ip_range)

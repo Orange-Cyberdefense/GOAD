@@ -79,6 +79,12 @@ class Utils:
         return False
 
     @staticmethod
+    def is_windows():
+        if not Utils.is_wsl() and platform.system() == 'Windows':
+            return True
+        return False
+
+    @staticmethod
     def confirm(message):
         result = input(f"{message}")
         if result == "y" or result == "Y" or result == "Yes":
