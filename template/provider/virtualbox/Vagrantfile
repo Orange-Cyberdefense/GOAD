@@ -38,7 +38,9 @@ boxes.append(
       # BOX
       target.vm.provider "virtualbox" do |v|
         v.name = box[:name]
+        {% if not use_provisioning_vm %}
         v.customize ["modifyvm", :id, "--groups", "/GOAD"]
+        {% endif %}
         v.memory = box[:mem]
         v.cpus = box[:cpus]
       end
