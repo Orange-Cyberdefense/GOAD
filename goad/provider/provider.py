@@ -9,7 +9,6 @@ class Provider(ABC):
     provider_name = None
     default_provisioner = PROVISIONING_LOCAL
     allowed_provisioners = ALLOWED_PROVISIONER
-    use_jumpbox = False
     update_ip_range = False
 
     def __init__(self, lab_name):
@@ -49,6 +48,9 @@ class Provider(ABC):
 
     def destroy_vm(self, vm_name):
         pass
+
+    def get_jumpbox_ip(self, ip_range=''):
+        return None
 
     def restart_vm(self, vm_name):
         self.stop_vm(vm_name)

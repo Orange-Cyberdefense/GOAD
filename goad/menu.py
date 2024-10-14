@@ -32,6 +32,7 @@ def print_menu(lab_manager, advanced=True, debug=False):
     provider = lab_manager.get_current_provider_name()
 
     if lab_manager.get_current_instance() is not None:
+        use_jumpbox = lab_manager.get_current_instance_provisioner().use_jumpbox
         print_menu_title('Manage Lab instance commands')
         print_menu_entry('status', 'show current status')
         print_menu_entry('start', 'start lab')
@@ -51,7 +52,7 @@ def print_menu(lab_manager, advanced=True, debug=False):
         if advanced:
             print_menu_entry('provision_extension <extension>', 'provision extension (provisioning only)')
 
-        if provider == AZURE or provider == AWS:
+        if use_jumpbox:
             print_menu_title('JumpBox')
             if advanced:
                 print_menu_entry('prepare_jumpbox', 'install package on the jumpbox for provisioning')

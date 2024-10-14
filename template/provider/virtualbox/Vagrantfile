@@ -7,6 +7,19 @@ ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
 
 {{extensions}}
 
+{% if use_provisioning_vm %}
+boxes.append(
+    { :name => "PROVISIONING",
+      :ip => "{{ip_range}}.3",
+      :box => "bento/ubuntu-22.04",
+      :os => "linux",
+      :cpus => 1,
+      :mem => 2000,
+      :forwarded_port => [ {:guest => 22, :host => 2210, :id => "ssh"} ]
+    }
+)
+{% endif %}
+
   # disable rdp forwarded port inherited from StefanScherer box
   config.vm.network :forwarded_port, guest: 3389, host: 3389, id: "rdp", auto_correct: true, disabled: true
 

@@ -9,6 +9,7 @@ class Provisioner(ABC):
     lab_name = ''
     provider_name = ''
     provisioner_name = None
+    use_jumpbox = False
 
     def __init__(self, lab_name, provider):
         self.lab_name = lab_name

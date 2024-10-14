@@ -13,4 +13,5 @@ class Dependencies:
     provisioner_local_enabled = True
     provisioner_runner_enabled = True
     provisioner_remote_enabled = True
+    provisioner_vm_enabled = True
     provisioner_docker_enabled = False if Utils.is_wsl() else True

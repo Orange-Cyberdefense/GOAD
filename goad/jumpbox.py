@@ -9,6 +9,7 @@ class JumpBox:
 
     def __init__(self, instance, creation=False):
         self.lab_name = instance.lab_name
+        self.instance_id = instance.instance_id
         self.instance_path = instance.instance_path
         self.provider = instance.provider
         self.ssh_key = self.get_jumpbox_key()
@@ -19,7 +20,7 @@ class JumpBox:
             self.command = LinuxCommand()
 
         if not creation:
-            self.ip = self.provider.get_jumpbox_ip()
+            self.ip = self.provider.get_jumpbox_ip(instance.ip_range)
             if os.path.isfile(self.ssh_key) is None:
                 Log.error('Missing ssh file JumpBox remote connection')
             if self.ip is None:

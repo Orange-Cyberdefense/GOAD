@@ -134,6 +134,9 @@ class LabManager(metaclass=SingletonMeta):
     def set_ip_range(self, ip_range):
         self.current_settings.set_ip_range(ip_range)
 
+    def get_ip_range(self):
+        return self.current_settings.ip_range
+
     def set_extensions(self, extensions_name):
         self.current_settings.set_extensions(extensions_name)
 

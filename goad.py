@@ -3,6 +3,7 @@ import argparse
 import sys
 import time
 from goad.config import Config
+from goad.log import Log
 from goad.exceptions import JumpBoxInitFailed
 from goad.menu import print_menu, print_logo
 from goad.infos import *
@@ -144,12 +145,12 @@ class Goad(cmd.Cmd):
             Log.info(f'Provisioned from {arg} in {time_provision}')
 
     def do_sync_source_jumpbox(self, arg=''):
-        if self.lab_manager.get_current_instance_provider().use_jumpbox:
+        if self.lab_manager.get_current_instance_provisioner().use_jumpbox:
             self.lab_manager.get_current_instance_provisioner().sync_source_jumpbox()
 
     def do_prepare_jumpbox(self, arg=''):
-        if self.lab_manager.get_current_instance_provider().use_jumpbox:
-            jumpbox_ip = self.lab_manager.get_current_instance_provider().get_jumpbox_ip()
+        if self.lab_manager.get_current_instance_provisioner().use_jumpbox:
+            jumpbox_ip = self.lab_manager.get_current_instance_provider().get_jumpbox_ip(self.lab_manager.get_ip_range())
             if jumpbox_ip is not None:
                 self.lab_manager.get_current_instance_provisioner().prepare_jumpbox(jumpbox_ip)
             else:
@@ -159,7 +160,7 @@ class Goad(cmd.Cmd):
         self.lab_manager.show_settings()
 
     def do_ssh_jumpbox(self, arg):
-        if self.lab_manager.get_current_instance_provider().use_jumpbox:
+        if self.lab_manager.get_current_instance_provisioner().use_jumpbox:
             try:
                 jump_box = self.lab_manager.get_current_instance_provisioner().jumpbox
                 jump_box.ssh()
@@ -169,7 +170,7 @@ class Goad(cmd.Cmd):
             Log.error('No jump box for this provider')
 
     def do_ssh_jumpbox_proxy(self, arg):
-        if self.lab_manager.get_current_instance_provider().use_jumpbox:
+        if self.lab_manager.get_current_instance_provisioner().use_jumpbox:
             try:
                 jump_box = self.lab_manager.get_current_instance_provisioner().jumpbox
                 if arg.isnumeric() and 1024 < int(arg) <= 65535:

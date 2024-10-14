@@ -3,20 +3,20 @@ from goad.provisioner.ansible.ansible import Ansible
 from goad.utils import *
 
 
-class RemoteAnsibleProvisioner(Ansible):
-    provisioner_name = PROVISIONING_REMOTE
+class VmAnsibleProvisioner(Ansible):
+    provisioner_name = PROVISIONING_VM
     use_jumpbox = True
 
     def __init__(self, lab_name, provider):
         super().__init__(lab_name, provider)
         self.jumpbox = None
-        self.remote_project_path = '/home/goad/GOAD'
+        self.remote_project_path = '/home/vagrant/GOAD'
 
     def prepare_jumpbox(self, jumpbox_ip):
         if self.jumpbox is not None:
             self.jumpbox.ip = jumpbox_ip
-            self.jumpbox.sync_sources()
             self.jumpbox.provision()
+            self.jumpbox.sync_sources()
         else:
             Log.error('no jumpbox for provisioner')
 
@@ -41,7 +41,7 @@ class RemoteAnsibleProvisioner(Ansible):
         remote_inventories = []
         for inventory in inventories:
             remote_inventories.append(Utils.transform_local_path_to_remote_path(inventory, self.remote_project_path))
-        command = f'/home/goad/.local/bin/ansible-playbook -i {" -i ".join(remote_inventories)} {playbook}'
+        command = f'/home/vagrant/.local/bin/ansible-playbook -i {" -i ".join(remote_inventories)} {playbook}'
 
         Log.info(f'Run playbook : {playbook} with inventory file(s) : {", ".join(remote_inventories)}')
         Log.cmd('command')

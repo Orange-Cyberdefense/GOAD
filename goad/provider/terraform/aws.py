@@ -13,7 +13,6 @@ class AwsProvider(TerraformProvider):
     provider_name = AWS
     default_provisioner = PROVISIONING_REMOTE
     allowed_provisioners = [PROVISIONING_REMOTE]
-    use_jumpbox = True
 
     def __init__(self, lab_name, config):
         super().__init__(lab_name)
@@ -173,7 +172,7 @@ class AwsProvider(TerraformProvider):
             Log.error(f'vm id {vm_id} not found, be sure to use the instance_id and not the name for aws')
         return found
 
-    def get_jumpbox_ip(self):
+    def get_jumpbox_ip(self, ip_range=''):
         jumpbox_ip = self.command.run_terraform_output(['ubuntu-jumpbox-ip'], self.path)
         if jumpbox_ip is None:
             Log.error('Jump box ip not found')

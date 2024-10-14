@@ -3,6 +3,7 @@ import shutil
 from jinja2 import Template, Environment, FileSystemLoader
 from goad.goadpath import *
 from goad.jumpbox import JumpBox
+from goad.local_jumpbox import LocalJumpBox
 from goad.log import Log
 from goad.exceptions import ProviderPathNotFound, JumpBoxInitFailed
 from goad.utils import *
@@ -16,7 +17,8 @@ if Dependencies.provisioner_remote_enabled:
     from goad.provisioner.ansible.remote import RemoteAnsibleProvisioner
 if Dependencies.provisioner_docker_enabled:
     from goad.provisioner.ansible.docker import DockerAnsibleProvisionerCmd
-
+if Dependencies.provisioner_vm_enabled:
+    from goad.provisioner.ansible.vm import VmAnsibleProvisioner
 
 class LabInstance:
 
@@ -86,6 +88,9 @@ class LabInstance:
             self.provisioner = LocalAnsibleProvisionerEmbed(self.lab_name, self.provider)
         elif self.provisioner_name == PROVISIONING_DOCKER and Dependencies.provisioner_docker_enabled:
             self.provisioner = DockerAnsibleProvisionerCmd(self.lab_name, self.provider)
+        elif self.provisioner_name == PROVISIONING_VM and Dependencies.provisioner_local_enabled:
+            self.provisioner = VmAnsibleProvisioner(self.lab_name, self.provider)
+            self.provisioner.jumpbox = LocalJumpBox(self, creation)
 
         if self.provisioner is None:
             Log.error('instance provisioner does not exist')
@@ -152,13 +157,16 @@ class LabInstance:
             ) + "\n"
 
         # load extensions Vagrantfile into instance
+        use_provisioning_vm = True if self.provisioner_name == PROVISIONING_VM else False
         environment = Environment(loader=FileSystemLoader(GoadPath.get_template_path(self.provider_name)))
         vagrantfile_template = environment.get_template("Vagrantfile")
         vagrantfile_content = vagrantfile_template.render(
             lab_name=self.lab_name,
             lab=lab_vagrantfile_content,
             extensions=lab_extensions_content,
-            provider_name=self.provider_name
+            provider_name=self.provider_name,
+            ip_range=self.ip_range,
+            use_provisioning_vm=use_provisioning_vm
         )
 
         # create vagrantfile

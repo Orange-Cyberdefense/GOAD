@@ -3,6 +3,10 @@ from goad.provider.provider import Provider
 
 class VagrantProvider(Provider):
 
+    def __init__(self, lab_name):
+        super().__init__(lab_name)
+        self.jumpbox_setup_script = 'setup_local_jumpbox.sh'
+
     def check(self):
         checks = [
             self.command.check_vagrant(),
@@ -40,3 +44,6 @@ class VagrantProvider(Provider):
     def remove_extension(self, extension_name):
         # TODO one day if possible
         pass
+
+    def get_jumpbox_ip(self, ip_range=''):
+        return ip_range + '.3'

@@ -6,6 +6,19 @@ ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vmware_desktop'
 
 {{extensions}}
 
+{% if use_provisioning_vm %}
+boxes.append(
+    { :name => "PROVISIONING",
+      :ip => "{{ip_range}}.3",
+      :box => "bento/ubuntu-22.04",
+      :os => "linux",
+      :cpus => 1,
+      :mem => 2000,
+      :forwarded_port => [ {:guest => 22, :host => 2210, :id => "ssh"} ]
+    }
+)
+{% endif %}
+
   config.vm.provider "vmware_desktop" do |v|
     v.force_vmware_license = "workstation"  # force the licence for fix some vagrant plugin issue
     # v.gui = true
