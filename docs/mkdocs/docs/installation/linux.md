@@ -119,43 +119,45 @@
 
 ## Prepare your python environment for goad.py
 
-- [x] To run the Goad installation/management script you will need :
-    -  Python (version between 3.8 and 3.11) with venv module installed
+=== "Classic"
+    
+    - [x] To run the Goad installation/management script you will need :
+        -  Python (version between 3.8 and 3.11) with venv module installed
+    
+    - Install the python3-venv corresponding to your python version 
+    
+    ```bash
+    sudo apt install python<version>-venv
+    ```
+    
+    - Example:
+    
+    ```bash
+    sudo apt install python3.10-venv
+    ```
+    
+    !!! bug "Python version"
+           Be sure to use a python version between **python3.8** and python **3.11**. Others python versions are not supported by now due to incompatibility with the fixed version in the requirements.
 
-- Install the python3-venv corresponding to your python version 
-
-```bash
-sudo apt install python<version>-venv
-```
-
-- Example:
-
-```bash
-sudo apt install python3.10-venv
-```
-
-!!! bug "Python version"
-       Be sure to use a python version between **python3.8** and python **3.11**. Others python versions are not supported by now due to incompatibility with the fixed version in the requirements.
-
-## Prepare your python environment for goad.py and provisioning with docker
-
-!!! info
-    With this method ansible-core will not be installed locally on your venv
-
-- [x] be sure you have docker installed on your os for the provisioning part (ansible will be run from the container)
-- [x] To run the Goad installation/management script you will need :
-    -  Python (version >= 3.8) with venv module installed
-
-- Install the python3-venv corresponding to your python version 
-
-```bash
-sudo apt install python<version>-venv
-```
-
-- Example:
-
-```bash
-sudo apt install python3.10-venv
-```
-
-- Run goad with `./goad_docker.sh` instead of `./goad.sh` to install the dependencies without the ansible part (local and runner provisioning method will not be available)
+=== "Provisioning with docker"
+    
+    !!! info
+        With this method ansible-core will not be installed locally on your venv
+    
+    - [x] be sure you have docker installed on your os for the provisioning part (ansible will be run from the container)
+    - [x] To run the Goad installation/management script you will need :
+        -  Python (version >= 3.8) with venv module installed
+    
+    - Install the python3-venv corresponding to your python version 
+    
+    ```bash
+    sudo apt install python<version>-venv
+    ```
+    
+    - Example:
+    
+    ```bash
+    sudo apt install python3.10-venv
+    ```
+    
+    - Run goad with `./goad_docker.sh` instead of `./goad.sh` to install the dependencies without the ansible part (local and runner provisioning method will not be available)
