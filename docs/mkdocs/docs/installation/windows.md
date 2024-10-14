@@ -1,8 +1,5 @@
 # :material-microsoft-windows: Windows
 
-!!! info 
-    To use GOAD on windows you will need WSL.
-
 - First you will prepare your windows host for an hypervisor
 - Second you will choose between 
     - install debian 12 with WSL to run goad install script
