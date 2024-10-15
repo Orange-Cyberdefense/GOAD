@@ -21,7 +21,7 @@ class LocalJumpBox(JumpBox):
         self.command.scp(script_file, f'{self.username}@{self.ip}:~/setup.sh', self.ssh_key, self.instance_path)
         if Utils.is_windows():
             # if is windows convert line ending
-            self.run_command("sudo apt install dos2unix", '~')
+            self.run_command("sudo apt update && sudo apt install -y dos2unix", '~')
             self.run_command("dos2unix setup.sh", '~')
         self.run_command('bash setup.sh', '~')
 
