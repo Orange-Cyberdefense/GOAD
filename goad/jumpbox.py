@@ -36,15 +36,15 @@ class JumpBox:
         return self.instance_path + os.path.sep + 'ssh_keys' + os.path.sep + 'ubuntu-jumpbox.pem'
 
     def ssh(self):
-        ssh_cmd = f"ssh -o 'StrictHostKeyChecking no' -i {self.ssh_key} {self.username}@{self.ip}"
+        ssh_cmd = f"ssh -o StrictHostKeyChecking=no -i {self.ssh_key} {self.username}@{self.ip}"
         self.command.run_shell(ssh_cmd, project_path)
 
     def ssh_proxy(self, port):
-        ssh_cmd = f"ssh -o 'StrictHostKeyChecking no' -D {port} -i {self.ssh_key} {self.username}@{self.ip}"
+        ssh_cmd = f"ssh -o StrictHostKeyChecking=no -D {port} -i {self.ssh_key} {self.username}@{self.ip}"
         self.command.run_shell(ssh_cmd, project_path)
 
     def run_script(self, script):
-        ssh_cmd = f"ssh -o 'StrictHostKeyChecking no' -i {self.ssh_key} {self.username}@{self.ip} 'bash -s' < {script}"
+        ssh_cmd = f"ssh-o StrictHostKeyChecking=no -i {self.ssh_key} {self.username}@{self.ip} 'bash -s' < {script}"
         self.command.run_shell(ssh_cmd, project_path)
 
     def sync_sources(self):
@@ -66,6 +66,6 @@ class JumpBox:
             Log.error('Can not sync source jumpbox ip is invalid')
 
     def run_command(self, command, path):
-        ssh_cmd = f"ssh -t -o 'StrictHostKeyChecking no' -i {self.ssh_key} {self.username}@{self.ip} 'cd {path} && {command}'"
+        ssh_cmd = f"ssh -t -o StrictHostKeyChecking=no -i {self.ssh_key} {self.username}@{self.ip} 'cd {path} && {command}'"
         result = self.command.run_command(ssh_cmd, project_path)
         return result

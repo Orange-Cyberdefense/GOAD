@@ -121,7 +121,10 @@ class Utils:
 
     @staticmethod
     def transform_local_path_to_remote_path(origin, remote_project_path):
-        return remote_project_path + origin[len(project_path):]
+        result_path = remote_project_path + origin[len(project_path):]
+        if Utils.is_windows():
+            result_path = result_path.replace('\\', '/')
+        return result_path
 
     @staticmethod
     def get_random_string(length):
