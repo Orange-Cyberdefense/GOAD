@@ -7,7 +7,7 @@ title: Game Of Active Directory
 <img alt="GOAD" src="./img/logo_GOAD3.png">
 </div>
 
-Welcome to [GOAD](https://github.com/Orange-Cyberdefense/GOAD) (v3) documentation !
+Welcome to [GOAD](https://github.com/Orange-Cyberdefense/GOAD/tree/v3-beta) (v3-beta) documentation !
 
 Game Of Active Directory is a free pentest active directory LAB(s) project (1).
 { .annotate }

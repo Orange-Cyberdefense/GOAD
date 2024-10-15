@@ -36,6 +36,7 @@ The goad management script is now written in :simple-python: python to permit mo
 
     git clone https://github.com/Orange-Cyberdefense/GOAD.git
     cd GOAD
+    git checkout -b v3-beta origin/v3-beta
     # verify installation
     ./goad.sh -t check -l GOAD -p virtualbox
 
