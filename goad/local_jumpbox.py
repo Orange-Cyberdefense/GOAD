@@ -18,7 +18,7 @@ class LocalJumpBox(JumpBox):
         if not os.path.isfile(script_file):
             Log.error(f'script file: {script_file} not found !')
             return None
-        self.command.scp(script_file, '~/setup.sh', self.ssh_key, self.instance_path)
+        self.command.scp(script_file, f'{self.username}@{self.ip}:~/setup.sh', self.ssh_key, self.instance_path)
         self.run_command('bash ~/setup.sh', '~')
 
     def get_jumpbox_key(self):
