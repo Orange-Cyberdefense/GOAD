@@ -18,7 +18,8 @@ class LocalJumpBox(JumpBox):
         if not os.path.isfile(script_file):
             Log.error(f'script file: {script_file} not found !')
             return None
-        self.run_script(script_file)
+        self.command.scp(script_file, '~/setup.sh', self.ssh_key, self.instance_path)
+        self.run_command('bash ~/setup.sh', '~')
 
     def get_jumpbox_key(self):
         # example : workspace/bf0c11-goad-light-vmware/provider/.vagrant/machines/ELK/vmware_desktop/private_key
