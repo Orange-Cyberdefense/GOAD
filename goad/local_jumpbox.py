@@ -19,7 +19,11 @@ class LocalJumpBox(JumpBox):
             Log.error(f'script file: {script_file} not found !')
             return None
         self.command.scp(script_file, f'{self.username}@{self.ip}:~/setup.sh', self.ssh_key, self.instance_path)
-        self.run_command('bash ~/setup.sh', '~')
+        if Utils.is_windows():
+            # if is windows convert line ending
+            self.run_command("sudo apt install dos2unix", '~')
+            self.run_command("dos2unix setup.sh", '~')
+        self.run_command('bash setup.sh', '~')
 
     def get_jumpbox_key(self):
         # example : workspace/bf0c11-goad-light-vmware/provider/.vagrant/machines/ELK/vmware_desktop/private_key
@@ -41,7 +45,11 @@ class LocalJumpBox(JumpBox):
             # workspace inventory files (no need -r as it will copy all the provider folder)
             for src_file in Utils.list_files(self.instance_path):
                 source = self.instance_path + os.path.sep + src_file
-                destination = f'{self.username}@{self.ip}:~/GOAD/workspace/{self.instance_id}/{src_file}'
+                destination_file = f'~/GOAD/workspace/{self.instance_id}/{src_file}'
+                destination = f'{self.username}@{self.ip}:{destination_file}'
                 self.command.scp(source, destination, self.ssh_key, self.instance_path)
+                if Utils.is_windows():
+                    # if is windows convert line ending
+                    self.run_command(f"dos2unix {destination_file}", '~')
         else:
             Log.error('Can not sync source jumpbox ip is invalid')
