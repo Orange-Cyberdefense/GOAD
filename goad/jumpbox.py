@@ -44,7 +44,7 @@ class JumpBox:
         self.command.run_shell(ssh_cmd, project_path)
 
     def run_script(self, script):
-        ssh_cmd = f"ssh-o StrictHostKeyChecking=no -i {self.ssh_key} {self.username}@{self.ip} 'bash -s' < {script}"
+        ssh_cmd = f"ssh -o StrictHostKeyChecking=no -i {self.ssh_key} {self.username}@{self.ip} 'bash -s' < {script}"
         self.command.run_shell(ssh_cmd, project_path)
 
     def sync_sources(self):
