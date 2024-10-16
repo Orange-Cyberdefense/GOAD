@@ -1202,24 +1202,34 @@
 <p>Install :</p>
 </li>
 </ul>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>./goad.sh<span class="w"> </span>-t<span class="w"> </span>install<span class="w"> </span>-l<span class="w"> </span>NHA<span class="w"> </span>-p<span class="w"> </span>virtualbox<span class="w"> </span>-m<span class="w"> </span>docker
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>./goad.sh<span class="w"> </span>-t<span class="w"> </span>install<span class="w"> </span>-l<span class="w"> </span>NHA<span class="w"> </span>-p<span class="w"> </span>virtualbox
+</span></code></pre></div>
+<p>or</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>./goad.sh
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>&gt;<span class="w"> </span>set_lab<span class="w"> </span>NHA
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>&gt;<span class="w"> </span>set_provider<span class="w"> </span>&lt;your_provider&gt;
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>&gt;<span class="w"> </span>set_iprange<span class="w"> </span><span class="m">192</span>.168.56<span class="w">  </span><span class="c1"># select the one you want and you can skip this with ludus</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>&gt;<span class="w"> </span>install
 </span></code></pre></div>
 <ul>
 <li>Once install finish disable vagrant user to avoid using it :</li>
 </ul>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>./goad.sh<span class="w"> </span>-t<span class="w"> </span>disablevagrant<span class="w"> </span>-l<span class="w"> </span>NHA<span class="w"> </span>-p<span class="w"> </span>virtualbox<span class="w"> </span>-m<span class="w"> </span>docker
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>./goad.sh
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>&gt;<span class="w"> </span>load<span class="w"> </span>&lt;instance_id&gt;
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>&gt;<span class="w"> </span>disable_vagrant
 </span></code></pre></div>
 <ul>
 <li>Now do a reboot of all the machine to avoid unintended secrets stored : </li>
 </ul>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>./goad.sh<span class="w"> </span>-t<span class="w"> </span>stop<span class="w"> </span>-l<span class="w"> </span>NHA<span class="w"> </span>-p<span class="w"> </span>virtualbox<span class="w"> </span>-m<span class="w"> </span>docker
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>./goad.sh<span class="w"> </span>-t<span class="w"> </span>start<span class="w"> </span>-l<span class="w"> </span>NHA<span class="w"> </span>-p<span class="w"> </span>virtualbox<span class="w"> </span>-m<span class="w"> </span>docker
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>&gt;<span class="w"> </span>stop
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>&gt;<span class="w"> </span>start
 </span></code></pre></div>
 <p>And you are ready to play ! :)</p>
 <ul>
 <li>If you need to re-enable vagrant</li>
 </ul>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>./goad.sh<span class="w"> </span>-t<span class="w"> </span>enablevagrant<span class="w"> </span>-l<span class="w"> </span>NHA<span class="w"> </span>-p<span class="w"> </span>virtualbox<span class="w"> </span>-m<span class="w"> </span>docker
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>&gt;<span class="w"> </span>load<span class="w"> </span>&lt;instance_id&gt;
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>&gt;<span class="w"> </span>enable_vagrant
 </span></code></pre></div>
 <ul>
 <li>If you want to create a write up of the chall, no problem, have fun. Please ping me on X (@M4yFly) or Discord, i will be happy to read it :)</li>
