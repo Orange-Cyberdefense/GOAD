@@ -3,6 +3,8 @@
   <br>
 </div>
 
+New version v3 (beta) is here : [https://github.com/Orange-Cyberdefense/GOAD/tree/v3-beta](https://github.com/Orange-Cyberdefense/GOAD/tree/v3-beta)
+
 ## Description
 GOAD is a pentest active directory LAB project.
 The purpose of this lab is to give pentesters a vulnerable Active directory environment ready to use to practice usual attack techniques.
