@@ -13,20 +13,32 @@
 - Install :
 
 ```bash
-./goad.sh -t install -l NHA -p virtualbox -m docker
+./goad.sh -t install -l NHA -p virtualbox
+```
+
+or
+
+```bash
+./goad.sh
+> set_lab NHA
+> set_provider <your_provider>
+> set_iprange 192.168.56  # select the one you want and you can skip this with ludus
+> install
 ```
 
 - Once install finish disable vagrant user to avoid using it :
 
 ```bash
-./goad.sh -t disablevagrant -l NHA -p virtualbox -m docker
+./goad.sh
+> load <instance_id>
+> disable_vagrant
 ```
 
 - Now do a reboot of all the machine to avoid unintended secrets stored : 
 
 ```bash
-./goad.sh -t stop -l NHA -p virtualbox -m docker
-./goad.sh -t start -l NHA -p virtualbox -m docker
+> stop
+> start
 ```
 
 And you are ready to play ! :)
@@ -34,7 +46,8 @@ And you are ready to play ! :)
 - If you need to re-enable vagrant
 
 ```bash
-./goad.sh -t enablevagrant -l NHA -p virtualbox -m docker
+> load <instance_id>
+> enable_vagrant
 ```
 
 - If you want to create a write up of the chall, no problem, have fun. Please ping me on X (@M4yFly) or Discord, i will be happy to read it :)
