@@ -23,9 +23,13 @@ cd GOAD
 git checkout -b v3-beta origin/v3-beta  # switch to origin/v3-beta branch
 sudo apt install python3.11-venv
 export LUDUS_API_KEY='myapikey'         # put your api key here
-./goad.sh
-exit
+./goad.sh -p ludus
+GOAD/ludus/local > check
+GOAD/ludus/local > set_lab XXX # GOAD/GOAD-Light/NHA/SCCM
+GOAD/ludus/local > install
 ```
+
+And goad launch the installation ;)
 
 ## Goad configuration
 
