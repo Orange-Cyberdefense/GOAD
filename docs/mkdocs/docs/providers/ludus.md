@@ -20,13 +20,16 @@
 ```bash
 git clone https://github.com/Orange-Cyberdefense/GOAD.git
 cd GOAD
+git checkout -b v3-beta origin/v3-beta  # switch to origin/v3-beta branch
 sudo apt install python3.11-venv
+export LUDUS_API_KEY='myapikey'         # put your api key here
 ./goad.sh
 exit
 ```
 
 ## Goad configuration
 
+- If you don't want to do the export LUDUS_API_KEY before using goad you can also add the api_key in the goad.ini configuration file
 - The goad configuration file as some options for ludus:
 
 ```

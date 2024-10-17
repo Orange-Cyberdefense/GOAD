@@ -53,7 +53,11 @@ class LinuxCommand(Command):
     # RUN
     def run_ludus(self, args, path, api_key, user_id='', impersonation=False):
         env = os.environ.copy()
-        env["LUDUS_API_KEY"] = api_key
+        if "LUDUS_API_KEY" not in os.environ:
+            Log.info('Using api key from config file')
+            env["LUDUS_API_KEY"] = api_key
+        else:
+            Log.info('Using api key from env')
         result = None
         try:
             command = 'ludus '
@@ -70,7 +74,11 @@ class LinuxCommand(Command):
     def run_ludus_result(self, command, path, api_key, do_log=True, user_id='', impersonation=False):
         result = None
         env = os.environ.copy()
-        env["LUDUS_API_KEY"] = api_key
+        if "LUDUS_API_KEY" not in os.environ:
+            Log.info('Using api key from config file')
+            env["LUDUS_API_KEY"] = api_key
+        else:
+            Log.info('Using api key from env')
         try:
             cmd = ['ludus']
             if impersonation:
