@@ -9,6 +9,7 @@ GOAD_REPO=/home/vagrant/GOAD
 GIT_FOLDER=$LOCALREPO/.git
 if [ ! -d $GIT_FOLDER ]
 then
+    rm -rf $GOAD_REPO
     git clone https://github.com/Orange-Cyberdefense/GOAD.git $GOAD_REPO
     cd $GOAD_REPO
     git checkout -b v3-beta origin/v3-beta
