@@ -1,3 +1,5 @@
+import os.path
+
 from goad.command.linux import LinuxCommand
 from goad.command.wsl import WslCommand
 from goad.log import Log
@@ -31,7 +33,9 @@ class LocalJumpBox(JumpBox):
         provider_folders = Utils.list_folders(provider_folder)
         if len(provider_folders) > 0:
             return provider_folder + provider_folders[0] + os.path.sep + 'private_key'
-        return 'not found'
+        key_supposed_path = provider_folder + '<provider_name>' + os.path.sep + 'private_key'
+        Log.error(f'PROVISIONING ssh key not found at : {key_supposed_path}')
+        return None
 
     def sync_sources(self):
         """

@@ -17,7 +17,9 @@ class JumpBox:
 
         if not creation:
             self.ip = self.provider.get_jumpbox_ip(instance.ip_range)
-            if os.path.isfile(self.ssh_key) is None:
+            if self.ssh_key is None:
+                Log.error('Missing ssh file JumpBox remote connection')
+            elif os.path.isfile(self.ssh_key) is None:
                 Log.error('Missing ssh file JumpBox remote connection')
             if self.ip is None:
                 Log.error('Missing ip for JumpBox remote connection')

@@ -15,8 +15,12 @@ class VmAnsibleProvisioner(Ansible):
     def prepare_jumpbox(self, jumpbox_ip):
         if self.jumpbox is not None:
             self.jumpbox.ip = jumpbox_ip
-            self.jumpbox.provision()
-            self.jumpbox.sync_sources()
+            self.jumpbox.ssh_key = self.jumpbox.get_jumpbox_key()
+            if self.jumpbox.ssh_key is not None:
+                self.jumpbox.provision()
+                self.jumpbox.sync_sources()
+            else:
+                Log.error("The ssh key for the provider can't be found, error.")
         else:
             Log.error('no jumpbox for provisioner')
 
