@@ -103,7 +103,7 @@
             }
         },
         "srv02" : {
-            "hostname" : "castleblack",
+            "hostname" : "castelblack",
             "type" : "server",
             "local_admin_password": "NgtI75cKV+Pu",
             "domain" : "north.sevenkingdoms.local",
