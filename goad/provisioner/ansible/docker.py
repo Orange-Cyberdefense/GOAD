@@ -12,22 +12,24 @@ class DockerAnsibleProvisionerCmd(Ansible):
     def __init__(self, lab_name, provider):
         super().__init__(lab_name, provider)
         self.remote_project_path = '/goad'
-        if self.is_current_user_in_sudo_group():
+        if self.is_current_user_in_docker_group():
             self.sudo = ''
         else:
             self.sudo = 'sudo'
         self.check_docker_image()
 
-    def is_current_user_in_sudo_group(self):
+    def is_current_user_in_docker_group(self):
         try:
             # Get the current logged-in user
             user = os.getlogin()
             # Run the 'groups' command to get the groups the user belongs to
             output = subprocess.check_output(['groups', user], text=True)
             # Check if 'sudo' is in the output
-            if 'sudo' in output.split():
+            if 'docker' in output.split():
+                Log.info('Current user is in docker group')
                 return True
             else:
+                Log.info('Current user is not in docker group, we will use "sudo" before docker commands')
                 return False
         except subprocess.CalledProcessError:
             # If the command fails, return False
