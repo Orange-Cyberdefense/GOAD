@@ -1,0 +1,14 @@
+[default]
+; ------------------------------------------------
+; sevenkingdoms.local
+; ------------------------------------------------
+dc01 ansible_host={{ip_range}}.10 dns_domain=dc01 dict_key=dc01
+
+[all:vars]
+force_dns_server=no
+dns_server={{ip_range}}.254
+
+dns_server_forwarder={{ip_range}}.254
+
+ansible_user=localuser
+ansible_password=password
