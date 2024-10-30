@@ -9,6 +9,7 @@
 
 - NHA WriteUp :
     - [crypt0ace's blog NHA writeup](https://crypt0ace.github.io/posts/NHA-Part-1/)
+    - [mr-stark's blog NHA writeup](https://mr-stark.notion.site/NINJA-HACKER-ACADEMY-12179e9ad7c980c4a3b7c35e03cd501f)
 
 - Podcast
     - [Hackn'speak episode 0x1B (FR)](https://podcasts-francais.fr/podcast/hack-n-speak)
