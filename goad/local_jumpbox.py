@@ -27,14 +27,15 @@ class LocalJumpBox(JumpBox):
             self.run_command("dos2unix setup.sh", '~')
         self.run_command('bash setup.sh', '~')
 
-    def get_jumpbox_key(self):
-        # example : workspace/bf0c11-goad-light-vmware/provider/.vagrant/machines/ELK/vmware_desktop/private_key
-        provider_folder = f'{self.instance_path}/provider/.vagrant/machines/PROVISIONING/'.replace('/', os.path.sep)
-        provider_folders = Utils.list_folders(provider_folder)
-        if len(provider_folders) > 0:
-            return provider_folder + provider_folders[0] + os.path.sep + 'private_key'
-        key_supposed_path = provider_folder + '<provider_name>' + os.path.sep + 'private_key'
-        Log.error(f'PROVISIONING ssh key not found at : {key_supposed_path}')
+    def get_jumpbox_key(self, creation=False):
+        if not creation:
+            # example : workspace/bf0c11-goad-light-vmware/provider/.vagrant/machines/ELK/vmware_desktop/private_key
+            provider_folder = f'{self.instance_path}/provider/.vagrant/machines/PROVISIONING/'.replace('/', os.path.sep)
+            provider_folders = Utils.list_folders(provider_folder)
+            if len(provider_folders) > 0:
+                return provider_folder + provider_folders[0] + os.path.sep + 'private_key'
+            key_supposed_path = provider_folder + '<provider_name>' + os.path.sep + 'private_key'
+            Log.error(f'PROVISIONING ssh key not found at : {key_supposed_path}')
         return None
 
     def sync_sources(self):

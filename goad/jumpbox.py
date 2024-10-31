@@ -11,7 +11,7 @@ class JumpBox:
         self.instance_id = instance.instance_id
         self.instance_path = instance.instance_path
         self.provider = instance.provider
-        self.ssh_key = self.get_jumpbox_key()
+        self.ssh_key = self.get_jumpbox_key(creation)
         self.username = 'goad'
         self.command = CommandFactory.get_command()
 
@@ -34,7 +34,7 @@ class JumpBox:
             return None
         self.run_script(script_file)
 
-    def get_jumpbox_key(self):
+    def get_jumpbox_key(self, creation=False):
         return self.instance_path + os.path.sep + 'ssh_keys' + os.path.sep + 'ubuntu-jumpbox.pem'
 
     def ssh(self):
