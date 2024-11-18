@@ -41,7 +41,7 @@ variable "storage" {
 }
 
 variable "network_bridge" {
-  default = "{{config.get_value('proxmox', 'network_bridge', 'vmbr3')}}"
+  default = "{{config.get_value('proxmox', 'pm_network_bridge', 'vmbr3')}}"
 }
 
 variable "network_model" {
