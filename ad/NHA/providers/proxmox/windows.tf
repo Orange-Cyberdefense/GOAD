@@ -23,7 +23,7 @@
   desc               = "SRV01 - windows server 2019 - {{ip_range}}.21"
   cores              = 2
   memory             = 4096
-  clone              = "WinServer2016_x64"
+  clone              = "WinServer2019_x64"
   dns                = "{{ip_range}}.1"
   ip                 = "{{ip_range}}.21/24"
   gateway            = "{{ip_range}}.1"
@@ -43,7 +43,7 @@
   desc               = "SRV03 - windows server 2016 - {{ip_range}}.23"
   cores              = 2
   memory             = 4096
-  clone              = "WinServer2016_x64"
+  clone              = "WinServer2019_x64"
   dns                = "{{ip_range}}.1"
   ip                 = "{{ip_range}}.23/24"
   gateway            = "{{ip_range}}.1"
