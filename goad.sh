@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-py=python3.8
+py=python3
 venv="$HOME/.goad/.venv"
 requirement_file="requirements.yml"
 
