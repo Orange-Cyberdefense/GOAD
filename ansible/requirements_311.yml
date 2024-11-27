@@ -1,0 +1,13 @@
+---
+collections:
+  # Install a collection from Ansible Galaxy.
+  # ansible.windows 2.5.0 and community.windows 2.3.0 need ansible-core >= 2.16
+  - name: ansible.windows
+    version: 2.5.0
+  - name: community.general
+  - name: community.windows
+    version: 2.3.0
+  - name: chocolatey.chocolatey
+# - name: goad.windows
+#   type: dir
+#   source: ./collections/goad/windows

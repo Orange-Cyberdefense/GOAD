@@ -2,19 +2,28 @@
 
 py=python3
 venv="$HOME/.goad/.venv"
+requirement_file="requirements.yml"
 
 if [ ! -d "$venv" ]
 then
   # Get the Python version (removes 'Python' from output)
   version=$($py --version 2>&1 | awk '{print $2}')
+  echo "Python version in use : $version"
   # Convert the version to comparable format (removes the dot and treats it as an integer)
   version_numeric=$(echo $version | awk -F. '{printf "%d%02d%02d\n", $1, $2, $3}')
-  # Check if the version is >= 3.8.0 and < 3.12.0
-  if [ "$version_numeric" -ge 30800 ] && [ "$version_numeric" -lt 31200 ]; then
-      # echo "Python version is >= 3.8.0 and < 3.12.0"
-      echo 'python version ok'
+  # Check if the version is >= 3.8.0
+  if [ "$version_numeric" -ge 30800 ]; then
+      # echo "Python version is >= 3.8.0
+      echo 'python version >= 3.8 ok'
+      if [ "$version_numeric" -lt 31100 ]; then
+        # python version < 3.11
+        requirement_file="requirements.yml"
+      else
+        # python version >= 3.11
+        requirement_file="requirements_311.yml"
+      fi
   else
-      echo "Python version is outside the range 3.8.0 to 3.12.0"
+      echo "Python version is < 3.8 please update python before install"
       exit
   fi
 
@@ -32,9 +41,9 @@ then
   source $venv/bin/activate
   $py -m pip install --upgrade pip
   export SETUPTOOLS_USE_DISTUTILS=stdlib
-  $py -m pip install -r requirements.yml
+  $py -m pip install -r $requirement_file
   cd ansible
-  ansible-galaxy install -r requirements.yml
+  ansible-galaxy install -r $requirement_file
   cd -
 fi
 
