@@ -19,6 +19,7 @@ ad/PURPLE
 ad/REDLAB
 ad/EDRLAB
 ad/DEMO
+ad/FEDGOAD
 ansible/roles/edr
 ansible/edr.yml
 ansible/private_data_dir/artifacts/
@@ -34,4 +35,6 @@ todo.md
 next_extensions/
 /extensions/exchange/ansible/iso/resources/iso/*.ISO
 docs/site/
+docs/olddocs/
 docs/mkdocs/site/
+scripts/archives/
