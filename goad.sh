@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-py=python3
+py=python3.8
 venv="$HOME/.goad/.venv"
 requirement_file="requirements.yml"
 
@@ -27,24 +27,31 @@ then
       exit
   fi
 
-  if $py -m venv --help > /dev/null 2>&1; then
-      echo "venv module is installed. continue"
+  if [ "$($py -m venv -h 2>/dev/null | grep -i 'usage:')" ]; then
+    echo "venv module is installed. continue"
   else
-      echo "venv module is not installed."
-      echo "please install python-venv according to your system"
-      echo "exit"
-      exit 0
+    echo "venv module is not installed."
+    echo "please install $py-venv according to your system"
+    echo "exit"
+    exit 0
   fi
+
   echo '[+] venv not found, start python venv creation'
-  mkdir ~/.goad
+  mkdir -p ~/.goad
   $py -m venv $venv
   source $venv/bin/activate
-  $py -m pip install --upgrade pip
-  export SETUPTOOLS_USE_DISTUTILS=stdlib
-  $py -m pip install -r $requirement_file
-  cd ansible
-  ansible-galaxy install -r $requirement_file
-  cd -
+  if [ $? -eq 0 ]; then
+    $py -m pip install --upgrade pip
+    export SETUPTOOLS_USE_DISTUTILS=stdlib
+    $py -m pip install -r $requirement_file
+    cd ansible
+    ansible-galaxy install -r $requirement_file
+    cd -
+  else
+    echo "Error in venv creation"
+    rm -rf $venv
+    exit 0
+  fi
 fi
 
 # launch the app
