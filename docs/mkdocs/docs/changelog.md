@@ -60,10 +60,10 @@
 - [X] extension ludus
 - [X] extension elk
 - [X] extension ws01
-- [ ] extension exchange add a bot to read mails
+- [X] extension exchange add a bot to read mails
+- [ ] extension guacamole
 - [ ] extension attackbox
 - [ ] extension VPN
-- [ ] extension guacamole
 - [ ] extension linux VM enrolled
 - [ ] Add Applocker to ws01
 - [ ] Wsus (to add on sccm)
