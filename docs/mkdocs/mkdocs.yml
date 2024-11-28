@@ -34,6 +34,11 @@ nav:
     - index : usage/index.md
     - Arguments: usage/goad_args.md
     - Interactive: usage/goad_console.md
+  - 📝 Developers: 
+    - index : developers/index.md
+    - Add Extension: developers/add_extension.md
+    - Add Lab: developers/add_lab.md
+    - Add Provider: developers/add_provider.md
   - 🇮 instances: instances.md
   - 🛠️ provisioning: provisioning.md
   - ⚠️ Troubleshoot :  troobleshoot.md

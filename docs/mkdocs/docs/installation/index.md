@@ -46,7 +46,25 @@ The goad management script is now written in :simple-python: python to permit mo
     ./goad.sh
     ```
 
-## Dependencies
+## Installation
+
+- Installation is in three parts :
+    - Templating : this will create the template to use (needed only for proxmox and ludus)
+    - Providing : this will instantiate the virtual machines depending on your provider
+    - Provisioning : it is always made with ansible, it will install all the stuff to create the lab
+
+- GOAD script cover the providing and provisioning part
+
+- The install script take multiple parameters:
+    - `-p`  : the provider to use (vmware/virtualbox/proxmox/ludus/azure/aws)
+    - `-l`  : the lab to install (GOAD/GOAD-Light/SCCM/NHA/MINILAB)
+    - `-m`  : the method of installation (local/runner/docker/remote), most of the time don't change it
+    - `-ip` : the ip range to use
+
+- The easy way is just launch `./goad.sh` and use help `?`in the interactive prompt
+
+
+### Python Dependencies
 
 - Goad in :simple-python: python come with a lot of dependencies as you can see in the `requirements.yml` file on the root of the project.
 - If you don't want to run the provisioning from your python venv but only from docker you can use `goad_docker.sh` script instead of `goad.sh`. This will run the ansible with the docker method instead of local or runner.
@@ -62,12 +80,21 @@ pyyaml
 ```
 
 - Mandatory for :material-ansible: ansible inside goad (for provisioning method local or runner) :
-```
-# Ansible
-ansible_runner
-ansible-core==2.12.6
-pywinrm
-```
+  - python < 3.11
+    ```
+    # Ansible
+    ansible_runner
+    ansible-core==2.12.6
+    pywinrm
+    ```
+  - python >= 3.11
+    ```
+    # Ansible
+    setuptools
+    ansible_runner
+    ansible-core==2.18.0
+    pywinrm
+    ```
 
 - Mandatory for :material-microsoft-azure: azure provider :
 ```
@@ -103,23 +130,6 @@ requests
 -d remote     : disable remote provisioning method
 -d docker     : disable docker provisioning method
 ```
-
-## Installation
-
-- Installation is in three parts :
-    - Templating : this will create the template to use (needed only for proxmox and ludus)
-    - Providing : this will instantiate the virtual machines depending on your provider
-    - Provisioning : it is always made with ansible, it will install all the stuff to create the lab
-
-- GOAD script cover the providing and provisioning part
-
-- The install script take multiple parameters:
-    - `-p`  : the provider to use (vmware/virtualbox/proxmox/ludus/azure/aws)
-    - `-l`  : the lab to install (GOAD/GOAD-Light/SCCM/NHA/MINILAB)
-    - `-m`  : the method of installation (local/runner/docker/remote), most of the time don't change it
-    - `-ip` : the ip range to use
-
-- The easy way is just launch `./goad.sh` and use help `?`in the interactive prompt
 
 ## Configuration files
 
