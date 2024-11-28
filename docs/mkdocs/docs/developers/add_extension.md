@@ -16,6 +16,25 @@ extensions/
         inventory           # mandatory
         extension.json      # mandatory
 ```
+## Create Extension.json
+
+- Create the extension.json file
+
+```json
+{
+    "name": "my extension",
+    "description": "Add an extension to goad lab",
+    "machines": [
+        "ws02 (myvm.sevenkingdoms.local)"
+    ],
+    "compatibility": [
+        "GOAD",
+        "GOAD-Light",
+        "GOAD-Mini"
+    ],
+    "impact": "blabla"
+}
+```
 
 ## Providers
 
