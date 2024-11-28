@@ -1,0 +1,15 @@
+- name: create setup folder
+  ansible.windows.win_file:
+    path: "c:\\setup"
+    state: directory
+
+- name: Copy scripts
+  ansible.windows.win_copy:
+    src: "{{item}}"
+    dest: "c:\\setup\\{{item}}"
+  with_items:
+    - botScheduler.ps1
+    - readMail.ps1
+
+- name: Create schedule task bot_scheduler
+  ansible.windows.win_shell: 'c:\setup\botScheduler.ps1'

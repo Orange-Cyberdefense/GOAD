@@ -78,3 +78,8 @@
     exchange_prereqs_complete_file: "{{ ludus_exchange_iso_directory }}\\exchange_prereqs_complete.txt"
     send_connector_source_transport_servers: "{{ludus_exchange_host}}"
     ludus_install_directory: "./iso"
+
+- name: Add exchange mail reader bot
+  hosts: srv01
+  roles:
+    - { role: 'exchange_bot', tags: 'exchange_bot' }
