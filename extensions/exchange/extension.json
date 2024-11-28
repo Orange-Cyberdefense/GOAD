@@ -6,7 +6,8 @@
     ],
     "compatibility": [
         "GOAD",
-        "GOAD-Light"
+        "GOAD-Light",
+        "GOAD-Mini"
     ],
     "impact": "Modify the ad schema and add a computer (warning the exchange machine is really heavy)"
 }
