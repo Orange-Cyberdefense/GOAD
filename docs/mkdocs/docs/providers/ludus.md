@@ -20,8 +20,7 @@
 ```bash
 git clone https://github.com/Orange-Cyberdefense/GOAD.git
 cd GOAD
-git checkout -b v3-beta origin/v3-beta  # switch to origin/v3-beta branch
-sudo apt install python3.11-venv
+sudo apt install python3.11-venv        # because by default ludus use debian 12 with python3.11
 export LUDUS_API_KEY='myapikey'         # put your api key here
 ./goad.sh -p ludus
 GOAD/ludus/local > check

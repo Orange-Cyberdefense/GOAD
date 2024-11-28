@@ -121,8 +121,7 @@
 
 === "Classic"
     
-    - [x] To run the Goad installation/management script you will need :
-        -  Python (version between 3.8 and 3.11) with venv module installed
+    - To run the Goad installation/management script you will need : **Python version >=3.8** with venv module installed
     
     - Install the python3-venv corresponding to your python version 
     
@@ -135,9 +134,48 @@
     ```bash
     sudo apt install python3.10-venv
     ```
-    
-    !!! bug "Python version"
-           Be sure to use a python version between **python3.8** and python **3.11**. Others python versions are not supported by now due to incompatibility with the fixed version in the requirements.
+
+    - Then you are ready to launch 
+
+    ```
+    ./goad.sh
+    ```
+
+    - The script will :
+        - verify python version >=3.8
+        - create a venv in `~/.goad/.venv`
+        - launch python requirements installation
+        - launch ansible-galaxy collections requirements installation
+        - start goad.py with the venv created
+
+    !!! tip
+        if you got an error during requirements installation, look at the error and delete `~/.goad/.venv` before try again
+
+    !!! tip
+        if you need to force a python version change the variable `py=python3` to `py=python3.10` for example in the `goad.sh` script
+
+=== "With poetry"
+
+    - Install python dependencies:
+    ```
+    poetry install
+    ``` 
+
+    - Install ansible-galaxy requirements:
+        - If python < 3.11
+        ```
+        poetry run ansible-galaxy ansible/requirements.yml
+        ```
+
+        - If python >= 3.11
+        ```
+        poetry run ansible-galaxy ansible/requirements_311.yml
+        ```
+
+    - Run goad:
+    ```
+    poetry run python3 goad.py
+    ```
 
 === "Provisioning with docker"
     

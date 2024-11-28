@@ -19,7 +19,7 @@
         - winrm-elevated
 
 - Provisioning
-    - Python3 (version between [3.8, 3.11])
+    - Python3 >=3.8
     - goad requirements
     - ansible-galaxy goad requirements
 

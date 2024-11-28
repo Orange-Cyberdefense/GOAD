@@ -3,9 +3,9 @@
   <br>
 </div>
 
-**GOADv3 - BETA VERSION**
+**GOADv3**
 
-:bookmark: GOADv3 Documentation : [https://orange-cyberdefense.github.io/GOAD/](https://orange-cyberdefense.github.io/GOAD/)
+:bookmark: Documentation : [https://orange-cyberdefense.github.io/GOAD/](https://orange-cyberdefense.github.io/GOAD/)
 
 ## Description
 GOAD is a pentest active directory LAB project.
@@ -21,6 +21,11 @@ The purpose of this lab is to give pentesters a vulnerable Active directory envi
 This lab use free Windows VM only (180 days). After that delay enter a license on each server or rebuild all the lab (may be it's time for an update ;))
 
 ## Available labs
+
+- GOAD Lab family and extensions overview
+<div align="center">
+<img alt="GOAD" width="800" src="./docs/img/diagram-GOADv3-full.png">
+</div>
 
 - [GOAD](https://orange-cyberdefense.github.io/GOAD/labs/GOAD/) : 5 vms, 2 forests, 3 domains (full goad lab)
 <div align="center">

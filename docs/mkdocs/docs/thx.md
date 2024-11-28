@@ -12,6 +12,6 @@
 
 And of course to all the [project contributors](https://github.com/Orange-Cyberdefense/GOAD/graphs/contributors) !
 
-## Enterprise
+## Enterprise
 
-- [Orange Cyberdefense](https://www.orangecyberdefense.com/fr/)
+- [Orange Cyberdefense](https://www.orangecyberdefense.com/fr/) to give me time to work on the project, and let me put the project in GPL on the Orange Cyberdefense's GitHub repository.

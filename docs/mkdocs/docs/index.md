@@ -7,7 +7,7 @@ title: Game Of Active Directory
 <img alt="GOAD" src="./img/logo_GOAD3.png">
 </div>
 
-Welcome to [GOAD](https://github.com/Orange-Cyberdefense/GOAD/tree/v3-beta) (v3-beta) documentation !
+Welcome to [GOAD](https://github.com/Orange-Cyberdefense/GOAD/) documentation !
 
 Game Of Active Directory is a free pentest active directory LAB(s) project (1).
 { .annotate }
@@ -27,3 +27,8 @@ This repository was build for pentest practice :slight_smile:
 
 !!! info "Windows Licenses"
     This lab use free windows VM only (180 days). After that delay enter a license on each server or rebuild all the lab (may be it's time for an update ;))
+
+!!! example ""
+    **:heart: Sponsor**<br>
+    This lab is created and maintained mainly by his creator (Cyril Servières a.k.a @m4yfly) on personal time (~80% personal time / ~20% at Orange Cyberdefense).
+    If you like it maybe consider sponsoring me : [https://github.com/sponsors/Mayfly277](https://github.com/sponsors/Mayfly277)

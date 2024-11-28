@@ -109,7 +109,7 @@
     ### Prepare WSL distribution
     - Open debian console then :
 
-        - Verify you are using python version <= 11
+        - Verify you are using python version >= 3.8
         ```bash
         python3 --version
         ```
@@ -138,11 +138,10 @@
         - :simple-python: [python](https://www.python.org/downloads/windows/) on your windows (tested ok with python 3.10) 
         - :simple-git: [git](https://git-scm.com/downloads/win)
     
-    - Clone the goad project: `git clone https://github.com/Orange-Cyberdefense/GOAD`
-    - Checkout the v3-beta branch : 
+    - Checkout GOAD : 
         ```
-        cd GOAD
-        git checkout -b v3-beta origin/v3-beta
+        git clone https://github.com/Orange-Cyberdefense/GOAD
+        cd GOAD/
         ```
     - Install python dependencies (choose the noansible file) : 
         ```
