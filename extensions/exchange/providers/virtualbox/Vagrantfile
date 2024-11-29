@@ -1,0 +1,9 @@
+boxes.append(
+  { :name => "{{lab_name}}-SRV01",
+    :ip => "{{ip_range}}.21",
+    :box => "StefanScherer/windows_2019",
+    :os => "windows",
+    :cpus => 4,
+    :mem => 12000
+  }
+)

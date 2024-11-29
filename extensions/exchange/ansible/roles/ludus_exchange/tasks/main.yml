@@ -1,0 +1,35 @@
+---
+- name: Check if Exchange is installed
+  win_service:
+    name: "MSExchangeFrontendTransport"
+  register: exchange_installed
+
+- name: Download Exchange ISO for Windows Server 2016
+  ansible.builtin.include_tasks: ludus-download-exchange-2016.yml
+  when: ludus_os_version == "2016" and not exchange_installed.exists
+
+- name: Download Exchange ISO for Windows Server 2019
+  ansible.builtin.include_tasks: ludus-download-exchange-2019.yml
+  when: ludus_os_version in ["2019", "2022"] and not exchange_installed.exists
+
+- name: Ludus Exchange Server features to be installed
+  ansible.builtin.include_tasks: ludus-exchange-pre.yml
+  when: not exchange_installed.exists
+
+- name: Install Exchange Server for Windows Server 2016
+  ansible.builtin.include_tasks: ludus-exchange-2016-install.yml
+  when: ludus_os_version == "2016" and not exchange_installed.exists
+
+- name: Install Exchange Server for Windows Server 2019
+  ansible.builtin.include_tasks: ludus-exchange-2019-install.yml
+  when: ludus_os_version in ["2019", "2022"] and not exchange_installed.exists
+
+- name: Create ad users mailbox
+  ansible.builtin.include_tasks: ludus-create-mailbox.yml
+
+- name: Setup internal dns adapter
+  ansible.builtin.include_tasks: ludus-exchange-dns.yml
+
+#- name: Run the send connector task
+#  ansible.builtin.include_tasks: ludus_sendconnector.yml
+#  when: exchange_installed.exists or send_connector_name is defined

@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "goad"
+version = "3.0.0"
+description = "Game of active directory, an active directory lab project"
+authors = ["Mayfly277 <mayfly277@gmail.com>"]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+rich = "^13.9.4"
+psutil = "^6.1.0"
+Jinja2 = "^3.1.4"
+PyYAML = "^6.0.2"
+setuptools = {version = "^75.6.0", python = ">=3.9"}
+ansible-runner = [{ version = "==2.3.6", python = "==3.8" },
+                  { version = "^2.4.0", python = ">=3.9" }]
+ansible-core = [{ version = "==2.12.6", python = "<3.11" },
+                { version = "==2.18.0", python = ">=3.11" }]
+pywinrm = "^0.5.0"
+azure-identity = "^1.19.0"
+azure-mgmt-compute = "^33.0.0"
+azure-mgmt-network = "^28.0.0"
+boto3 = "^1.35.70"
+proxmoxer = "^2.1.0"
+requests = "^2.32.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

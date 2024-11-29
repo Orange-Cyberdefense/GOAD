@@ -1,0 +1,125 @@
+---
+- name: Check if pre-req installation is completed
+  win_stat:
+    path: "{{ exchange_prereqs_complete_file }}"
+  register: prereq_check
+
+- block:
+    - name: Install IIS 6 Compatibility Features
+      win_feature:
+        name:
+          - Server-Media-Foundation
+          - NET-Framework-45-Features
+          - RPC-over-HTTP-proxy
+          - RSAT-Clustering
+          - RSAT-Clustering-CmdInterface
+          - RSAT-Clustering-Mgmt
+          - RSAT-Clustering-PowerShell
+          - WAS-Process-Model
+          - Web-Asp-Net45
+          - Web-Basic-Auth
+          - Web-Client-Auth
+          - Web-Digest-Auth
+          - Web-Dir-Browsing
+          - Web-Dyn-Compression
+          - Web-Http-Errors
+          - Web-Http-Logging
+          - Web-Http-Redirect
+          - Web-Http-Tracing
+          - Web-ISAPI-Ext
+          - Web-ISAPI-Filter
+          - Web-Lgcy-Mgmt-Console
+          - Web-Metabase
+          - Web-Mgmt-Console
+          - Web-Mgmt-Service
+          - Web-Net-Ext45
+          - Web-Request-Monitor
+          - Web-Server
+          - Web-Stat-Compression
+          - Web-Static-Content
+          - Web-Windows-Auth
+          - Web-WMI
+          - Windows-Identity-Foundation
+          - RSAT-ADDS
+          - ADLDS
+        state: present
+
+    - name: Enable Windows optional features
+      win_optional_feature:
+        name:
+          - IIS-IIS6ManagementCompatibility
+          - IIS-Metabase
+        state: present
+
+    - name: Install .NET Framework
+      win_package:
+        path: "{{ exchange_dotnet_install_path }}"
+        arguments: /q /norestart
+        state: present
+      register: dotnet_install
+
+    - name: Reboot after installing .NET Framework 4.8
+      win_reboot:
+      when: dotnet_install.rc == 3010  # 3010 means a reboot is required
+
+    - name: Wait for the machine to be up after reboot
+      wait_for_connection:
+        timeout: 300
+
+    - name: Install Visual C++ Redistributable for Visual Studio 2013
+      win_package:
+        path: "{{ vcredist2013_install_path }}"
+        arguments: /q /norestart
+        state: present
+      register: vcredist2013_install
+
+    - name: Reboot after installing Visual C++ Redistributable for Visual Studio 2013
+      win_reboot:
+      when: vcredist2013_install.changed
+
+    - name: The IIS URL Rewrite Module is required with Exchange Server 2016 CU22 and Exchange Server 2019 CU11 or later
+      win_package:
+        path: "{{ rewrite_module_path }}"
+        arguments: /q /norestart
+        state: present
+
+    - name: Install Unified Communications Managed API 4.0 Runtime.
+      win_package:
+        path: "{{ ucma_runtime_path }}"
+        arguments: /q /norestart
+        product_id: UCMA4
+        state: present
+      register: pri_exchange_ucma_install
+
+    - name: reboot after installing Unified Communications Managed API 4.0 Runtime
+      win_reboot:
+      when: pri_exchange_ucma_install.reboot_required
+
+    - name: Wait for the machine to be up after reboot
+      wait_for_connection:
+        timeout: 300
+
+    - name: Install Windows features ADLDS Exchange Transport Hub
+      win_feature:
+        name:
+          - ADLDS
+        state: present
+
+    - name: Create file marker for pre-req installation completion
+      win_shell: New-Item -Path "{{ exchange_prereqs_complete_file }}" -ItemType "file"
+      when: not prereq_check.stat.exists
+
+    - name: Reboot the system
+      win_reboot:
+        reboot_timeout: 300
+
+    - name: Wait for the machine to be up after reboot
+      wait_for_connection:
+        timeout: 300
+
+  when: not prereq_check.stat.exists
+
+- name: Check if pre-req installation is already completed
+  debug:
+    msg: "Pre-req installation is already completed. Skipping Pre-req installation tasks."
+  when: prereq_check.stat.exists

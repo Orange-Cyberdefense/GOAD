@@ -1,0 +1,13 @@
+{
+    "name": "exchange",
+    "description": "Add an exchange to goad lab",
+    "machines": [
+        "srv01 (the-eyrie.sevenkingdoms.local)"
+    ],
+    "compatibility": [
+        "GOAD",
+        "GOAD-Light",
+        "GOAD-Mini"
+    ],
+    "impact": "Modify the ad schema and add a computer (warning the exchange machine is really heavy)"
+}

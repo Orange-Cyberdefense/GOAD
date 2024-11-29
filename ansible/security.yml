@@ -27,7 +27,7 @@
       vars:
         security_vars : "{{ lab.hosts[dict_key].security_vars[secu] | default({}) }}"
         domain: "{{lab.hosts[dict_key].domain}}"
-        domain_username: "{{domain}}\\Administrator"
+        domain_username: "{{domain}}\\{{admin_user}}"
         domain_password: "{{lab.domains[domain].domain_password}}"
       loop: "{{lab.hosts[dict_key].security | default([]) }}"
       loop_control:

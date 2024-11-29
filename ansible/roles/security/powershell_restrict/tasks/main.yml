@@ -1,0 +1,8 @@
+- name: Powershell Restrict
+  ansible.windows.win_shell: |
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope MachinePolicy -Force
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope UserPolicy -Force
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force
+  ignore_errors: true

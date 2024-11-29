@@ -1,0 +1,60 @@
+{
+    "lab_extension": {
+        "hosts": {
+            "srv01": {
+                "hostname": "the-eyrie",
+                "type": "server",
+                "local_admin_password": "FP.xh5Fk9Z1c",
+                "domain": "sevenkingdoms.local",
+                "path": "DC=sevenkingdoms,DC=local",
+                "local_groups": {
+                    "Administrators": [
+                        "sevenkingdoms\\lysa.arryn"
+                    ],
+                    "Remote Desktop Users": [
+                        "sevenkingdoms\\Arryn"
+                    ]
+                }
+            }
+        },
+        "domains": {
+            "sevenkingdoms.local": {
+                "organisation_units": {},
+                "groups": {
+                    "universal": {},
+                    "global": {
+                        "Arryn": {
+                            "managed_by": "lysa.arryn",
+                            "path": "OU=Vale,DC=sevenkingdoms,DC=local"
+                        }
+                    },
+                    "domainlocal": {}
+                },
+                "users": {
+                    "lysa.arryn": {
+                        "firstname": "Lysa",
+                        "surname": "Arryn",
+                        "password": "rob1nIsMyHeart",
+                        "city": "The Eyries",
+                        "description": "Lysa Arryn",
+                        "groups": [
+                            "Arryn"
+                        ],
+                        "path": "OU=Vale,DC=sevenkingdoms,DC=local"
+                    },
+                    "robin.arryn": {
+                        "firstname": "Robin",
+                        "surname": "Arryn",
+                        "password": "mommy",
+                        "city": "The Eyries",
+                        "description": "Robin Arryn",
+                        "groups": [
+                            "Arryn"
+                        ],
+                        "path": "OU=Vale,DC=sevenkingdoms,DC=local"
+                    }
+                }
+            }
+        }
+    }
+}

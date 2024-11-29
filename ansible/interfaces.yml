@@ -1,0 +1,40 @@
+---
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+#- name: show variables
+#  hosts: domain
+#  tasks:
+#    - debug:
+#        "var=ansible_interfaces"
+
+- name: set Network adapter variables
+  hosts: domain
+  tasks:
+     - set_fact:
+         domain_adapter="{{item.connection_name}}"
+       when: item.ipv4.address == hostvars[dict_key].ansible_host
+       with_items: "{{ ansible_interfaces }}"
+     - set_fact:
+         nat_adapter="{{item.connection_name}}"
+       when: item.ipv4.address != hostvars[dict_key].ansible_host
+       with_items: "{{ ansible_interfaces }}"
+     - set_fact:
+         number_of_interfaces="{{ansible_interfaces|length}}"
+     - set_fact:
+         two_adapters="{{ 'no' if number_of_interfaces != '1' else 'yes' }}"
+     - set_fact:
+         nat_adapter="{{domain_adapter}}"
+       when: two_adapters == 'no'
+
+- name: show variables
+  hosts: domain
+  tasks:
+    - debug:
+        msg: "domain interface : {{domain_adapter}}"
+    - debug:
+        msg: "nat interface : {{nat_adapter}}"
+    - debug:
+        msg: "two_adapters : {{two_adapters}}"

@@ -1,0 +1,7 @@
+- name: "wait"
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Wait 5 minutes to finish
+      ansible.builtin.pause:
+        minutes: 5

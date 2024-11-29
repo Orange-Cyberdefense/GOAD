@@ -1,6 +1,6 @@
 - name: "disable the registration of the {{nat_adapter}} interface (NAT address) in DNS"
   ansible.windows.win_shell: Get-NetAdapter {{nat_adapter}} | Set-DNSClient -RegisterThisConnectionsAddress $False
-  when: two_adapters == "yes"
+  when: two_adapters
 
 - name: "Set configure dns to {{dns_domain}}"
   win_dns_client:
@@ -71,7 +71,7 @@
     parameters:
       Password: "{{parent_domain_password}}"
       DomSafePassword: "{{domain_password}}"
-      DomainAdmin: "Administrator@{{parent_domain}}"
+      DomainAdmin: "{{parent_domain_user}}"
       ParentDomainName: "{{parent_domain}}"
       ReplicationSourceDC: "{{source_dc}}"
       NewDomainNetbiosName: "{{netbios_name}}"
@@ -93,7 +93,21 @@
 
 - name: enable the {{domain_adapter}} interface (local) for DNS client requests
   ansible.windows.win_shell: dnscmd . /resetlistenaddresses {{ hostvars[dict_key].ansible_host }}
-  when: two_adapters == "yes"
+  when: two_adapters
+
+- name: Check for xDnsServer Powershell module
+  win_psmodule:
+    name: xDnsServer
+    state: present
+
+# add external dns forwarder
+- name: Configure DNS Forwarders
+  win_dsc:
+    resource_name: xDnsServerForwarder
+    IsSingleInstance: "yes"
+    UseRootHint: false
+    IPAddresses:
+      - "{{dns_server_forwarder}}"
 
 - name: "Install XactiveDirectory"
   win_psmodule:

@@ -1,0 +1,21 @@
+rich
+psutil
+Jinja2
+pyyaml
+# Ansible
+# setuptools for python >= 3.12
+setuptools
+ansible_runner
+# fix ansible-core version to avoid breaking changes
+# ansible-core 2.18.0 min version python 3.11
+ansible-core==2.18.0
+pywinrm
+# AZURE
+azure-identity
+azure-mgmt-compute
+azure-mgmt-network
+# AWS
+boto3
+# Proxmox
+proxmoxer
+requests

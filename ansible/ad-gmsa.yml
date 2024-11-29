@@ -14,7 +14,7 @@
   vars:
     ad_gmsa: "{{lab.domains[lab.hosts[dict_key].domain].gmsa | default({})}}"
     domain: "{{lab.hosts[dict_key].domain}}"
-    domain_username: "{{domain}}\\Administrator"
+    domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
 
 - name: GMSA hosts
@@ -24,6 +24,6 @@
   vars:
     ad_gmsa: "{{lab.domains[lab.hosts[dict_key].domain].gmsa | default({})}}"
     domain: "{{lab.hosts[dict_key].domain}}"
-    domain_username: "{{domain}}\\Administrator"
+    domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
     hostname: "{{lab.hosts[dict_key].hostname}}"

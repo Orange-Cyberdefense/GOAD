@@ -4,12 +4,7 @@
 ; ------------------------------------------------
 ; sccm.lab
 ; ------------------------------------------------
-dc01 ansible_host=192.168.33.10 dns_domain=dc01 dict_key=dc01
-srv01 ansible_host=192.168.33.11 dns_domain=dc01 dict_key=srv01
-srv02 ansible_host=192.168.33.12 dns_domain=dc01 dict_key=srv02
-ws01 ansible_host=192.168.33.13 dns_domain=dc01 dict_key=ws01
-
-[all:vars]
-; adapter created by vagrant and vmware (uncomment if you use vmware)
-nat_adapter=Ethernet0
-domain_adapter=Ethernet1
+dc01 ansible_host={{ip_range}}.10 dns_domain=dc01 dict_key=dc01
+srv01 ansible_host={{ip_range}}.11 dns_domain=dc01 dict_key=srv01
+srv02 ansible_host={{ip_range}}.12 dns_domain=dc01 dict_key=srv02
+ws01 ansible_host={{ip_range}}.13 dns_domain=dc01 dict_key=ws01

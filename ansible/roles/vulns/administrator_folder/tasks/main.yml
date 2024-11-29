@@ -1,0 +1,54 @@
+- name: "Check if administrator folder already exist"
+  ansible.windows.win_stat:
+    path: "c:\\users\\administrator"
+  register: administrator_folder
+
+- name: "Check if administrator folder already exist"
+  ansible.windows.win_stat:
+    path: "c:\\users\\administrator\\desktop"
+  register: administrator_desktop_folder
+
+- name: "Create administrator directory"
+  ansible.windows.win_file:
+    path: "c:\\users\\administrator"
+    state: directory
+  when: not administrator_folder.stat.exists
+
+- name: "Create administrator desktop directory"
+  ansible.windows.win_file:
+    path: "c:\\users\\administrator\\desktop"
+    state: directory
+  when: not administrator_desktop_folder.stat.exists
+
+- name: Disable inherited ACE's
+  ansible.windows.win_acl_inheritance:
+    path: "c:\\users\\administrator"
+    state: absent
+  when: not administrator_folder.stat.exists
+
+- name: "Allow c:\\users\\administrator to administrators"
+  ansible.windows.win_acl:
+    path: "c:\\users\\administrator"
+    user: Administrator
+    rights: Read,Write,Modify,FullControl,Delete
+    type: allow
+    state: present
+  when: not administrator_folder.stat.exists
+
+- name: "Allow c:\\users\\administrator to administrators"
+  ansible.windows.win_acl:
+    path: "c:\\users\\administrator"
+    user: NT AUTHORITY\SYSTEM
+    rights: Read,Write,Modify,FullControl,Delete
+    type: allow
+    state: present
+  when: not administrator_folder.stat.exists
+
+- name: "Allow c:\\users\\administrator to administrators"
+  ansible.windows.win_acl:
+    path: "c:\\users\\administrator"
+    user: Administrators
+    rights: Read,Write,Modify,FullControl,Delete
+    type: allow
+    state: present
+  when: not administrator_folder.stat.exists

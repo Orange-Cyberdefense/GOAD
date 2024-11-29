@@ -3,12 +3,18 @@
 sql_instance_name=MSSQLSERVER
 sql_version=MSSQL_2022
 
+; administrator user
+admin_user=administrator
+
 ; domain_name : folder inside ad/
 domain_name=SCCM
 
 force_dns_server=no
 dns_server=x.x.x.x
 two_adapters=yes
+
+;dns server forwarder
+dns_server_forwarder=1.1.1.1
 
 ; winrm connection (windows)
 ansible_user=vagrant

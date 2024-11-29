@@ -18,6 +18,7 @@
     domain_password: "{{lab.domains[domain].domain_password}}"
     netbios_name: "{{lab.domains[domain].netbios_name}}"
     parent_domain: "{{'.'.join(domain.split('.')[1:])}}"
+    parent_domain_user: "{{admin_user}}@{{parent_domain}}"
     parent_domain_password: "{{lab.domains[parent_domain].domain_password}}"
     source_dc: "{{lab.hosts[lab.domains[parent_domain].dc].hostname}}.{{parent_domain}}"
     zone_name: "{{parent_domain}}"
@@ -29,7 +30,7 @@
 - name: Parent DC ADD DNS configuration
   hosts: parent_dc
   roles:
-    - { role: 'child_dns', tags: 'child_dns'}
+    - { role: 'parent_child_dns', tags: 'parent_child_dns'}
   vars:
     lab: "{{lab}}"
     domains: "{{lab.domains.keys()}}"

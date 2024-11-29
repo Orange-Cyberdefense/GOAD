@@ -12,7 +12,7 @@
   - { role: 'adcs', tags: 'adcs'}
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
-    domain_username: "{{domain}}\\Administrator"
+    domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
     ca_common_name: "{{lab.domains[domain].netbios_name}}-CA"
     ca_web_enrollment: "{{lab.domains[domain].ca_web_enrollment | default(true)}}"
@@ -23,7 +23,7 @@
   - { role: 'adcs_templates', tags: 'adcs_templates'}
   vars:
     domain: "{{lab.hosts[dict_key].domain}}"
-    domain_username: "{{domain}}\\Administrator"
+    domain_username: "{{domain}}\\{{admin_user}}"
     domain_password: "{{lab.domains[domain].domain_password}}"
     ca_common_name: "{{lab.domains[domain].netbios_name}}-CA"
     ca_host: "{{lab.domains[domain].ca_server}}"

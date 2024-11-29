@@ -1,0 +1,11 @@
+{
+    "name": "wazuh",
+    "description": "Add the wazuh EDR into the lab",
+    "machines": [
+        "wazuh"
+    ],
+    "compatibility": [
+        "*"
+    ],
+    "impact": "add a wazuh machine and a wazuh agent on all windows machine"
+}

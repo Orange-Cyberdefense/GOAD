@@ -1,0 +1,64 @@
+# use /opt/wazuh instead of /tmp to keep track
+- name: Create /opt/wazuh directory if it does not exist
+  ansible.builtin.file:
+    path: /opt/wazuh
+    state: directory
+    mode: '0755'
+
+# check existence to not reinstall if already installed
+- name: Check services facts
+  ansible.builtin.service_facts:
+
+# - name: Print service facts
+#   ansible.builtin.debug:
+#     var: ansible_facts.services
+
+- name: Download Wazuh installation script
+  get_url:
+    url: "{{ wazuh_install_script_url }}"
+    dest: /opt/wazuh/wazuh-install.sh
+  when: not ansible_facts.services['wazuh-manager.service'] is defined
+
+- name: Run Wazuh installation script
+  shell: sudo bash /opt/wazuh/wazuh-install.sh -a -i > /opt/wazuh/wazuh-install-output.txt
+  when: not ansible_facts.services['wazuh-manager.service'] is defined
+
+# FIX false positive on  /bin/diff  cf. https://github.com/wazuh/wazuh/issues/19000
+- name: fix rootkit trojan detection due to issue
+  ansible.builtin.lineinfile:
+    path: /var/ossec/etc/rootcheck/rootkit_trojans.txt
+    search_string: 'diff        !bash|^/bin/sh|file\.h|proc\.h|/dev/[^n]|^/bin/.*sh!'
+    line: 'diff        !bash|^/bin/sh|file\.h|proc\.h|/dev/[^nf]|^/bin/.*sh!'
+
+- name: Start Wazuh Manager service
+  service:
+    name: wazuh-manager
+    state: started
+    enabled: yes
+
+# check socfotress folder to avoid reinstall if already installed
+- name: Get stats of ossec directory
+  ansible.builtin.stat:
+    path: /var/ossec
+  register: ossec_folder
+
+- name: Download SOCFORTRESS Wazuh rules script
+  copy:
+    src: wazuh_socfortress_rules.sh
+    dest: /opt/wazuh/wazuh_socfortress_rules.sh
+    mode: "0755"  # Ensure the script is executable
+  when: not ossec_folder.stat.exists
+
+- name: Run SOCFORTRESS Wazuh rules script
+  shell: sudo bash /opt/wazuh/wazuh_socfortress_rules.sh
+  when: not ossec_folder.stat.exists
+
+- name: Extract username and password
+  shell: "grep -E 'User:|Password:' /opt/wazuh/wazuh-install-output.txt | awk '{print $NF}'"
+  register: access_info
+
+- name: Display username and password
+  debug:
+    msg:
+      - "Username: {{ access_info.stdout_lines[0] }}"
+      - "Password: {{ access_info.stdout_lines[1] }}"

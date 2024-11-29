@@ -1,2 +1,25 @@
-- name: Windows | Add the fr keyboard layout
-  win_shell: $langList = Get-WinUserLanguageList; $langList.Add("{{layout}}"); Set-WinUserLanguageList -LanguageList $langList -Force
+#- name: "Windows | Add the keyboard layouts"
+#  win_shell: $langList = Get-WinUserLanguageList; $langList.Add("{{item}}"); Set-WinUserLanguageList -LanguageList $langList -Force
+#  loop: "{{layouts}}"
+
+# taskbar
+- name: Add Keyboard Layouts registry key
+  win_regedit:
+    path:  HKLM:\SYSTEM\CurrentControlSet\Control\Keyboard Layouts\Preload
+    name: "{{index + 1}}"
+    data: "{{item}}"
+    type: string
+  loop: "{{layouts}}"
+  loop_control:
+    index_var: index
+
+# login screen
+- name: Add Keyboard Layouts registry key for default users
+  win_regedit:
+    path:  HKCU:\.DEFAULT\Keyboard Layout\Keyboard Layouts\Preload
+    name: "{{index + 1}}"
+    data: "{{item}}"
+    type: string
+  loop: "{{layouts}}"
+  loop_control:
+    index_var: index

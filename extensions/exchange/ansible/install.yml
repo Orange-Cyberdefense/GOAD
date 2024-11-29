@@ -1,0 +1,85 @@
+---
+# read global configuration file and set up adapters
+- import_playbook: "../../../ansible/data.yml"
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+# read local configuration file
+- name: "Read local config file"
+  hosts: domain:extensions
+  connection: local
+  vars_files:
+    - "../data/config.json"
+  tasks:
+    - name: merge lab variable with local config
+      set_fact:
+        lab: "{{ lab|combine(lab_extension, recursive=True) }}"
+
+- name: Update AD data
+  hosts: dc01
+  roles:
+    - { role: 'ad', tags: 'ad_domain_data' }
+  vars:
+    hostname: "{{lab.hosts[dict_key].hostname}}"
+    domain: "{{lab.hosts[dict_key].domain}}"
+    domain_username: "{{domain}}\\{{admin_user}}"
+    domain_password: "{{lab.domains[domain].domain_password}}"
+    domain_server: "{{lab.hosts[dict_key].hostname}}.{{domain}}"
+    ad_users: "{{lab.domains[lab.hosts[dict_key].domain].users}}"
+    ad_ou: "{{lab.domains[lab.hosts[dict_key].domain].organisation_units  | default({}) }}"
+    ad_groups: "{{lab.domains[lab.hosts[dict_key].domain].groups}}"
+
+- name: Install new server
+  hosts: srv01
+  roles:
+    # build.yml
+    - { role: 'common', tags: 'common', http_proxy: "{{enable_http_proxy}}" }
+    - { role: 'settings/keyboard', tags: 'keyboard', layouts: "{{keyboard_layouts}}" }
+    - { role: 'settings/no_updates', tags: 'no_updates' }
+    # ad-servers.yml
+    - { role: 'settings/admin_password', tags: 'admin_password' }
+    - { role: 'settings/hostname', tags: 'hostname' }
+    # ad-members.yml : enroll srv01
+    - { role: 'member_server', tags: 'server' }
+    # ad-relations.yml : domain group and users local permissions
+    - { role: "settings/adjust_rights", tags: 'adjust_rights' }
+    - { role: "settings/user_rights", tags: 'adjust_rights' }
+  vars:
+    local_admin_password: "{{lab.hosts[dict_key].local_admin_password}}"
+    hostname: "{{lab.hosts[dict_key].hostname}}"
+    member_domain: "{{lab.hosts[dict_key].domain}}"
+    domain_username: "{{member_domain}}\\{{admin_user}}"
+    domain_password: "{{lab.domains[member_domain].domain_password}}"
+    local_groups: "{{lab.hosts[dict_key].local_groups  | default({}) }}"
+
+- name: Synchronize all domains
+  hosts: dc
+  roles:
+    - { role: 'sync_domains', tags: 'sync' }
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    domain_username: "{{domain}}\\{{admin_user}}"
+    domain_password: "{{lab.domains[domain].domain_password}}"
+
+- name: Install exchange
+  hosts: srv01
+  roles:
+    - { role: 'ludus_exchange', tags: 'exchange' }
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    ludus_exchange_domain: "{{domain.split('.')[0]}}"
+    ludus_exchange_dc: "{{lab.hosts[dict_key].hostname}}.{{domain}}"
+    ludus_exchange_host: "{{lab.hosts[dict_key].hostname}}"
+    ludus_exchange_domain_username: "{{domain}}\\{{admin_user}}"
+    ludus_exchange_domain_password: "{{lab.domains[domain].domain_password}}"
+    ludus_os_version: "2019"
+    ludus_exchange_iso_directory: "C:\\exchange"
+    exchange_prereqs_complete_file: "{{ ludus_exchange_iso_directory }}\\exchange_prereqs_complete.txt"
+    send_connector_source_transport_servers: "{{ludus_exchange_host}}"
+    ludus_install_directory: "./iso"
+
+- name: Add exchange mail reader bot
+  hosts: srv01
+  roles:
+    - { role: 'exchange_bot', tags: 'exchange_bot' }

@@ -1,0 +1,25 @@
+[default]
+; Note: ansible_host *MUST* be an IPv4 address or setting things like DNS
+; servers will break.
+; ------------------------------------------------
+; sevenkingdoms.local
+; ------------------------------------------------
+dc01 ansible_host={{ip_range}}.10 dns_domain=dc01 dict_key=dc01 ansible_user=administrator@sevenkingdoms.local ansible_password=8dCT-DJjgScp
+
+[all:vars]
+; domain_name : folder inside ad/
+domain_name=GOAD-Mini
+
+; winrm connection (windows)
+ansible_winrm_transport=ntlm
+ansible_user=notused
+ansible_password=notused
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+ansible_winrm_operation_timeout_sec=400
+ansible_winrm_read_timeout_sec=500
+
+
+; LAB SCENARIO CONFIGURATION -----------------------------
+[domain]
+dc01

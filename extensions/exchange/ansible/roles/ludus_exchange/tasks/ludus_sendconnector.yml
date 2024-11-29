@@ -1,0 +1,17 @@
+---
+- name: Alert if send_connector_smtpserver is not set or empty
+  ansible.builtin.debug:
+    msg: >
+      "send_connector_smtpserver is not set or is empty. Please make sure to set it in the role vars."
+  when: send_connector_smtpserver == "" or send_connector_smtpserver is not defined
+  
+- name: Configure Send Connector
+  ansible.windows.win_shell: |
+    Add-PSSnapin Microsoft.Exchange.Management.PowerShell.SnapIn
+    New-SendConnector -Name "{{ send_connector_name }}" -Custom -SmartHosts "{{ send_connector_smtpserver }}" -AddressSpaces ("{{ send_connector_address_spaces | join(',') }}") -SourceTransportServers "{{ send_connector_source_transport_servers }}"
+  vars:
+    ansible_become: true
+    ansible_become_method: runas
+    ansible_become_user: "{{ ludus_exchange_domain_username }}"
+    ansible_become_password: "{{ ludus_exchange_domain_password }}"
+  when: send_connector_name is defined  # Only execute if send_connector_name is defined 

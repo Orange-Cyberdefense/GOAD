@@ -2,7 +2,7 @@
 - name: "prioritize the {{domain_adapter}} interface (local) as the default for routing"
   ansible.windows.win_shell:
     Set-NetIPInterface -InterfaceAlias "{{domain_adapter}}" -InterfaceMetric 10
-  when: two_adapters == "yes"
+  when: two_adapters
 
 - name: "Set configure dns to {{dns_domain}}"
   win_dns_client:
@@ -14,7 +14,7 @@
 - name: "Add workstation to {{member_domain}}"
   win_domain_membership:
     dns_domain_name: "{{member_domain}}"
-    domain_admin_user: "Administrator@{{member_domain}}"
+    domain_admin_user: "{{domain_username}}"
     domain_admin_password: "{{domain_password}}"
 #    domain_ou_path: "{{member_domain_ou_path}}"
     state: domain

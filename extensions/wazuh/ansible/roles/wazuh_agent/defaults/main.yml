@@ -1,0 +1,4 @@
+# Wazuh agent installation script URL
+wazuh_agent_install_package: "https://packages.wazuh.com/4.x/windows/wazuh-agent-4.8.2-1.msi"
+
+wazuh_install_location: "c:\\tmp"

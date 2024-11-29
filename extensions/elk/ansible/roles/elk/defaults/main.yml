@@ -1,0 +1,2 @@
+elasticsearch_version: '7.x'
+es_cluster_name: elasticsearch

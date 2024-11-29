@@ -1,0 +1,13 @@
+rich
+psutil
+Jinja2
+pyyaml
+# AZURE
+azure-identity
+azure-mgmt-compute
+azure-mgmt-network
+# AWS
+boto3
+# Proxmox
+proxmoxer
+requests

@@ -1,0 +1,46 @@
+---
+#- name: Create A record for child domain in parent domain
+#  community.windows.win_dns_record:
+#    name: "{{lab.hosts[dc].hostname}}.{{item.split('.')[0]}}"
+#    type: "A"
+#    values:
+#      - "{{hostvars[dc].ansible_host}}"
+#    zone: "{{domain}}"
+#  vars:
+#    dc: "{{lab.domains[item].dc}}"
+#  loop: "{{ domains }}"
+#  when: domain == '.'.join(item.split('.')[1:])
+
+
+# set delegation to child domain
+# Add-DnsServerZoneDelegation -Name "sevenkingdoms.local" -ChildZoneName "north" -NameServer "winterfell.north.sevenkingdoms.local" -IPAddress 192.168.10.11 -PassThru -Verbose
+# domain == parent domain
+# item == child domain
+- name: add dns delegation to child domain
+  ansible.windows.win_shell: |
+    Add-DnsServerZoneDelegation -Name "{{parent_domain}}" -ChildZoneName "{{zone}}" -NameServer "{{name_server}}" -IPAddress "{{name_server_ip}}" -PassThru -Verbose
+  vars:
+    parent_domain: "{{domain}}"
+    child_dc: "{{lab.domains[item].dc}}"
+    name_server: "{{lab.hosts[child_dc].hostname}}.{{item}}"
+    name_server_ip: "{{hostvars[child_dc].ansible_host}}"
+    zone: "{{item.split('.')[0]}}"
+  loop: "{{ domains }}"
+  when: domain == '.'.join(item.split('.')[1:])
+
+
+- name: create conditional forwarder to child domain
+  community.windows.win_dns_zone:
+    name: "{{item}}"
+    type: forwarder
+    replication: "none"
+    dns_servers:
+      - "{{name_server_ip}}"
+  vars:
+    child_dc: "{{lab.domains[item].dc}}"
+    name_server_ip: "{{hostvars[child_dc].ansible_host}}"
+    zone: "{{item.split('.')[0]}}"
+  loop: "{{ domains }}"
+  when: domain == '.'.join(item.split('.')[1:])
+
+

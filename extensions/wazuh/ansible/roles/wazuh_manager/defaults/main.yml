@@ -1,0 +1,5 @@
+# Wazuh installation script URL
+wazuh_install_script_url: "https://packages.wazuh.com/4.8/wazuh-install.sh"
+
+# SOCFORTRESS Wazuh rules script URL
+socfortress_rules_script_url: "https://raw.githubusercontent.com/socfortress/Wazuh-Rules/main/wazuh_socfortress_rules.sh"

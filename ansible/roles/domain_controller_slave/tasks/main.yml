@@ -2,13 +2,13 @@
   win_dns_client:
     adapter_names: "{{domain_adapter}}"
     ipv4_addresses:
-    - "{{hostvars[dns_domain}.ansible_host}"
+    - "{{hostvars[dns_domain].ansible_host}}"
     log_path: C:\dns_log.txt
 
 - name: Promote the server to aditionnal DC
   win_domain_controller:
     dns_domain_name: "{{domain_name}}"
-    domain_admin_user: "Administrator@{{domain_name}}"
+    domain_admin_user: "{{domain_username}}"
     domain_admin_password: "{{domain_password}}"
     safe_mode_password: "{{domain_password}}"
     state: domain_controller

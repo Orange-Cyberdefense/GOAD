@@ -1,0 +1,38 @@
+/*@media only screen and (min-width: 76.25em) {
+    .md-main__inner {
+      max-width: none;
+    }
+    .md-sidebar--primary {
+      left: 0;
+    }
+    .md-sidebar--secondary {
+      right: 0;
+      margin-left: 0;
+      -webkit-transform: none;
+      transform: none;   
+    }
+  }
+*/
+.md-header__button.md-logo img, .md-header__button.md-logo svg {
+fill: currentcolor;
+display: block;
+height: 3.0rem;
+width: auto;
+}
+
+h1 {
+  font-weight: bold;
+}
+
+h1, h2 {
+  border-bottom: 1px solid #2f3032; /* Adjust thickness and color */
+  padding-bottom: 10px; /* Adds spacing between text and the border */
+}
+
+nav .md-nav--primary {
+  border-right: 1px solid #2f3032;
+}
+
+nav.md-nav--secondary{
+  border-left: 1px solid #2f3032;
+}

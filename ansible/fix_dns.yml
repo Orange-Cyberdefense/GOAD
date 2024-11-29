@@ -1,0 +1,11 @@
+---
+# Load datas
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+- name: setup dns again on all domain computers
+  hosts: domain
+  roles:
+    - { role: 'fix_dns', tags: 'fix_dns' }

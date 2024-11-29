@@ -1,0 +1,44 @@
+---
+- name: Enable Mailbox for all AD users
+  ansible.windows.win_shell: |
+    Add-PSSnapin Microsoft.Exchange.Management.PowerShell.SnapIn
+    $users = Get-User -RecipientTypeDetails User -ResultSize Unlimited | Where-Object { $_.RecipientTypeDetails -ne 'MailboxUser' }
+    $excludedUsers = @("administrator", "ansible", "goadmin", "vagrant")
+    foreach ($user in $users) {
+        if ($excludedUsers -contains $user.samAccountName) {
+          Write-Host "user skipped: $user.samAccountName"
+        } else {
+          if (-not $user.samAccountName.EndsWith('$')) {
+            Write-Host "create mailbox: $user.samAccountName"
+            try {
+              Enable-Mailbox -Identity $user.SamAccountName
+            } catch {
+              Write-Host "error during mailbox creation"
+            }
+          } else {
+            Write-Host "user skipped: $user.samAccountName"
+          }
+        }
+    }
+  vars:
+    ansible_become: true
+    ansible_become_method: runas
+    ansible_become_user: "{{ ludus_exchange_domain_username }}"
+    ansible_become_password: "{{ ludus_exchange_domain_password }}"
+
+- name: Disable mailbox splash screen
+  ansible.windows.win_shell: |
+    Add-PSSnapin Microsoft.Exchange.Management.PowerShell.SnapIn
+    $users = Get-Mailbox -ResultSize Unlimited
+    foreach ($user in $users) {
+      try {
+        Set-MailboxRegionalConfiguration -Identity $user.Alias -Language en-US -TimeZone "Romance Standard Time"
+      } catch {
+        Write-Host "error during MailboxRegionalConfiguration"
+      }
+    }
+  vars:
+    ansible_become: true
+    ansible_become_method: runas
+    ansible_become_user: "{{ ludus_exchange_domain_username }}"
+    ansible_become_password: "{{ ludus_exchange_domain_password }}"

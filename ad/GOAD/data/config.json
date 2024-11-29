@@ -25,24 +25,6 @@
                 "account_is_sensitive" : { "renly": {"account" : "renly.baratheon"} }
             }
         },
-        "ws01" : {
-            "hostname" : "casterlyrock",
-            "type" : "workstation",
-            "local_admin_password": "EP+xh7Rk6j90",
-            "domain" : "sevenkingdoms.local",
-            "path" : "DC=sevenkingdoms,DC=local",
-            "local_groups" : {
-                "Administrators" : [
-                    "sevenkingdoms\\tywin.lannister",
-                    "sevenkingdoms\\jaime.lannister"
-                ]
-            },
-            "Remote Desktop Users" : [
-                "sevenkingdoms\\Lanister"
-            ],
-            "scripts" : [],
-            "vulns" : ["disable_firewall"]
-        },
         "dc02" : {
             "hostname" : "winterfell",
             "type" : "dc",
@@ -66,8 +48,7 @@
                 "ntlm_relay.ps1",
                 "responder.ps1",
                 "gpo_abuse.ps1",
-                "rdp_scheduler.ps1",
-                "unconstrained_delegation_user.ps1"
+                "rdp_scheduler.ps1"
             ],
             "vulns" : ["disable_firewall","directory", "credentials", "autologon", "files", "enable_llmnr", "enable_nbt-ns", "shares"],
             "vulns_vars" : {

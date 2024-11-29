@@ -1,0 +1,43 @@
+---
+- name: Mount Exchange ISO
+  community.windows.win_disk_image:
+    image_path: "{{ ludus_exchange_iso_directory }}\\{{ ludus_exchange_iso_url.split('/') | last }}"
+    state: present
+  register: iso_mount
+
+- name: Prepare Schema
+  ansible.windows.win_shell: |
+    & {{ iso_mount.mount_paths[0] }}Setup.exe /IAcceptExchangeServerLicenseTerms /PrepareSchema
+  vars:
+    ansible_become: true
+    ansible_become_method: runas
+    ansible_become_user: "{{ ludus_exchange_domain_username }}"
+    ansible_become_password: "{{ ludus_exchange_domain_password }}"
+
+- name: Prepare Active Directory
+  ansible.windows.win_shell: |
+    & {{ iso_mount.mount_paths[0] }}Setup.exe /IAcceptExchangeServerLicenseTerms /PrepareAD /OrganizationName:"{{ ludus_exchange_domain }}"
+  vars:
+    ansible_become: true
+    ansible_become_method: runas
+    ansible_become_user: "{{ ludus_exchange_domain_username }}"
+    ansible_become_password: "{{ ludus_exchange_domain_password }}"
+
+- name: Install Exchange
+  ansible.windows.win_shell: |
+    & {{ iso_mount.mount_paths[0] }}Setup.exe /IAcceptExchangeServerLicenseTerms /Mode:Install /Role:Mailbox
+  vars:
+    ansible_become: true
+    ansible_become_method: runas
+    ansible_become_user: "{{ ludus_exchange_domain_username }}"
+    ansible_become_password: "{{ ludus_exchange_domain_password }}"
+
+- name: Unmount ISO
+  community.windows.win_disk_image:
+    image_path: "{{ ludus_exchange_iso_directory }}\\{{ ludus_exchange_iso_url.split('/') | last }}"
+    state: absent
+
+- name: Remove ISO file
+  ansible.windows.win_file:
+    path: "{{ ludus_exchange_iso_directory }}\\{{ ludus_exchange_iso_url.split('/') | last }}"
+    state: absent

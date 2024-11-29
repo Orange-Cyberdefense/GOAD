@@ -1,3 +1,24 @@
+[all:vars]
+; domain_name : folder inside ad/
+domain_name=NHA
+; administrator user
+admin_user=administrator
+
+;force_dns_server
+force_dns_server=no
+dns_server=1.1.1.1
+
+;dns server forwarder
+dns_server_forwarder=1.1.1.1
+
+; winrm connection (windows)
+ansible_user=vagrant
+ansible_password=vagrant
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+ansible_winrm_operation_timeout_sec=400
+ansible_winrm_read_timeout_sec=500
+
 ; LAB SCENARIO CONFIGURATION -----------------------------
 
 ; computers inside domain (mandatory)

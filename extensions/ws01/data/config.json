@@ -1,0 +1,27 @@
+{
+  "lab_extension" : {
+      "hosts" : {
+          "ws01" : {
+              "hostname" : "casterlyrock",
+              "type" : "workstation",
+              "local_admin_password": "EP+xh7Rk6j90",
+              "domain" : "sevenkingdoms.local",
+              "path" : "DC=sevenkingdoms,DC=local",
+              "local_groups" : {
+                  "Administrators" : [
+                      "sevenkingdoms\\tywin.lannister",
+                      "sevenkingdoms\\jaime.lannister"
+                  ],
+                  "Remote Desktop Users" : [
+                      "sevenkingdoms\\Lannister"
+                  ]
+              },
+              "security": ["enable_run_as_ppl", "asr", "powershell_restrict"],
+              "security_vars": {
+                  "asr" : { "block lsass stealing": {"ruleid" : "9e6c4e1f-7d60-472f-ba1a-a39ef669e4b2"},
+                            "block PSExec and WMI": {"ruleid" : "d1e49aac-8f56-4280-b9ba-993a6d77406c"}}
+              }
+          }
+      }
+  }
+}

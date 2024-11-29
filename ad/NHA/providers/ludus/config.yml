@@ -1,0 +1,46 @@
+ludus:
+  - vm_name: "{{ range_id }}-NHA-DC01"
+    hostname: "{{ range_id }}-DC01"
+    template: win2019-server-x64-template
+    vlan: 10
+    ip_last_octet: 30
+    ram_gb: 4
+    cpus: 2
+    windows:
+      sysprep: true
+  - vm_name: "{{ range_id }}-NHA-DC02"
+    hostname: "{{ range_id }}-DC02"
+    template: win2019-server-x64-template
+    vlan: 10
+    ip_last_octet: 31
+    ram_gb: 4
+    cpus: 2
+    windows:
+      sysprep: true
+  - vm_name: "{{ range_id }}-NHA-SRV01"
+    hostname: "{{ range_id }}-SRV01"
+    template: win2019-server-x64-template
+    vlan: 10
+    ip_last_octet: 32
+    ram_gb: 4
+    cpus: 2
+    windows:
+      sysprep: true
+  - vm_name: "{{ range_id }}-NHA-SRV02"
+    hostname: "{{ range_id }}-SRV02"
+    template: win2019-server-x64-template
+    vlan: 10
+    ip_last_octet: 33
+    ram_gb: 4
+    cpus: 2
+    windows:
+      sysprep: true
+  - vm_name: "{{ range_id }}-NHA-SRV03"
+    hostname: "{{ range_id }}-SRV03"
+    template: win2019-server-x64-template
+    vlan: 10
+    ip_last_octet: 34
+    ram_gb: 4
+    cpus: 2
+    windows:
+      sysprep: true

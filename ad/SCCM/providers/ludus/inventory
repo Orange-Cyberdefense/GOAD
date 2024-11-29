@@ -1,0 +1,19 @@
+[default]
+; Note: ansible_host *MUST* be an IPv4 address or setting things like DNS
+; servers will break.
+; ------------------------------------------------
+; sccm.lab
+; ------------------------------------------------
+dc01 ansible_host={{ip_range}}.40 dns_domain=dc01 dict_key=dc01
+srv01 ansible_host={{ip_range}}.41 dns_domain=dc01 dict_key=srv01
+srv02 ansible_host={{ip_range}}.42 dns_domain=dc01 dict_key=srv02
+ws01 ansible_host={{ip_range}}.43 dns_domain=dc01 dict_key=ws01
+
+[all:vars]
+force_dns_server=no
+dns_server={{ip_range}}.254
+
+dns_server_forwarder={{ip_range}}.254
+
+ansible_user=localuser
+ansible_password=password

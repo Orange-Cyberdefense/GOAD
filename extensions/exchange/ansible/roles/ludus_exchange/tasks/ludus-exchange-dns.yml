@@ -1,0 +1,37 @@
+---
+- name: Configure InternalDNSAdapter
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+        param (
+            [String]
+            $DomainAdapter
+        )
+      Add-PSSnapin Microsoft.Exchange.Management.PowerShell.SnapIn
+      
+      $transport_service = Get-TransportService
+      
+      $adapterGUID = (Get-WmiObject Win32_NetworkAdapter | Where-Object { $_.NetConnectionID -eq $DomainAdapter }).GUID
+      $adapterGUID = $adapterGUID -replace '.*\\|\{|\}', ''
+      
+      if ( $transport_service.InternalDNSAdapterGuid -ne $null -And $adapterGUID -eq $transport_service.InternalDNSAdapterGuid.Guid ) {
+        $Ansible.Changed = $false
+      } else {
+        Set-TransportService $transport_service.name -ExternalDNSAdapterEnabled $false -ExternalDNSServers 1.1.1.1 -InternalDNSAdapterEnabled $true -InternalDNSAdapterGuid $adapterGUID
+        $Ansible.Changed = $true
+      }
+    parameters:
+      DomainAdapter: "{{domain_adapter}}"
+  vars:
+    ansible_become: true
+    ansible_become_method: runas
+    ansible_become_user: "{{ ludus_exchange_domain_username }}"
+    ansible_become_password: "{{ ludus_exchange_domain_password }}"
+  register: internal_dns_adapter
+  when: two_adapters  # Only execute if two_adapters are defined
+
+- name: Restart the Exchange Transport service
+  win_service:
+    name: MSExchangeTransport
+    state: restarted
+  when: two_adapters and internal_dns_adapter.changed

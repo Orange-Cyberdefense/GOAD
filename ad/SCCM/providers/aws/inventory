@@ -1,0 +1,9 @@
+[default]
+dc01 ansible_host={{ip_range}}.10 dns_domain=dc01 dict_key=dc01 ansible_user=ansible ansible_password=AZERTY*qsdfg
+srv01 ansible_host={{ip_range}}.11 dns_domain=dc01 dict_key=srv01 ansible_user=ansible ansible_password=NgtI75cKV+Pu
+srv02 ansible_host={{ip_range}}.12 dns_domain=dc01 dict_key=srv02 ansible_user=ansible ansible_password=NgtazecKV+Pu
+ws01 ansible_host={{ip_range}}.13 dns_domain=dc01 dict_key=ws01 ansible_user=ansible ansible_password=EP+xh7Rk6j90
+
+
+[all:vars]
+admin_user=goadmin

@@ -5,7 +5,7 @@
 - name: "disable the registration of the {{nat_adapter}} interface (NAT address) in DNS"
   ansible.windows.win_shell:
     Get-NetAdapter {{nat_adapter}} | Set-DNSClient -RegisterThisConnectionsAddress $False
-  when: two_adapters == "yes"
+  when: two_adapters
 
 - name: Ensure that domain exists
   win_domain:
@@ -17,13 +17,13 @@
 - name: Reboot to complete domain creation
   win_reboot:
     reboot_timeout: 900
-    post_reboot_delay: 100
+    post_reboot_delay: 300
   when: check_domain.changed
 
 - name: Ensure the server is a domain controller
   win_domain_controller:
     dns_domain_name: "{{domain}}"
-    domain_admin_user: "Administrator@{{domain}}"
+    domain_admin_user: "{{domain_username}}"
     domain_admin_password: "{{domain_password}}"
     safe_mode_password: "{{domain_password}}"
     state: domain_controller
@@ -55,7 +55,7 @@
 
 - name: enable only the {{domain_adapter}} interface (local) for DNS client requests
   ansible.windows.win_shell: dnscmd . /resetlistenaddresses {{ hostvars[dict_key].ansible_host }}
-  when: two_adapters == "yes"
+  when: two_adapters
 
 - name: Configure DNS Forwarders
   win_dsc:
@@ -63,8 +63,7 @@
     IsSingleInstance: "yes"
     UseRootHint: false
     IPAddresses:
-      - "1.1.1.1"
-      - "9.9.9.9"
+      - "{{dns_server_forwarder}}"
 
 #- name: install nuget
 #  win_shell: install-packageprovider -name nuget -force
