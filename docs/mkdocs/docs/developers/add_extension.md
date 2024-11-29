@@ -169,6 +169,14 @@ extensions/
             password           = "goadadmin_password"
         }
         ```
+        - Find AMI example :
+        ```
+        aws ec2 describe-images \
+          --owners "amazon" \
+          --filters "Name=name,Values=Windows_Server-2019-English-Full-Base*" \ 
+          --query "Images[*].{ImageId:ImageId,Name:Name,CreationDate:CreationDate,Description:Description}" \
+          --output table
+        ```
 
 === ":simple-proxmox: Proxmox"
     - As an example to add a new box for proxmox :
