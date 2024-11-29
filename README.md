@@ -3,7 +3,7 @@
   <br>
 </div>
 
-**GOADv3**
+**GOAD (v3)**
 
 :bookmark: Documentation : [https://orange-cyberdefense.github.io/GOAD/](https://orange-cyberdefense.github.io/GOAD/)
 
