@@ -13,12 +13,12 @@ variable "config_ws01_ext" {
   default = {
     "ws01" = {
        name               = "GOAD-WS01"
-       desc               = "WS01 - windows 10 - 192.168.10.30"
+       desc               = "WS01 - windows 10 - 192.168.10.31"
        cores              = 2
        memory             = 4096
        clone              = "Windows10_22h2_x64"
        dns                = "192.168.10.1"
-       ip                 = "192.168.10.30/24"
+       ip                 = "192.168.10.31/24"
        gateway            = "192.168.10.1"
     }
   }

@@ -2,7 +2,7 @@
     hostname: "{{ range_id }}-WS01"
     template: win10-21h2-x64-enterprise-template
     vlan: 10
-    ip_last_octet: 30
+    ip_last_octet: 31
     ram_gb: 4
     cpus: 2
     windows:
