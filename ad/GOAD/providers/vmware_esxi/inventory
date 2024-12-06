@@ -1,0 +1,17 @@
+[default]
+; Note: ansible_host *MUST* be an IPv4 address or setting things like DNS
+; servers will break.
+; ------------------------------------------------
+; sevenkingdoms.local
+; ------------------------------------------------
+dc01 ansible_host={{ip_range}}.10 dns_domain=dc01 dict_key=dc01
+; ------------------------------------------------
+; north.sevenkingdoms.local
+; ------------------------------------------------
+dc02 ansible_host={{ip_range}}.11 dns_domain=dc01 dict_key=dc02
+srv02 ansible_host={{ip_range}}.22 dns_domain=dc02 dict_key=srv02
+; ------------------------------------------------
+; essos.local
+; ------------------------------------------------
+dc03 ansible_host={{ip_range}}.12 dns_domain=dc03 dict_key=dc03
+srv03 ansible_host={{ip_range}}.23 dns_domain=dc03 dict_key=srv03

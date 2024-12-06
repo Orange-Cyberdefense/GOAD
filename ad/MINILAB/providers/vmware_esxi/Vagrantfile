@@ -1,0 +1,4 @@
+boxes = [
+  { :name => "DC01",  :ip => "{{ip_range}}.30", :box => "mayfly/windows_server2019", :os => "windows", :cpus => 2, :mem => 4000},
+  { :name => "WS01",  :ip => "{{ip_range}}.31", :box => "mayfly/windows10", :os => "windows", :cpus => 2, :mem => 4000}
+]
