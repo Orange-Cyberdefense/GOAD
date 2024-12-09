@@ -1,9 +1,9 @@
 [default]
-dc01 ansible_host={{ip_range}}.10 dns_domain=dc01 dict_key=dc01 ansible_user=administrator@ninja.hack ansible_password=8dCT-6546541qsdDJjgScp
-dc02 ansible_host={{ip_range}}.20 dns_domain=dc02 dict_key=dc02 ansible_user=administrator@academy.ninja.lan ansible_password=Ufe-qsdaz789bVXSx9rk
-srv01 ansible_host={{ip_range}}.21 dns_domain=dc02 dict_key=srv01 ansible_user=administrator@academy.ninja.lan ansible_password=Ufe-qsdaz789bVXSx9rk
-srv02 ansible_host={{ip_range}}.22 dns_domain=dc02 dict_key=srv02 ansible_user=administrator@academy.ninja.lan ansible_password=Ufe-qsdaz789bVXSx9rk
-srv03 ansible_host={{ip_range}}.23 dns_domain=dc02 dict_key=srv03 ansible_user=administrator@academy.ninja.lan ansible_password=Ufe-qsdaz789bVXSx9rk
+dc01 ansible_host={{ip_range}}.30 dns_domain=dc01 dict_key=dc01 ansible_user=administrator@ninja.hack ansible_password=8dCT-6546541qsdDJjgScp
+dc02 ansible_host={{ip_range}}.31 dns_domain=dc02 dict_key=dc02 ansible_user=administrator@academy.ninja.lan ansible_password=Ufe-qsdaz789bVXSx9rk
+srv01 ansible_host={{ip_range}}.32 dns_domain=dc02 dict_key=srv01 ansible_user=administrator@academy.ninja.lan ansible_password=Ufe-qsdaz789bVXSx9rk
+srv02 ansible_host={{ip_range}}.33 dns_domain=dc02 dict_key=srv02 ansible_user=administrator@academy.ninja.lan ansible_password=Ufe-qsdaz789bVXSx9rk
+srv03 ansible_host={{ip_range}}.34 dns_domain=dc02 dict_key=srv03 ansible_user=administrator@academy.ninja.lan ansible_password=Ufe-qsdaz789bVXSx9rk
 
 [all:vars]
 ; domain_name : folder inside ad/
