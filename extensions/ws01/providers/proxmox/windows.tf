@@ -5,6 +5,6 @@
   memory             = 4096
   clone              = "Windows10_22h2_x64"
   dns                = "{{ip_range}}.1"
-  ip                 = "{{ip_range}}.10/24"
+  ip                 = "{{ip_range}}.31/24"
   gateway            = "{{ip_range}}.1"
 }
