@@ -1,6 +1,6 @@
 "ws01" = {
   name               = "WS01"
-  desc               = "WS01 - windows 10 - {{ip_range}}.10"
+  desc               = "WS01 - windows 10 - {{ip_range}}.31"
   cores              = 2
   memory             = 4096
   clone              = "Windows10_22h2_x64"
