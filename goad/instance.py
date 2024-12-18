@@ -80,7 +80,7 @@ class LabInstance:
         return self.provider_name == AWS or self.provider_name == AZURE or self.provider_name == PROXMOX
 
     def is_vagrant(self):
-        return self.provider_name == VMWARE or self.provider_name == VIRTUALBOX
+        return self.provider_name == VMWARE or self.provider_name == VMWARE_ESXI or self.provider_name == VIRTUALBOX
 
     def is_ludus(self):
         return self.provider_name == LUDUS
@@ -151,6 +151,34 @@ class LabInstance:
         with open(instance_vagrant_file, mode="w", encoding="utf-8") as vagrantfile:
             vagrantfile.write(vagrantfile_content)
             Log.info(f'Instance vagrantfile created : {Utils.get_relative_path(instance_vagrant_file)}')
+
+    def _create_esxi_env(self):
+        # get esxi config
+        config = self.config
+        esxi_hostname = config.get_value('vmware_esxi', 'esxi_hostname')
+        esxi_username = config.get_value('vmware_esxi', 'esxi_username')
+        esxi_password = config.get_value('vmware_esxi', 'esxi_password')
+        esxi_net_nat = config.get_value('vmware_esxi', 'esxi_net_nat')
+        esxi_net_domain = config.get_value('vmware_esxi', 'esxi_net_domain')
+        esxi_datastore = config.get_value('vmware_esxi', 'esxi_datastore')
+        
+        # load .env template
+        environment = Environment(loader=FileSystemLoader(GoadPath.get_template_path(self.provider_name)))
+        envfile_template = environment.get_template(".env")
+        envfile_content = envfile_template.render(
+            esxi_hostname = esxi_hostname,
+            esxi_username = esxi_username,
+            esxi_password = esxi_password,
+            esxi_net_nat = esxi_net_nat,
+            esxi_net_domain = esxi_net_domain,
+            esxi_datastore = esxi_datastore
+        )
+
+        # create .env file
+        instance_env_file = self.instance_provider_path + sep + '.env'
+        with open(instance_env_file, mode="w", encoding="utf-8") as vagrantfile:
+            vagrantfile.write(envfile_content)
+            Log.info(f'Instance .env created : {Utils.get_relative_path(instance_env_file)}')
 
     def _create_ludus_config_file(self):
         # load lab vagrantfile
@@ -255,6 +283,8 @@ class LabInstance:
         Log.info('Create instance providing files')
         if self.is_vagrant():
             self._create_vagrantfile()
+        if self.provider_name == VMWARE_ESXI:
+            self._create_esxi_env()
         if self.is_ludus():
             self._create_ludus_config_file()
         if self.is_terraform():

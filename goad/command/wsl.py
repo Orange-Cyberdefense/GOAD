@@ -31,6 +31,9 @@ class WslCommand(Command):
     def check_vmware_utility(self):
         return self.file_exist("/mnt/c/Program Files/VagrantVMwareUtility/vagrant-vmware-utility.exe")
 
+    def check_ovftool(self):
+        return self.file_exist("/mnt/c/Program Files/VMware/VMware OVF Tool/ovftool.exe")
+
     def check_virtualbox(self):
         return self.file_exist("/mnt/c/Program Files/Oracle/VirtualBox/VBoxManage.exe")
 

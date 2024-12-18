@@ -21,9 +21,10 @@ AWS = 'aws'
 VIRTUALBOX = 'virtualbox'
 AZURE = 'azure'
 VMWARE = 'vmware'
+VMWARE_ESXI = 'vmware_esxi'
 PROXMOX = 'proxmox'
 LUDUS = 'ludus'
-ALLOWED_PROVIDERS = [AWS, VIRTUALBOX, AZURE, VMWARE, PROXMOX, LUDUS]
+ALLOWED_PROVIDERS = [AWS, VIRTUALBOX, AZURE, VMWARE, VMWARE_ESXI, PROXMOX, LUDUS]
 
 # provisioning method
 PROVISIONING_LOCAL = 'local'
@@ -56,6 +57,8 @@ TASK_STOP = 'stop'
 TASK_RESTART = 'restart'
 TASK_DESTROY = 'destroy'
 TASK_STATUS = 'status'
+TASK_SNAPSHOT = 'snapshot'
+TASK_RESET = 'reset'
 
 
 class SingletonMeta(type):

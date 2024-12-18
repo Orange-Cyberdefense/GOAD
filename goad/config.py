@@ -27,7 +27,7 @@ class Config:
         config.set('default', '; lab: GOAD / GOAD-Light / MINILAB / NHA / SCCM')
         config.set('default', 'lab', 'GOAD')
 
-        config.set('default', '; provider : virtualbox / vmware / aws / azure / proxmox')
+        config.set('default', '; provider : virtualbox / vmware / vmware_esxi / aws / azure / proxmox')
         config.set('default', 'provider', 'vmware')
 
         config.set('default', "; provisioner method : local / remote")
@@ -64,6 +64,14 @@ class Config:
         config.set('ludus', '; api key must not have % if you have a % in it, change it by a %%')
         config.set('ludus', 'ludus_api_key', 'change_me')
         config.set('ludus', 'use_impersonation', 'yes')
+
+        config.add_section('vmware_esxi')
+        config.set('vmware_esxi', 'esxi_hostname', '10.10.10.10')
+        config.set('vmware_esxi', 'esxi_username', 'root')
+        config.set('vmware_esxi', 'esxi_password', 'password')
+        config.set('vmware_esxi', 'esxi_net_nat', 'VM Network')
+        config.set('vmware_esxi', 'esxi_net_domain', 'GOAD-LAN')
+        config.set('vmware_esxi', 'esxi_datastore', 'datastore1')
         config.write(cfgfile)
         cfgfile.close()
 
@@ -88,6 +96,8 @@ class Config:
                 for disable_dependence in args.disable_dependencies:
                     if disable_dependence == 'vmware':
                         Dependencies.vmware_enabled = False
+                    elif disable_dependence == 'vmware_esxi':
+                        Dependencies.vmware_esxi_enabled = False
                     elif disable_dependence == 'virtualbox':
                         Dependencies.virtualbox_enabled = False
                     elif disable_dependence == 'azure':

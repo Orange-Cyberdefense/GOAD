@@ -3,6 +3,8 @@ from goad.dependencies import Dependencies
 
 if Dependencies.vmware_enabled:
     from goad.provider.vagrant.vmware import VmwareProvider
+if Dependencies.vmware_esxi_enabled:
+    from goad.provider.vagrant.vmware_esxi import VmwareEsxiProvider
 if Dependencies.virtualbox_enabled:
     from goad.provider.vagrant.virtualbox import VirtualboxProvider
 if Dependencies.azure_enabled:
@@ -24,6 +26,8 @@ class ProviderFactory:
             provider = VirtualboxProvider(lab_name)
         elif provider_name == VMWARE and Dependencies.vmware_enabled:
             provider = VmwareProvider(lab_name)
+        elif provider_name == VMWARE_ESXI and Dependencies.vmware_esxi_enabled:
+            provider = VmwareEsxiProvider(lab_name)
         elif provider_name == PROXMOX and Dependencies.proxmox_enabled:
             provider = ProxmoxProvider(lab_name, config)
         elif provider_name == AZURE and Dependencies.azure_enabled:

@@ -99,6 +99,18 @@ class Goad(cmd.Cmd):
         else:
             self.lab_manager.get_current_instance_provider().destroy_vm(arg)
 
+    def do_snapshot(self, arg=''):
+        self.do_stop()
+        if self.lab_manager.get_current_instance_provider():
+            self.lab_manager.get_current_instance_provider().snapshot()
+        self.do_start()
+    
+    def do_reset(self, arg=''):
+        self.do_stop()
+        if self.lab_manager.get_current_instance_provider():
+            self.lab_manager.get_current_instance_provider().reset()
+        self.do_start()
+
     def do_provide(self, arg=''):
         result = self.lab_manager.get_current_instance_provider().install()
         if result:
@@ -509,5 +521,9 @@ if __name__ == '__main__':
                 goad.do_destroy()
             elif args.task == 'status':
                 goad.do_status()
+            elif args.task == 'snapshot':
+                goad.do_snapshot()
+            elif args.task == 'reset':
+                goad.do_reset()
             elif args.task == 'show':
                 pass

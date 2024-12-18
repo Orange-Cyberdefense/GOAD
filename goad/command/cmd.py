@@ -44,6 +44,9 @@ class Command:
     def check_vmware_utility(self):
         pass
 
+    def check_ovftool(self):
+        pass
+
     def check_gem(self, gem_name):
         pass
 

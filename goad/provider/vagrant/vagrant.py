@@ -32,6 +32,12 @@ class VagrantProvider(Provider):
     def status(self):
         return self.command.run_vagrant(['status'], self.path)
 
+    def snapshot(self):
+        return self.command.run_vagrant(['snapshot', 'push'], self.path)
+
+    def reset(self):
+        return self.command.run_vagrant(['snapshot', 'pop', '--no-delete'], self.path)
+
     def destroy_vm(self, vm_name):
         return self.command.run_vagrant(['destroy', vm_name], self.path)
 

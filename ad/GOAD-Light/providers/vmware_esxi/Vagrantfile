@@ -1,0 +1,8 @@
+boxes = [
+  # windows server 2019
+  { :name => "GOAD-Light-DC01",  :ip => "{{ip_range}}.10", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows", :cpus => 2, :mem => 3000},
+  # windows server 2019
+  { :name => "GOAD-Light-DC02",  :ip => "{{ip_range}}.11", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows", :cpus => 2, :mem => 3000},
+  # windows server 2019
+  { :name => "GOAD-Light-SRV02", :ip => "{{ip_range}}.22", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows", :cpus => 2, :mem => 6000}
+]

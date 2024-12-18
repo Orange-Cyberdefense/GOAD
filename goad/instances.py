@@ -65,6 +65,8 @@ class LabInstances:
             provider = f'[dodger_blue3]{provider}[/dodger_blue3]'
         elif provider == VMWARE:
             provider = f'[cyan3]{provider}[/cyan3]'
+        elif provider == VMWARE_ESXI:
+            provider = f'[cyan1]{provider}[/cyan1]'
         elif provider == PROXMOX:
             provider = f'[dark_orange3]{provider}[/dark_orange3]'
         return provider

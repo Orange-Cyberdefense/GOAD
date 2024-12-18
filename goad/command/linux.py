@@ -44,6 +44,21 @@ class LinuxCommand(Command):
             Log.error("vagrant-vmware-utility is not installed")
             return False
 
+    def check_ovftool(self):
+        try:
+            result = subprocess.run(['ovftool', '-v'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd='.')
+            fields = result.stdout.split(' ')
+            if len(fields) > 2:
+                version = fields[2]
+                Log.success(f'Ovftool version {version} is installed')
+                return True
+            else:
+                Log.error(f'Failed to parse ovftool version')
+                return False
+        except FileNotFoundError:
+            Log.error("ovftool is not installed or not found in PATH.")
+            return False
+
     def check_virtualbox(self):
         return self.is_in_path('VBoxManage')
 

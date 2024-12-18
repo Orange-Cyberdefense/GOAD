@@ -1,0 +1,6 @@
+[default]
+dc01 ansible_host={{ip_range}}.10 dns_domain=dc01 dict_key=dc01
+dc02 ansible_host={{ip_range}}.20 dns_domain=dc02 dict_key=dc02
+srv01 ansible_host={{ip_range}}.21 dns_domain=dc02 dict_key=srv01
+srv02 ansible_host={{ip_range}}.22 dns_domain=dc02 dict_key=srv02
+srv03 ansible_host={{ip_range}}.23 dns_domain=dc02 dict_key=srv03
