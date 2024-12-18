@@ -3,6 +3,11 @@
     name: WazuhSvc
   register: wazuh_agent_service
 
+- name: Create wazuh_install_location folder if not exist
+  ansible.windows.win_file:
+    path: "{{wazuh_install_location}}"
+    state: directory
+
 - name: Download Wazuh Agent MSI package
   win_get_url:
     url: "{{ wazuh_agent_install_package }}"
