@@ -5,7 +5,7 @@
 
 <div align="center">
   <img alt="vagrant" width="153" height="150" src="../img/icon_vagrant.png">
-  <img alt="icon_vwmare" width="176"  height="150" src="../img/icon_vwmare_esxi.png">
+  <img alt="icon_vmmare_esxi" width="176"  height="150" src="../img/icon_vmware_esxi.png">
   <img alt="icon_ansible" width="150"  height="150" src="../img/icon_ansible.png">
 </div>
 
@@ -39,7 +39,7 @@
 GOAD/vmware_esxi/local/192.168.56.X > check
 ```
 
-ADD IMAGE
+![esxi_check.png](./../img/esxi_check.png)
 
 !!! info
     If there is some missing dependencies goes to the [installation](../installation/index.md) chapter and follow the guide according to your os.
@@ -58,7 +58,7 @@ GOAD/vmware_esxi/local/192.168.56.X > set_ip_range <ip_range>  # here choose the
 GOAD/vmware_esxi/local/192.168.56.X > install
 ```
 
-ADD IMAGE
+![esxi_install](./../img/esxi_install.png)
 
 - or all in command line with arguments
 
