@@ -11,7 +11,8 @@ nav:
   - 🏗 Providers:
     - index: providers/index.md
     - Virtualbox: providers/virtualbox.md
-    - Vmware: providers/vmware.md
+    - Vmware Workstation: providers/vmware.md
+    - Vmware Esxi: providers/vmware_esxi.md
     - Aws: providers/aws.md
     - Azure: providers/azure.md
     - Proxmox: providers/proxmox.md
