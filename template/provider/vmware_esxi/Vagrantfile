@@ -1,0 +1,90 @@
+Vagrant.configure("2") do |config|
+
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vmware_esxi'
+
+{{lab}}
+
+{{extensions}}
+
+# auto-load .env if vagrant-env installed
+if Vagrant.has_plugin?("vagrant-env") then
+  config.env.enable # Enable vagrant-env(.env)
+end
+
+{% if use_provisioning_vm %}
+boxes.append(
+    { :name => "PROVISIONING",
+      :ip => "{{ip_range}}.3",
+      :box => "bento/ubuntu-22.04",
+      :os => "linux",
+      :cpus => 2,
+      :mem => 2000,
+      :forwarded_port => [ {:guest => 22, :host => 2210, :id => "ssh"} ]
+    }
+)
+{% endif %}
+
+  # disable rdp forwarded port inherited from StefanScherer box
+  config.vm.network :forwarded_port, guest: 3389, host: 3389, id: "rdp", auto_correct: true, disabled: true
+
+  # no autoupdate if vagrant-vbguest is installed
+  if Vagrant.has_plugin?("vagrant-vbguest") then
+    config.vbguest.auto_update = false
+  end
+
+  config.vm.boot_timeout = 600
+  config.vm.graceful_halt_timeout = 600
+  config.winrm.retry_limit = 30
+  config.winrm.retry_delay = 10
+
+  boxes.each do |box|
+    config.vm.define box[:name] do |target|
+      # BOX
+      target.vm.provider :vmware_esxi do |v|
+        v.esxi_hostname         = ENV['GOAD_VAGRANT_ESXIHOSTNAME']
+        v.esxi_username         = ENV['GOAD_VAGRANT_ESXIUSERNAME']
+        v.esxi_password         = 'env:GOAD_VAGRANT_ESXIPASSWORD'
+        v.esxi_virtual_network  = [ ENV['GOAD_VAGRANT_ESXINETNAT'], ENV['GOAD_VAGRANT_ESXINETDOM'] ]
+        v.guest_numvcpus        = '4'
+        v.guest_memsize         = '6000'
+        v.guest_name            = box[:name]
+        v.esxi_disk_store       = ENV['GOAD_VAGRANT_ESXISTORE']
+      end
+
+      target.vm.box_download_insecure = box[:box]
+      target.vm.box = box[:box]
+      if box.has_key?(:box_version)
+        target.vm.box_version = box[:box_version]
+      end
+
+      # issues/49
+      target.vm.synced_folder '.', '/vagrant', disabled: true
+
+      # IP
+      target.vm.network :private_network, ip: box[:ip]
+
+      # OS specific
+      if box[:os] == "windows"
+        target.vm.guest = :windows
+        target.vm.communicator = "winrm"
+        target.vm.provision :shell, :path => "../../../vagrant/Install-WMF3Hotfix.ps1", privileged: false
+        target.vm.provision :shell, :path => "../../../vagrant/ConfigureRemotingForAnsible.ps1", privileged: false
+
+        # fix ip for vmware
+        if ENV['VAGRANT_DEFAULT_PROVIDER'] == "vmware_esxi"
+          target.vm.provision :shell, :path => "../../../vagrant/fix_ip.ps1", privileged: false, args: box[:ip]
+        end
+      else
+        target.vm.communicator = "ssh"
+      end
+
+      if box.has_key?(:forwarded_port)
+        # forwarded port explicit
+        box[:forwarded_port] do |forwarded_port|
+          target.vm.network :forwarded_port, guest: forwarded_port[:guest], host: forwarded_port[:host], host_ip: "127.0.0.1", id: forwarded_port[:id]
+        end
+      end
+
+    end
+  end
+end
