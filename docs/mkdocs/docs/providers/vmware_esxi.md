@@ -1,7 +1,7 @@
 # :simple-vmware: Vmware ESXi
 
-!!! quote
-    "Virtualbox c'est no way" @mpgn
+!!! success "Thanks!"
+    Thanks to [fsacer](https://github.com/fsacer) and  [viris](https://github.com/viris) for the pr [330](https://github.com/Orange-Cyberdefense/GOAD/pull/330) for vmware esxi provider support
 
 <div align="center">
   <img alt="vagrant" width="153" height="150" src="../img/icon_vagrant.png">
