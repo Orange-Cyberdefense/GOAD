@@ -27,9 +27,18 @@
       Add-DhcpServerV4Scope -Name "DHCP Scope" -StartRange {{ip_from}} -EndRange {{ip_to}} -SubnetMask {{ip_mask}} -LeaseDuration {{lease_duration}}
     }
 
-- name: Add DNS Server, Router Gateway Options in DHCP
+- name: Get default gateway
   win_shell: |
-    Set-DhcpServerV4OptionValue -DnsServer {{dns_ip}}
+    (Get-NetRoute -DestinationPrefix "0.0.0.0/0").NextHop
+  register: ip_gateway_command
+
+- name: Set ip_gateway
+  set_fact:
+    ip_gateway: "{{ ip_gateway_command.stdout | trim }}"
+
+- name: Add DNS Server and Default Gateway Options in DHCP
+  win_shell: |
+    Set-DhcpServerV4OptionValue -DnsServer {{dns_ip}} -Router {{ip_gateway}}
 
 #- name: create server option boot server hostname (MECM)
 #  win_shell: |
