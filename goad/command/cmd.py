@@ -102,7 +102,7 @@ class Command:
         disk_usage = psutil.disk_usage('.')
         free_disk_gb = disk_usage.free / (1024 ** 3)  # Convert bytes to GB
         if free_disk_gb < min_disk_gb:
-            Log.warning(f'not enought disk space, only {str(free_disk_gb)} Gb available')
+            Log.warning(f'not enough disk space, only {str(free_disk_gb)} Gb available')
             return False
         return True
 
