@@ -35,12 +35,11 @@ resource "azurerm_windows_virtual_machine" "goad-vm" {
     storage_account_type = "Standard_LRS"
   }
 
-  source_image_reference {
-    publisher = each.value.publisher
-    offer     = each.value.offer
-    sku       = each.value.windows_sku
-    version   = each.value.windows_version # "latest"
-  }
+source_image_reference {
+  publisher = each.value.publisher
+  offer     = each.value.offer
+  sku       = each.value.windows_sku
+  version   = "17763.6659.241205"
 }
 
 resource "azurerm_virtual_machine_extension" "goad-vm-ext" {
