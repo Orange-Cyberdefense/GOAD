@@ -21,6 +21,8 @@
     - ESC3
     - ESC3-CRA
     - ESC4
+    - ESC9
+    - ESC13
 
 - name: Install templates
   win_shell: |
@@ -37,17 +39,5 @@
     - ESC3
     - ESC3-CRA
     - ESC4
-
-- name: "Configure ATTRIBUTESUBJECTALTNAME2 on CA - ESC6"
-  win_shell: |
-    certutil -config "{{cauthority_server}}\{{cauthority_common_name}}" -setreg policy\Editflags +EDITF_ATTRIBUTESUBJECTALTNAME2
-  vars:
-    ansible_become: yes
-    ansible_become_method: runas
-    ansible_become_user: "{{domain_username}}"
-    ansible_become_password: "{{domain_password}}"
-    cauthority_server: "{{ca_host}}"
-    cauthority_common_name: "{{ca_common_name}}"
-
-- name: Refresh
-  ansible.windows.win_command: gpupdate /force
+    - ESC9
+    - ESC13

@@ -1,0 +1,10 @@
+- name: "Add share folder users change {{type}} : {{perm}} rights"
+  ansible.windows.win_acl:
+    path: "{{path}}"
+    user: "{{share_user}}"
+    rights: "{{perm}}"
+    type: "{{type}}"
+    state: present
+  loop: "{{users}}"
+  loop_control:
+    loop_var: share_user

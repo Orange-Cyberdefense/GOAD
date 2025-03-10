@@ -1,0 +1,7 @@
+function FindProxyForURL(url, host) {
+    if (host == "127.0.0.1" || isPlainHostName(host) || shExpMatch (host, "({{proxy_fqdn}})")) {
+        return "DIRECT";
+    }
+
+    return "PROXY {{proxy_fqdn}}:3128";
+}

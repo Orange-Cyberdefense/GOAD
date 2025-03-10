@@ -1,0 +1,58 @@
+{
+    "name":  "ESC9",
+    "displayName":  "ESC9",
+    "objectClass":  "pKICertificateTemplate",
+    "flags":  131642,
+    "revision":  100,
+    "msPKI-Cert-Template-OID":  "1.3.6.1.4.1.311.21.8.12926314.13933278.9259679.1328214.12908673.21.15721773.8953759",
+    "msPKI-Certificate-Application-Policy":  [
+                                                 "1.3.6.1.4.1.311.10.3.4",
+                                                 "1.3.6.1.5.5.7.3.4",
+                                                 "1.3.6.1.5.5.7.3.2"
+                                             ],
+    "msPKI-Certificate-Name-Flag":  33554432,
+    "msPKI-Enrollment-Flag":  524329,
+    "msPKI-Minimal-Key-Size":  2048,
+    "msPKI-Private-Key-Flag":  16842768,
+    "msPKI-RA-Signature":  0,
+    "msPKI-Template-Minor-Revision":  4,
+    "msPKI-Template-Schema-Version":  2,
+    "pKICriticalExtensions":  [
+                                  "2.5.29.15",
+                                  "2.5.29.7"
+                              ],
+    "pKIDefaultCSPs":  [
+                           "1,Microsoft Enhanced Cryptographic Provider v1.0"
+                       ],
+    "pKIDefaultKeySpec":  1,
+    "pKIExpirationPeriod":  [
+                                0,
+                                64,
+                                57,
+                                135,
+                                46,
+                                225,
+                                254,
+                                255
+                            ],
+    "pKIExtendedKeyUsage":  [
+                                "1.3.6.1.4.1.311.10.3.4",
+                                "1.3.6.1.5.5.7.3.4",
+                                "1.3.6.1.5.5.7.3.2"
+                            ],
+    "pKIKeyUsage":  [
+                        160,
+                        0
+                    ],
+    "pKIMaxIssuingDepth":  0,
+    "pKIOverlapPeriod":  [
+                             0,
+                             128,
+                             166,
+                             10,
+                             255,
+                             222,
+                             255,
+                             255
+                         ]
+}

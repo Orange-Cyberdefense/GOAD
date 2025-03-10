@@ -52,6 +52,8 @@ dc03
 srv02
 srv03
 
+[linux_domain]
+
 ; domain controler (mandatory)
 ; usage : ad-acl.yml, ad-data.yml, ad-relations.yml, laps.yml
 [dc]

@@ -1,0 +1,36 @@
+# Code adapted from ludus adcs module : https://github.com/badsectorlabs/ludus_adcs/blob/main/files/esc7.ps1
+# RUN me on DC
+- name: Install module PSPKI
+  win_shell: |
+    Install-Module PSPKI -Force
+
+- name: ADD ManageCA rights
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $caManagerUser
+      )
+      if (Get-Module -ListAvailable -Name PSPKI) {
+        $Ansible.Changed = $false
+      } else {
+        Import-Module -Name PSPKI
+        $caHostname = Get-CertificationAuthority | Select-Object -ExpandProperty ComputerName
+        try {
+          Get-CertificationAuthority "$caHostname" | Get-CertificationAuthorityAcl | Add-CertificationAuthorityAcl -Identity "$caManagerUser" -AccessType "Allow" -AccessMask "ManageCa" | Set-CertificationAuthorityAcl -RestartCA
+          $Ansible.Changed = $true
+        } catch {
+          $Ansible.Changed = $false
+        }
+      }
+    error_action: stop
+    parameters:
+      caManagerUser: "{{item.value.ca_manager}}"
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    domain_name: "{{domain}}"
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+  with_dict: "{{ vulns_vars }}"

@@ -1,0 +1,117 @@
+- name: update apt cache
+  apt: update_cache=yes
+
+- name: Install AD Packages
+  apt:
+    name:
+      - sssd-ad
+      - sssd-tools
+      - realmd
+      - adcli
+      - packagekit
+    state: present
+
+- name: Create KRB5 File
+  copy:
+    dest: "/etc/krb5.conf"
+    content: |
+      [libdefaults]
+      default_realm = {{ domain |upper}}
+      ticket_lifetime = 24h
+      renew_lifetime = 7d
+      dns_lookup_realm = true
+      dns_lookup_kdc = true
+      forward = true
+      forwardable = true
+
+      [realms]
+      {{ domain  |upper }} = {
+        admin_server = {{ dc_fqdn  |upper}}
+        kdc = {{ dc_fqdn  |upper}}
+      }
+
+      [domain_realm]
+      {{ domain|upper }} = {{ domain }}
+      .{{ domain|upper }} = {{ domain }}
+
+- name: Install krb5 Packages
+  apt:
+    name:
+      - krb5-user
+      - sssd-krb5
+    state: present
+
+- name: Modify Hosts File to add current hostname
+  lineinfile:
+    dest: "/etc/hosts"
+    line: "127.0.1.1       {{ hostname }}.{{ domain }}"
+    state: present
+    backup: yes
+
+- name: Modify Hosts File to add domain dc 
+  lineinfile:
+    dest: "/etc/hosts"
+    line: "{{dc_ip}}       {{ dc_fqdn }}  {{ domain }}"
+    state: present
+    backup: yes
+
+- name: Modify Hostname
+  shell:
+    "sudo hostnamectl set-hostname {{ hostname }}.{{ domain }}"
+
+- name: Kinit
+  shell:
+    "echo {{ domain_password }} | sudo kinit {{ domain_username }}"
+  register: result
+
+- name: Print Kinit Result
+  debug: var=result.stdout_lines
+
+- name: Check if domain joined
+  shell:
+    "realm list"
+  register: domain_joined
+
+- name: Print realm list Result
+  debug: var=domain_joined.stdout_lines
+
+- name: Join Realm
+  shell:
+    "echo {{ domain_password }} | sudo realm join -v -U {{ domain_username }} {{ domain }}"
+  when: not domain in domain_joined.stdout_lines
+  register: result
+
+- name: Print Realm Result
+  debug: var=result.stdout_lines
+  when: not domain in domain_joined.stdout_lines
+
+- name: Activate Homedir Creation
+  shell:
+    "sudo pam-auth-update --enable mkhomedir"
+
+- name: Modify SSDCONF Line 1 Ubuntu
+  replace:
+    path: /etc/sssd/sssd.conf
+    regexp: 'use_fully_qualified_names = True'
+    replace: 'use_fully_qualified_names = False'
+
+- name: Modify SSDCONF Line 2 Ubuntu
+  replace:
+    path: /etc/sssd/sssd.conf
+    regexp: 'fallback_homedir = /home/%u@%d'
+    replace: 'fallback_homedir = /home/%u'
+
+- name: Add {{ item }} to Sudoers Ubuntu
+  lineinfile:
+    dest: "/etc/sudoers"
+    line: "%{{ item }}   ALL=(ALL) NOPASSWD:ALL"
+    state: present
+    validate: /usr/sbin/visudo -cf %s
+    backup: yes
+  loop: "{{sudoers_group}}"
+
+- name: Allow {{ item }} Login Ubuntu
+  shell:
+    "realm permit -g {{ item }}@{{ domain }}"
+  loop: "{{ssh_group}}"
+

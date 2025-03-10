@@ -27,6 +27,90 @@
 # "ba33815a-4f93-4c76-87f3-57574bff8109" {$right = "Manage-SID-History"}
 # "1131f6ad-9c07-11d1-f79f-00c04fc2dcd2" {$right = "DS-Replication-Get-Changes-All"}
 
+#  Get-ADObject -SearchBase "CN=Extended-Rights,CN=Configuration,DC=essos,DC=local" -Filter * -Properties cn, ObjectGUID | Select-Object cn, ObjectGUID
+# Extended-Rights                               9b7d2c93-d499-4596-9ca3-a695b6be465c
+# Domain-Administer-Server                      e504244d-e1fd-488f-b37a-f314c05a7d32
+# User-Change-Password                          0fe73392-46e1-4731-ae36-ad5d6760e94b
+# User-Force-Change-Password                    8f310920-3501-44e1-afdb-516998f3cd5b
+# Send-As                                       97f3ed7d-9c14-430e-aab9-e82690b75031
+# Receive-As                                    5db63385-e52e-4670-8dc6-127efe1f258f
+# Send-To                                       c97bf0b2-1b6d-41bf-b3f3-81ebcf7191f2
+# Domain-Password                               df29d475-85f2-4dab-88e9-08cb71f09f98
+# General-Information                           b49543a3-93f4-4693-9022-dc4e031cd37a
+# User-Account-Restrictions                     57280d2c-63d6-48c3-8940-40a0386e441a
+# User-Logon                                    5de54ab3-cf92-4fcc-a02c-32f3dd8f033b
+# Membership                                    150db84e-e0d2-4ced-ad78-fb308a1e36ae
+# Open-Address-Book                             4ab03696-d857-4eda-9e3b-66f7d4ca7c1d
+# Personal-Information                          7c087e49-548d-4452-99a4-897f719c9714
+# Email-Information                             f44205ea-d22e-45a4-8df6-f1f62af91fa1
+# Web-Information                               ff5ce5c7-d610-43ac-9b4c-1f54c706a4ec
+# DS-Replication-Get-Changes                    89359caf-885d-4bfd-86f7-597da344cd31
+# DS-Replication-Synchronize                    ea24c9cb-16de-40d5-a7b9-c7bd2829eb54
+# DS-Replication-Manage-Topology                6f645ad8-d1ce-4b55-b819-40c567a47d7d
+# Change-Schema-Master                          51be0e75-2826-4a30-852a-6599e575dea5
+# Change-Rid-Master                             8640f02c-ae7e-4929-9b80-9a07e96aa2bc
+# Do-Garbage-Collection                         b566d20b-8b6e-49bd-a030-44fd25e97011
+# Recalculate-Hierarchy                         21a0fc05-d231-4d88-91da-6c1b3fe95592
+# Allocate-Rids                                 fb0c09dd-dd98-4d08-8db7-ed56a4a37f47
+# Change-PDC                                    a2f51b25-6271-450d-97de-0e92ccd021ec
+# Add-GUID                                      b1140d87-5635-4307-b53b-e0149c7c0c05
+# Change-Domain-Master                          ac9a0b36-26a6-42eb-bb86-418cdf69b7f4
+# Public-Information                            05fd7211-4774-4aad-9758-aadc0c06769c
+# msmq-Receive-Dead-Letter                      0c5a23eb-6e08-4e42-8fcb-9848c669a958
+# msmq-Peek-Dead-Letter                         3f61a921-fe0c-4735-94ad-5c2c99772eee
+# msmq-Receive-computer-Journal                 c9466a99-d3fa-4ee9-a3cf-ebb5fd0522cb
+# msmq-Peek-computer-Journal                    1d474c11-cf1a-4507-bf24-6b62aa873e3f
+# msmq-Receive                                  4ebf186e-d85e-4b3f-af0e-1a82f0a91006
+# msmq-Peek                                     cc1d853f-3eb7-416f-8fb8-1133038015ce
+# msmq-Send                                     726e07c2-447b-49f0-a9ab-32b048d93ab5
+# msmq-Receive-journal                          61944b74-1fd1-4eb3-9c26-7f048d3c2ad9
+# msmq-Open-Connector                           09e074fc-580f-4438-aa55-d33ffe43d65c
+# Apply-Group-Policy                            63231ba7-f6a1-4483-8a0d-6e019f050d74
+# RAS-Information                               4772e2b5-8517-431b-a527-550dcd82871b
+# DS-Install-Replica                            b4071e8e-db74-4015-9d22-e962e857be10
+# Change-Infrastructure-Master                  0d20b469-65d4-4ce0-a3c8-b03090c7ac70
+# Update-Schema-Cache                           2f96d806-c550-49ae-8c2a-6e3651687035
+# Recalculate-Security-Inheritance              85473cfe-ebdb-479e-982e-e52dc5b548a6
+# DS-Check-Stale-Phantoms                       2908d21c-de4d-435a-b974-432e09e8ed36
+# Certificate-Enrollment                        1458779e-3d29-481c-82bf-20a4ba791658
+# Self-Membership                               f795df1b-c7dd-496e-a319-26619a97fde9
+# Validated-DNS-Host-Name                       5db425b7-a9f9-482c-b820-2a285504d166
+# Validated-SPN                                 fd8881f1-eeb8-4836-b34f-df39cb97bc03
+# Generate-RSoP-Planning                        6f03801a-778b-4062-bc65-2ddf73e4e86d
+# Refresh-Group-Cache                           d30727a5-60d9-4919-aa47-6e428029373f
+# SAM-Enumerate-Entire-Domain                   ff9e23a3-a840-4bf1-8a54-d29c33e52074
+# Generate-RSoP-Logging                         8668e4d2-e4d7-4c31-8bab-df1e323542de
+# Domain-Other-Parameters                       8accf218-351b-4bfc-b052-4bc0483cafc0
+# DNS-Host-Name-Attributes                      9f6cd937-1747-4c31-bcc1-3b0bb215c2ad
+# Create-Inbound-Forest-Trust                   b8c8ae65-b61b-490b-9b18-85ef0671df3a
+# DS-Replication-Get-Changes-All                0ea8ddf5-200e-4fd7-b8a7-bf700fe1c9db
+# Migrate-SID-History                           bb7a33cc-718a-4e99-813f-7bc7045b5f0d
+# Reanimate-Tombstones                          a65ee3f0-0e3e-46c3-81b1-69a00561e7e9
+# Allowed-To-Authenticate                       378c1b73-0d0c-4233-8da4-f4535bdadcd4
+# DS-Execute-Intentions-Script                  31f3b31b-499e-42a8-98bc-55b80501a588
+# DS-Replication-Monitor-Topology               878775ad-2ca5-4f18-a198-8256f9f8ef0c
+# Update-Password-Not-Required-Bit              567c4967-5ea7-401f-b365-e978f43edf1a
+# Unexpire-Password                             72fb83c4-6bc8-41bb-8488-dfbf29ce68f0
+# Enable-Per-User-Reversibly-Encrypted-Password d7fb9493-ffb9-4fee-843b-f486a544fa32
+# DS-Query-Self-Quota                           2a7e864d-f9f4-452f-b148-f0f1fe48cc6c
+# Private-Information                           3eb80fd9-0fe3-4063-89c6-32c43c6f602f
+# Read-Only-Replication-Secret-Synchronization  68d62c55-f3bd-44e4-bbba-ec5173dfbc86
+# MS-TS-GatewayAccess                           4ed4306b-b193-40fa-b6ac-51acbd82569d
+# Terminal-Server-License-Server                d3b3de9b-05c3-412c-9ce4-4d4a073161be
+# Reload-SSL-Certificate                        fa6d2bac-0dab-4d70-8648-66b93c13171c
+# DS-Replication-Get-Changes-In-Filtered-Set    3a4a7690-91a4-40c8-aa89-523c49ab59d3
+# Run-Protect-Admin-Groups-Task                 dee4aa72-8eff-488a-8182-409f5a6f9e67
+# Manage-Optional-Features                      52ccd3e5-4d18-4e65-9d94-f3174adda90f
+# DS-Clone-Domain-Controller                    836bcd2f-26e9-4146-87bc-c107c7756738
+# Validated-MS-DS-Behavior-Version              139b1950-1b1a-4860-a69f-926625092d5a
+# Validated-MS-DS-Additional-DNS-Host-Name      f6f2c8f1-5779-4f89-8799-e180542e6e40
+# Certificate-AutoEnrollment                    162d653a-4488-4ec5-ad04-a46f65592d4d
+# DS-Set-Owner                                  99044f51-e9f8-4ca4-a691-7d1f632419c3
+# DS-Bypass-Quota                               d20edcfd-2ab2-4f2f-be8b-935dd601441c
+# DS-Read-Partition-Secrets                     01e1f66d-11b4-4d9a-9345-33f28a7b9b58
+# DS-Write-Partition-Secrets                    fe22431d-3aba-449c-9ff9-2d41fc97132e
+# DS-Validated-Write-Computer                   cbcc2342-ae9b-442a-8a18-a076ecc849ca
+
 # acl extended values allowed : 
 # Ext-User-Force-Change-Password', 'Ext-Self-Self-Membership', 'Ext-Write-Self-Membership'
 # ACL abuse scenarios
@@ -55,7 +139,7 @@
       Import-Module ActiveDirectory
       Set-Location AD:
       $aclValues = 'AccessSystemSecurity', 'CreateChild', 'Delete', 'DeleteChild', 'DeleteTree', 'ExtendedRight', 'GenericAll', 'GenericExecute', 'GenericRead', 'GenericWrite', 'ListChildren', 'ListObject', 'ReadControl', 'ReadProperty', 'Self', 'Synchronize', 'WriteDacl', 'WriteOwner', 'WriteProperty'
-      $aclExtendValues = 'Ext-User-Force-Change-Password', 'Ext-Self-Self-Membership', 'Ext-Write-Self-Membership'
+      $aclExtendValues = 'Ext-User-Force-Change-Password', 'Ext-Self-Self-Membership', 'Ext-Write-Self-Membership', 'Ext-ManageCA'
       if ($for.StartsWith("NT AUTHORITY")) {
         $forSID = New-Object System.Security.Principal.NTAccount "$for"
       } else {
@@ -88,6 +172,7 @@
         "Ext-User-Force-Change-Password" = @("ExtendedRight","00299570-246d-11d0-a768-00aa006e0529")
         "Ext-Write-Self-Membership" = @("WriteProperty","bf9679c0-0de6-11d0-a285-00aa003049e2")
         "Ext-Self-Self-Membership" = @("Self","bf9679c0-0de6-11d0-a285-00aa003049e2")
+        "Ext-ManageCA" = @("ExtendedRight","18e470eb-9b98-47c5-896e-146c5c77100d")
       }
 
       $Ansible.Changed = $false

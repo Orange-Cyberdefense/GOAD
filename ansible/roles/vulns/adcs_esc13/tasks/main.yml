@@ -1,0 +1,21 @@
+# adapted from ludus ESC13
+# RUN me on DC
+# https://github.com/badsectorlabs/ludus_adcs/blob/main/tasks/esc13.yml
+
+- name: Copy ESC13 script to remote host
+  ansible.windows.win_copy:
+    src: files/esc13.ps1
+    dest: C:\setup\esc13.ps1
+
+- name: Run ESC13 script
+  ansible.windows.win_shell: |
+    C:\setup\esc13.ps1 -esc13group '{{ item.value.adcs_esc13_group }}' -esc13templateName '{{ item.value.adcs_esc13_template }}'
+  become: true
+  become_method: runas
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    domain_name: "{{domain}}"
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+  with_dict: "{{ vulns_vars }}"
