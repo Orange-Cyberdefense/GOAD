@@ -16,7 +16,64 @@ $Service = New-Object Microsoft.Exchange.WebServices.Data.ExchangeService
 $Service.Credentials = New-Object Net.NetworkCredential($EmailAddress, $Password)
 $Service.Url = New-Object Uri($EwsUrl)
 
-# download and execute attached files
+# Mount ISO and execute files
+function Mount-IsoAndExecute {
+    param (
+        [string]$IsoPath
+    )
+
+    try {
+        # Mount the ISO
+        $MountResult = Mount-DiskImage -ImagePath $IsoPath -PassThru
+        $DriveLetter = ($MountResult | Get-Volume).DriveLetter
+        if ($DriveLetter) {
+            Write-Host "ISO mounted at drive: $DriveLetter"
+            $DrivePath = "$DriveLetter`:\"
+
+            # Find and execute specific file types
+            $FileTypes = @("*.ps1", "*.bat", "*.exe", "*.hta", "*.cpl", "*.js")
+            foreach ($FileType in $FileTypes) {
+                $Files = Get-ChildItem -Path $DrivePath -Filter $FileType -Recurse
+                foreach ($File in $Files) {
+                    Write-Host "Executing file: $($File.FullName)"
+                    switch -Wildcard ($File.FullName) {
+                        "*.ps1" {
+                            powershell.exe -ExecutionPolicy Bypass -File $File.FullName
+                        }
+                        "*.bat" {
+                            cmd.exe /c $File.FullName
+                        }
+                        "*.exe" {
+                            Start-Process -FilePath $File.FullName -Wait
+                        }
+                        "*.hta" {
+                            mshta.exe $File.FullName
+                        }
+                        "*.cpl" {
+                            control.exe $File.FullName
+                        }
+                        "*.js" {
+                            wscript.exe $File.FullName
+                        }
+                        default {
+                            Write-Host "Unknown file type in ISO: $($File.FullName)"
+                        }
+                    }
+                }
+            }
+
+            # Dismount the ISO after execution
+            Dismount-DiskImage -ImagePath $IsoPath
+            Write-Host "ISO dismounted: $IsoPath"
+        } else {
+            Write-Host "Failed to mount ISO: $IsoPath"
+        }
+    } catch {
+        Write-Host "Error processing ISO file: $_"
+    }
+}
+
+# Download and execute attached files
 function Process-Attachments {
     param(
         [Microsoft.Exchange.WebServices.Data.EmailMessage]$Email
@@ -28,8 +85,7 @@ function Process-Attachments {
             $FileAttachment = [Microsoft.Exchange.WebServices.Data.FileAttachment]$Attachment
             $FilePath = Join-Path -Path $DownloadPath -ChildPath $FileAttachment.Name
             $FileAttachment.Load($FilePath)
-            Write-Host "attached file downloaded : $FilePath"
-
+            Write-Host "Attached file downloaded: $FilePath"
 
             switch -Wildcard ($FilePath) {
                 "*.ps1" {
@@ -39,7 +95,7 @@ function Process-Attachments {
                     cmd.exe /c $FilePath
                 }
                 "*.exe" {
-                    $FilePath
+                    Start-Process -FilePath $FilePath -Wait
                 }
                 "*.hta" {
                     mshta.exe $FilePath
@@ -50,24 +106,30 @@ function Process-Attachments {
                 "*.js" {
                     wscript.exe $FilePath
                 }
+                "*.iso" {
+                    Mount-IsoAndExecute -IsoPath $FilePath
+                }
+                "*.doc" {
+                    Start-Process -FilePath $FilePath
+                }
                 default {
-                    Write-Host "unknow type file : $FilePath"
+                    Write-Host "Unknown file type: $FilePath"
                 }
             }
         }
     }
 }
-
+#doc file type needs to install office and enable macros by default using the registry
 # Search and read mail
 $Inbox = [Microsoft.Exchange.WebServices.Data.Folder]::Bind($Service, [Microsoft.Exchange.WebServices.Data.WellKnownFolderName]::Inbox)
-$View = New-Object Microsoft.Exchange.WebServices.Data.ItemView(10) # get last 10 emails
+$View = New-Object Microsoft.Exchange.WebServices.Data.ItemView(10)
 $FindResults = $Inbox.FindItems($View)
 foreach ($Item in $FindResults.Items) {
     if ($Item -is [Microsoft.Exchange.WebServices.Data.EmailMessage]) {
         $Email = [Microsoft.Exchange.WebServices.Data.EmailMessage]$Item
         $Email.Load()
         if (-Not $Email.IsRead) {
-            Write-Host "Email de $($Email.From.Address): $($Email.Subject)"
+            Write-Host "Email from $($Email.From.Address): $($Email.Subject)"
             Process-Attachments -Email $Email
             $Email.IsRead = $true
             $Email.Update([Microsoft.Exchange.WebServices.Data.ConflictResolutionMode]::AlwaysOverwrite)
