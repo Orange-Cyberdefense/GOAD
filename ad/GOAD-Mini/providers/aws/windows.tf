@@ -2,7 +2,7 @@
   name               = "dc01"
   domain             = "sevenkingdoms.local"
   windows_sku        = "2019-Datacenter"
-  ami                = "ami-0f86e4f2f0ee6d61f"
+  ami                = "ami-001303fabe63b6763"
   instance_type      = "t2.medium"
   private_ip_address = "{{ip_range}}.10"
   password           = "8dCT-DJjgScp"
