@@ -19,6 +19,11 @@ boxes.append(
 )
 {% endif %}
 
+  unless File.exist?("../private_key")
+    # Generate ssh key pair as vagrant user
+    `ssh-keygen -t rsa -b 4096 -f private_key -C "vagrant" -N ""`
+    `cp private_key ../private_key`
+  end
   config.vm.provider "vmware_desktop" do |v|
     v.force_vmware_license = "workstation"  # force the licence for fix some vagrant plugin issue
     # v.gui = true
@@ -69,7 +74,13 @@ boxes.append(
           target.vm.provision :shell, :path => "../../../vagrant/fix_ip.ps1", privileged: false, args: box[:ip]
         end
       else
+        # issues/371
+        # Use Default vagrant user and password for initial provisioning connection
         target.vm.communicator = "ssh"
+        target.ssh.username = "vagrant"
+        target.ssh.password = "vagrant"
+        target.ssh.private_key_path = "private_key"
+        target.vm.provision "file", source: "private_key.pub", destination: "/home/vagrant/.ssh/authorized_keys"
       end
 
       if box.has_key?(:forwarded_port)
