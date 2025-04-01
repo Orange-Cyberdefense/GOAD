@@ -81,6 +81,17 @@ boxes.append(
         target.ssh.password = "vagrant"
         target.ssh.private_key_path = "private_key"
         target.vm.provision "file", source: "private_key.pub", destination: "/home/vagrant/.ssh/authorized_keys"
+        # Copy private_key to the appropriate provider directory
+        provider_name = ENV['VAGRANT_DEFAULT_PROVIDER']
+        `echo "Copying private key to the appropriate provider directory..."`
+        target.trigger.after :up do |t|
+          t.info = "Copying private key to the appropriate provider directory..."
+          t.run = {
+            inline: <<-SHELL
+              cp private_key .vagrant/machines/PROVISIONING/#{provider_name}/
+            SHELL
+          }
+        end
       end
 
       if box.has_key?(:forwarded_port)
