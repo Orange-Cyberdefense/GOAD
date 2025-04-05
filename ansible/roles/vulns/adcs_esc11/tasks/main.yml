@@ -1,0 +1,9 @@
+- name: Disable IF_ENFORCEENCRYPTICERTREQUEST flag (ESC11)
+  win_shell: |
+     certutil -setreg CA\InterfaceFlags -IF_ENFORCEENCRYPTICERTREQUEST
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+  notify: restart-adcs

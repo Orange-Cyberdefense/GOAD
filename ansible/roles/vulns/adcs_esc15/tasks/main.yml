@@ -1,0 +1,20 @@
+- name: Run ESC15
+  ansible.windows.win_powershell:
+    script: |
+      # code from ludus module (also GPL)
+      # https://github.com/badsectorlabs/ludus_adcs/blob/main/files/esc15.ps1
+      # Import ADCSTemplate module
+      Import-Module ADCSTemplate
+
+      # Define the template and group name
+      $displayName = "Web Server"
+      $groupName = "Domain Users"
+
+      Set-ADCSTemplateACL -DisplayName $displayName -Type Allow -Identity $groupName -Enroll
+    error_action: stop
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    domain_name: "{{domain}}"
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"

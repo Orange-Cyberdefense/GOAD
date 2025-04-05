@@ -19,7 +19,7 @@
                 ]
             },
             "scripts" : ["sidhistory.ps1"],
-            "vulns" : ["disable_firewall"],
+            "vulns" : ["disable_firewall", "adcs_esc10_case1", "adcs_esc10_case2"],
             "security": ["account_is_sensitive"],
             "security_vars": {
                 "account_is_sensitive" : { "renly": {"account" : "renly.baratheon"} }
@@ -125,6 +125,15 @@
                         "user" : "IIS_IUSRS",
                         "rights" : "FullControl"
                     }
+                },
+                "shares" : {
+                    "thewall" : {
+                        "path"   : "C:\\thewall",
+                        "list"   : "yes",
+                        "full"   : "NORTH\\Stark",
+                        "change" : "NORTH\\jon.snow,NORTH\\samwell.tarly",
+                        "read"   : "Users"
+                    }
                 }
             },
             "mssql":{
@@ -167,14 +176,28 @@
             "path" : "DC=essos,DC=local",
             "local_groups" : {
                 "Administrators" : [
-                    "essos\\daenerys.targaryen"
+                    "essos\\daenerys.targaryen",
+                    "essos\\greatmaster"
                 ],
                 "Remote Desktop Users" : [
                     "essos\\Targaryen"
                 ]
             },
             "scripts" : ["asrep_roasting2.ps1"],
-            "vulns" : ["ntlmdowngrade", "disable_firewall"]
+            "vulns" : ["ntlmdowngrade", "disable_firewall",  "adcs_esc7", "adcs_esc13", "adcs_esc15"],
+            "vulns_vars" : {
+                "adcs_esc7": {
+                    "viserys": {
+                        "ca_manager": "essos\\viserys.targaryen"
+                    }
+                },
+                "adcs_esc13": {
+                    "esc13" : {
+                        "adcs_esc13_group": "greatmaster",
+                        "adcs_esc13_template": "ESC13"
+                    }
+                }
+            }
         },
         "srv03" : {
             "hostname" : "braavos",
@@ -192,7 +215,7 @@
                 "essos\\Dothraki"
             ],
             "scripts" : [],
-            "vulns" : ["openshares","disable_firewall"],
+            "vulns" : ["openshares","disable_firewall", "adcs_esc6", "adcs_esc11"],
             "security": ["enable_run_as_ppl"],
             "mssql":{
                 "sa_password": "sa_P@ssw0rd!Ess0s",
@@ -230,7 +253,11 @@
                 "Spys"
             ],
             "groups" : {
-                "universal" : {},
+                "universal" : {
+                    "greatmaster" : {
+                        "path" : "CN=Users,DC=essos,DC=local"
+                    }
+                },
                 "global" : {
                     "Targaryen" : {
                         "managed_by" : "viserys.targaryen",
@@ -287,9 +314,10 @@
                 "GenericAll_spy_jorah" : {"for": "Spys", "to": "jorah.mormont", "right": "GenericAll", "inheritance": "None"},
                 "GenericAll_khal_esc4" : {"for": "khal.drogo", "to": "CN=ESC4,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=essos,DC=local", "right": "GenericAll", "inheritance": "None"},
                 "WriteProperty_petyer_domadmin" : {"for": "viserys.targaryen", "to": "jorah.mormont", "right": "WriteProperty", "inheritance": "All"},
-                "GenericWrite_DragonsFriends_braavos" : {"for": "DragonsFriends", "to": "braavoos$", "right": "GenericWrite", "inheritance": "None"},
+                "GenericWrite_DragonsFriends_braavos" : {"for": "DragonsFriends", "to": "braavos$", "right": "GenericWrite", "inheritance": "None"},
                 "GenericAll_missandei_khal" : {"for": "missandei", "to": "khal.drogo", "right": "GenericAll", "inheritance": "None"},
-                "GenericAll_gmsaDragon_drogo" : {"for": "gmsaDragon$", "to": "drogon", "right": "GenericAll", "inheritance": "None"}
+                "GenericAll_gmsaDragon_drogo" : {"for": "gmsaDragon$", "to": "drogon", "right": "GenericAll", "inheritance": "None"},
+                "GenericWrite_missandei_viserys" : {"for": "missandei", "to": "viserys.targaryen", "right": "GenericWrite", "inheritance": "None"}
             },
             "users" : {
                 "daenerys.targaryen" : {

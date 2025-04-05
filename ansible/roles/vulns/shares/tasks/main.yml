@@ -6,13 +6,48 @@
   with_dict: "{{ vulns_vars }}"
 
 - name: Create share
-  win_share:
+  ansible.windows.win_share:
     name: "{{item.key}}"
-    description: "Share {{item.key}}" 
+    description: "{{item.value.description | default(item.key) }}" 
     path: "{{item.value.path}}"
     list: "{{item.value.list| default('yes')}}"
-    full: "{{item.value.full_access| default('Administrators')}}"
-    change: "{{item.value.rw_access| default('')}}"
-    read: "{{item.value.ro_access| default('')}}"
-    deny: "{{item.value.deny_access| default('')}}"
+    full: "{{item.value.full| default('Administrators')}}"
+    change: "{{item.value.change| default('')}}"
+    read: "{{item.value.read| default('')}}"
+    deny: "{{item.value.deny| default('')}}"
+  register: shareregister
+  with_dict: "{{ vulns_vars }}"
+
+# change permissions according to rights
+- include_tasks: perm.yml
+  vars:
+    path: "{{item.value.path}}"
+    users: "{{ item.value.full | split(',') |trim | default([])  }}"
+    perm: "FullControl"
+    type: "allow"
+  with_dict: "{{ vulns_vars }}"
+
+
+- include_tasks: perm.yml
+  vars:
+    path: "{{item.value.path}}"
+    users: "{{ item.value.change | split(',') |trim | default([])  }}"
+    perm: " Read,Write,Modify,Delete"
+    type: "allow"
+  with_dict: "{{ vulns_vars }}"
+
+- include_tasks: perm.yml
+  vars:
+    path: "{{item.value.path}}"
+    users: "{{ item.value.read | split(',') |trim | default([])  }}"
+    perm: " Read"
+    type: "allow"
+  with_dict: "{{ vulns_vars }}"
+
+- include_tasks: perm.yml
+  vars:
+    path: "{{item.value.path}}"
+    users: "{{ item.value.deny | split(',') |trim | default([])  }}"
+    perm: "Read,Write,Modify,FullControl,Delete"
+    type: "deny"
   with_dict: "{{ vulns_vars }}"

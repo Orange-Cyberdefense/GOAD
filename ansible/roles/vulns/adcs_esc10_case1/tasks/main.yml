@@ -1,0 +1,12 @@
+- name: Set StrongCertificateBindingEnforcement to 0
+  win_regedit:
+    path: HKLM:\SYSTEM\CurrentControlSet\Services\Kdc
+    name: StrongCertificateBindingEnforcement
+    data: 0x0
+    type: dword
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    domain_name: "{{domain}}"
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"

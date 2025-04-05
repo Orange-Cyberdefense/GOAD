@@ -1,0 +1,55 @@
+- name: update apt cache
+  apt: update_cache=yes
+
+- name: Install AD Packages
+  apt:
+    name:
+      - squid
+    state: present
+
+- name: setup squid config
+  ansible.builtin.template:
+    src: squid.conf.j2
+    dest: "/etc/squid/squid.conf"
+    owner: "root"
+    group: "root"
+    mode: "644"
+  notify:
+    - restart squid
+
+# WPAD serve
+- name: Install Apache
+  apt: 
+    name: apache2
+    state: latest
+
+- name: Change Apache default vhost
+  copy:
+    src: 000-default.conf
+    dest: /etc/apache2/sites-available/000-default.conf
+    owner: "root"
+    group: "root"
+    force: yes
+    mode: 0644
+
+- name: setup wpad config
+  ansible.builtin.template:
+    src: wpad.dat.j2
+    dest: "/var/www/html/wpad.dat"
+    owner: "root"
+    group: "root"
+    mode: "644"
+
+- name: Start Apache service and enable
+  service: 
+    name: apache2
+    state: started
+    enabled: true
+
+- name: Enable Apache mods
+  command: a2enmod {{ item }}
+  with_items:
+    - headers
+    - ssl
+    - rewrite
+  notify: restart apache

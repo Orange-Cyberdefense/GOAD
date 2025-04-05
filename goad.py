@@ -461,7 +461,7 @@ def parse_args():
     parser.add_argument("-t", "--task", help=f"{task_help}", required=False)
     parser.add_argument("-l", "--lab", help="lab to use (default: GOAD)", default='GOAD', required=False)
     parser.add_argument("-p", "--provider", help="provider to use (default: vmware)", default='vmware', required=False)
-    parser.add_argument("-ip", "--ip_range", help="ip range to use (default: 192.168.56)", default='192.168.56', required=False)
+    parser.add_argument("-ip", "--ip_range", help="ip range to use (default: 192.168.56)", default='', required=False)
     parser.add_argument("-m", "--method", help="deploy method to use (default: local)", default='local', required=False)
     parser.add_argument("-i", "--instance", help="use a specific instance (use default if not selected)", required=False)
     parser.add_argument("-e", "--extensions", help="extensions to use", action='append', required=False)

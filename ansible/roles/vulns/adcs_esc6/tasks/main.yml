@@ -1,0 +1,10 @@
+
+- name: "Configure ATTRIBUTESUBJECTALTNAME2 on CA - ESC6"
+  win_shell: |
+    certutil -setreg policy\Editflags +EDITF_ATTRIBUTESUBJECTALTNAME2
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{domain_username}}"
+    ansible_become_password: "{{domain_password}}"
+  notify: restart-adcs   

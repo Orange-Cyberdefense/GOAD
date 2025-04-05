@@ -1,0 +1,17 @@
+visible_hostname {{proxy_fqdn}}
+http_port 0.0.0.0:{{squid_port}}
+
+#################################### ACL ####################################
+acl all src all
+acl lan src {{ip_range}}
+acl Safe_ports port 80 # Port HTTP = Port 'sure'
+acl Safe_ports port 443 # Port HTTPS = Port 'sure'
+############################################################################
+
+# access only safe port
+http_access deny !Safe_ports
+# access lan only
+http_access deny !lan
+
+# the port in use in the proxy
+http_port {{squid_port}}

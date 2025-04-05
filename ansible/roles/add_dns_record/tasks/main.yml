@@ -1,0 +1,6 @@
+- name: Create a dns record
+  community.windows.win_dns_record:
+    name: "{{record_name}}"
+    type: "{{record_type}}"
+    values: "{{record_value}}"
+    zone: "{{domain}}"
