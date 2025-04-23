@@ -11,7 +11,7 @@ def print_logo():
  | |__| ||  |||  [blue]/ /__\\ \\\\[/blue]| |__| |
   \\_____| \\_|||_[blue]/________\\\\[/blue]_____/
     [bold]Game Of Active Directory[/bold]
-      [yellow][italic]Pwning is comming[/italic][/yellow]
+      [yellow][italic]Pwning is coming[/italic][/yellow]
 [/white]
 Goad management console type help or ? to list commands
 """
