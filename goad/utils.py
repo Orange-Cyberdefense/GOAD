@@ -62,6 +62,15 @@ TASK_SNAPSHOT = 'snapshot'
 TASK_RESET = 'reset'
 
 
+# keyboard layout codes
+keyboard_layout_dict = {
+    'fr-FR': '00000407',
+    'en-US': '00000409',
+    'de-DE': '00000407',
+    'es-ES': '0000040A',
+    'it-IT': '00000410',
+}
+
 class SingletonMeta(type):
     _instances = {}
 
