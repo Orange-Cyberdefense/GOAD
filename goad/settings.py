@@ -165,25 +165,25 @@ class Settings:
             raise ValueError(f"can't set extension because lab_name is not set")
         return self.extensions_name
 
-    def set_keyboard_layout(self, keyboard_layouts):
+    def set_keyboard_layout(self, keyboard_layout):
         """
         Set the keyboard layouts
-        :param keyboard_layouts: list of keyboard layouts
+        :param keyboard_layout: list of keyboard layouts
         :return: list of keyboard layouts
         """
         self.keyboard_layout = []
         try:
-            if ',' in keyboard_layouts:
-                for keyboard_layout in keyboard_layouts.split(','):
+            if ',' in keyboard_layout:
+                for keyboard_layout in keyboard_layout.split(','):
                     if keyboard_layout in keyboard_layout_dict.keys():
                         self.keyboard_layout.append(keyboard_layout)
                     else:
                         Log.error(f'Keyboard layout {keyboard_layout} is not available.')
             else:
-                if keyboard_layouts in keyboard_layout_dict.keys():
-                    self.keyboard_layout.append(keyboard_layouts)
+                if keyboard_layout in keyboard_layout_dict.keys():
+                    self.keyboard_layout.append(keyboard_layout)
                 else:
-                    Log.error(f'Keyboard layout {keyboard_layouts} is not available.')
+                    Log.error(f'Keyboard layout {keyboard_layout} is not available.')
         except Exception as e:
             Log.error(f'Error parsing keyboard layout: {e}')
             Log.info(f'fallback to default keyboard layout: "fr-FR,en-US"')

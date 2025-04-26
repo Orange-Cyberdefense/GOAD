@@ -14,7 +14,7 @@ class LabManager(metaclass=SingletonMeta):
         self.current_provisioner = None
         self.current_extensions = []
         self.current_ip_range = None
-        self.current_keyboard_layouts = []
+        self.current_keyboard_layout = []
 
         self.config = None
         self.lab_instances = None
@@ -34,7 +34,7 @@ class LabManager(metaclass=SingletonMeta):
         self.current_settings.set_provider_name(self.config.get_value('default', PROVIDER), False)
         self.current_settings.set_provisioner_name(self.config.get_value('default', PROVISIONER))
         self.current_settings.set_ip_range(self.config.get_value('default', IP_RANGE))
-        self.current_settings.set_keyboard_layout(self.config.get_value('default', KEYBOARD_LAYOUTS))
+        self.current_settings.set_keyboard_layout(self.config.get_value('default', KEYBOARD_LAYOUT))
         if args.extensions:
             self.current_settings.set_extensions(args.extensions)
         return self
@@ -139,8 +139,8 @@ class LabManager(metaclass=SingletonMeta):
     def get_ip_range(self):
         return self.current_settings.ip_range
 
-    def set_keyboard_layout(self, keyboard_layouts):
-        self.current_settings.set_keyboard_layout(keyboard_layouts)
+    def set_keyboard_layout(self, keyboard_layout):
+        self.current_settings.set_keyboard_layout(keyboard_layout)
 
     def set_extensions(self, extensions_name):
         self.current_settings.set_extensions(extensions_name)
