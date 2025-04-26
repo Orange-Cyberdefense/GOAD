@@ -11,7 +11,7 @@ from goad.utils import *
 
 class LabInstance:
 
-    def __init__(self, instance_id, lab_name, config, provider_name, provisioner_name, ip_range, extensions=None, status='', default=False):
+    def __init__(self, instance_id, lab_name, config, provider_name, provisioner_name, ip_range, keyboard_layout, extensions=None, status='', default=False):
         if instance_id is None:
             random_id = ''.join(random.choices(string.hexdigits, k=6))
             self.instance_id = f'{random_id}-{lab_name}-{provider_name}'.lower()
@@ -22,6 +22,7 @@ class LabInstance:
         self.provider_name = provider_name
         self.provisioner_name = provisioner_name
         self.ip_range = ip_range
+        self.keyboard_layout = keyboard_layout
         self.status = status
         if extensions is None:
             extensions = []
@@ -106,6 +107,7 @@ class LabInstance:
             "provider": self.provider_name,
             "provisioner": self.provisioner_name,
             "ip_range": self.ip_range,
+            "keyboard_layout": self.keyboard_layout,
             "extensions": self.extensions,
             "status": self.status,
             "is_default": self.is_default
@@ -302,7 +304,8 @@ class LabInstance:
         instance_inventory_content = inventory_template.render(
             lab_name=self.lab_name,
             ip_range=self.ip_range,
-            provider_name=self.provider_name
+            provider_name=self.provider_name,
+            keyboard_layout=self.keyboard_layout,
         )
         # create instance inventory file
         instance_inventory_file = self.instance_path + sep + inventory_file

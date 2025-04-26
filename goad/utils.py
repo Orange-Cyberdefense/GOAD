@@ -10,6 +10,7 @@ LAB = 'lab'
 PROVIDER = 'provider'
 PROVISIONER = 'provisioner'
 IP_RANGE = 'ip_range'
+KEYBOARD_LAYOUTS = 'keyboard_layouts'
 
 # log level
 INFO = 5
