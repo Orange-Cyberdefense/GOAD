@@ -526,4 +526,5 @@ if __name__ == '__main__':
             elif args.task == 'reset':
                 goad.do_reset()
             elif args.task == 'show':
-                pass
+                Log.error('Not implemented')
+                raise NotImplementedError('Not implemented')

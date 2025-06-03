@@ -42,7 +42,7 @@ instance_id> install_extension ws01
 
 ## Uninstall
 
-- Not implemented yet
+ - Not implemented
 
 ## credits:
 - asr rules implementation : https://github.com/zuesdevil (https://github.com/Orange-Cyberdefense/GOAD/pull/172)
