@@ -1,0 +1,62 @@
+# Resource-Based Constrained Delegation Attack Scenario Configuration
+# This scenario focuses on exploiting resource-based constrained delegation
+
+scenario_name: "Resource-Based Constrained Delegation"
+description: "Exploit resource-based constrained delegation (RBCD) misconfigurations"
+estimated_ram: "10GB"
+
+required_vms:
+  - name: "techcorp-dc"
+    role: "Domain Controller"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.10"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "us-dc"
+    role: "Child Domain Controller"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.11"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "us-web"
+    role: "Web Server with RBCD Misconfiguration"
+    ram: 2048
+    cpus: 1
+    ip: "{{ip_range}}.25"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "us-mgmt"
+    role: "Management Server (Target)"
+    ram: 2048
+    cpus: 1
+    ip: "{{ip_range}}.26"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "student"
+    role: "Attack Machine"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.100"
+    os: "linux"
+    box: "kalilinux/rolling"
+    box_version: "2023.1.0"
+
+attack_path:
+  - "Compromise a server with rights to configure RBCD on the target"
+  - "Create a new machine account or use an existing one"
+  - "Configure the msDS-AllowedToActOnBehalfOfOtherIdentity attribute on the target"
+  - "Request a ticket for any service on the target as any user"
+  - "Access the target service with the obtained ticket"
+
+references:
+  - "CRTE Notion - Resource-Based Constrained Delegation section"

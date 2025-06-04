@@ -1,0 +1,63 @@
+# Exchange Server Attack Scenario Configuration
+# This scenario focuses on exploiting Exchange server vulnerabilities
+
+scenario_name: "Exchange Server Attacks"
+description: "Exploit Exchange server vulnerabilities for privilege escalation"
+estimated_ram: "12GB"
+
+required_vms:
+  - name: "techcorp-dc"
+    role: "TechCorp Forest Root Domain Controller"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.10"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "us-dc"
+    role: "Child Domain Controller"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.11"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "us-exchange"
+    role: "Exchange Server"
+    ram: 4096
+    cpus: 2
+    ip: "{{ip_range}}.22"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "us-mailmgmt"
+    role: "Mail Management Server"
+    ram: 2048
+    cpus: 1
+    ip: "{{ip_range}}.21"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "student"
+    role: "Attack Machine"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.100"
+    os: "linux"
+    box: "kalilinux/rolling"
+    box_version: "2023.1.0"
+
+attack_path:
+  - "Identify Exchange servers in the environment"
+  - "Enumerate Exchange server configurations and permissions"
+  - "Exploit Exchange server ACLs and group memberships"
+  - "Abuse Exchange server privileges for domain privilege escalation"
+  - "Use Exchange server as a pivot point for lateral movement"
+  - "Access mailboxes and sensitive information"
+
+references:
+  - "CRTE Notion - Exchange Server Attacks section"
