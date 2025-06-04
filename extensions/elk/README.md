@@ -25,4 +25,4 @@ instance_id> install_extension elk
 
 ## Uninstall
 
-- Not implemented yet
+ - Not implemented

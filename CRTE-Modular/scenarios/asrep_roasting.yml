@@ -1,0 +1,42 @@
+# AS-REP Roasting Attack Scenario Configuration
+# This scenario focuses on exploiting accounts with "Do not require Kerberos preauthentication"
+
+scenario_name: "AS-REP Roasting"
+description: "Exploit accounts with 'Do not require Kerberos preauthentication' setting enabled"
+estimated_ram: "8GB"
+
+required_vms:
+  - name: "techcorp-dc"
+    role: "Domain Controller"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.10"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "us-dc"
+    role: "Child Domain Controller"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.11"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "student"
+    role: "Attack Machine"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.100"
+    os: "linux"
+    box: "kalilinux/rolling"
+    box_version: "2023.1.0"
+
+attack_path:
+  - "Identify accounts with 'Do not require Kerberos preauthentication' setting"
+  - "Request AS-REP tickets for these accounts using GetNPUsers.py"
+  - "Extract and crack the hashes offline"
+
+references:
+  - "CRTE Notion - AS-REP Roasting section"

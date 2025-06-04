@@ -1,0 +1,72 @@
+# SQL Server Link Attack Scenario Configuration
+# This scenario focuses on exploiting linked SQL servers for lateral movement
+
+scenario_name: "SQL Server Link Attacks"
+description: "Exploit linked SQL servers for lateral movement and privilege escalation"
+estimated_ram: "14GB"
+
+required_vms:
+  - name: "techcorp-dc"
+    role: "TechCorp Forest Root Domain Controller"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.10"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "us-dc"
+    role: "Child Domain Controller"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.11"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "us-mssql"
+    role: "SQL Server in TechCorp"
+    ram: 3072
+    cpus: 2
+    ip: "{{ip_range}}.23"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "db-dc"
+    role: "DB Forest Domain Controller"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.40"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "db-sqlprod"
+    role: "Production SQL Server in DB Forest"
+    ram: 3072
+    cpus: 2
+    ip: "{{ip_range}}.31"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "student"
+    role: "Attack Machine"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.100"
+    os: "linux"
+    box: "kalilinux/rolling"
+    box_version: "2023.1.0"
+
+attack_path:
+  - "Identify SQL servers in the environment"
+  - "Gain access to a SQL server with linked server configurations"
+  - "Enumerate linked servers using SQL queries"
+  - "Execute commands across linked servers using OPENQUERY and xp_cmdshell"
+  - "Chain multiple SQL links for lateral movement across domain and forest boundaries"
+  - "Escalate privileges using SQL server privileges"
+
+references:
+  - "CRTE Notion - SQL Server Link Attacks section"

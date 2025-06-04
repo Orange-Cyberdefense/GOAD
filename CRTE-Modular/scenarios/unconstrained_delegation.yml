@@ -1,0 +1,52 @@
+# Unconstrained Delegation Attack Scenario Configuration
+# This scenario focuses on exploiting servers with unconstrained delegation enabled
+
+scenario_name: "Unconstrained Delegation"
+description: "Exploit servers with unconstrained delegation to steal user tickets"
+estimated_ram: "10GB"
+
+required_vms:
+  - name: "techcorp-dc"
+    role: "Domain Controller"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.10"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "us-dc"
+    role: "Child Domain Controller"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.11"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "us-exchange"
+    role: "Exchange Server with Unconstrained Delegation"
+    ram: 4096
+    cpus: 2
+    ip: "{{ip_range}}.22"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "student"
+    role: "Attack Machine"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.100"
+    os: "linux"
+    box: "kalilinux/rolling"
+    box_version: "2023.1.0"
+
+attack_path:
+  - "Identify servers with unconstrained delegation enabled"
+  - "Compromise the server with unconstrained delegation"
+  - "Force a domain admin to authenticate to the compromised server"
+  - "Capture and use the domain admin's TGT"
+
+references:
+  - "CRTE Notion - Unconstrained Delegation section"

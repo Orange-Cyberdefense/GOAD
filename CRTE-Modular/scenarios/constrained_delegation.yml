@@ -1,0 +1,61 @@
+# Constrained Delegation Attack Scenario Configuration
+# This scenario focuses on exploiting servers with constrained delegation enabled
+
+scenario_name: "Constrained Delegation"
+description: "Exploit servers with constrained delegation to impersonate users to specific services"
+estimated_ram: "10GB"
+
+required_vms:
+  - name: "techcorp-dc"
+    role: "Domain Controller"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.10"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "us-dc"
+    role: "Child Domain Controller"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.11"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "us-web"
+    role: "Web Server with Constrained Delegation"
+    ram: 2048
+    cpus: 1
+    ip: "{{ip_range}}.25"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "us-mssql"
+    role: "SQL Server (delegation target)"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.23"
+    os: "windows"
+    box: "StefanScherer/windows_2019"
+    box_version: "2021.05.15"
+    
+  - name: "student"
+    role: "Attack Machine"
+    ram: 2048
+    cpus: 2
+    ip: "{{ip_range}}.100"
+    os: "linux"
+    box: "kalilinux/rolling"
+    box_version: "2023.1.0"
+
+attack_path:
+  - "Identify servers with constrained delegation enabled"
+  - "Compromise the server with constrained delegation"
+  - "Use S4U2Self and S4U2Proxy to request tickets for allowed services"
+  - "Access the target service as any user"
+
+references:
+  - "CRTE Notion - Constrained Delegation section"
