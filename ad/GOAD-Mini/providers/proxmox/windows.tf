@@ -1,5 +1,5 @@
 "dc01" = {
-  name               = "DC01"
+  name               = "goadv3-DC01"
   desc               = "DC01 - windows server 2019 - {{ip_range}}.10"
   cores              = 2
   memory             = 3096

@@ -12,10 +12,17 @@ copy-item "G:\sysprep\cloudbase-init.conf" "C:\Program Files\Cloudbase Solutions
 copy-item "G:\sysprep\cloudbase-init-unattend.conf" "C:\Program Files\Cloudbase Solutions\Cloudbase-Init\conf\cloudbase-init-unattend.conf" -force
 copy-item "G:\sysprep\cloudbase-init-unattend.xml" "C:\Program Files\Cloudbase Solutions\Cloudbase-Init\conf\cloudbase-init-unattend.xml" -force
 
-echo "Disable cloudbaseinit at start"
-# disable cloudbase-init start
-Set-Service -Name cloudbase-init -StartupType Disabled
+# Delete cloudbase-init User
+net user cloudbase-init /delete
 
+# Attribute service to local system
+sc.exe config cloudbase-init obj= .\LocalSystem
+
+# Modify executon path of Service
+$newtext = Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\cloudbase-init' -Name 'ImagePath' | Select-Object -ExpandProperty ImagePath | %{$_.replace(" cloudbase-init ", " NT-AUTHORITY\SYSTEM ")}
+Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\cloudbase-init' -Name 'ImagePath' -Value $newtext
+
+echo "Running Sysprep"
 # Run sysprep
 cd "C:\Program Files\Cloudbase Solutions\Cloudbase-Init\conf\"
-start-process -FilePath "C:/Windows/system32/sysprep/sysprep.exe" -ArgumentList "/generalize /oobe /mode:vm /unattend:cloudbase-init-unattend.xml" -wait
+start-process -FilePath "C:/Windows/system32/sysprep/sysprep.exe" -ArgumentList "/generalize /oobe /mode:vm /quit /unattend:cloudbase-init-unattend.xml" -wait

@@ -55,25 +55,43 @@
                     </PathAndCredentials>
                 </DriverPaths>
             </component>
-            
-            <component xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+            <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                 <DiskConfiguration>
                     <Disk wcm:action="add">
                         <CreatePartitions>
                             <CreatePartition wcm:action="add">
                                 <Order>1</Order>
+                                <Type>EFI</Type>
+                                <Size>100</Size>
+                            </CreatePartition>
+                            <CreatePartition wcm:action="add">
+                                <Order>2</Order>
+                                <Type>MSR</Type>
+                                <Size>128</Size>
+                            </CreatePartition>
+                            <CreatePartition wcm:action="add">
+                                <Order>3</Order>
                                 <Type>Primary</Type>
                                 <Extend>true</Extend>
                             </CreatePartition>
                         </CreatePartitions>
                         <ModifyPartitions>
                             <ModifyPartition wcm:action="add">
-                                <Extend>false</Extend>
-                                <Format>NTFS</Format>
-                                <Letter>C</Letter>
                                 <Order>1</Order>
                                 <PartitionID>1</PartitionID>
-                                <Label>Windows 10</Label>
+                                <Label>System</Label>
+                                <Format>FAT32</Format>
+                            </ModifyPartition>
+                            <ModifyPartition wcm:action="add">
+                                <Order>2</Order>
+                                <PartitionID>2</PartitionID>
+                            </ModifyPartition>
+                            <ModifyPartition wcm:action="add">
+                                <Order>3</Order>
+                                <PartitionID>3</PartitionID>
+                                <Letter>C</Letter>
+                                <Label>Windows</Label>
+                                <Format>NTFS</Format>
                             </ModifyPartition>
                         </ModifyPartitions>
                         <DiskID>0</DiskID>
@@ -81,47 +99,34 @@
                     </Disk>
                     <WillShowUI>OnError</WillShowUI>
                 </DiskConfiguration>
-                <UserData>
-                    <AcceptEula>true</AcceptEula>
-                    <FullName>Vagrant</FullName>
-                    <Organization>Vagrant</Organization>
-
-                    <!--
-                        NOTF: If you are re-configuring this for use of a retail key
-                        and using a retail ISO, you need to adjust the <ProductKey> block
-                        below to look like this:
-
-                        <ProductKey>
-                            <Key>W269N-WFGWX-YVC9B-4J6C9-T83GX</Key>
-                            <WillShowUI>Never</WillShowUI>
-                        </ProductKey>
-
-                        Notice the addition of the `<Key>` element.
-                    -->
-
-                    <!-- Product Key from https://www.microsoft.com/en-us/evalcenter/evaluate-windows-10-enterprise -->
-                    <ProductKey>
-                        <WillShowUI>Never</WillShowUI>
-                    </ProductKey>
-                </UserData>
                 <ImageInstall>
                     <OSImage>
-                        <InstallTo>
-                            <DiskID>0</DiskID>
-                            <PartitionID>1</PartitionID>
-                        </InstallTo>
-                        <WillShowUI>OnError</WillShowUI>
-                        <InstallToAvailablePartition>false</InstallToAvailablePartition>
                         <InstallFrom>
                             <MetaData wcm:action="add">
                                 <Key>/IMAGE/NAME</Key>
                                 <Value>Windows 10 Enterprise Evaluation</Value>
                             </MetaData>
                         </InstallFrom>
+                        <InstallTo>
+                            <DiskID>0</DiskID>
+                            <PartitionID>3</PartitionID>
+                        </InstallTo>
                     </OSImage>
                 </ImageInstall>
+                <UserData>
+                    <!-- Product Key from https://www.microsoft.com/de-de/evalcenter/evaluate-windows-server-technical-preview?i=1 -->
+                    <ProductKey>
+                        <!-- Do not uncomment the Key element if you are using trial ISOs -->
+                        <!-- You must uncomment the Key element (and optionally insert your own key) if you are using retail or volume license ISOs -->
+                        <!-- <Key>6XBNX-4JQGW-QX6QG-74P76-72V67</Key> -->
+                        <WillShowUI>OnError</WillShowUI>
+                    </ProductKey>
+                    <AcceptEula>true</AcceptEula>
+                    <FullName>Vagrant</FullName>
+                    <Organization>Vagrant</Organization>
+                </UserData>
             </component>
-            <component xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+            <component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                 <SetupUILanguage>
                     <UILanguage>en-US</UILanguage>
                 </SetupUILanguage>
@@ -263,46 +268,28 @@
                         <CommandLine>powershell -NoProfile -ExecutionPolicy Bypass -Command "F:\guest-agent\qemu-ga-x86_64.msi /quiet"</CommandLine>
                         <Description>Drivers install</Description>
                     </SynchronousCommand>
-                    <!--<SynchronousCommand wcm:action="add">
-                        <CommandLine>powershell -NoProfile -ExecutionPolicy Bypass -Command "msiexec /i G:\CloudbaseInitSetup_1_1_2_x64.msi /qn /l*v c:\log.txt"</CommandLine>
-                        <Description>Prepare for cloudinit</Description>
-                        <Order>20</Order>
-                    </SynchronousCommand> -->
                     <SynchronousCommand wcm:action="add">
                         <CommandLine>powershell -NoProfile -ExecutionPolicy Bypass -Command "G:\Install-WMF3Hotfix.ps1"</CommandLine>
                         <Description>Install-WMF3Hotfix.ps1</Description>
-                        <Order>97</Order>
+                        <Order>94</Order>
                     </SynchronousCommand>
-                    <!-- no updates 
-                    <SynchronousCommand wcm:action="add">
-                        <CommandLine>powershell -NoProfile -ExecutionPolicy Bypass -Command "G:\ConfigureRemotingForAnsible.ps1"</CommandLine>
-                        <Description>ConfigureRemotingForAnsible</Description>
-                        <Order>98</Order>
-                    </SynchronousCommand>
-                    <SynchronousCommand wcm:action="add">
-                        <CommandLine>cmd.exe /c C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File G:\enable-winrm.ps1</CommandLine>
-                        <Description>Enable WinRM</Description>
-                        <Order>99</Order>
-                    </SynchronousCommand>
-                    WITH WINDOWS UPDATES -->
                     <SynchronousCommand wcm:action="add">
                         <CommandLine>cmd.exe /c G:\microsoft-updates.bat</CommandLine>
-                        <Order>98</Order>
+                        <Order>97</Order>
                         <Description>Enable Microsoft Updates</Description>
                     </SynchronousCommand>
                     <SynchronousCommand wcm:action="add">
                         <CommandLine>cmd.exe /c C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File G:\disable-screensaver.ps1</CommandLine>
                         <Description>Disable Screensaver</Description>
-                        <Order>99</Order>
+                        <Order>98</Order>
                         <RequiresUserInput>true</RequiresUserInput>
                     </SynchronousCommand>
                     <SynchronousCommand wcm:action="add">
                         <CommandLine>cmd.exe /c C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File G:\win-updates.ps1</CommandLine>
                         <Description>Install Windows Updates</Description>
-                        <Order>100</Order>
+                        <Order>99</Order>
                         <RequiresUserInput>true</RequiresUserInput>
                     </SynchronousCommand>
-                    <!-- END WITH WINDOWS UPDATES -->
                 </FirstLogonCommands>
                 <ShowWindowsLive>false</ShowWindowsLive>
             </component>

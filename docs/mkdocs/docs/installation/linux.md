@@ -91,8 +91,7 @@
 
 === ":simple-proxmox: Proxmox"
 
-    - Proxmox install is very complex and use a lot of steps
-    - A complete guide to proxmox installation is available here : [https://mayfly277.github.io/categories/proxmox/](https://mayfly277.github.io/categories/proxmox/)
+    For detailed Proxmox installation and setup instructions, please refer to the [Proxmox Provider Documentation](../providers/proxmox.md).
 
 === "🏟️  Ludus"
 

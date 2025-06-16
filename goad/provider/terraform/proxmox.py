@@ -11,8 +11,8 @@ from rich import print
 
 class ProxmoxProvider(TerraformProvider):
     provider_name = PROXMOX
-    default_provisioner = PROVISIONING_LOCAL
-    allowed_provisioners =  [PROVISIONING_LOCAL, PROVISIONING_RUNNER]
+    default_provisioner = PROVISIONING_REMOTE
+    allowed_provisioners =  [PROVISIONING_REMOTE, PROVISIONING_LOCAL, PROVISIONING_RUNNER]
 
     def __init__(self, lab_name, config):
         super().__init__(lab_name)
@@ -21,6 +21,7 @@ class ProxmoxProvider(TerraformProvider):
         self.pm_node = config.get_value('proxmox', 'pm_node')
         self.pm_pool = config.get_value('proxmox', 'pm_pool')
         self.pm_password = config.get_value('proxmox', 'pm_pass', None)
+        self.jumpbox_setup_script = 'setup_proxmox.sh'
 
     def _get_proxmox(self):
         if self.pm_password is None:
@@ -199,3 +200,13 @@ class ProxmoxProvider(TerraformProvider):
 
     def destroy_vm(self, vm_name):
         pass
+
+    def get_jumpbox_ip(self, ip_range=''):
+        jumpbox_ip = self.command.run_terraform_output(['ubuntu-jumpbox-ip'], self.path)
+        if jumpbox_ip is None:
+            Log.error('Jump box ip not found')
+            return None
+        if not Utils.is_valid_ipv4(jumpbox_ip):
+            Log.error('Invalid IP')
+            return None
+        return jumpbox_ip
