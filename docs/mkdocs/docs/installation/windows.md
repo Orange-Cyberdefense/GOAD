@@ -117,13 +117,13 @@
         - Install python packages
         ```bash
         sudo apt update
-        sudo apt install python3 python3-pip python3-venv libpython3-dev
+        sudo apt install python3 python3-pip python3-venv libpython3-dev git
         ```
 
     - Next you can clone and run goad
 
     ```bash
-    cd /mnt/c/whatever_folder_you_want
+    cd /mnt/c/whatever_folder_you_want      # This path HAS to be on one of your drives (C:/D:/E:/...)!
     git clone https://github.com/Orange-Cyberdefense/GOAD.git
     cd GOAD
     ./goad.sh
@@ -145,6 +145,8 @@
         ```
     - Install python dependencies (choose the noansible file) : 
         ```
+        python -m venv .env
+        source .env\Scripts\activate        # In CMD: .env\Scripts\activate.bat
         pip install -r noansible_requirements.yml
         ```
     - Launch goad with vm provisioning method : 
