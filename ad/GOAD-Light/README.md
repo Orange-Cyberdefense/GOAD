@@ -10,7 +10,7 @@ Missing scenarios:
 - ESC4, ESC2/3
 
 ### Servers
-This lab is actually composed of five virtual machines:
+This lab is actually composed of three virtual machines:
 - **kingslanding** : DC01  running on Windows Server 2019 (with windefender enabled by default)
 - **winterfell**   : DC02  running on Windows Server 2019 (with windefender enabled by default)
 - **castelblack**  : SRV02 running on Windows Server 2019 (with windefender **disabled** by default)
