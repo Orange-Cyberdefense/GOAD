@@ -10,3 +10,6 @@ wazuh
 
 [wazuh_agents:children]
 domain
+
+[wazuh_agents_linux:children]
+linux_domain

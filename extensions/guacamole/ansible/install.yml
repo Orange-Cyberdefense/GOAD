@@ -1,0 +1,78 @@
+---
+- name: "Read lab data files"
+  hosts: guacamole
+  connection: local
+  vars_files:
+    - "../../../ad/{{domain_name}}/data/config.json"
+  tasks:
+    - name: register lab var
+      set_fact:
+        lab: "{{lab}}"
+        cacheable: yes
+      run_once: true
+
+# read all configuration file
+- name: "Read local config file to add on lab config"
+  hosts: guacamole
+  connection: local
+  tasks:
+    - name: Include and merge config file
+      vars:
+        ext_config: {}
+      ansible.builtin.include_vars:
+        file: "../../{{ item }}/data/config.json"
+        name: ext_config
+      loop:
+        - exchange
+        - lx01
+        - ws01
+      register: included_vars
+
+    - name: Debug included configs
+      debug:
+        var: item.ansible_facts.ext_config
+      loop: "{{ included_vars.results }}"
+
+    - name: Merge all included configs into lab
+      set_fact:
+        lab: "{{ lab | combine(item.ansible_facts.ext_config.lab_extension, recursive=True) }}"
+      loop: "{{ included_vars.results }}"
+
+    - name: Debug final merged lab variable
+      debug:
+        var: lab
+
+# --- install
+- name: Install Guacamole
+  hosts: guacamole
+  become: yes
+  vars_files:
+    - "../../../guacamole.yml"
+  roles:
+  - { role: 'geerlingguy.mysql', tags: 'mysql'}
+  - { role: 'linux/tomcat', tags: 'tomcat'}
+  - { role: 'linux/guacamole', tags: 'guacamole'}
+  vars:
+    mysql_databases:
+      - name: "{{guacamole_db}}"
+        encoding: utf8
+        collation: utf8_general_ci
+    mysql_users:
+      - name: "{{guacamole_db_username}}"
+        host: "%"
+        password: ohmygoadchangeme
+        priv: "{{guacamole_db}}.*:ALL"
+    salt: "{{99999999999999 | random | to_uuid | hash('sha256')}}"
+
+# --- create connections
+- name: Create guacamole connections
+  hosts: guacamole
+  become: yes
+  vars_files:
+    - "../../../guacamole.yml"
+  roles:
+  - { role: 'linux/guacamole_create_connections', tags: 'guacamole_connections'}
+  vars:
+    guacadmin_username: "guacadmin"
+    hosts: "{{lab.hosts}}"
+    domains: "{{lab.domains}}"

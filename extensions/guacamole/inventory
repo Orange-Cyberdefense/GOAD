@@ -1,0 +1,5 @@
+[default]
+guacamole ansible_host={{ip_range}}.52 ansible_connection=ssh ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[extensions]
+guacamole

@@ -1,0 +1,8 @@
+  - vm_name: "{{ range_id }}-GUACAMOLE"
+    hostname: "{{ range_id }}-GUACAMOLE"
+    template: ubuntu-22.04-x64-server-template
+    vlan: 10
+    ip_last_octet: 52
+    ram_gb: 4
+    cpus: 2
+    linux: true

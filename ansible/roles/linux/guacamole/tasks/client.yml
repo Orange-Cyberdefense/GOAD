@@ -1,0 +1,40 @@
+---
+- name: Creates guacamole directory
+  file:
+    path: /etc/guacamole
+    state: directory
+
+- name: check if guacamole client downloaded
+  ansible.builtin.stat:
+    path: "{{ '/etc/guacamole/guacamole-' + GUACAMOLE_VERSION + '.war' }}"
+  register: guacamole_client_downloaded
+
+- name: downloading Guacamole Client Package
+  ansible.builtin.get_url:
+    url: "https://apache.org/dyn/closer.lua/guacamole/{{GUACAMOLE_VERSION}}/binary/guacamole-{{GUACAMOLE_VERSION}}.war?action=download"
+    dest: "{{ '/etc/guacamole/guacamole-' + GUACAMOLE_VERSION + '.war' }}"
+  register: client_war
+  when: not guacamole_client_downloaded.stat.exists
+
+- name: check if guacamole client deployed
+  ansible.builtin.stat:
+    path: "{{ '/var/lib/tomcat9/webapps/guacamole##' + GUACAMOLE_VERSION + '.war' }}"
+  register: guacamole_client_deployed
+
+- name: setting Permissions On Tomcat Symlink For {{ 'guacamole-' + guacamole_version + '.war' }}
+  ansible.builtin.file:
+    path: "{{ '/etc/guacamole/guacamole-' + GUACAMOLE_VERSION + '.war' }}"
+    owner: "tomcat"
+    group: "tomcat"
+
+- name: creating Tomcat Symlink For {{ 'guacamole-' + GUACAMOLE_VERSION + '.war' }}
+  ansible.builtin.file:
+    src: "{{ '/etc/guacamole/guacamole-' + GUACAMOLE_VERSION + '.war' }}"
+    dest: "{{ '/var/lib/tomcat9/webapps/guacamole##' + GUACAMOLE_VERSION + '.war' }}"
+    state: link
+  notify:
+    - restart tomcat9
+    - kill guacd
+    - restart guacd
+  when: not guacamole_client_deployed.stat.exists
+

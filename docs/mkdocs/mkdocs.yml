@@ -27,7 +27,9 @@ nav:
     - MINILAB: labs/MINILAB.md
   - 📈 Extensions:
     - index: extensions/index.md
+    - guacamole: extensions/guacamole.md
     - exchange: extensions/exchange.md
+    - lx01: extensions/lx01.md
     - ws01: extensions/ws01.md
     - elk: extensions/elk.md
     - wazuh: extensions/wazuh.md

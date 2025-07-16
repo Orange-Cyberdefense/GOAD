@@ -1,0 +1,106 @@
+- name: Install mysql java connector
+  ansible.builtin.apt:
+    name: 
+      - libmariadb-java
+    state: present
+
+- name: downloading Auth JDBC Library and unarchive
+  ansible.builtin.unarchive:
+    src: "https://apache.org/dyn/closer.lua/guacamole/{{GUACAMOLE_VERSION}}/binary/guacamole-auth-jdbc-{{GUACAMOLE_VERSION}}.tar.gz?action=download"
+    dest: "{{ GUACAMOLE_INSTALL_DIR }}"
+    remote_src: true
+
+- name: Creates guacamole extensions directory
+  file:
+    path: /etc/guacamole/extensions/
+    state: directory
+
+- name: copying Auth JDBC Connector
+  ansible.builtin.copy:
+    src: "{{GUACAMOLE_INSTALL_DIR}}/guacamole-auth-jdbc-{{GUACAMOLE_VERSION}}/mysql/guacamole-auth-jdbc-mysql-{{GUACAMOLE_VERSION}}.jar"
+    dest: /etc/guacamole/extensions/
+    owner: "tomcat"
+    group: "tomcat"
+    remote_src: true
+
+- name: Creates guacamole lib directory
+  file:
+    path: /etc/guacamole/lib/
+    state: directory
+
+- name: copy connector
+  ansible.builtin.copy:
+    src: /usr/share/java/mariadb-java-client.jar
+    dest: /etc/guacamole/lib/mariadb-java-client.jar
+    owner: "tomcat"
+    group: "tomcat"
+    remote_src: true
+
+- name: creating Guacamole DB
+  community.mysql.mysql_db:
+    name: "{{ guacamole_db }}"
+    login_host: "localhost"
+    login_port: "3306"
+    login_user: "root"
+    login_password: "{{ mysql_root_password }}"
+    state: present
+
+- name: creating Guacamole DB User
+  community.mysql.mysql_user:
+    name: "{{ guacamole_db_username }}"
+    password: "{{ guacamole_db_password }}"
+    login_host: "localhost"
+    login_port: "3306"
+    login_user: "root"
+    login_password: "{{ mysql_root_password }}"
+    column_case_sensitive: true
+    priv: "{{ guacamole_db + '.*:GRANT,SELECT,INSERT,UPDATE,DELETE' }}"
+    state: present
+
+- name: checking If DB Has Been Populated
+  ansible.builtin.stat:
+    path: /etc/guacamole/.db_populated
+  register: guacamole_db_populated_check
+
+- name: popluating DB
+  community.mysql.mysql_db:
+    name: "{{ guacamole_db_username }}"
+    login_host: "localhost"
+    login_port: "3306"
+    login_user: "root"
+    login_password: "{{ mysql_root_password }}"
+    state: import
+    target: "{{GUACAMOLE_INSTALL_DIR}}/guacamole-auth-jdbc-{{GUACAMOLE_VERSION}}/mysql/schema/{{item }}"
+  become: true
+  register: guacamole_db_populated
+  notify:
+    - restart tomcat9
+    - kill guacd
+    - restart guacd
+  with_items:
+    - 001-create-schema.sql
+    - 002-create-admin-user.sql
+  when: not guacamole_db_populated_check.stat.exists
+
+- name: mark DB As Populated
+  ansible.builtin.file:
+    path: /etc/guacamole/.db_populated
+    state: touch
+  when: guacamole_db_populated.changed
+
+- name: config | Creating Tomcat symlink For guacamole.properties
+  ansible.builtin.file:
+    src: /etc/guacamole
+    dest: /usr/share/tomcat9/.guacamole
+    state: link
+    owner: tomcat
+    group: tomcat
+  notify:
+    - restart tomcat9
+    - kill guacd
+    - restart guacd
+
+- name: Update index.hmtl of ROOT in tomcat to redirect to guacamole
+  ansible.builtin.copy:
+    content: "<meta http-equiv='Refresh' content=\"0; url='/guacamole'\"/>"
+    dest: "/var/lib/tomcat9/webapps/ROOT/index.html"

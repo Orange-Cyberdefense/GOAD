@@ -12,3 +12,11 @@
     - { role: 'wazuh_agent', tags: 'wazuh_agent' }
   vars:
     wazuh_manager_host: "{{ hostvars['wazuh']['ansible_host'] }}"
+
+- name: Install Wazuh Agent
+  hosts: wazuh_agents_linux
+  become: yes
+  roles:
+    - { role: 'wazuh_agent_linux', tags: 'wazuh_agent_linux' }
+  vars:
+    wazuh_manager_host: "{{ hostvars['wazuh']['ansible_host'] }}"

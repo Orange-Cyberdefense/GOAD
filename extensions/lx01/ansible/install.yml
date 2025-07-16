@@ -1,0 +1,70 @@
+---
+# read global configuration file and set up adapters
+- import_playbook: "../../../ansible/data.yml"
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+  tags: 'data'
+
+# read local configuration file
+- name: "Read local config file"
+  hosts: domain:extensions
+  connection: local
+  vars_files:
+    - "../data/config.json"
+  tasks:
+    - name: merge lab variable with local config
+      set_fact:
+        lab: "{{ lab|combine(lab_extension, recursive=True) }}"
+
+# provision ----
+- name: Enroll lx01 machine to domain
+  hosts: lx01
+  become: yes
+  roles:
+  - { role: 'linux/add_linux_to_domain', tags: 'linux_domain'}
+  vars:
+    hostname: "{{lab.hosts[dict_key].hostname}}"
+    domain: "{{lab.hosts[dict_key].domain}}"
+    dc_key: "{{lab.domains[domain].dc}}"
+    dc_name: "{{lab.hosts[dc_key].hostname}}"
+    dc_fqdn: "{{dc_name}}.{{domain}}"
+    dc_ip: "{{hostvars[dc_key].ansible_host}}"
+    domain_username: "{{admin_user}}"
+    domain_password: "{{lab.domains[domain].domain_password}}"
+    sudoers_group: "{{lab.hosts[dict_key].local_groups.sudoers | default([])}}"
+    ssh_group: "{{lab.hosts[dict_key].local_groups.ssh | default([])}}"
+
+- name: Setup lx01 machine dns on domain controler
+  hosts: dc01
+  roles:
+  - { role: 'add_dns_record', tags: 'add_dns_record'}
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    record_name: "{{lab.hosts['lx01'].hostname}}"
+    record_type: "A"
+    record_value:  "{{hostvars['lx01'].ansible_host}}"
+
+# - name: Setup lx01 machine as proxy
+#   hosts: lx01
+#   become: yes
+#   roles:
+#   - { role: 'linux/proxy_server', tags: 'linux_domain'}
+#   vars:
+#     hostname: "{{lab.hosts[dict_key].hostname}}"
+#     domain: "{{lab.hosts[dict_key].domain}}"
+#     squid_port: "3128"
+#     ip_range: "{{hostvars[dict_key].ansible_host}}/24"
+#     proxy_fqdn: "{{hostname}}.{{domain}}"
+# 
+# - name: Setup lx01 machine as wpad CNAME in dns of domain controlers
+#   hosts: dc
+#   tasks:
+#     - name: reset dns query blocklist (to remove wpad from list)
+#       ansible.windows.win_shell:  dnscmd /config /globalqueryblocklist
+#   roles:
+#     - { role: 'add_dns_record', tags: 'add_dns_record'}
+#   vars:
+#     domain: "{{lab.hosts[dict_key].domain}}"
+#     record_name: "wpad"
+#     record_type: "CNAME"
+#     record_value: "{{lab.hosts['lx01'].hostname}}.{{lab.hosts['lx01'].domain}}"

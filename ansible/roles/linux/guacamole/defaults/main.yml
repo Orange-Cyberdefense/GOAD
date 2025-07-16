@@ -1,0 +1,6 @@
+GUACAMOLE_VERSION: 1.6.0
+GUACAMOLE_TMP_DIR: /tmp
+GUACAMOLE_INSTALL_DIR: /opt/guacamole
+guacamole_db: guacamole
+guacamole_db_username: guacamole
+guacamole_db_password: guacamole

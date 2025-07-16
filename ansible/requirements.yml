@@ -7,6 +7,12 @@ collections:
   - name: community.windows
     version: 1.11.0
   - name: chocolatey.chocolatey
+  - name: community.crypto
+  - name: community.mysql
+  - name: scicore.guacamole
+  - name: ansible.posix
 # - name: goad.windows
 #   type: dir
 #   source: ./collections/goad/windows
+roles:
+  - name: geerlingguy.mysql

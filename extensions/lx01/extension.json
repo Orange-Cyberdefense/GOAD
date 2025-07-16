@@ -1,0 +1,13 @@
+{
+    "name": "lx01",
+    "description": "Add a linux computer enrolled to the lab",
+    "machines": [
+        "lx01"
+    ],
+    "compatibility": [
+        "GOAD",
+        "GOAD-Light",
+        "GOAD-Mini"
+    ],
+    "impact": "none"
+}

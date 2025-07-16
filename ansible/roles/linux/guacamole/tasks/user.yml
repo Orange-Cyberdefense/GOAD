@@ -1,0 +1,13 @@
+- name: change guacadmin password
+  community.mysql.mysql_query:
+    login_host: "localhost"
+    login_port: "3306"
+    login_db: "{{ guacamole_db }}"
+    login_user: "{{ guacamole_db_username }}"
+    login_password: "{{ guacamole_db_password }}"
+    query: >
+      UPDATE guacamole_user set 
+        password_salt=UNHEX('{{salt|upper}}'), 
+        password_hash=UNHEX(SHA2(CONCAT('{{guacadmin_password}}', '{{salt|upper}}'), 256)), 
+        password_date=CURRENT_TIMESTAMP 
+      WHERE entity_id = 1;

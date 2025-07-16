@@ -1,0 +1,45 @@
+- name: Gather service facts
+  ansible.builtin.service_facts:
+
+- name: "Update cache"
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 86400
+  when: "'wazuh-agent.service' not in ansible_facts.services or ansible_facts.services['wazuh-agent.service'].state != 'running'"
+
+- name: Add required dependencies.
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - gnupg2
+    state: present
+  when: "'wazuh-agent.service' not in ansible_facts.services or ansible_facts.services['wazuh-agent.service'].state != 'running'"
+
+- name: Install wazuh apt key
+  ansible.builtin.apt_key:
+    url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+    state: present
+  when: "'wazuh-agent.service' not in ansible_facts.services or ansible_facts.services['wazuh-agent.service'].state != 'running'"
+
+- name: Add Wazuh repository.
+  ansible.builtin.apt_repository:
+    repo: 'deb https://packages.wazuh.com/4.x/apt/ stable main'
+    state: present
+    update_cache: true
+  when: "'wazuh-agent.service' not in ansible_facts.services or ansible_facts.services['wazuh-agent.service'].state != 'running'"
+
+- name: Install wazuh agent
+  ansible.builtin.apt: 
+    name: "wazuh-agent={{wazuh_version}}"
+    state: present
+  environment:
+    WAZUH_MANAGER: "{{wazuh_manager_host}}"
+    WAZUH_REGISTRATION_SERVER: "{{ wazuh_manager_host }}"
+  when: "'wazuh-agent.service' not in ansible_facts.services or ansible_facts.services['wazuh-agent.service'].state != 'running'"
+
+- name: Start and enable wazuh-agent
+  ansible.builtin.service:
+    name: wazuh-agent
+    state: started
+    enabled: yes
+  when: "'wazuh-agent.service' not in ansible_facts.services or ansible_facts.services['wazuh-agent.service'].state != 'running'"

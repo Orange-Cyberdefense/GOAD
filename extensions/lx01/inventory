@@ -1,0 +1,8 @@
+[default]
+lx01 ansible_host={{ip_range}}.32  dict_key=lx01 ansible_connection=ssh ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[extensions]
+lx01
+
+[linux_domain]
+lx01

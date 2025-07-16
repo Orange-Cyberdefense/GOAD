@@ -1,0 +1,80 @@
+- name: Install Guacamole dependencies
+  ansible.builtin.apt:
+    name: 
+      - freerdp2-x11
+      - freerdp2-dev
+      - build-essential
+      - libavcodec-dev
+      - libavutil-dev
+      - libcairo2-dev
+      - libjpeg-turbo8-dev
+      - libossp-uuid-dev
+      - libpango1.0-dev
+      - libpng-dev
+      - libpulse-dev
+      - libssh2-1-dev
+      - libssl-dev
+      - libswscale-dev
+      - libtelnet-dev
+      - libvncserver-dev
+      - libvorbis-dev
+      - libwebp-dev
+      - libwebsockets-dev
+      - libavformat-dev
+      - autoconf
+    state: present
+
+- name: check if guacamole server installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/guaclog
+  register: guacamole_server_installed
+
+- name: checking if Guacamole folder exist
+  ansible.builtin.stat:
+    path: "{{ GUACAMOLE_INSTALL_DIR + '/guacamole-server-' + GUACAMOLE_VERSION }}"
+  register: guacamole_server_extracted
+
+- name: Creates guacamole directory
+  file:
+    path: "{{GUACAMOLE_INSTALL_DIR}}"
+    state: directory
+  when: not guacamole_server_extracted.stat.exists
+
+- name: Download guacamole Server Package
+  ansible.builtin.get_url:
+    url: "https://apache.org/dyn/closer.lua/guacamole/{{GUACAMOLE_VERSION}}/source/guacamole-server-{{GUACAMOLE_VERSION}}.tar.gz?action=download"
+    dest: "{{GUACAMOLE_TMP_DIR}}"
+  when: not guacamole_server_extracted.stat.exists
+
+- name: Extract guacamole tar.gz
+  ansible.builtin.unarchive:
+    src: "{{ GUACAMOLE_TMP_DIR + '/guacamole-server-' + GUACAMOLE_VERSION + '.tar.gz' }}"
+    dest: "{{ GUACAMOLE_INSTALL_DIR }}"
+    remote_src: true
+  when: not guacamole_server_extracted.stat.exists
+
+- name: Configuring guacamole
+  ansible.builtin.command: "./configure --with-init-dir=/etc/init.d"
+  args:
+    chdir: "{{ GUACAMOLE_INSTALL_DIR + '/guacamole-server-' + GUACAMOLE_VERSION }}"
+  register: guacamole_config
+  when: not guacamole_server_installed.stat.exists
+
+- name: Make guacamole
+  ansible.builtin.command: "make"
+  args:
+    chdir: "{{ GUACAMOLE_INSTALL_DIR + '/guacamole-server-' + GUACAMOLE_VERSION }}"
+  register: guacamole_make
+  when: guacamole_config['changed']
+
+- name: Make Install guacamole
+  ansible.builtin.command: "make install"
+  args:
+    chdir: "{{ GUACAMOLE_INSTALL_DIR + '/guacamole-server-' + GUACAMOLE_VERSION }}"
+  register: guacamole_make_install
+  when: guacamole_make['changed']
+
+- name: ldconfig
+  ansible.builtin.command: ldconfig
+  when: guacamole_make_install['changed']
+

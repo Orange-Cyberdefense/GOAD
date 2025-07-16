@@ -1,0 +1,27 @@
+- name: Add guacamole properties file
+  template:
+    src: guacamole.properties.j2
+    dest: /etc/guacamole/guacamole.properties
+    owner: "root"
+    group: "root"
+    force: yes
+    mode: 0644
+
+- name: Add guadc conf file
+  template:
+    src: guacd.conf.j2
+    dest: /etc/guacamole/guacd.conf
+    owner: "root"
+    group: "root"
+    force: yes
+    mode: 0644
+  notify:
+    - restart tomcat9
+    - kill guacd
+    - restart guacd
+
+- name: enable guacd
+  ansible.builtin.service:
+    name: guacd
+    enabled: true
+    state: started

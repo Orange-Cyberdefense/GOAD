@@ -1,0 +1,14 @@
+- name: server
+  import_tasks: server.yml
+
+- name: client
+  import_tasks: client.yml
+
+- name: config
+  import_tasks: config.yml
+
+- name: jdbc
+  import_tasks: jdbc.yml
+
+- name: user
+  import_tasks: user.yml

@@ -1,0 +1,101 @@
+- name: "User {{user_name}}"
+  debug:
+    msg: "Domain : {{user_domain_name}} | user : {{user_name}} | password: {{user_password}} | host: {{hosts_data.key}}"
+  loop: "{{ user_hosts_list | dict2items }}"
+  loop_control:
+    loop_var: hosts_data
+  when: user_guacamole == "yes"
+
+- name: "Create a connection group for {{user_name}}"
+  scicore.guacamole.guacamole_connections_group:
+    base_url: "{{guac_url}}"
+    auth_username: "{{guacadmin_username}}"
+    auth_password: "{{guacadmin_password}}"
+    group_name: "{{user_name}}"
+    parent_group: "{{user_domain_name}}"
+  when: user_guacamole == "yes"
+
+- name: "Add Local RDP connection for User : {{user_name}}"
+  scicore.guacamole.guacamole_connection:
+    base_url: "{{guac_url}}"
+    rdp_domain: "{{user_domain_name}}"
+    auth_username: "{{guacadmin_username}}"
+    auth_password: "{{guacadmin_password}}"
+    connection_name: "RDP-{{hosts_data.key}}-{{hosts_data.value.hostname}}-{{user_name}}"
+    protocol: "rdp"
+    hostname: "{{hostvars[hosts_data.key].ansible_host}}"
+    port: "3389"
+    username: "{{user_name}}"
+    password: "{{user_password}}"
+    rdp_server_layout: "{{layout}}"
+    rdp_ignore_server_certs: true
+    validate_certs: false
+    max_connections: 4
+    group_name: "{{user_name}}"
+  loop: "{{ user_hosts_list | dict2items }}"
+  loop_control:
+    loop_var: hosts_data
+  when: >-
+    hostvars[hosts_data.key] is defined and
+    user_guacamole == "yes" and (hosts_data.value.os | default('') in ['', 'windows']) and (
+       (hosts_data.value.local_groups.get('Administrators', []) | default([]) | map('regex_replace', '.*\\\\', '') | list | intersect(user_groups) | length > 0)
+    or (hosts_data.value.local_groups.get('Remote Desktop Users', []) | default([]) | map('regex_replace', '.*\\\\', '') | list | intersect(user_groups) | length > 0)
+    or ((user_domain_name == hosts_data.value.domain) and (['Domain Admins']| list | intersect(user_groups) | length > 0))
+    or (hosts_data.value.local_groups.get('Administrators', []) | default([])  | map('regex_replace', '.*\\\\', '') | list | intersect([user_name]) | length > 0)
+    or (hosts_data.value.local_groups.get('Remote Desktop Users', []) | default([]) | map('regex_replace', '.*\\\\', '') | list | intersect([user_name]) | length > 0)
+    )
+
+- name: Add RDP user to list of connections
+  set_fact:
+    "connection_list": "{{ connection_list | default([]) + ['RDP-' + hosts_data.key + '-' + hosts_data.value.hostname + '-' + user_name]}}"
+  loop: "{{ user_hosts_list | dict2items }}"
+  loop_control:
+    loop_var: hosts_data
+  when: >-
+    hostvars[hosts_data.key] is defined and
+    user_guacamole == "yes" and (hosts_data.value.os | default('') in ['', 'windows']) and (
+       (hosts_data.value.local_groups.get('Administrators', []) | default([]) | map('regex_replace', '.*\\\\', '') | list | intersect(user_groups) | length > 0)
+    or (hosts_data.value.local_groups.get('Remote Desktop Users', []) | default([]) | map('regex_replace', '.*\\\\', '') | list | intersect(user_groups) | length > 0)
+    or ((user_domain_name == hosts_data.value.domain) and (['Domain Admins']| list | intersect(user_groups) | length > 0))
+    or (hosts_data.value.local_groups.get('Administrators', []) | default([])  | map('regex_replace', '.*\\\\', '') | list | intersect([user_name]) | length > 0)
+    or (hosts_data.value.local_groups.get('Remote Desktop Users', []) | default([]) | map('regex_replace', '.*\\\\', '') | list | intersect([user_name]) | length > 0)
+    )
+
+- name: "Add Local SSH connection for User : {{user_name}}"
+  scicore.guacamole.guacamole_connection:
+    base_url: "{{guac_url}}"
+    auth_username: "{{guacadmin_username}}"
+    auth_password: "{{guacadmin_password}}"
+    connection_name: "SSH-{{hosts_data.key}}-{{hosts_data.value.hostname}}-{{user_name}}"
+    protocol: "ssh"
+    hostname: "{{hostvars[hosts_data.key].ansible_host}}"
+    port: "22"
+    username: "{{user_name}}"
+    password: "{{user_password}}"
+    validate_certs: false
+    max_connections: 4
+    group_name: "{{user_name}}"
+  loop: "{{ user_hosts_list | dict2items }}"
+  loop_control:
+    loop_var: hosts_data
+  when: >-
+    hostvars[hosts_data.key] is defined and
+    user_guacamole == "yes" and (hosts_data.value.os is defined and hosts_data.value.os == "linux") and (
+       (hosts_data.value.local_groups.get('ssh', []) | default([]) | map('regex_replace', '.*\\\\', '') | list | intersect(user_groups) | length > 0)
+    or ((user_domain_name == hosts_data.value.domain) and (['Domain Admins']| list | intersect(user_groups) | length > 0))
+    or (hosts_data.value.local_groups.get('ssh', []) | default([]) | map('regex_replace', '.*\\\\', '') | list | intersect([user_name]) | length > 0)
+    )
+
+- name: Add SSH user to list of connections
+  set_fact:
+    "connection_list": "{{ connection_list | default([]) + ['SSH-' + hosts_data.key + '-' + hosts_data.value.hostname + '-' + user_name]}}"
+  loop: "{{ user_hosts_list | dict2items }}"
+  loop_control:
+    loop_var: hosts_data
+  when: >-
+    hostvars[hosts_data.key] is defined and
+    user_guacamole == "yes" and (hosts_data.value.os is defined and hosts_data.value.os == "linux") and (
+       (hosts_data.value.local_groups.get('ssh', []) | default([])| map('regex_replace', '.*\\\\', '') | list | intersect(user_groups) | length > 0)
+    or ((user_domain_name == hosts_data.value.domain) and (['Domain Admins']| list | intersect(user_groups) | length > 0))
+    or (hosts_data.value.local_groups.get('ssh', []) | default([]) | map('regex_replace', '.*\\\\', '') | list | intersect([user_name]) | length > 0)
+    )

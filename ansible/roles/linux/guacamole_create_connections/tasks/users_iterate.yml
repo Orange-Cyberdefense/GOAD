@@ -1,0 +1,12 @@
+- name: Iterate over users in each domain
+  include_tasks: users_hosts.yml
+  vars:
+    user_domain_name: "{{users_domain_name}}"
+    user_name: "{{users_data.key}}"
+    user_password: "{{users_data.value.password}}"
+    user_groups: "{{users_data.value.groups}}"
+    user_hosts_list: "{{hosts_list}}"
+    user_guacamole: "{{users_data.value.guacamole | default('yes')}}"
+  loop: "{{ users | dict2items }}"
+  loop_control:
+    loop_var: users_data

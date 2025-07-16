@@ -1,0 +1,10 @@
+- name: "Update cache"
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 86400
+
+- name: Install tomcat9
+  ansible.builtin.apt:
+    name: 
+      - tomcat9
+    state: present

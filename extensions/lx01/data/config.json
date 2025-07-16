@@ -1,0 +1,20 @@
+{
+    "lab_extension" : {
+        "hosts" : {
+          "lx01" : {
+              "hostname" : "dragonstone", 
+              "type" : "server",
+              "os": "linux",
+              "local_admin_password": "HGLXP@ssw_rd$",
+              "domain" : "sevenkingdoms.local", 
+              "path" : "DC=sevenkingdoms,DC=local",
+              "local_groups" : {
+                  "sudoers" : ["Baratheon"],
+                  "ssh" : ["Lannister", "Baratheon"]
+              },
+              "security": [""],
+              "security_vars": {}
+          }
+        }
+    }
+  }
