@@ -1,6 +1,6 @@
   - vm_name: "{{ range_id }}-GOAD-WS01"
     hostname: "{{ range_id }}-WS01"
-    template: win10-21h2-x64-enterprise-template
+    template: win10-22h2-x64-enterprise-template
     vlan: 10
     ip_last_octet: 31
     ram_gb: 4
