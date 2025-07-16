@@ -56,8 +56,29 @@ aws_region = eu-west-3
 aws_zone = eu-west-3c
 ```
 
-- If you want to use a different region and zone you can modify it.
+- If you want to use a different region and zone you can modify it (but this could break ami values in terraform)
 
+## Change AMI value
+
+- You can get the ami of Windows_Server with a query like that:
+```
+aws ec2 describe-images \
+  --region eu-west-3 \
+  --owners 801119661308 \
+  --filters "Name=name,Values=Windows_Server-2016-English-Full-Base*" \
+  --query 'Images[*].[ImageId,Name,CreationDate]' \
+  --output table
+```
+
+- for ubuntu use this command :
+```
+aws ec2 describe-images \
+  --region eu-west-3 \
+  --owners 099720109477 \
+  --filters "Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*" \
+  --query "Images[*].[ImageId,Name,CreationDate]" \
+  --output table
+```
 
 ## Installation
 
