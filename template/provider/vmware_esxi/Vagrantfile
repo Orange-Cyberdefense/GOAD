@@ -16,6 +16,7 @@ boxes.append(
     { :name => "PROVISIONING",
       :ip => "{{ip_range}}.3",
       :box => "bento/ubuntu-22.04",
+      :box_version => "202401.31.0",
       :os => "linux",
       :cpus => 2,
       :mem => 2000,
