@@ -1551,7 +1551,7 @@
 <p>Virtualbox</p>
 <ul>
 <li>
-<p>Install virtualbox &lt;= 7.0 (vagrant support only to vbox7.0 at the time of writing) : <a href="https://www.virtualbox.org/wiki/Download_Old_Builds_7_0">https://www.virtualbox.org/wiki/Download_Old_Builds_7_0</a></p>
+<p>Install virtualbox &lt;= 7.1.x (vagrant supports up to vbox7.1.x at the time of writing) : <a href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a></p>
 </li>
 <li>
 <p>Install the following vagrant plugins:</p>
@@ -1669,7 +1669,7 @@ As an example: <code>wsl --set-version Debian 1</code> will set your Debian dist
 <li>
 <p>Install python packages
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>update
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w"> </span>python3-venv<span class="w"> </span>libpython3-dev
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w"> </span>python3-venv<span class="w"> </span>libpython3-dev<span class="w"> </span>git
 </span></code></pre></div></p>
 </li>
 </ul>
@@ -1678,7 +1678,7 @@ As an example: <code>wsl --set-version Debian 1</code> will set your Debian dist
 <p>Next you can clone and run goad</p>
 </li>
 </ul>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">cd</span><span class="w"> </span>/mnt/c/whatever_folder_you_want
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">cd</span><span class="w"> </span>/mnt/c/whatever_folder_you_want<span class="w">      </span><span class="c1"># This path HAS to be on one of your drives (C:/D:/E:/...)!</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Orange-Cyberdefense/GOAD.git
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nb">cd</span><span class="w"> </span>GOAD
 </span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>./goad.sh
@@ -1704,7 +1704,9 @@ As an example: <code>wsl --set-version Debian 1</code> will set your Debian dist
 </span></code></pre></div></p>
 </li>
 <li>Install python dependencies (choose the noansible file) : 
-    <div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>pip install -r noansible_requirements.yml
+    <div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>python -m venv .env
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>source .env\Scripts\activate        # In CMD: .env\Scripts\activate.bat
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>pip install -r noansible_requirements.yml
 </span></code></pre></div></li>
 <li>Launch goad with vm provisioning method : 
     <div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>py goad.py -m vm

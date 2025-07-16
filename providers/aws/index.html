@@ -582,6 +582,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#change-ami-value" class="md-nav__link">
+    <span class="md-ellipsis">
+      Change AMI value
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       Installation
@@ -1531,6 +1540,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#change-ami-value" class="md-nav__link">
+    <span class="md-ellipsis">
+      Change AMI value
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       Installation
@@ -1659,16 +1677,39 @@ Only network coerce attacks will work.</p>
 </span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>aws_zone = eu-west-3c
 </span></code></pre></div>
 <ul>
-<li>If you want to use a different region and zone you can modify it.</li>
+<li>If you want to use a different region and zone you can modify it (but this could break ami values in terraform)</li>
+</ul>
+<h2 id="change-ami-value">Change AMI value</h2>
+<ul>
+<li>
+<p>You can get the ami of Windows_Server with a query like that:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>aws ec2 describe-images \
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  --region eu-west-3 \
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  --owners 801119661308 \
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>  --filters &quot;Name=name,Values=Windows_Server-2016-English-Full-Base*&quot; \
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>  --query &#39;Images[*].[ImageId,Name,CreationDate]&#39; \
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>  --output table
+</span></code></pre></div></p>
+</li>
+<li>
+<p>for ubuntu use this command :
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>aws ec2 describe-images \
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>  --region eu-west-3 \
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  --owners 099720109477 \
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>  --filters &quot;Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*&quot; \
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>  --query &quot;Images[*].[ImageId,Name,CreationDate]&quot; \
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>  --output table
+</span></code></pre></div></p>
+</li>
 </ul>
 <h2 id="installation">Installation</h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># check prerequisites</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>./goad.sh<span class="w"> </span>-t<span class="w"> </span>check<span class="w"> </span>-l<span class="w"> </span>GOAD<span class="w"> </span>-p<span class="w"> </span>aws
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># Install</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>./goad.sh<span class="w"> </span>-t<span class="w"> </span>install<span class="w"> </span>-l<span class="w"> </span>GOAD<span class="w"> </span>-p<span class="w"> </span>aws
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># check prerequisites</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>./goad.sh<span class="w"> </span>-t<span class="w"> </span>check<span class="w"> </span>-l<span class="w"> </span>GOAD<span class="w"> </span>-p<span class="w"> </span>aws
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1"># Install</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>./goad.sh<span class="w"> </span>-t<span class="w"> </span>install<span class="w"> </span>-l<span class="w"> </span>GOAD<span class="w"> </span>-p<span class="w"> </span>aws
 </span></code></pre></div>
 <p>or from the interactive console :</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>GOAD/aws/remote/192.168.56.X<span class="w"> </span>&gt;<span class="w"> </span>install
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>GOAD/aws/remote/192.168.56.X<span class="w"> </span>&gt;<span class="w"> </span>install
 </span></code></pre></div>
 <h2 id="startstopstatus">start/stop/status</h2>
 <ul>
@@ -1680,15 +1721,15 @@ Only network coerce attacks will work.</p>
 <li>The vm used for goad are defined in the lab terraform file : <code>ad/&lt;lab&gt;/providers/aws/windows.tf</code></li>
 <li>This file is containing information about each vm in use</li>
 </ul>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>&quot;dc01&quot; = {
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  name               = &quot;dc01&quot;
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  domain             = &quot;sevenkingdoms.local&quot;
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  windows_sku        = &quot;2019-Datacenter&quot;
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>  ami                = &quot;ami-018ebfbd6b0a4c605&quot;
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>  instance_type      = &quot;t2.medium&quot;
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>  private_ip_address = &quot;{{ip_range}}.10&quot;
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>  password           = &quot;8dCT-DJjgScp&quot;
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>}
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>&quot;dc01&quot; = {
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  name               = &quot;dc01&quot;
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>  domain             = &quot;sevenkingdoms.local&quot;
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>  windows_sku        = &quot;2019-Datacenter&quot;
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>  ami                = &quot;ami-018ebfbd6b0a4c605&quot;
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>  instance_type      = &quot;t2.medium&quot;
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>  private_ip_address = &quot;{{ip_range}}.10&quot;
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>  password           = &quot;8dCT-DJjgScp&quot;
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>}
 </span></code></pre></div>
 <h2 id="how-it-works">How it works ?</h2>
 <ul>
@@ -1702,12 +1743,12 @@ Only network coerce attacks will work.</p>
 <li>The provisioning is launch with ssh remotely on the jumpbox</li>
 </ul>
 <h2 id="install-step-by-step">Install step by step</h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>GOAD/aws/remote/192.168.56.X<span class="w"> </span>&gt;<span class="w"> </span>create_empty<span class="w"> </span><span class="c1"># create empty instance</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>GOAD/aws/remote/192.168.56.X<span class="w"> </span>&gt;<span class="w"> </span>load<span class="w"> </span>&lt;instance_id&gt;
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>GOAD/aws/remote/192.168.56.X<span class="w"> </span><span class="o">(</span>&lt;instance_id&gt;<span class="o">)</span><span class="w"> </span>&gt;<span class="w"> </span>provide<span class="w"> </span><span class="c1"># play terraform</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>GOAD/aws/remote/192.168.56.X<span class="w"> </span><span class="o">(</span>&lt;instance_id&gt;<span class="o">)</span><span class="w"> </span>&gt;<span class="w"> </span>sync_source_jumpbox<span class="w"> </span><span class="c1"># sync jumpbox source</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>GOAD/aws/remote/192.168.56.X<span class="w"> </span><span class="o">(</span>&lt;instance_id&gt;<span class="o">)</span><span class="w"> </span>&gt;<span class="w"> </span>prepare_jumpbox<span class="w"> </span><span class="c1"># install dependencies on jumpbox</span>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>GOAD/aws/remote/192.168.56.X<span class="w"> </span><span class="o">(</span>&lt;instance_id&gt;<span class="o">)</span><span class="w"> </span>&gt;<span class="w"> </span>provision_lab<span class="w"> </span><span class="c1"># run ansible</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>GOAD/aws/remote/192.168.56.X<span class="w"> </span>&gt;<span class="w"> </span>create_empty<span class="w"> </span><span class="c1"># create empty instance</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>GOAD/aws/remote/192.168.56.X<span class="w"> </span>&gt;<span class="w"> </span>load<span class="w"> </span>&lt;instance_id&gt;
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>GOAD/aws/remote/192.168.56.X<span class="w"> </span><span class="o">(</span>&lt;instance_id&gt;<span class="o">)</span><span class="w"> </span>&gt;<span class="w"> </span>provide<span class="w"> </span><span class="c1"># play terraform</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>GOAD/aws/remote/192.168.56.X<span class="w"> </span><span class="o">(</span>&lt;instance_id&gt;<span class="o">)</span><span class="w"> </span>&gt;<span class="w"> </span>sync_source_jumpbox<span class="w"> </span><span class="c1"># sync jumpbox source</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>GOAD/aws/remote/192.168.56.X<span class="w"> </span><span class="o">(</span>&lt;instance_id&gt;<span class="o">)</span><span class="w"> </span>&gt;<span class="w"> </span>prepare_jumpbox<span class="w"> </span><span class="c1"># install dependencies on jumpbox</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>GOAD/aws/remote/192.168.56.X<span class="w"> </span><span class="o">(</span>&lt;instance_id&gt;<span class="o">)</span><span class="w"> </span>&gt;<span class="w"> </span>provision_lab<span class="w"> </span><span class="c1"># run ansible</span>
 </span></code></pre></div>
 <h2 id="tips">Tips</h2>
 <ul>
