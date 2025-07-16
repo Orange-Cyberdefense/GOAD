@@ -60,7 +60,7 @@
     mysql_users:
       - name: "{{guacamole_db_username}}"
         host: "%"
-        password: ohmygoadchangeme
+        password: "{{guacamole_db_password}}"
         priv: "{{guacamole_db}}.*:ALL"
     salt: "{{99999999999999 | random | to_uuid | hash('sha256')}}"
 
