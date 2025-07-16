@@ -19,7 +19,7 @@
 
     - Virtualbox
 
-        - Install virtualbox <= 7.0 (vagrant support only to vbox7.0 at the time of writing) : [https://www.virtualbox.org/wiki/Download_Old_Builds_7_0](https://www.virtualbox.org/wiki/Download_Old_Builds_7_0)
+        - Install virtualbox <= 7.1.x (vagrant supports up to vbox7.1.x at the time of writing) : [https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads)
 
         - Install the following vagrant plugins:
 
