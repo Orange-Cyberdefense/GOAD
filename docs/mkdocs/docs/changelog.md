@@ -61,10 +61,11 @@
 - [X] extension elk
 - [X] extension ws01
 - [X] extension exchange add a bot to read mails
-- [ ] extension guacamole
+- [X] extension guacamole
+- [X] extension linux VM enrolled
+- [ ] extension add X workstations
 - [ ] extension attackbox
 - [ ] extension VPN
-- [ ] extension linux VM enrolled
 - [ ] Add Applocker to ws01
 - [ ] Wsus (to add on sccm)
 - [ ] ADCS add vulns
