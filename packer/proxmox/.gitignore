@@ -1,2 +1,2 @@
 config.auto.pkrvars.hcl
-scripts/sysprep/CloudbaseInitSetup_Stable_x64.msi
+scripts/sysprep/CloudbaseInitSetup_x64.msi

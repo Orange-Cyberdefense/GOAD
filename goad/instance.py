@@ -320,7 +320,8 @@ class LabInstance:
         instance_inventory_content = inventory_template.render(
             lab_name=self.lab_name,
             ip_range=self.ip_range,
-            provider_name=self.provider_name
+            provider_name=self.provider_name,
+            config=self.config
         )
         # create instance inventory file
         instance_inventory_file = self.instance_path + sep + 'inventory'

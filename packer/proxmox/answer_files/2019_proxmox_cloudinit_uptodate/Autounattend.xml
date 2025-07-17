@@ -60,18 +60,37 @@
                     <CreatePartitions>
                         <CreatePartition wcm:action="add">
                             <Order>1</Order>
+                            <Type>EFI</Type>
+                            <Size>100</Size>
+                        </CreatePartition>
+                        <CreatePartition wcm:action="add">
+                            <Order>2</Order>
+                            <Type>MSR</Type>
+                            <Size>128</Size>
+                        </CreatePartition>
+                        <CreatePartition wcm:action="add">
+                            <Order>3</Order>
                             <Type>Primary</Type>
                             <Extend>true</Extend>
                         </CreatePartition>
                     </CreatePartitions>
                     <ModifyPartitions>
                         <ModifyPartition wcm:action="add">
-                            <Extend>false</Extend>
-                            <Format>NTFS</Format>
-                            <Letter>C</Letter>
                             <Order>1</Order>
                             <PartitionID>1</PartitionID>
-                            <Label>Windows 2019</Label>
+                            <Label>System</Label>
+                            <Format>FAT32</Format>
+                        </ModifyPartition>
+                        <ModifyPartition wcm:action="add">
+                            <Order>2</Order>
+                            <PartitionID>2</PartitionID>
+                        </ModifyPartition>
+                        <ModifyPartition wcm:action="add">
+                            <Order>3</Order>
+                            <PartitionID>3</PartitionID>
+                            <Letter>C</Letter>
+                            <Label>Windows</Label>
+                            <Format>NTFS</Format>
                         </ModifyPartition>
                     </ModifyPartitions>
                     <DiskID>0</DiskID>
@@ -89,7 +108,7 @@
                     </InstallFrom>
                     <InstallTo>
                         <DiskID>0</DiskID>
-                        <PartitionID>1</PartitionID>
+                        <PartitionID>3</PartitionID>
                     </InstallTo>
                 </OSImage>
             </ImageInstall>
@@ -110,10 +129,10 @@
             <SetupUILanguage>
                 <UILanguage>en-US</UILanguage>
             </SetupUILanguage>
-            <InputLocale>fr-FR</InputLocale>
+            <InputLocale>en-US</InputLocale>
             <SystemLocale>en-US</SystemLocale>
             <UILanguage>en-US</UILanguage>
-            <UILanguageFallback>fr-FR</UILanguageFallback>
+            <UILanguageFallback>en-US</UILanguageFallback>
             <UserLocale>en-US</UserLocale>
         </component>
     </settings>
@@ -239,39 +258,25 @@
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>powershell -NoProfile -ExecutionPolicy Bypass -Command "G:\Install-WMF3Hotfix.ps1"</CommandLine>
                     <Description>Install-WMF3Hotfix.ps1</Description>
-                    <Order>97</Order>
+                    <Order>94</Order>
                 </SynchronousCommand>
-                <!-- no updates 
-                <SynchronousCommand wcm:action="add">
-                    <CommandLine>powershell -NoProfile -ExecutionPolicy Bypass -Command "G:\ConfigureRemotingForAnsible.ps1"</CommandLine>
-                    <Description>ConfigureRemotingForAnsible</Description>
-                    <Order>98</Order>
-                </SynchronousCommand>
-                <SynchronousCommand wcm:action="add">
-                    <CommandLine>cmd.exe /c C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File G:\enable-winrm.ps1</CommandLine>
-                    <Description>Enable WinRM</Description>
-                    <Order>99</Order>
-                </SynchronousCommand>
-                 end no update -->
-                <!-- WITH WINDOWS UPDATES -->
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>cmd.exe /c G:\microsoft-updates.bat</CommandLine>
-                    <Order>98</Order>
+                    <Order>97</Order>
                     <Description>Enable Microsoft Updates</Description>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>cmd.exe /c C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File G:\disable-screensaver.ps1</CommandLine>
                     <Description>Disable Screensaver</Description>
-                    <Order>99</Order>
+                    <Order>98</Order>
                     <RequiresUserInput>true</RequiresUserInput>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>cmd.exe /c C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File G:\win-updates.ps1</CommandLine>
                     <Description>Install Windows Updates</Description>
-                    <Order>100</Order>
+                    <Order>99</Order>
                     <RequiresUserInput>true</RequiresUserInput>
                 </SynchronousCommand>
-                <!-- END WITH WINDOWS UPDATES -->
             </FirstLogonCommands>
             <OOBE>
                 <HideEULAPage>true</HideEULAPage>

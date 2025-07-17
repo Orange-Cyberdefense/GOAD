@@ -11,4 +11,4 @@ srv02 ansible_host={{ip_range}}.22 dns_domain=dc02 dict_key=srv02
 
 [all:vars]
 force_dns_server=yes
-dns_server={{ip_range}}.1
+dns_server={{config.get_value('proxmox', 'pm_dns_server', '1.1.1.1')}}

@@ -33,11 +33,11 @@ function Check-ContinueRestartOrEnd() {
       }
       elseif ($script:Cycles -gt $global:MaxCycles) {
         LogWrite "Exceeded Cycle Count - Stopping"
-        & "G:\ConfigureRemotingForAnsible.ps1"
+        Run-FinalConfiguration
       }
       else {
         LogWrite "Done Installing Windows Updates"
-        & "G:\ConfigureRemotingForAnsible.ps1"
+        Run-FinalConfiguration
       }
     }
     1 {
@@ -58,6 +58,12 @@ function Check-ContinueRestartOrEnd() {
       break
     }
   }
+}
+
+function Run-FinalConfiguration {
+  LogWrite "Running final configuration scripts..."
+  & "G:\ConfigureRemotingForAnsible.ps1"
+  & "G:\enable-winrm.ps1"
 }
 
 function Install-WindowsUpdates()
@@ -138,7 +144,7 @@ function Install-WindowsUpdates()
     LogWrite 'No updates available to install...'
     $global:MoreUpdates = 0
     $global:RestartRequired = 0
-    & "G:\ConfigureRemotingForAnsible.ps1"
+    Run-FinalConfiguration
     break
   }
 
