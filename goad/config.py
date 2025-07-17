@@ -36,6 +36,9 @@ class Config:
         config.set('default', '; ip_range (3 first ip digits)')
         config.set('default', 'ip_range', '192.168.56')
 
+        config.set('default', '; keyboard layouts codes')
+        config.set('default', 'keyboard_layout', 'fr-FR,en-US')
+
         config.add_section('aws')
         config.set('aws', 'aws_region', 'eu-west-3')
         config.set('aws', 'aws_zone', 'eu-west-3c')
@@ -92,6 +95,8 @@ class Config:
                 self.set_value('default', PROVISIONER, args.method)
             if args.ip_range:
                 self.set_value('default', IP_RANGE, args.ip_range)
+            if args.keyboard_layout:
+                self.set_value('default', KEYBOARD_LAYOUT, args.keyboard_layout)
             if args.disable_dependencies:
                 for disable_dependence in args.disable_dependencies:
                     if disable_dependence == 'vmware':
