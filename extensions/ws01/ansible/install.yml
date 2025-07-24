@@ -33,7 +33,7 @@
     - { role: 'settings/admin_password', tags: 'admin_password' }
     - { role: 'settings/hostname', tags: 'hostname' }
     # ad-members.yml : enroll ws01
-    - { role: 'commonwkstn', tags: 'workstation' }
+    - { role: 'commonwkstn', tags: 'workstation', goad_provider: "{{ provider | default(omit) }}" }
     # ad-relations.yml : domain group and users local permissions
     - { role: "settings/adjust_rights", tags: 'adjust_rights' }
     - { role: "settings/user_rights", tags: 'adjust_rights' }

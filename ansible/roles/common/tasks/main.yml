@@ -1,3 +1,24 @@
+# even though this script is done on the packer, some hosts might not be packed from this, like when we grab a vagrant host (e.g. mayfly/windows10)
+- name: Check if VMware Tools are installed
+  ansible.windows.win_powershell:
+    script: |
+        $vmtools_installed = Get-WmiObject -Class Win32_Product | Where-Object {$_.Name -like "VMware Tools*"} | Select-Object -ExpandProperty Name
+        if ($vmtools_installed) {
+            Write-Host "VMware Tools is installed."
+            return $true
+        } else {
+            Write-Host "VMware Tools is not installed."
+            return $false
+        }
+  register: vmware_tools_installed
+
+- name: Install VM Guest Tools if using VMware or VMware ESXi
+  win_shell: |
+    powershell.exe -ExecutionPolicy Bypass -File "{{ playbook_dir }}\\roles\\common\\files\\vm-guest-tools.ps1"
+  when: 
+    - goad_provider is defined and (goad_provider == 'vmware' or goad_provider == 'vmware_esxi')
+    - vmware_tools_installed.exists == false
+
 - name: "Force a DNS on the adapter {{nat_adapter}}"
   ansible.windows.win_dns_client:
     adapter_names: "{{nat_adapter}}"

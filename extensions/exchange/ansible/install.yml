@@ -78,6 +78,7 @@
     exchange_prereqs_complete_file: "{{ ludus_exchange_iso_directory }}\\exchange_prereqs_complete.txt"
     send_connector_source_transport_servers: "{{ludus_exchange_host}}"
     ludus_install_directory: "./iso"
+    goad_provider: "{{ provider | default(omit) }}"
 
 - name: Add exchange mail reader bot
   hosts: srv01
