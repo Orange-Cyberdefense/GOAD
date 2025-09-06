@@ -16,8 +16,8 @@ class TerraformProvider(Provider):
 
     def install(self):
         self.command.run_terraform(['init'], self.path)
-        self.command.run_terraform(['plan'], self.path)
-        return self.command.run_terraform(['apply'], self.path)
+        self.command.run_terraform(['plan', '-out=lab.tfplan'], self.path)
+        return self.command.run_terraform(['apply', 'lab.tfplan'], self.path)
 
     def destroy(self):
         return self.command.run_terraform(['destroy'], self.path)
