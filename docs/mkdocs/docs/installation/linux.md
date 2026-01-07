@@ -5,6 +5,30 @@
 
 ## Prepare your Provider
 
+=== ":simple-libvirt: Libvirt"
+
+    - Vagrant
+        - In order to download vm and create them on libvirt you need to install vagrant
+        - [https://developer.hashicorp.com/vagrant/install#linux](https://developer.hashicorp.com/vagrant/install#linux)
+    
+    - libvirt
+        - Install libvirt
+        ```bash
+        sudo apt-get install qemu-system-x86 libvirt-daemon-system ebtables libguestfs-tools ruby-fog-libvirt
+        ```
+
+    - Install vagrant plugins
+    ```bash
+    vagrant plugin install vagrant-reload vagrant-libvirt winrm winrm-fs winrm-elevated
+    ```
+
+    !!! warning "Disk space"
+        The lab takes about 77GB (but you have to get the space for the vms vagrant images windows server 2016 (22GB) / windows server 2019 (14GB) / ubuntu 18.04 (502M))
+        The total space needed for the lab is ~115 GB (depend on the lab you use and it will take more space if you take snapshots), be sure you have enough disk space before install.
+
+    !!! warning "RAM"
+        Depending on the lab you will need a lot of ram to run all the virtual machines. Be sure to have at least 20GB for GOAD-Light and 24GB for GOAD.
+
 === ":simple-virtualbox: Virtualbox"
 
     - Vagrant
