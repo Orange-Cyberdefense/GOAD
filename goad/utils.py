@@ -17,6 +17,7 @@ VERBOSE = 2
 DEBUG = 1
 
 # providers
+LIBVIRT = 'libvirt'
 AWS = 'aws'
 VIRTUALBOX = 'virtualbox'
 AZURE = 'azure'

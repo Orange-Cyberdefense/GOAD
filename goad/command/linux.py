@@ -32,6 +32,18 @@ class LinuxCommand(Command):
     def check_vmware(self):
         return self.is_in_path('vmrun')
 
+    def check_libvirt(self):
+        try:
+            result = subprocess.run(
+                ['systemctl', 'is-active', '--quiet', 'libvirtd'],
+                check=True
+            )
+            Log.success(f'libvirtd is running')
+            return True
+        except subprocess.CalledProcessError:
+            Log.error("libvirtd is not installed or not running")
+            return False
+
     def check_vmware_utility(self):
         try:
             result = subprocess.run(
