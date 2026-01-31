@@ -1,6 +1,30 @@
+- name: check Microsoft .NET Framework 4.8 installer exists
+  win_stat:
+    path: 'c:\setup\mssql\NDP48-x86-x64-AllOS-ENU.exe'
+  register: ssms_dotnet_framework_installer_file
+
+- name: get the installer
+  win_get_url:
+    url: 'https://download.microsoft.com/download/f/3/a/f3a6af84-da23-40a5-8d1c-49cc10c8e76f/NDP48-x86-x64-AllOS-ENU.exe'
+    dest: 'c:\setup\mssql\NDP48-x86-x64-AllOS-ENU.exe'
+    checksum: 0a3a390c47e639d0f7fc65b21195fee6b7f65b066f80f70c60fab191d14b7e40
+    checksum_algorithm: sha256
+  when: not ssms_dotnet_framework_installer_file.stat.exists
+
+- name: Install NDP48-x86-x64-AllOS-ENU.exe runtime silently
+  win_package:
+    path: 'c:\setup\mssql\NDP48-x86-x64-AllOS-ENU.exe'
+    arguments: '/quiet /norestart'
+  when: not ssms_dotnet_framework_installer_file.stat.exists
+
+- name: Reboot after install
+  win_reboot:
+    reboot_timeout: 600
+  when: not ssms_dotnet_framework_installer_file.stat.exists
+
 - name: check SQL Server Manager Studio installer exists
   win_stat:
-    path: c:\setup\mssql\SSMS_installer.exe
+    path: 'c:\setup\mssql\SSMS_installer.exe'
   register: ssms_installer_file
 
 - name: get the installer
@@ -11,11 +35,13 @@
 
 - name: check SSMS installation already done
   win_stat:
-    path: "C:\\Program Files (x86)\\Microsoft SQL Server Management Studio 18"
+    path: 'C:\Program Files (x86)\Microsoft SQL Server Management Studio 18'
   register: ssms_installation
 
 - name: Install SSMS
-  win_command: c:\setup\mssql\SSMS_installer.exe /install /quiet /norestart
+  win_package:
+    path: 'c:\setup\mssql\SSMS_installer.exe'
+    arguments: '/install /quiet /norestart'
   register: install_ssmss
   when: not ssms_installation.stat.exists
 
