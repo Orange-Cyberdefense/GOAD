@@ -286,8 +286,7 @@
                     "city"        : "Castel Black",
                     "description" : "Jon Snow",
                     "groups"      : ["Stark", "Night Watch"],
-                    "path"        : "CN=Users,DC=North,DC=sevenkingdoms,DC=local",
-                    "spns"        : ["HTTP/thewall.north.sevenkingdoms.local"]
+                    "path"        : "CN=Users,DC=North,DC=sevenkingdoms,DC=local"
                 },
                 "samwell.tarly" : {
                     "firstname"   : "Samwell",
