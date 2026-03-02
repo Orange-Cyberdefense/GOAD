@@ -23,10 +23,11 @@ $mysqli->set_charset('utf8mb4');
 $sql = "
     INSERT INTO glpi_useremails (users_id, email, is_default)
     VALUES (
-        (SELECT id FROM glpi_users WHERE name = '?'),
-        '?',
+        (SELECT id FROM glpi_users WHERE name = ?),
+        ?,
         1
-    );
+    ) 
+    ON DUPLICATE KEY UPDATE email = VALUES(email);
 ";
 
 $stmt = $mysqli->prepare($sql);

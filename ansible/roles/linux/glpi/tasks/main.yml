@@ -159,10 +159,12 @@
     {{ glpi_db_name }}
     {{ glpi_db_user }}
     {{ glpi_db_password }}
-    "glpi"
-    "glpi@dracarys.lab"
+    {{ item }}
+    "noreply@dracarys.lab"
   args:
     executable: php
+  loop:
+    - glpi
 
 - name: Set write permissions to glpi directory (for logs and other stuff made has root during provisioning)
   file:
