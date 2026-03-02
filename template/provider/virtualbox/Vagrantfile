@@ -32,6 +32,7 @@ boxes.append(
   config.vm.graceful_halt_timeout = 600
   config.winrm.retry_limit = 30
   config.winrm.retry_delay = 10
+  config.winrm.ssl_peer_verification = false
 
   boxes.each do |box|
     config.vm.define box[:name] do |target|
