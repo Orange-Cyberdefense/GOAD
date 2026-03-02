@@ -1,0 +1,27 @@
+boxes = 
+[
+  { :name => "DRACARYS-DC01", 
+    :ip => "{{ip_range}}.10", 
+    :box => "gusztavvargadr/windows-server-2025-standard", 
+    :box_version => "2511.0.0", 
+    :os => "windows", 
+    :cpus => 2, 
+    :mem => 3000
+  },
+  { :name => "DRACARYS-SRV01", 
+    :ip => "{{ip_range}}.11", 
+    :box => "gusztavvargadr/windows-server-2025-standard", 
+    :box_version => "2511.0.0", 
+    :os => "windows", 
+    :cpus => 2, 
+    :mem => 3000
+  },
+  { :name => "DRACARYS-LX01",
+    :ip => "{{ip_range}}.12",
+    :box => "bento/ubuntu-24.04", 
+    :os => "linux",
+    :cpus => 2,
+    :mem => 3000,
+    :forwarded_port => [ {:guest => 22, :host => 2210, :id => "ssh"} ]
+  }
+]

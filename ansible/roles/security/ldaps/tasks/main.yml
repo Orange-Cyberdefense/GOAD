@@ -1,0 +1,17 @@
+# -----------------------------
+# Import certificate into Personal store with exportable key
+# -----------------------------
+- name: Import PFX into LocalMachine\My with exportable key
+  ansible.windows.win_shell: |
+    $pwd = ConvertTo-SecureString -String "{{ item.value.cert_password }}" -Force -AsPlainText
+    Import-PfxCertificate -CertStoreLocation Cert:\LocalMachine\My -FilePath "{{ item.value.pfx }}" -Password $pwd -Exportable
+  with_dict: "{{ security_vars }}"
+
+# -----------------------------
+# Import into Trusted Root store (for clients trusting DC)
+# -----------------------------
+- name: Import PFX into LocalMachine\Root if not already present
+  ansible.windows.win_shell: |
+    $pwd = ConvertTo-SecureString -String "{{ item.value.cert_password }}" -Force -AsPlainText
+    Import-PfxCertificate -CertStoreLocation Cert:\LocalMachine\Root -FilePath "{{ item.value.pfx }}" -Password $pwd -Exportable
+  with_dict: "{{ security_vars }}"

@@ -115,3 +115,45 @@
     "realm permit -g {{ item }}@{{ domain }}"
   loop: "{{ssh_group}}"
 
+- name: Enable GSSAPI Authentication in SSHD
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?GSSAPIAuthentication'
+    line: 'GSSAPIAuthentication yes'
+    state: present
+    backup: yes
+
+- name: Enable GSSAPI Cleanup Credentials
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?GSSAPICleanupCredentials'
+    line: 'GSSAPICleanupCredentials yes'
+    state: present
+    backup: yes
+
+- name: Disable GSSAPIStrictAcceptorCheck
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?GSSAPIStrictAcceptorCheck'
+    line: 'GSSAPIStrictAcceptorCheck no'
+    state: present
+    backup: yes
+
+- name: Ensure PAM is enabled in SSHD
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?UsePAM'
+    line: 'UsePAM yes'
+    state: present
+    backup: yes
+
+- name: Install PAM Kerberos module
+  apt:
+    name: libpam-krb5
+    state: present
+  notify: Restart SSH
+
+- name: Add ssh
+  shell:
+    "sudo realm join --client-software=sssd {{ domain }}"
+  ignore_errors: yes

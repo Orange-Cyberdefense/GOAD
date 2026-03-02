@@ -1,0 +1,40 @@
+---
+# Load datas
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+
+- name: Install GLPI
+  hosts: glpi
+  gather_facts: false
+  become: yes
+  roles:
+  - { role: 'linux/common', tags: 'linux_common'}
+  - { role: 'linux/apache', tags: 'linux_apache'}
+  - { role: 'linux/php', tags: 'linux_php'}
+  - { role: 'geerlingguy.mysql', tags: 'mysql'}
+  - { role: 'linux/glpi', tags: 'glpi'}
+  vars:
+    mysql_root_password: mysuperR00Tpassword
+    mysql_root_password_update: true
+    mysql_databases:
+      - name: glpi
+        encoding: utf8
+        collation: utf8_general_ci
+    mysql_users:
+      - name: glpi
+        host: "%"
+        password: glpi
+        priv: "glpi.*:ALL"
+    domain: "{{lab.hosts[dict_key].domain}}"
+    dc_key: "{{lab.domains[domain].dc}}"
+    dc_name: "{{lab.hosts[dc_key].hostname}}"
+    dc_fqdn: "{{dc_name}}.{{domain}}"
+    glpi_ldap:
+      name: "Active_Directory-ldap-{{lab.hosts[dict_key].domain}}"
+      host: "{{dc_fqdn}}"
+      basedn: "{{lab.hosts[dc_key].path}}"
+      rootdn: "CN=sunfyre,CN=Users,{{lab.hosts[dc_key].path}}"
+      port: 636
+      glpi_user_password: "BSno5DP4tjJ4jIu8is3B"
+    glpi_local_users_pass: "glPwnM33FTW!"

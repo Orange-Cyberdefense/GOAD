@@ -1,0 +1,22 @@
+- name: install php packages
+  apt: 
+    update_cache: yes 
+    state: latest
+    pkg:
+      - php
+      - php-gd
+      - php-mysql
+      - php-curl
+      - php-imap
+      - php-json
+      - php-ldap
+      - php-mbstring
+      - php-xml
+      - php-cli
+      - php-xmlrpc
+      - php-intl
+      - php-apcu
+      - php-cas
+      - php-zip
+      - php-bz2
+  notify: reload apache

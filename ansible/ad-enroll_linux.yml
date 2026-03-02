@@ -1,0 +1,37 @@
+---
+# Load datas
+- import_playbook: data.yml
+  vars:
+    data_path: "../ad/{{domain_name}}/data/"
+
+- name: Enroll linux machine to domain
+  hosts: linux_domain
+  become: yes
+  roles:
+  - { role: 'linux/add_linux_to_domain', tags: 'linux_domain'}
+  vars:
+    hostname: "{{lab.hosts[dict_key].hostname}}"
+    domain: "{{lab.hosts[dict_key].domain}}"
+    dc_key: "{{lab.domains[domain].dc}}"
+    dc_name: "{{lab.hosts[dc_key].hostname}}"
+    dc_fqdn: "{{dc_name}}.{{domain}}"
+    dc_ip: "{{hostvars[dc_key].ansible_host}}"
+    domain_username: "{{admin_user}}"
+    domain_password: "{{lab.domains[domain].domain_password}}"
+    sudoers_group: "{{lab.hosts[dict_key].local_groups.sudoers | default([])}}"
+    ssh_group: "{{lab.hosts[dict_key].local_groups.ssh | default([])}}"
+
+- name: Setup DNS records for linux machines on all domain controllers
+  hosts: dc
+  tasks:
+    - name: Add DNS record for each linux_domain machine
+      include_role:
+        name: add_dns_record
+      vars:
+        domain: "{{ lab.hosts[item].domain }}"
+        record_name: "{{ lab.hosts[item].hostname }}"
+        record_type: "A"
+        record_value: "{{ hostvars[item].ansible_host }}"
+      loop: "{{ groups['linux_domain'] }}"
+      loop_control:
+        loop_var: item

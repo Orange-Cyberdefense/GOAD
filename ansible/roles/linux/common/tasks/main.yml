@@ -1,0 +1,52 @@
+######################################
+# Update and upgrade
+######################################
+- name: update and upgrade apt
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400 #One day
+
+######################################
+# Generic tools
+######################################
+- name: Install usefull system tools
+  apt: name={{ item }} state=present
+  with_items:
+    - vim
+    - htop
+    - git
+    - openssl
+    - tmux
+    - curl
+    - tar
+    - nano
+    - rsync
+
+# ######################################
+# # Time management
+# ######################################
+# - name: Set local timezone
+#   copy: content={{ timezone }}
+#         dest=/etc/timezone
+# 
+# - name: Reconfigure tzdata
+#   command: dpkg-reconfigure -f noninteractive tzdata
+# 
+# - name: Install NTP (and update apt cache for the first install)
+#   apt: name=ntp state=present
+#         update_cache=yes
+# 
+# - name: Start the ntp service
+#   service: name=ntp state=started enabled=true
+
+######################################
+# Copy system files
+######################################
+- name: add profile common
+  copy:
+    src: common.sh
+    dest: /etc/profile.d/common.sh
+    owner: "root"
+    group: "root"
+    mode: 0755

@@ -1,0 +1,9 @@
+# 0	None. The server does not require LDAP signing. Unsigned simple binds are allowed.
+# 1	Negotiate signing. The server will request signing but allow unsigned binds if the client does not support signing.
+# 2	Require signing. All LDAP binds must be signed; unsigned simple binds are rejected.
+- name: Disable LDAP Signing (RequireSigning = 0)
+  ansible.windows.win_regedit:
+    path: HKLM:\SYSTEM\CurrentControlSet\Services\LDAP
+    name: LDAPServerSigningRequirements
+    type: dword
+    data: 0
