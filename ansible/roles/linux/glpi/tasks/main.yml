@@ -159,6 +159,8 @@
     {{ glpi_db_name }}
     {{ glpi_db_user }}
     {{ glpi_db_password }}
+    "glpi"
+    "glpi@dracarys.lab"
   args:
     executable: php
 
