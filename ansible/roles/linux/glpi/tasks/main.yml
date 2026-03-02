@@ -152,6 +152,16 @@
     - use_notifications
     - notifications_mailing
 
+- name: Add GLPI email for default user
+  ansible.builtin.script: >
+    files/glpi_insert_mail.php
+    {{ glpi_db_host }}
+    {{ glpi_db_name }}
+    {{ glpi_db_user }}
+    {{ glpi_db_password }}
+  args:
+    executable: php
+
 - name: Set write permissions to glpi directory (for logs and other stuff made has root during provisioning)
   file:
     path: "{{ glpi_install_path }}"
