@@ -6,5 +6,6 @@
 
 - name: "Disable vagrant"
   hosts: linux_domain
+  become: yes
   roles:
     - { role: 'linux/disable_user', tags: 'disable_vagrant', username: "vagrant"}
