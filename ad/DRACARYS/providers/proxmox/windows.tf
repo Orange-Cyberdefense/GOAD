@@ -7,6 +7,7 @@
   dns                = "{{ip_range}}.1"
   ip                 = "{{ip_range}}.10/24"
   gateway            = "{{ip_range}}.1"
+  os                 = "win11"
 }
 "srv01" = {
   name               = "SRV01"
@@ -17,4 +18,5 @@
   dns                = "{{ip_range}}.1"
   ip                 = "{{ip_range}}.11/24"
   gateway            = "{{ip_range}}.1"
+  os                 = "win11"
 }

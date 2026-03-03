@@ -8,6 +8,7 @@ variable "vm_config" {
     dns                = string
     ip                 = string
     gateway            = string
+    os                 = optional(string, "win10")
   }))
 
   default = {
@@ -24,7 +25,7 @@ resource "proxmox_virtual_environment_vm" "bgp" {
     pool_id     = var.pm_pool
 
     operating_system {
-      type = "win10"
+      type = each.value.os
     }
 
     cpu {
