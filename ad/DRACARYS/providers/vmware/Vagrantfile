@@ -2,16 +2,16 @@ boxes =
 [
   { :name => "DRACARYS-DC01", 
     :ip => "{{ip_range}}.10", 
-    :box => "gusztavvargadr/windows-server-2025-standard", 
-    :box_version => "2511.0.0", 
+    :box => "GOAD/WindowsServer2025", 
+    :box_version => "2026.02.09", 
     :os => "windows", 
     :cpus => 2, 
     :mem => 3000
   },
   { :name => "DRACARYS-SRV01", 
     :ip => "{{ip_range}}.11", 
-    :box => "gusztavvargadr/windows-server-2025-standard", 
-    :box_version => "2511.0.0", 
+    :box => "GOAD/WindowsServer2025", 
+    :box_version => "2026.02.09", 
     :os => "windows", 
     :cpus => 2, 
     :mem => 3000

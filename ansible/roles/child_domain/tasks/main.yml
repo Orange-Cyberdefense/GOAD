@@ -1,5 +1,5 @@
 - name: "disable the registration of the {{nat_adapter}} interface (NAT address) in DNS"
-  ansible.windows.win_shell: Get-NetAdapter {{nat_adapter}} | Set-DNSClient -RegisterThisConnectionsAddress $False
+  ansible.windows.win_shell: Get-NetAdapter '{{nat_adapter}}' | Set-DNSClient -RegisterThisConnectionsAddress $False
   when: two_adapters
 
 - name: "Set configure dns to {{dns_domain}}"
