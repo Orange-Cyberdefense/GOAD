@@ -22,6 +22,6 @@ ludus:
     template: ubuntu-24.04-x64-server-template
     vlan: 10
     ip_last_octet: 12
-    ram_gb: 2
+    ram_gb: 4
     cpus: 2
     linux: true
