@@ -8,7 +8,7 @@
   ip                 = "{{ip_range}}.10/24"
   gateway            = "{{ip_range}}.1"
 }
-"dc02" = {
+"srv01" = {
   name               = "SRV01"
   desc               = "SRV01 - DRACARYS- windows server 2025 - {{ip_range}}.11"
   cores              = 2
