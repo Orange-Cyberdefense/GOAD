@@ -1,0 +1,27 @@
+ludus:
+  - vm_name: "{{ range_id }}-DRACARYS-DC01"
+    hostname: "{{ range_id }}-DC01"
+    template: win2025-server-x64-template
+    vlan: 10
+    ip_last_octet: 10
+    ram_gb: 4
+    cpus: 2
+    windows:
+      sysprep: true
+  - vm_name: "{{ range_id }}-DRACARYS-SRV01"
+    hostname: "{{ range_id }}-SRV01"
+    template: win2025-server-x64-template
+    vlan: 10
+    ip_last_octet: 11
+    ram_gb: 4
+    cpus: 2
+    windows:
+      sysprep: true
+  - vm_name: "{{ range_id }}-DRACARYS-LX01"
+    hostname: "{{ range_id }}-LX01"
+    template: ubuntu-24.04-x64-server-template
+    vlan: 10
+    ip_last_octet: 12
+    ram_gb: 2
+    cpus: 2
+    linux: true
