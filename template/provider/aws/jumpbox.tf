@@ -13,7 +13,7 @@ resource "aws_network_interface" "goad-vm-nic-jumpbox" {
 }
 
 resource "aws_instance" "goad-vm-jumpbox" {
-  ami                    = "ami-0309b5fc16a20deb4"
+  ami                    = "ami-04c332520bd9cedb4"
   instance_type          = "t2.medium"
 
   network_interface {
