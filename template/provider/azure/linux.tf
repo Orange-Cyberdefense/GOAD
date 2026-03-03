@@ -3,6 +3,7 @@ variable "linux_vm_config" {
   type = map(object({
     name               = string
     linux_sku          = string
+    linux_offer        = string
     linux_version      = string
     private_ip_address = string
     password           = string
@@ -46,7 +47,7 @@ resource "azurerm_linux_virtual_machine" "goad-linux-vm" {
 
   source_image_reference {
     publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
+    offer     = each.value.linux_offer #"0001-com-ubuntu-server-jammy"
     sku       = each.value.linux_sku # "22_04-lts-gen2"
     version   = each.value.linux_version # "latest"
   }
