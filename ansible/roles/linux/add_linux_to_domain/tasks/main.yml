@@ -157,3 +157,9 @@
   shell:
     "sudo realm join --client-software=sssd {{ domain }}"
   ignore_errors: yes
+
+- name: change nameserver ip
+  lineinfile:
+    path: /etc/resolv.conf
+    regexp: '^nameserver '
+    line: "nameserver {{dc_ip}}"
