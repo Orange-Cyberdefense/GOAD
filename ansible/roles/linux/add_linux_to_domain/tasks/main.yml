@@ -175,3 +175,12 @@
     dest: /etc/resolv.conf
     state: link
     force: yes
+
+- name: Remove faulty ad_server line to enable auto-discovery
+  lineinfile:
+    path: /etc/sssd/sssd.conf
+    regexp: '^ad_server\s*='
+    state: absent
+    backup: yes
+  notify:
+    - Restart SSSD
