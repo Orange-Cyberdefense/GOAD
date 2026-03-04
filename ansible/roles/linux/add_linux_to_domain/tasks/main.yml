@@ -168,3 +168,10 @@
   systemd:
     name: systemd-resolved
     state: restarted
+
+- name: Fix symlink resolv.conf
+  file:
+    src: /run/systemd/resolve/resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: yes
