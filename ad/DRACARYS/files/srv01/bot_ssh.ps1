@@ -1,4 +1,4 @@
-$User = "viserion@dracarys.lab"
+$User = "viserion"
 $SSHHost = "syrax"
 $Password = "aLHtz1WvIVmeV4Zh4CDE"
 
