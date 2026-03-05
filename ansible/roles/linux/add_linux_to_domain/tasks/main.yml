@@ -182,12 +182,6 @@
     state: present
     update_cache: true
 
-- name: Install systemd-timesyncd
-  apt:
-    name: systemd-timesyncd
-    state: present
-    update_cache: yes
-
 - name: Force immediate time sync with DC
   ansible.builtin.command:
     cmd: "ntpdate -u {{ dc_ip }}"
