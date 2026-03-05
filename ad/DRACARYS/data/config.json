@@ -99,7 +99,7 @@
               },
               "security": [],
               "security_vars": {},
-              "scripts" : ["change_perm.sh"]
+              "scripts" : []
         }
     },
     "domains" : {

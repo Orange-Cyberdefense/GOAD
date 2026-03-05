@@ -7,3 +7,8 @@
   systemd:
     name: sssd
     state: restarted
+
+- name: Restart timesyncd
+  ansible.builtin.systemd:
+    name: systemd-timesyncd
+    state: restarted

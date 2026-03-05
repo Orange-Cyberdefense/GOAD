@@ -31,8 +31,8 @@
       }
 
       [domain_realm]
-      {{ domain|upper }} = {{ domain }}
-      .{{ domain|upper }} = {{ domain }}
+      {{ domain }} =  {{ domain|upper }}
+      .{{ domain }} = {{ domain|upper }}
 
 - name: Install krb5 Packages
   apt:
@@ -175,6 +175,37 @@
     dest: /etc/resolv.conf
     state: link
     force: yes
+
+- name: Install ntpdate
+  ansible.builtin.apt:
+    name: ntpdate
+    state: present
+    update_cache: true
+
+- name: Install systemd-timesyncd
+  apt:
+    name: systemd-timesyncd
+    state: present
+    update_cache: yes
+
+- name: Force immediate time sync with DC
+  ansible.builtin.command:
+    cmd: "ntpdate -u {{ dc_ip }}"
+
+- name: Ensure systemd-timesyncd is enabled
+  ansible.builtin.systemd:
+    name: systemd-timesyncd
+    enabled: yes
+    state: started
+
+- name: Configure systemd-timesyncd to use DC
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/timesyncd.conf
+    regexp: '^NTP='
+    line: "NTP={{ dc_ip }}"
+    state: present
+  notify:
+    - Restart timesyncd
 
 - name: Remove faulty ad_server line to enable auto-discovery
   lineinfile:
