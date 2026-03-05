@@ -192,20 +192,52 @@
   ansible.builtin.command:
     cmd: "ntpdate -u {{ dc_ip }}"
 
-- name: Ensure systemd-timesyncd is enabled
-  ansible.builtin.systemd:
-    name: systemd-timesyncd
-    enabled: yes
-    state: started
+- name: Install chrony
+  ansible.builtin.apt:
+    name: chrony
+    state: present
+    update_cache: yes
 
-- name: Configure systemd-timesyncd to use DC
+- name: Configure DC as NTP server
   ansible.builtin.lineinfile:
-    path: /etc/systemd/timesyncd.conf
-    regexp: '^NTP='
-    line: "NTP={{ dc_ip }}"
+    path: /etc/chrony/chrony.conf
+    regexp: '^server {{ dc_ip }}'
+    line: "server {{ dc_ip }} iburst"
+    state: present
+    insertafter: EOF
+  notify:
+    - Restart chrony
+
+- name: Remove default Ubuntu NTP pools
+  ansible.builtin.replace:
+    path: /etc/chrony/chrony.conf
+    regexp: '^pool .*$'
+    replace: ''
+  notify:
+    - Restart chrony
+
+- name: Set makestep to 1 -1
+  ansible.builtin.lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^makestep'
+    line: "makestep 1 -1"
     state: present
   notify:
-    - Restart timesyncd
+    - Restart chrony
+
+- name: Ensure chrony is started and enabled
+  ansible.builtin.systemd:
+    name: chrony
+    state: started
+    enabled: yes
+
+- name: Set RTC in local timezone and adjust system clock
+  ansible.builtin.command:
+    cmd: timedatectl set-local-rtc 1 --adjust-system-clock
+
+- name: Force immediate time sync
+  ansible.builtin.command:
+    cmd: chronyc -a makestep
 
 - name: Remove faulty ad_server line to enable auto-discovery
   lineinfile:
