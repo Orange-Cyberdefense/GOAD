@@ -2,7 +2,7 @@
 
 # Install git and python3
 sudo apt-get update
-sudo apt-get install -y git python3-venv python3-pip
+sudo apt-get install -y git python3-venv python3-pip sshpass
 
 #python3 -m venv .venv
 #source .venv/bin/activate

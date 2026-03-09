@@ -1,8 +1,13 @@
+# 0 will start a new instance in parallel with existing instances of that task.
+# 1 will wait until other instances of that task to finish running before starting itself.
+# 2 will not start a new instance if another is running.
+# 3 will stop other instances of the task and start the new one.
 # https://docs.ansible.com/ansible/latest/collections/community/windows/win_scheduled_task_module.html
 - name: Create a task that will be repeated every minute
   community.windows.win_scheduled_task:
     name: "{{item.value.name}}"
     description: ansible schedule task
+    multiple_instances: "{{ item.value.multiple_instances | default('2') }}"
     actions:
     - path: cmd.exe
       arguments: "/c {{item.value.cmd}}"

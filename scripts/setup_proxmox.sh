@@ -7,7 +7,7 @@ then
 fi
 
 sudo apt update
-sudo apt install -y git vim tmux curl gnupg software-properties-common mkisofs
+sudo apt install -y git vim tmux curl gnupg software-properties-common mkisofs sshpass
 
 ######################################################################################################
 # PACKER & TERRAFORM

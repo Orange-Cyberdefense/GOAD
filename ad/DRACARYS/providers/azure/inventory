@@ -1,0 +1,10 @@
+[default]
+; ------------------------------------------------
+; dracarys.lab
+; ------------------------------------------------
+dc01 ansible_host={{ip_range}}.10 dns_domain=dc01 dict_key=dc01 ansible_user=ansible ansible_password=8dCsfT-DJjgS3xdcp
+srv01 ansible_host={{ip_range}}.11 dns_domain=dc01 dict_key=srv01 ansible_user=ansible ansible_password=NgtkgtIAs75cKV+Pu
+lx01 ansible_host={{ip_range}}.12  dict_key=lx01 ansible_connection=ssh ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_user=goadmin ansible_password=HGLXaxQSP@ssw_rd$
+
+[all:vars]
+admin_user=goadmin

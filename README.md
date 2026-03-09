@@ -45,3 +45,11 @@ This lab use free Windows VM only (180 days). After that delay enter a license o
 </div>
 
 - [NHA](https://orange-cyberdefense.github.io/GOAD/labs/NHA/) : A challenge with 5 vms and 2 domains. no schema provided, you will have to find out how break it.
+<div align="center">
+<img alt="SCCM" width="600" src="./docs/img/logo_NHA.jpeg">
+</div>
+
+- [DRACARYS](https://orange-cyberdefense.github.io/GOAD/labs/DRACARYS/) : A challenge with 3 vms and 1 domains. no schema provided, you will have to find out how break it.
+<div align="center">
+<img alt="SCCM" width="600" src="./docs/img/dracarys_logo.png">
+</div>

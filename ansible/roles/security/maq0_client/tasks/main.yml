@@ -1,0 +1,6 @@
+- name: Disable NTLM minimum client session security (MAQ client)
+  ansible.windows.win_regedit:
+    path: HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0
+    name: NtlmMinClientSec
+    type: dword
+    data: 0

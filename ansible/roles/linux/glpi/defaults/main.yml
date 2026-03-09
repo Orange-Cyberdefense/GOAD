@@ -1,0 +1,17 @@
+---
+glpi_install_path: "/var/www/html"
+glpi_version: "10.0.17"
+glpi_download_url: "https://github.com/glpi-project/glpi/releases/download/{{glpi_version}}/glpi-{{glpi_version}}.tgz"
+glpi_db_host: "localhost"
+glpi_db_port: "3306"
+glpi_db_name: "glpi"
+glpi_db_user: "glpi"
+glpi_db_password: "glpi"
+glpi_force_reinstall: false
+glpi_ldap:
+  name: "ldap"
+  host: "192.168.10.10"
+  basedn: "DC=balerion,DC=dracarys,DC=lab"
+  rootdn: "sunfyre@balerion.dracarys.lab"
+  port: 389
+  glpi_user_password: "XXXX"

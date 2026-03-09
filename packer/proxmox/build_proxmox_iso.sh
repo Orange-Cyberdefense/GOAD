@@ -32,6 +32,12 @@ sha_winserv2019_update=$(sha256sum ./iso/Autounattend_winserver2019_cloudinit_up
 echo "[+] update windows_server2019_proxmox_cloudinit_uptodate.pkvars.hcl"
 sed -i "s/\"sha256:.*\"/\"sha256:$sha_winserv2019_update\"/g" windows_server2019_proxmox_cloudinit_uptodate.pkvars.hcl
 
+echo "[+] Build iso windows 11 with cloudinit and update"
+mkisofs -J -l -R -V "autounatend CD" -iso-level 4 -o ./iso/Autounattend_windows11_cloudinit_uptodate.iso answer_files/11_proxmox_cloudinit_uptodate
+sha_win10=$(sha256sum ./iso/Autounattend_windows11_cloudinit_uptodate.iso|cut -d ' ' -f1)
+echo "[+] update windows_11_23h2_proxmox_cloudinit_uptodate.pkvars.hcl"
+sed -i "s/\"sha256:.*\"/\"sha256:$sha_win10\"/g" windows_11_23h2_proxmox_cloudinit_uptodate.pkvars.hcl
+
 echo "[+] Build iso for scripts"
 mkisofs -J -l -R -V "scripts CD" -iso-level 4 -o ./iso/scripts_withcloudinit.iso scripts
 # echo "scripts_withcloudinit.iso"

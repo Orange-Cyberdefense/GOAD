@@ -3,3 +3,9 @@
   hosts: domain
   roles:
     - { role: 'enable_user', tags: 'enable_vagrant', username: "vagrant"}
+
+- name: "Disable vagrant"
+  hosts: linux_domain
+  become: yes
+  roles:
+    - { role: 'linux/enable_user', tags: 'enable_user', username: "vagrant"}

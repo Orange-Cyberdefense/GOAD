@@ -7,7 +7,6 @@ variable "linux_vm_config" {
     instance_type      = string
     private_ip_address = string
     password           = string
-    size               = string
   }))
 
   default = {
@@ -35,7 +34,7 @@ resource "aws_instance" "linux-goad-vm" {
   for_each = var.linux_vm_config
 
   ami                    = "${each.value.ami}"
-  instance_type          = "${each.value.size}"
+  instance_type          = "${each.value.instance_type}"
 
   network_interface {
     network_interface_id = aws_network_interface.linux-goad-vm-nic[each.key].id

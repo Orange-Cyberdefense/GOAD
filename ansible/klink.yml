@@ -1,0 +1,4 @@
+- name: Install klink
+  hosts: klink
+  roles:
+    - { role: 'klink', tags: 'klink' }

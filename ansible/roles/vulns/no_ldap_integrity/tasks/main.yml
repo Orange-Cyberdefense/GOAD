@@ -1,0 +1,10 @@
+#0	No signing required. The server will not require integrity protection for LDAP binds.
+#1	Signing required for SASL (e.g., Kerberos/NTLM) binds only. Simple binds are allowed without signing.
+#2	Signing required for all LDAP binds (simple and SASL). Simple binds over non-SSL connections will fail.
+
+- name: Disable LDAP Server Integrity (LDAPServerIntegrity = 0)
+  ansible.windows.win_regedit:
+    path: HKLM:\SYSTEM\CurrentControlSet\Services\NTDS\Parameters
+    name: LDAPServerIntegrity
+    type: dword
+    data: 0

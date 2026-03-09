@@ -1,0 +1,170 @@
+{
+"lab" : {
+    "hosts" : {
+        "dc01" : {
+            "hostname" : "balerion",
+            "type" : "dc",
+            "local_admin_password": "8dCsfT-DJjgS3xdcp",
+            "domain" : "dracarys.lab",
+            "path" : "DC=dracarys,DC=lab",
+            "local_groups" : {
+                "Administrators" : [
+                    "dracarys\\Drogon"
+                ]
+            },
+            "scripts" : ["set_spn.ps1","wsman_kerb.ps1"],
+            "security": ["directory", "files", "ldaps"],
+            "security_vars": {
+                "directory": {
+                    "setup": "c:\\setup"
+                },
+                "files" : {
+                    "certificate" : {
+                        "src" : "dc01/ldaps.pfx",
+                        "dest" : "c:\\setup\\ldaps.pfx"
+                    }
+                },
+                "ldaps": {
+                    "certificate" : {
+                        "pfx" : "c:\\setup\\ldaps.pfx",
+                        "cert_password" : "MyStr@ngeCertP@ssword123"
+                    }
+                }
+            },
+            "vulns" : ["files", "enable_credssp_client", "schedule"],
+            "vulns_vars" : {
+                "files" : {
+                    "bot_keepass" : {
+                        "src" : "dc01/keepass_bot.ps1",
+                        "dest" : "c:\\keepass_bot.ps1"
+                    }
+                },
+                "schedule": {
+                    "bot": {
+                        "name": "keepass_bot",
+                        "cmd" : "powershell c:\\keepass_bot.ps1",
+                        "interval" : "PT1M",
+                        "multiple_instances" : "3"
+                    }
+                }
+            }
+        },
+        "srv01" : {
+            "hostname" : "vhagar",
+            "type" : "server",
+            "local_admin_password": "NgtkgtIAs75cKV+Pu",
+            "domain" : "dracarys.lab",
+            "path" : "DC=dracarys,DC=lab",
+            "use_laps": false,
+            "local_groups" : {
+                "Administrators" : [
+                    "dracarys\\Rhaegal"
+                ],
+                "Remote Desktop Users" : [
+                     "dracarys\\Rhaegal"
+                ]
+            },
+            "scripts" : [],
+            "vulns" : ["files", "enable_credssp_server", "schedule"],
+            "vulns_vars" : {
+                "files" : {
+                    "vault" : {
+                        "src" : "srv01/vault.kdbx",
+                        "dest" : "c:\\vault.kdbx"
+                    },
+                    "bot_ssh" : {
+                        "src" : "srv01/bot_ssh.ps1",
+                        "dest" : "c:\\bot_ssh.ps1"
+                    }
+                },
+                "schedule": {
+                    "bot": {
+                        "name": "bot_ssh",
+                        "cmd" : "powershell c:\\bot_ssh.ps1",
+                        "interval" : "PT1M"
+                    }
+                }
+            }
+        },
+        "lx01" : {
+              "hostname" : "syrax", 
+              "type" : "server",
+              "os": "linux",
+              "local_admin_password": "HGLXaxQSP@ssw_rd$",
+              "domain" : "dracarys.lab", 
+              "path" : "DC=dracarys,DC=lab",
+              "local_groups" : {
+                  "sudoers" : ["LinuxAdmins"],
+                  "ssh" : ["LinuxAdmins", "LinuxUsers"]
+              },
+              "security": [],
+              "security_vars": {},
+              "scripts" : []
+        }
+    },
+    "domains" : {
+        "dracarys.lab" : {
+            "dc": "dc01",
+            "domain_password" : "8dCsfT-DJjgS3xdcp",
+            "netbios_name": "DRACARYS",
+            "organisation_units" : {
+            },
+            "groups" : {
+                "universal" : {},
+                "global" : {
+                    "LinuxAdmins" : {
+                        "managed_by" : "drogon",
+                        "path" : "CN=Users,DC=dracarys,DC=lab"
+                    },
+                    "LinuxUsers" : {
+                        "managed_by" : "drogon",
+                        "path" : "CN=Users,DC=dracarys,DC=lab"
+                    }
+                },
+                "domainlocal" : {}
+            },
+            "multi_domain_groups_member" : {},
+            "acls" : {
+                "WriteSPN_viserion_vhagar": {"for": "viserion", "to": "vhagar$", "right": "Ext-Write-SPN", "inheritance": "None"},
+            },
+            "users" : {
+                "drogon" : {
+                    "firstname"   : "drogon",
+                    "surname"     : "-",
+                    "password"    : "sUIjHxs1i0yxZsGBreh0", 
+                    "city"        : "-",
+                    "description" : "Domain admin",
+                    "groups"      : ["LinuxAdmins", "Domain Admins"],
+                    "path"        : "CN=Users,DC=dracarys,DC=lab"
+                },
+                "rhaegal" : {
+                    "firstname"   : "rhaegal",
+                    "surname"     : "-",
+                    "password"    : "ufsmcvDaFz1uEqzAtaiL",
+                    "city"        : "-",
+                    "description" : "Rhaegal",
+                    "groups"      : ["LinuxAdmins"],
+                    "path"        : "CN=Users,DC=dracarys,DC=lab"
+                },
+                "viserion" : {
+                    "firstname"   : "viserion",
+                    "surname"     : "-",
+                    "password"    : "aLHtz1WvIVmeV4Zh4CDE",
+                    "city"        : "-",
+                    "description" : "viserion",
+                    "groups"      : ["LinuxUsers"],
+                    "path"        : "CN=Users,DC=dracarys,DC=lab"
+                },
+                "sunfyre" : {
+                    "firstname"   : "sunfyre",
+                    "surname"     : "-",
+                    "password"    : "BSno5DP4tjJ4jIu8is3B",
+                    "city"        : "-",
+                    "description" : "glpi service account",
+                    "groups"      : ["LinuxUsers"],
+                    "path"        : "CN=Users,DC=dracarys,DC=lab"
+                }
+            }
+        }
+    }
+}}

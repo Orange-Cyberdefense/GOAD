@@ -1,0 +1,174 @@
+# force reinstall if needed
+- name: Check if already installed
+  file:
+    path: "{{ glpi_install_path }}/glpi"
+    state: absent
+  when: glpi_force_reinstall
+
+# verify if installation is already done
+- name: Check if already installed
+  stat:
+    path: "{{ glpi_install_path }}/glpi"
+  register: glpi_is_installed
+
+# due to a bug with old ansible and unarchive
+- name: Download GLPI with curl
+  command: >
+    curl -L -k "{{ glpi_download_url }}" -o /tmp/glpi.tgz
+  args:
+    creates: /tmp/glpi.tgz
+  when: not glpi_is_installed.stat.exists
+
+- name: Extract GLPI
+  unarchive:
+    src: "/tmp/glpi.tgz"
+    dest: "{{ glpi_install_path }}"
+    owner: "www-data"
+    group: "www-data"
+    remote_src: true
+  when: not glpi_is_installed.stat.exists
+
+- name: Set permisions to glpi directory
+  file:
+    path: "{{ glpi_install_path }}/glpi/files"
+    recurse: true
+    owner: "www-data"
+    group: "www-data"
+  when: not glpi_is_installed.stat.exists
+
+- name: Set permissions to config directory
+  file:
+    path: "{{ glpi_install_path }}/glpi/config"
+    recurse: true
+    owner: "www-data"
+    group: "www-data"
+  when: not glpi_is_installed.stat.exists
+
+- name: Set permissions to all glpi directory
+  file:
+    path: "{{ glpi_install_path }}/"
+    recurse: true
+    owner: "www-data"
+    group: "www-data"
+  when: not glpi_is_installed.stat.exists
+
+# Launch install
+- name: Automatic installation
+  command: "php bin/console -n db:install -H {{ glpi_db_host }} -P {{ glpi_db_port }} -d {{ glpi_db_name }} -u {{ glpi_db_user }} -p {{ glpi_db_password }}"
+  args:
+    chdir: "{{ glpi_install_path }}/glpi"
+  when: not glpi_is_installed.stat.exists
+
+- name: Remove install.php
+  file:
+    path: "{{ glpi_install_path }}/glpi/install/install.php"
+    state: absent
+  when: not glpi_is_installed.stat.exists
+
+- name: Check if certificate is already present
+  stat:
+    path: /usr/local/share/ca-certificates/dc-ca.crt
+  register: ca_cert
+
+- name: Retrieve the certificate from the DC via openssl
+  shell: |
+    echo -n | openssl s_client -connect {{ glpi_ldap.host }}:636 -showcerts 2>/dev/null \
+    | awk '/BEGIN CERTIFICATE/,/END CERTIFICATE/ {print $0}' > /usr/local/share/ca-certificates/dc-ca.crt
+  when: not ca_cert.stat.exists
+
+- name: Update CA certificates store only if not already installed
+  command: update-ca-certificates
+  register: update_ca
+  changed_when: "'1 added' in update_ca.stdout or '0 added' not in update_ca.stdout"
+  when: not ca_cert.stat.exists
+
+- name: Reboot if CA certificates were updated
+  ansible.builtin.reboot:
+    msg: "Rebooting after new CA certificate installation"
+    pre_reboot_delay: 5
+    post_reboot_delay: 30
+  when: update_ca.changed
+
+- name: Configure LDAP for GLPI
+  ansible.builtin.script: >
+    files/glpi_ldap.php
+    {{ glpi_db_host }}
+    {{ glpi_db_name }}
+    {{ glpi_db_user }}
+    {{ glpi_db_password }}
+    {{ glpi_ldap.name }}
+    ldaps://{{ glpi_ldap.host }}
+    {{ glpi_ldap.basedn }}
+    {{ glpi_ldap.rootdn }}
+    {{ glpi_ldap.port | string }}
+    "(&(objectClass=user)(objectCategory=person))"
+    {{ glpi_ldap.glpi_user_password }}
+  args:
+    executable: php
+
+- name: Change GLPI default users passwords
+  ansible.builtin.script: >
+    files/glpi_password.php
+    {{ glpi_db_host }}
+    {{ glpi_db_name }}
+    {{ glpi_db_user }}
+    {{ glpi_db_password }}
+    {{ item }}
+    {{ glpi_local_users_pass }}
+  args:
+    executable: php
+  loop:
+    - glpi
+    - tech
+    - normal
+    - post-only
+
+
+- name: Enable GLPI inventory
+  ansible.builtin.script: >
+    files/glpi_config.php
+    {{ glpi_db_host }}
+    {{ glpi_db_name }}
+    {{ glpi_db_user }}
+    {{ glpi_db_password }}
+    enabled_inventory
+    1
+  args:
+    executable: php
+
+
+- name: Enable GLPI notifications and forgot password
+  ansible.builtin.script: >
+    files/glpi_config.php
+    {{ glpi_db_host }}
+    {{ glpi_db_name }}
+    {{ glpi_db_user }}
+    {{ glpi_db_password }}
+    {{ item }}
+    1
+  args:
+    executable: php
+  loop:
+    - use_notifications
+    - notifications_mailing
+
+- name: Add GLPI email for default user
+  ansible.builtin.script: >
+    files/glpi_insert_mail.php
+    {{ glpi_db_host }}
+    {{ glpi_db_name }}
+    {{ glpi_db_user }}
+    {{ glpi_db_password }}
+    {{ item }}
+    "noreply@dracarys.lab"
+  args:
+    executable: php
+  loop:
+    - glpi
+
+- name: Set write permissions to glpi directory (for logs and other stuff made has root during provisioning)
+  file:
+    path: "{{ glpi_install_path }}"
+    recurse: true
+    owner: "www-data"
+    group: "www-data"

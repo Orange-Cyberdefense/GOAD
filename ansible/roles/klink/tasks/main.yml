@@ -1,0 +1,31 @@
+---
+# Ensure PuTTY installation directory exists
+- name: Create PuTTY directory
+  ansible.windows.win_file:
+    path: "{{ putty_dir }}"
+    state: directory
+
+# Check if klink.exe already exists
+- name: Check if klink.exe is already installed
+  ansible.windows.win_stat:
+    path: "{{ klink_path }}"
+  register: klink_stat
+
+# Download klink.exe only if it is missing
+- name: Download klink.exe (only if not present)
+  ansible.windows.win_get_url:
+    url: "{{ klink_url }}"
+    dest: "{{ klink_path }}"
+  when: not klink_stat.stat.exists
+
+# Verify klink availability (non-fatal check)
+- name: Check klink version
+  ansible.windows.win_command: '"C:\Program Files\PuTTY\klink.exe" -V'
+  register: klink_version
+  changed_when: false
+  failed_when: false
+
+# Display detected klink version
+- name: Show klink version
+  debug:
+    var: klink_version.stdout

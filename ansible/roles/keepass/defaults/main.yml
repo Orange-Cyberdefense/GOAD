@@ -1,0 +1,3 @@
+keepass_url_install_package: https://unlimited.dl.sourceforge.net/project/keepass/KeePass 2.x/2.60/KeePass-2.60-Setup.exe?viasf=1
+keepass_download_location: c:\\setup
+keepass_install_bin: "{{keepass_download_location}}\\\\KeePass-2.60-Setup.exe"

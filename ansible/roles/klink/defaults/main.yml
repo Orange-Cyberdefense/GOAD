@@ -1,0 +1,3 @@
+putty_dir: "C:\\Program Files\\PuTTY"
+klink_url: "https://www.9bis.net/kitty/files/klink.exe"
+klink_path: "{{ putty_dir }}\\klink.exe"

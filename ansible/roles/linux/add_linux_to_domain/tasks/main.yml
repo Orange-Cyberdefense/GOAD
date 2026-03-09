@@ -31,8 +31,8 @@
       }
 
       [domain_realm]
-      {{ domain|upper }} = {{ domain }}
-      .{{ domain|upper }} = {{ domain }}
+      {{ domain }} =  {{ domain|upper }}
+      .{{ domain }} = {{ domain|upper }}
 
 - name: Install krb5 Packages
   apt:
@@ -115,3 +115,129 @@
     "realm permit -g {{ item }}@{{ domain }}"
   loop: "{{ssh_group}}"
 
+- name: Enable GSSAPI Authentication in SSHD
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?GSSAPIAuthentication'
+    line: 'GSSAPIAuthentication yes'
+    state: present
+    backup: yes
+
+- name: Enable GSSAPI Cleanup Credentials
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?GSSAPICleanupCredentials'
+    line: 'GSSAPICleanupCredentials yes'
+    state: present
+    backup: yes
+
+- name: Disable GSSAPIStrictAcceptorCheck
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?GSSAPIStrictAcceptorCheck'
+    line: 'GSSAPIStrictAcceptorCheck no'
+    state: present
+    backup: yes
+
+- name: Ensure PAM is enabled in SSHD
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?UsePAM'
+    line: 'UsePAM yes'
+    state: present
+    backup: yes
+
+- name: Install PAM Kerberos module
+  apt:
+    name: libpam-krb5
+    state: present
+  notify: Restart SSH
+
+- name: Add ssh
+  shell:
+    "sudo realm join --client-software=sssd {{ domain }}"
+  ignore_errors: yes
+
+- name: Define domain DNS in resolved.conf
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^#?DNS='
+    line: "DNS={{dc_ip}}"
+
+- name: restart systemd-resolved
+  systemd:
+    name: systemd-resolved
+    state: restarted
+
+- name: Fix symlink resolv.conf
+  file:
+    src: /run/systemd/resolve/resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: yes
+
+- name: Install ntpdate
+  ansible.builtin.apt:
+    name: ntpdate
+    state: present
+    update_cache: true
+
+- name: Force immediate time sync with DC
+  ansible.builtin.command:
+    cmd: "ntpdate -u {{ dc_ip }}"
+
+- name: Install chrony
+  ansible.builtin.apt:
+    name: chrony
+    state: present
+    update_cache: yes
+
+- name: Configure DC as NTP server
+  ansible.builtin.lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^server {{ dc_ip }}'
+    line: "server {{ dc_ip }} iburst"
+    state: present
+    insertafter: EOF
+  notify:
+    - Restart chrony
+
+- name: Remove default Ubuntu NTP pools
+  ansible.builtin.replace:
+    path: /etc/chrony/chrony.conf
+    regexp: '^pool .*$'
+    replace: ''
+  notify:
+    - Restart chrony
+
+- name: Set makestep to 1 -1
+  ansible.builtin.lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^makestep'
+    line: "makestep 1 -1"
+    state: present
+  notify:
+    - Restart chrony
+
+- name: Ensure chrony is started and enabled
+  ansible.builtin.systemd:
+    name: chrony
+    state: started
+    enabled: yes
+
+- name: Set RTC in local timezone and adjust system clock
+  ansible.builtin.command:
+    cmd: timedatectl set-local-rtc 1 --adjust-system-clock
+
+- name: Force immediate time sync
+  ansible.builtin.command:
+    cmd: chronyc -a makestep
+
+- name: Remove faulty ad_server line to enable auto-discovery
+  lineinfile:
+    path: /etc/sssd/sssd.conf
+    regexp: '^ad_server\s*='
+    state: absent
+    backup: yes
+  notify:
+    - Restart SSSD

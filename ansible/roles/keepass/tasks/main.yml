@@ -1,0 +1,20 @@
+- name: check keepass already exist
+  win_stat:
+    path: C:\Program Files\KeePass Password Safe 2\KeePass.exe
+  register: keepass_install
+
+- name: Create keepass_download_location folder if not exist
+  ansible.windows.win_file:
+    path: "{{keepass_download_location}}"
+    state: directory
+  when: not keepass_install.stat.exists
+
+- name: "Download Keepass to {{keepass_install_bin}}"
+  ansible.windows.win_get_url:
+    url: "{{ keepass_url_install_package }}"
+    dest: "{{keepass_install_bin}}"
+  when: not keepass_install.stat.exists
+
+- name: Install Keepass
+  win_command: "{{ keepass_install_bin }} /VERYSILENT"
+  when: not keepass_install.stat.exists

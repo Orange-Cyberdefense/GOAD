@@ -29,9 +29,17 @@ variable "vm_template_id" {
 
   # set the ids according to your templates
   default = {
-      "WinServer2019_x64"  = {{config.get_value('proxmox_templates_id', 'winserver2019_x64', 0)}}
-      "WinServer2016_x64"  = {{config.get_value('proxmox_templates_id', 'WinServer2016_x64', 0)}}
-      "Windows10_22h2_x64" = {{config.get_value('proxmox_templates_id', 'windows10_22h2_x64', 0)}}
+      "WinServer2019_x64"  = {{config.get_value('proxmox_templates_id', 'Winserver2019_x64', 201900)}}
+      "WinServer2019_x64_utd"  = {{config.get_value('proxmox_templates_id', 'WinServer2019_x64_utd', 201901)}}
+      "WinServer2016_x64"  = {{config.get_value('proxmox_templates_id', 'WinServer2016_x64', 201600)}}
+      "WinServer2022_x64"  = {{config.get_value('proxmox_templates_id', 'WinServer2022_x64', 202201)}}
+      "WinServer2025_x64"  = {{config.get_value('proxmox_templates_id', 'WinServer2025_x64', 202501)}}
+      "Windows10_22h2_x64" = {{config.get_value('proxmox_templates_id', 'Windows10_22h2_x64', 102221)}}
+      "Windows11_23h2_x64" = {{config.get_value('proxmox_templates_id', 'Windows11_23h2_x64', 112321)}}
+      "Windows11_24h2_x64" = {{config.get_value('proxmox_templates_id', 'Windows11_24h2_x64', 112421)}}
+      "Windows11_25h2_x64" = {{config.get_value('proxmox_templates_id', 'Windows11_25h2_x64', 112521)}}
+      "Ubuntu_2204_x64"    = {{config.get_value('proxmox_templates_id', 'Ubuntu_2204_x64', 922040)}}
+      "Ubuntu_2404_x64"    = {{config.get_value('proxmox_templates_id', 'Ubuntu_2404_x64', 924040)}}
   }
 }
 
