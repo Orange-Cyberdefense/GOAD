@@ -12,6 +12,9 @@
     To add GOAD on Ludus please use goad directly on the server.
     By now goad can work only directly on the server and not from a workstation client.
 
+!!! info "V2"
+    for ludus v2 create an environment variable : `export LUDUS_VERSION=2`
+
 - Install Ludus : [https://docs.ludus.cloud/docs/quick-start/install-ludus/](https://docs.ludus.cloud/docs/quick-start/install-ludus/)
 
 - Be sure to create an **admin** user and keep his api key
