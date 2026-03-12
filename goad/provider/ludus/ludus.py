@@ -15,16 +15,17 @@ def _get_ludus_major_version(config):
         return int(os.environ['LUDUS_VERSION'])
     api_key = config.get_value('ludus', 'ludus_api_key', 'not_set')
     command = CommandFactory.get_command()
-    output = command.run_ludus_result(['version', '--json'], None, api_key, do_log=False)
-    if not output:
-        return 1
-    try:
-        version_json = json.loads(output)
-        version = version_json.get('version', '')
-        if version:
-            return int(version.split('.')[0])
-    except (json.JSONDecodeError, KeyError, ValueError):
-        pass
+    if command.on_ludus():
+        output = command.run_ludus_result(['version', '--json'], None, api_key, do_log=False)
+        if not output:
+            return 1
+        try:
+            version_json = json.loads(output)
+            version = version_json.get('version', '')
+            if version:
+                return int(version.split('.')[0])
+        except (json.JSONDecodeError, KeyError, ValueError):
+            pass
     return 1
 
 
