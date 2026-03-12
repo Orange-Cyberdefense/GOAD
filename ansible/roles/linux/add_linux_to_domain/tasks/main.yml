@@ -9,6 +9,8 @@
       - realmd
       - adcli
       - packagekit
+      # ensure openssh service is available
+      - openssh-server
     state: present
 
 - name: Create KRB5 File
