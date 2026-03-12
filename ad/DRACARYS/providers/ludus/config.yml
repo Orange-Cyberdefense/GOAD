@@ -1,5 +1,5 @@
 ludus:
-  - vm_name: "{{ range_id }}-DRACARYS-DC01"
+  - vm_name: "{{ range_id }}-DC01"
     hostname: "{{ range_id }}-DC01"
     template: win2025-server-x64-tpm-template
     vlan: 10
@@ -8,7 +8,7 @@ ludus:
     cpus: 2
     windows:
       sysprep: true
-  - vm_name: "{{ range_id }}-DRACARYS-SRV01"
+  - vm_name: "{{ range_id }}-SRV01"
     hostname: "{{ range_id }}-SRV01"
     template: win2025-server-x64-tpm-template
     vlan: 10
@@ -17,7 +17,7 @@ ludus:
     cpus: 2
     windows:
       sysprep: true
-  - vm_name: "{{ range_id }}-DRACARYS-LX01"
+  - vm_name: "{{ range_id }}-LX01"
     hostname: "{{ range_id }}-LX01"
     template: ubuntu-24.04-x64-server-template
     vlan: 10

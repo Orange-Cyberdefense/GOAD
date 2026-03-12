@@ -12,14 +12,16 @@ class Command:
         self.terraform_bin = ''
 
     # CHECK
-    def is_in_path(self, bin_file):
+    def is_in_path(self, bin_file, show_log=True):
         command = f'which {bin_file} >/dev/null'
         try:
             subprocess.run(command, shell=True, check=True)
-            Log.success(f'{bin_file} found in PATH')
+            if show_log:
+                Log.success(f'{bin_file} found in PATH')
             return True
         except subprocess.CalledProcessError as e:
-            Log.error(f'{bin_file} not found in PATH')
+            if show_log:
+                Log.error(f'{bin_file} not found in PATH')
             return False
 
     def check_vagrant(self):
@@ -177,6 +179,9 @@ class Command:
         except subprocess.CalledProcessError as e:
             Log.error(f"An error occurred while running the command: {e}")
         return None
+
+    def on_ludus(self):
+        return self.is_in_path('ludus', False)
 
     def run_ludus(self, args, path, api_key, user_id='', impersonation=False):
         # linux only
