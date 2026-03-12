@@ -4,7 +4,7 @@
 domain_name=TEMPLATE
 
 ; global settings inventory default value
-keyboard_layouts=["en-US", "da-DK", "fr-FR"]
+;keyboard_layouts=["en-US", "da-DK", "fr-FR"]   ; Now set in the inventory file of the workspace
 
 ; modify this to add a default route
 add_route=no

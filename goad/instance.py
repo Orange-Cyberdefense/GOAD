@@ -11,7 +11,7 @@ from goad.utils import *
 
 class LabInstance:
 
-    def __init__(self, instance_id, lab_name, config, provider_name, provisioner_name, ip_range, extensions=None, status='', default=False):
+    def __init__(self, instance_id, lab_name, config, provider_name, provisioner_name, ip_range, keyboard_layout, extensions=None, status='', default=False):
         if instance_id is None:
             random_id = ''.join(random.choices(string.hexdigits, k=6))
             self.instance_id = f'{random_id}-{lab_name}-{provider_name}'.lower()
@@ -22,6 +22,7 @@ class LabInstance:
         self.provider_name = provider_name
         self.provisioner_name = provisioner_name
         self.ip_range = ip_range
+        self.keyboard_layout = keyboard_layout
         self.status = status
         if extensions is None:
             extensions = []
@@ -106,6 +107,7 @@ class LabInstance:
             "provider": self.provider_name,
             "provisioner": self.provisioner_name,
             "ip_range": self.ip_range,
+            "keyboard_layout": self.keyboard_layout,
             "extensions": self.extensions,
             "status": self.status,
             "is_default": self.is_default
@@ -302,7 +304,8 @@ class LabInstance:
         instance_inventory_content = inventory_template.render(
             lab_name=self.lab_name,
             ip_range=self.ip_range,
-            provider_name=self.provider_name
+            provider_name=self.provider_name,
+            keyboard_layout=self.keyboard_layout,
         )
         # create instance inventory file
         instance_inventory_file = self.instance_path + sep + inventory_file
@@ -328,6 +331,17 @@ class LabInstance:
             inventory_file.write(instance_inventory_content)
             Log.success(f'Instance inventory file created : {Utils.get_relative_path(instance_inventory_file)}')
 
+        # Very hacky to add the keyboard layout to the inventory file, but works for now
+        import configparser
+        config = configparser.ConfigParser(allow_no_value=True)
+        config.read(instance_inventory_file)
+        if not config.has_section('all:vars'):
+            config.add_section('all:vars')
+        config.set('all:vars', 'keyboard_layouts', str(self.keyboard_layout))
+        with open(instance_inventory_file, 'w') as configfile:
+            config.write(configfile)
+            Log.success(f'Instance inventory file updated: keyboard layout(s)')
+
     def _create_extensions_inventory(self):
         Log.info('Create instance extensions inventory files')
 
@@ -346,6 +360,17 @@ class LabInstance:
             with open(instance_extension_inventory_file, mode="w", encoding="utf-8") as inventory_file:
                 inventory_file.write(instance_extension_inventory_content)
                 Log.success(f'Instance inventory file created : {Utils.get_relative_path(instance_extension_inventory_file)}')
+
+            # Very hacky to add the keyboard layout to the inventory file, but works for now
+            import configparser
+            config = configparser.ConfigParser(allow_no_value=True)
+            config.read(instance_extension_inventory_file)
+            if not config.has_section('all:vars'):
+                config.add_section('all:vars')
+            config.set('all:vars', 'keyboard_layouts', str(self.keyboard_layout))
+            with open(instance_extension_inventory_file, 'w') as configfile:
+                config.write(configfile)
+                Log.success(f'Instance inventory file updated: keyboard layout(s)')
 
     def update_instance_folder(self):
         self.create_instance_folder(True)

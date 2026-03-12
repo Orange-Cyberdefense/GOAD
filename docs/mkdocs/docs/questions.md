@@ -1,8 +1,8 @@
 # Frequent asked questions
 
 
-!!! question "How can i change the default keyboard layout ?"
-    edit globalsettings.ini files and change the variable `keyboard_layouts`
+!!! question "How can i change the default keyboard layout?"
+    Either use the `--keyboard-layout` option or configure it via the goad cli. Alternatively, you can set a default in the `~/.goad/goad.ini` config file.
 
 !!! question "How can i change the folder where vagrant download the boxes ?"
     vagrant download the boxes by default on ~/.vagrant.d/ folder. Set up the VAGRANT_HOME environment variable to change this location.
