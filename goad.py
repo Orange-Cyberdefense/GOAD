@@ -63,8 +63,8 @@ class Goad(cmd.Cmd):
         if self.lab_manager.get_current_instance():
             self.lab_manager.get_current_instance().provider.status()
 
-    def do_install(self, arg=''):
-        self.do_create()
+    def do_install(self, auto_approve):
+        self.do_create(auto_approve)
 
     def do_start(self, arg=''):
         if self.lab_manager.get_current_instance_provider():
@@ -336,14 +336,14 @@ class Goad(cmd.Cmd):
     def do_update_instance_files(self, arg):
         self.lab_manager.update_instance_files()
 
-    def do_create(self, arg=''):
+    def do_create(self, auto_approve):
         if self.lab_manager.get_current_instance() is not None:
             self.do_install_instance()
         else:
             Log.success('Current Settings')
             self.lab_manager.current_settings.show()
             print()
-            if Utils.confirm('Create lab with theses settings ? (y/N)'):
+            if auto_approve or Utils.confirm('Create lab with theses settings ? (y/N)'):
                 Log.info('Create instance folder')
                 self.lab_manager.create_instance()
                 Log.info('Launch providing')
@@ -465,7 +465,8 @@ def parse_args():
     parser.add_argument("-m", "--method", help="deploy method to use (default: local)", default='local', required=False)
     parser.add_argument("-i", "--instance", help="use a specific instance (use default if not selected)", required=False)
     parser.add_argument("-e", "--extensions", help="extensions to use", action='append', required=False)
-    parser.add_argument("-a", "--ansible_only", help="run only provisioning (ansible) on instance (-i) (for task install only)", required=False)
+    parser.add_argument("-a", "--ansible_only", help="run only provisioning (ansible) on instance (-i) (for task install only)", action='store_true')
+    parser.add_argument("-y", "--auto_approve", help="auto approve confirmation prompts", action='store_true')
     parser.add_argument("-r", "--run_playbook", help="run only one ansible playbook on instance (-i) (for task install only)", required=False)
     parser.add_argument("-d", "--disable_dependencies", help="disable_dependencies", action='append', required=False)
     args = parser.parse_args()
@@ -491,7 +492,7 @@ if __name__ == '__main__':
         if args.instance is not None:
             goad.do_load(args.instance)
 
-        if args.run_playbook is not None or args.ansible_only is not None:
+        if args.run_playbook is not None or args.ansible_only:
             if args.instance is None:
                 Log.error('Instance must be selected (-i) to use --run_playbook (-r) or --ansible_only (-a)')
                 sys.exit(1)
@@ -507,7 +508,7 @@ if __name__ == '__main__':
                     else:
                         goad.do_install_instance()
                 else:
-                    goad.do_install()
+                    goad.do_install(args.auto_approve)
             elif args.task == 'check':
                 goad.do_check()
             elif args.task == 'start':
