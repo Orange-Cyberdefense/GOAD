@@ -46,7 +46,7 @@ class DockerAnsibleProvisionerCmd(Ansible):
         remote_inventories = []
         for inventory in inventories:
             remote_inventories.append(Utils.transform_local_path_to_remote_path(inventory, self.remote_project_path))
-        command = f'-i {" -i ".join(remote_inventories)} {playbook}'
+        command = f'-i {" -i ".join(remote_inventories)} --extra-vars "provider={self.provider_name}" {playbook}'
         Log.info(f'Run playbook : {playbook} with inventory file(s) : {", ".join(remote_inventories)}')
         run_complete = False
         nb_try = 0
