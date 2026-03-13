@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 py=python3
 venv="$HOME/.goad/.venv"
@@ -24,7 +25,7 @@ then
       fi
   else
       echo "Python version is < 3.8 please update python before install"
-      exit
+      exit 1
   fi
 
   if [ "$($py -m venv -h 2>/dev/null | grep -i 'usage:')" ]; then
@@ -33,7 +34,7 @@ then
     echo "venv module is not installed."
     echo "please install $py-venv according to your system"
     echo "exit"
-    exit 0
+    exit 1
   fi
 
   echo '[+] venv not found, start python venv creation'
@@ -50,7 +51,7 @@ then
   else
     echo "Error in venv creation"
     rm -rf $venv
-    exit 0
+    exit 1
   fi
 fi
 
