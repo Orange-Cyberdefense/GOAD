@@ -340,4 +340,45 @@ fatal: [dc01]: UNREACHABLE! => {"changed": false, "msg": "ssl: HTTPSConnectionPo
 - may be the vm is not well ready after the terraform creation. retry the install.
 - if you still get the error connect to the vm and verify the static ip is corresponding with the one expect.
 
+## Windows + VMware : SSH/SCP connection to VMs times out
+```
+ssh: connect to host 192.168.56.X port 22: Connection timed out
+```
+
+or vagrant prints during `vagrant up` :
+
+```
+==> GOAD-DC01: Configuring secondary network adapters through VMware
+==> GOAD-DC01: on Windows is not yet supported. You will need to manually
+==> GOAD-DC01: configure the network adapter.
+```
+
+Vagrant cannot auto-configure VMware private network adapters on Windows. The VMs never get their `192.168.56.x` IPs.
+
+- solution : configure VMware Virtual Network Editor manually
+    - Open Virtual Network Editor as Administrator
+    - Create or edit a host-only network (e.g. `VMnet2`) :
+        - Subnet IP : `192.168.56.0`
+        - Subnet Mask : `255.255.255.0`
+        - DHCP : unchecked
+        - Connect a host virtual adapter : checked
+    - Open `ncpa.cpl` and verify VMware Network Adapter VMnet2 has IP `192.168.56.1`. If not, set it manually (IPv4 -> static -> `192.168.56.1`, mask `255.255.255.0`)
+
+## Windows + VMware : Port 2210 collision with PROVISIONING VM
+
+```
+Vagrant cannot forward the specified ports on this VM, since they
+would collide with some other application that is already listening
+on these ports. The forwarded port to 2210 is already in use
+on the host machine.
+```
+
+When using the `vm` provisioning method with the full GOAD lab (5 Windows VMs), Vagrant auto-corrects their forwarded ports into the 2200+ range which collides with the PROVISIONING VM SSH port (2210).
+
+- solution : edit `template/provider/vmware/Vagrantfile` and change the provisioning VM forwarded port to a value outside the auto-correction range
+
+```
+# change :host => 2210 to :host => 2250
+:forwarded_port => [ {:guest => 22, :host => 2250, :id => "ssh"} ]
+```
 
