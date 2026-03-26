@@ -8,6 +8,8 @@ from goad.exceptions import ProviderPathNotFound, JumpBoxInitFailed
 from goad.provisioner.provisioner_factory import ProvisionerFactory
 from goad.utils import *
 
+JUMPBOX_TEMPLATE_FILES = ['jumpbox.tf', 'jumpbox-init.sh.tpl']
+
 
 class LabInstance:
 
@@ -57,6 +59,8 @@ class LabInstance:
             self.provider.set_resource_group(self.lab_name + '-' + self.instance_id)
         if self.provider_name == AWS:
             self.provider.set_tag(self.lab_name + '-' + self.instance_id)
+        if self.provider_name == AWS and self.provisioner_name == PROVISIONING_LOCAL:
+            self.provider.set_vpn_path(GoadPath.get_instance_vpn_path(self.instance_id))
         if self.provider_name == LUDUS:
             user_id = self.lab_name + self.instance_id.split('-')[0]
             user_id = user_id.replace('-', '').replace('_', '')
@@ -220,6 +224,17 @@ class LabInstance:
             ludusfile.write(ludus_config_file_template_content)
             Log.info(f'Instance vagrantfile created : {Utils.get_relative_path(instance_ludus_file)}')
 
+    def _use_existing_vpc(self):
+        if self.provider_name == AWS:
+            if self.provider is not None:
+                return self.provider.use_existing_vpc()
+            # During creation, provider may not be loaded yet - check config directly
+            vpc_id = self.config.get_value('aws', 'aws_vpc_id', '')
+            subnet_id = self.config.get_value('aws', 'aws_subnet_id', '')
+            sg_id = self.config.get_value('aws', 'aws_security_group_id', '')
+            return bool(vpc_id and subnet_id and sg_id)
+        return False
+
     def _create_terraform_folder(self):
         # load lab files
         lab_environment = Environment(loader=FileSystemLoader(GoadPath.get_lab_provider_path(self.lab_name, self.provider_name)))
@@ -257,6 +272,8 @@ class LabInstance:
         environment = Environment(loader=FileSystemLoader(GoadPath.get_template_path(self.provider_name)))
 
         for template in Utils.list_files(GoadPath.get_template_path(self.provider_name)):
+            if self.provisioner_name == PROVISIONING_LOCAL and template in JUMPBOX_TEMPLATE_FILES:
+                continue
             tf_template = environment.get_template(template)
             tf_content = tf_template.render(
                 windows_vms=windows_vm,
@@ -265,13 +282,37 @@ class LabInstance:
                 lab_name=self.lab_name,
                 ip_range=self.ip_range,
                 provider_name=self.provider_name,
-                config=self.config
+                config=self.config,
+                provisioner_name=self.provisioner_name,
+                use_existing_vpc=self._use_existing_vpc(),
             )
             # create terraform files
             instance_tf_file = self.instance_provider_path + sep + template
             with open(instance_tf_file, mode="w", encoding="utf-8") as tf_file:
                 tf_file.write(tf_content)
                 Log.success(f'Instance terraform file created : {Utils.get_relative_path(instance_tf_file)}')
+
+    def _create_vpn_terraform_folder(self):
+        vpn_template_path = GoadPath.get_template_path(self.provider_name) + 'vpn'
+        vpn_instance_path = self.instance_path + sep + 'vpn'
+        os.makedirs(vpn_instance_path, exist_ok=True)
+        environment = Environment(loader=FileSystemLoader(vpn_template_path))
+        core_state_path = os.path.relpath(
+            self.instance_provider_path, vpn_instance_path
+        ) + '/terraform.tfstate'
+        for template_file in Utils.list_files(vpn_template_path):
+            tf_template = environment.get_template(template_file)
+            tf_content = tf_template.render(
+                lab_identifier=self.lab_name + '-' + self.instance_id,
+                lab_name=self.lab_name,
+                ip_range=self.ip_range,
+                config=self.config,
+                core_state_path=core_state_path,
+                use_existing_vpc=self._use_existing_vpc(),
+            )
+            with open(vpn_instance_path + sep + template_file, "w") as f:
+                f.write(tf_content)
+                Log.success(f'Instance VPN terraform file created : {Utils.get_relative_path(vpn_instance_path + sep + template_file)}')
 
     def _create_provider_dir(self):
         # create provider dir
@@ -291,6 +332,8 @@ class LabInstance:
             self._create_ludus_config_file()
         if self.is_terraform():
             self._create_terraform_folder()
+        if self.provider_name == AWS and self.provisioner_name == PROVISIONING_LOCAL:
+            self._create_vpn_terraform_folder()
 
     def _create_provisioning_lab_inventory(self, inventory_file):
         Log.info(f'Create lab provisioning file {inventory_file}')

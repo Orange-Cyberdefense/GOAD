@@ -22,19 +22,28 @@ resource "tls_private_key" "linux_ssh" {
 
 resource "aws_network_interface" "linux-goad-vm-nic" {
   for_each = var.linux_vm_config
-  subnet_id   = aws_subnet.goad_private_network.id
+  subnet_id   = {% if use_existing_vpc %}var.existing_subnet_id{% else %}aws_subnet.goad_private_network.id{% endif %}
   private_ips = [each.value.private_ip_address]
-  security_groups = [aws_security_group.goad_security_group.id]
+  security_groups = [{% if use_existing_vpc %}var.existing_security_group_id{% else %}aws_security_group.goad_security_group.id{% endif %}]
   tags = {
     Lab = "{{lab_identifier}}"
+  }
+}
+
+data "aws_ami" "ubuntu_22_04_linux" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
   }
 }
 
 resource "aws_instance" "linux-goad-vm" {
   for_each = var.linux_vm_config
 
-  ami                    = "${each.value.ami}"
-  instance_type          = "${each.value.instance_type}"
+  ami                    = data.aws_ami.ubuntu_22_04_linux.id
+  instance_type          = each.value.instance_type
 
   network_interface {
     network_interface_id = aws_network_interface.linux-goad-vm-nic[each.key].id

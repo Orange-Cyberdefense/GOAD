@@ -12,8 +12,17 @@ resource "aws_network_interface" "goad-vm-nic-jumpbox" {
   }
 }
 
+data "aws_ami" "ubuntu_22_04" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+}
+
 resource "aws_instance" "goad-vm-jumpbox" {
-  ami                    = "ami-04c332520bd9cedb4"
+  ami                    = data.aws_ami.ubuntu_22_04.id
   instance_type          = "t2.medium"
 
   network_interface {

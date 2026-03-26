@@ -127,6 +127,10 @@ class GoadPath:
     def get_instance_provider_path(instance_id):
         return GoadPath.get_instance_path(instance_id) + sep + 'provider'
 
+    @staticmethod
+    def get_instance_vpn_path(instance_id):
+        return GoadPath.get_instance_path(instance_id) + sep + 'vpn'
+
     # EXTENSIONS
     @staticmethod
     def get_extensions_path():
