@@ -1,0 +1,17 @@
+# Zeek version from the official repo
+zeek_version: "7.0"
+
+# Interface to monitor - eth1 is typically the host-only/lab network on Vagrant VMs
+zeek_monitor_interface: "eth1"
+
+# Log directory
+zeek_log_dir: "/opt/zeek/logs"
+
+# Enable JSON logging for easier ingestion into SIEM
+zeek_json_logs: true
+
+# Packages to install alongside Zeek
+zeek_packages:
+  - zeek
+  - zeek-core
+  - zeekctl

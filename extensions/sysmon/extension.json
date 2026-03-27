@@ -1,0 +1,9 @@
+{
+    "name": "sysmon",
+    "description": "Deploy Sysmon with olafhartong modular config to all Windows domain machines",
+    "machines": [],
+    "compatibility": [
+        "*"
+    ],
+    "impact": "installs Sysmon64 on all Windows domain machines with a modular detection-focused configuration"
+}

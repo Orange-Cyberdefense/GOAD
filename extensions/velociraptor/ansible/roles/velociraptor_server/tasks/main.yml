@@ -1,0 +1,106 @@
+- name: Check Velociraptor service facts
+  ansible.builtin.service_facts:
+
+- name: Create Velociraptor directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0750'
+  loop:
+    - "{{ velociraptor_install_dir }}"
+    - "{{ velociraptor_config_dir }}"
+
+- name: Download Velociraptor binary
+  ansible.builtin.get_url:
+    url: "{{ velociraptor_linux_url }}"
+    dest: "{{ velociraptor_binary }}"
+    mode: '0755'
+  when: not ansible_facts.services['velociraptor.service'] is defined
+
+# Generate server config non-interactively using --merge to set hostname/ports
+- name: Generate Velociraptor server config
+  ansible.builtin.shell: |
+    {{ velociraptor_binary }} config generate \
+      --merge '{"Frontend":{"hostname":"{{ ansible_host }}","bind_address":"0.0.0.0","bind_port":{{ velociraptor_frontend_port }}},"GUI":{"bind_address":"0.0.0.0","bind_port":{{ velociraptor_gui_port }}},"Client":{"server_urls":["https://{{ ansible_host }}:{{ velociraptor_frontend_port }}/"]},"logging":{"output_directory":"/opt/velociraptor/logs","separate_logs_per_component":true}}' \
+      > {{ velociraptor_config_dir }}/server.config.yaml
+  args:
+    creates: "{{ velociraptor_config_dir }}/server.config.yaml"
+
+- name: Secure server config
+  ansible.builtin.file:
+    path: "{{ velociraptor_config_dir }}/server.config.yaml"
+    mode: '0600'
+
+# Extract client config from server config for agent packaging
+- name: Extract client config
+  ansible.builtin.shell: |
+    {{ velociraptor_binary }} \
+      --config {{ velociraptor_config_dir }}/server.config.yaml \
+      config client > {{ velociraptor_config_dir }}/client.config.yaml
+  args:
+    creates: "{{ velociraptor_config_dir }}/client.config.yaml"
+
+# Download Windows MSI for repack
+- name: Download Windows MSI
+  ansible.builtin.get_url:
+    url: "{{ velociraptor_windows_msi_url }}"
+    dest: "{{ velociraptor_install_dir }}/velociraptor-windows-amd64.msi"
+  when: not ansible_facts.services['velociraptor.service'] is defined
+
+# Repack the MSI with the embedded client config
+- name: Repack Windows agent MSI with client config
+  ansible.builtin.shell: |
+    {{ velociraptor_binary }} config repack \
+      --exe {{ velociraptor_install_dir }}/velociraptor-windows-amd64.msi \
+      {{ velociraptor_config_dir }}/client.config.yaml \
+      {{ velociraptor_install_dir }}/velociraptor-agent.msi
+  args:
+    creates: "{{ velociraptor_install_dir }}/velociraptor-agent.msi"
+
+# Add admin user
+- name: Add Velociraptor admin user
+  ansible.builtin.shell: |
+    echo "{{ velociraptor_admin_password }}" | \
+    {{ velociraptor_binary }} \
+      --config {{ velociraptor_config_dir }}/server.config.yaml \
+      user add {{ velociraptor_admin_user }} --role=administrator
+  register: user_add
+  failed_when: user_add.rc != 0 and 'already exists' not in user_add.stderr
+  changed_when: "'already exists' not in user_add.stderr"
+
+# Create systemd service
+- name: Install Velociraptor systemd service
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/velociraptor.service
+    content: |
+      [Unit]
+      Description=Velociraptor DFIR Platform
+      After=network.target
+
+      [Service]
+      Type=simple
+      ExecStart={{ velociraptor_binary }} --config {{ velociraptor_config_dir }}/server.config.yaml frontend -v
+      Restart=on-failure
+      RestartSec=10
+      LimitNOFILE=65536
+
+      [Install]
+      WantedBy=multi-user.target
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable and start Velociraptor service
+  ansible.builtin.systemd:
+    name: velociraptor
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Display Velociraptor access info
+  ansible.builtin.debug:
+    msg:
+      - "Velociraptor GUI : https://{{ ansible_host }}:{{ velociraptor_gui_port }}"
+      - "Username         : {{ velociraptor_admin_user }}"
+      - "Password         : {{ velociraptor_admin_password }}"
+      - "Agent MSI        : {{ velociraptor_install_dir }}/velociraptor-agent.msi"
