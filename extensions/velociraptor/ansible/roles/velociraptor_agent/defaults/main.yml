@@ -1,0 +1,3 @@
+velociraptor_agent_install_location: "c:\\tmp"
+velociraptor_agent_msi_name: "velociraptor-agent.msi"
+velociraptor_agent_service_name: "Velociraptor"

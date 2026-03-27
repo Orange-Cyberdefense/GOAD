@@ -1,0 +1,11 @@
+{
+    "name": "zeek",
+    "description": "Add a Zeek network security monitor to the lab",
+    "machines": [
+        "zeek"
+    ],
+    "compatibility": [
+        "*"
+    ],
+    "impact": "add a linux machine running Zeek that passively monitors all lab network traffic"
+}

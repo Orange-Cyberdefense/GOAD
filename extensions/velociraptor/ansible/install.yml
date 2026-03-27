@@ -1,0 +1,12 @@
+- name: Install Velociraptor server
+  hosts: velociraptor_server
+  become: yes
+  roles:
+    - { role: 'velociraptor_server', tags: 'velociraptor_server' }
+
+- name: Deploy Velociraptor agent to Windows machines
+  hosts: velociraptor_agents
+  roles:
+    - { role: 'velociraptor_agent', tags: 'velociraptor_agent' }
+  vars:
+    velociraptor_server_host: "{{ hostvars['velociraptor']['ansible_host'] }}"

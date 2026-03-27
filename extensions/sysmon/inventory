@@ -1,0 +1,5 @@
+; EXTENSION : SYSMON ------------------------------------------
+; No new machine - agents only
+
+[sysmon_targets:children]
+domain

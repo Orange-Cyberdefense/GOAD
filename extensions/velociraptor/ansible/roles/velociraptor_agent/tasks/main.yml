@@ -1,0 +1,39 @@
+- name: Check if Velociraptor agent service exists
+  win_service:
+    name: "{{ velociraptor_agent_service_name }}"
+  register: velo_agent_service
+  failed_when: false
+
+- name: Create agent install directory
+  ansible.windows.win_file:
+    path: "{{ velociraptor_agent_install_location }}"
+    state: directory
+
+# Fetch the repacked MSI from the Velociraptor server via SSH/fetch
+- name: Fetch repacked Velociraptor agent MSI from server
+  ansible.builtin.fetch:
+    src: "/opt/velociraptor/velociraptor-agent.msi"
+    dest: "/tmp/velociraptor-agent.msi"
+    flat: yes
+  delegate_to: "{{ velociraptor_server_host }}"
+  become: yes
+  run_once: true
+  when: not velo_agent_service.exists
+
+- name: Copy Velociraptor agent MSI to Windows machine
+  win_copy:
+    src: "/tmp/velociraptor-agent.msi"
+    dest: "{{ velociraptor_agent_install_location }}\\{{ velociraptor_agent_msi_name }}"
+  when: not velo_agent_service.exists
+
+- name: Install Velociraptor agent MSI
+  win_command: >
+    msiexec.exe /i "{{ velociraptor_agent_install_location }}\{{ velociraptor_agent_msi_name }}" /qn
+  when: not velo_agent_service.exists
+
+- name: Ensure Velociraptor agent service is running
+  win_service:
+    name: "{{ velociraptor_agent_service_name }}"
+    state: started
+    start_mode: auto
+  when: not velo_agent_service.exists

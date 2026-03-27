@@ -1,0 +1,11 @@
+{
+    "name": "velociraptor",
+    "description": "Add Velociraptor DFIR platform - server + agents on all Windows domain machines",
+    "machines": [
+        "velociraptor"
+    ],
+    "compatibility": [
+        "*"
+    ],
+    "impact": "add a linux machine running Velociraptor server and deploy Velociraptor agents to all Windows domain machines"
+}
