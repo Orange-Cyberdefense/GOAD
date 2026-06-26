@@ -70,7 +70,7 @@
 
 - name: "Install XactiveDirectory"
   win_psmodule:
-    name: ActiveDirectoryDSC
+    name: ActiveDirectoryDsc
     state: present
 
 - name: Ensure Administrator is part of Enterprise Admins

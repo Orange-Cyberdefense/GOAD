@@ -13,6 +13,7 @@ nav:
     - Virtualbox: providers/virtualbox.md
     - Vmware Workstation: providers/vmware.md
     - Vmware Esxi: providers/vmware_esxi.md
+    - vSphere: providers/vsphere.md
     - Aws: providers/aws.md
     - Azure: providers/azure.md
     - Proxmox: providers/proxmox.md

@@ -1,6 +1,7 @@
 import json
 import shutil
 import os
+import re
 from jinja2 import Template, Environment, FileSystemLoader
 from goad.goadpath import *
 from goad.log import Log
@@ -82,6 +83,9 @@ class LabInstance:
 
     def is_vagrant(self):
         return self.provider_name == VMWARE or self.provider_name == VMWARE_ESXI or self.provider_name == VIRTUALBOX
+
+    def is_ovftool(self):
+        return self.provider_name == VSPHERE
 
     def is_ludus(self):
         return self.provider_name == LUDUS
@@ -181,6 +185,64 @@ class LabInstance:
         with open(instance_env_file, mode="w", encoding="utf-8") as vagrantfile:
             vagrantfile.write(envfile_content)
             Log.info(f'Instance .env created : {Utils.get_relative_path(instance_env_file)}')
+
+    @staticmethod
+    def _parse_vagrant_boxes(content):
+        boxes = []
+        for match in re.finditer(r'\{(?P<body>.*?)\}', content, re.DOTALL):
+            body = match.group('body')
+            if ':name' not in body or ':box' not in body:
+                continue
+
+            box = {}
+            for key, double_value, single_value, bare_value in re.findall(r':(\w+)\s*=>\s*(?:"([^"]*)"|\'([^\']*)\'|([0-9]+))', body):
+                value = double_value or single_value or bare_value
+                if key in ['cpus', 'mem']:
+                    value = int(value)
+                box[key] = value
+
+            if 'name' in box and 'box' in box:
+                boxes.append(box)
+        return boxes
+
+    def _create_ovftool_files(self):
+        lab_provider_path = GoadPath.get_lab_provider_path(self.lab_name, self.provider_name)
+        environment = Environment(loader=FileSystemLoader(lab_provider_path))
+        lab_vagrantfile_template = environment.get_template("Vagrantfile")
+        rendered_vagrantfiles = [
+            lab_vagrantfile_template.render(
+                lab_name=self.lab_name,
+                ip_range=self.ip_range
+            )
+        ]
+
+        for extension in self.extensions:
+            extension_provider_folder = GoadPath.get_extension_providers_provider_path(extension, self.provider_name)
+            if os.path.isfile(f'{extension_provider_folder}{sep}Vagrantfile'):
+                extension_environment = Environment(loader=FileSystemLoader(extension_provider_folder))
+                extension_vagrantfile_template = extension_environment.get_template("Vagrantfile")
+                rendered_vagrantfiles.append(
+                    extension_vagrantfile_template.render(
+                        lab_name=self.lab_name,
+                        ip_range=self.ip_range
+                    )
+                )
+
+        boxes = []
+        source_content = ''
+        for rendered_vagrantfile in rendered_vagrantfiles:
+            source_content += rendered_vagrantfile + "\n"
+            boxes += self._parse_vagrant_boxes(rendered_vagrantfile)
+
+        instance_vagrant_source_file = self.instance_provider_path + sep + 'Vagrantfile'
+        with open(instance_vagrant_source_file, mode="w", encoding="utf-8") as vagrantfile:
+            vagrantfile.write(source_content)
+            Log.info(f'Instance box source file created : {Utils.get_relative_path(instance_vagrant_source_file)}')
+
+        instance_boxes_file = self.instance_provider_path + sep + 'boxes.json'
+        with open(instance_boxes_file, mode="w", encoding="utf-8") as boxes_file:
+            boxes_file.write(json.dumps(boxes, indent=4))
+            Log.success(f'Instance ovftool boxes file created : {Utils.get_relative_path(instance_boxes_file)}')
 
     def _create_ludus_config_file(self):
         # load lab vagrantfile
@@ -285,6 +347,8 @@ class LabInstance:
         Log.info('Create instance providing files')
         if self.is_vagrant():
             self._create_vagrantfile()
+        if self.is_ovftool():
+            self._create_ovftool_files()
         if self.provider_name == VMWARE_ESXI:
             self._create_esxi_env()
         if self.is_ludus():

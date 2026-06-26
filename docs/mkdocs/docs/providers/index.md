@@ -12,6 +12,7 @@
         - :simple-amazon: [Aws](aws.md)
 
     - Hypervisor :
+        - :simple-vmware: [vSphere](vsphere.md)
         - :simple-proxmox: [Proxmox](proxmox.md)
         - 🏟️ [Ludus](ludus.md)
 

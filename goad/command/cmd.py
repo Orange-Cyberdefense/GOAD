@@ -49,6 +49,9 @@ class Command:
     def check_ovftool(self):
         pass
 
+    def check_govc(self):
+        return self.is_in_path('govc')
+
     def check_gem(self, gem_name):
         pass
 

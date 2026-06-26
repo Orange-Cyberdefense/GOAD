@@ -20,11 +20,62 @@
       https: "{{ad_https_proxy}}"
   when: http_proxy == "yes"
 
-- name: Upgrade module PowerShellGet to fix accept license issue on last windows ansible version
+- name: Prepare PowerShell Gallery and required DSC modules
   win_shell: |
+    $ErrorActionPreference = 'Stop'
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Install-PackageProvider -Name NuGet -Force
-    Install-Module PowerShellGet -Force
+    foreach ($path in @(
+      'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319',
+      'HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319'
+    )) {
+      if (Test-Path $path) {
+        New-ItemProperty -Path $path -Name SchUseStrongCrypto -Value 1 -PropertyType DWord -Force | Out-Null
+      }
+    }
+
+    if (-not (Get-PackageProvider -ListAvailable -Name NuGet -ErrorAction SilentlyContinue)) {
+      Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force | Out-Null
+      Write-Output 'Installed: NuGet'
+    }
+
+    if (-not (Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue)) {
+      Register-PSRepository -Default
+    }
+    Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+
+    $modules = @(
+      @{ Name = 'PowerShellGet'; MinimumVersion = '2.2.5' },
+      @{ Name = 'ComputerManagementDsc' },
+      @{ Name = 'xNetworking' },
+      @{ Name = 'xDnsServer' },
+      @{ Name = 'ActiveDirectoryDsc' }
+    )
+
+    foreach ($module in $modules) {
+      $installed = Get-Module -ListAvailable -Name $module.Name | Sort-Object Version -Descending | Select-Object -First 1
+      $minimumVersion = $module.MinimumVersion
+      $needsInstall = $null -eq $installed
+      if ($installed -and $minimumVersion) {
+        $needsInstall = [version]$installed.Version -lt [version]$minimumVersion
+      }
+
+      if ($needsInstall) {
+        $params = @{
+          Name = $module.Name
+          Repository = 'PSGallery'
+          Scope = 'AllUsers'
+          Force = $true
+          AllowClobber = $true
+        }
+        if ($minimumVersion) {
+          $params.MinimumVersion = $minimumVersion
+        }
+        Install-Module @params
+        Write-Output "Installed: $($module.Name)"
+      }
+    }
+  register: ps_gallery_modules
+  changed_when: "'Installed:' in ps_gallery_modules.stdout"
 
 - name: Windows | Check for ComputerManagementDsc Powershell module
   win_psmodule:
