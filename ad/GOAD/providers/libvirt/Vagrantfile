@@ -1,0 +1,12 @@
+boxes = [
+  # windows server 2019
+  { :name => "GOAD-DC01",  :ip => "{{ip_range}}.10", :box => "jborean93/WindowsServer2019", :box_version => "1.2.0", :os => "windows", :cpus => 2, :mem => 3000},
+  # windows server 2019
+  { :name => "GOAD-DC02",  :ip => "{{ip_range}}.11", :box => "jborean93/WindowsServer2019", :box_version => "1.2.0", :os => "windows", :cpus => 2, :mem => 3000},
+  # windows server 2016
+  { :name => "GOAD-DC03",  :ip => "{{ip_range}}.12", :box => "jborean93/WindowsServer2016", :box_version => "1.2.0", :os => "windows", :cpus => 2, :mem => 3000},
+  # windows server 2019
+  { :name => "GOAD-SRV02", :ip => "{{ip_range}}.22", :box => "jborean93/WindowsServer2019", :box_version => "1.2.0", :os => "windows", :cpus => 2, :mem => 6000},
+  # windows server 2016
+  { :name => "GOAD-SRV03", :ip => "{{ip_range}}.23", :box => "jborean93/WindowsServer2016", :box_version => "1.2.0", :os => "windows", :cpus => 2, :mem => 5000}
+]

@@ -81,7 +81,7 @@ class LabInstance:
         return self.provider_name == AWS or self.provider_name == AZURE or self.provider_name == PROXMOX
 
     def is_vagrant(self):
-        return self.provider_name == VMWARE or self.provider_name == VMWARE_ESXI or self.provider_name == VIRTUALBOX
+        return self.provider_name == VMWARE or self.provider_name == VMWARE_ESXI or self.provider_name == VIRTUALBOX or self.provider_name == LIBVIRT
 
     def is_ludus(self):
         return self.provider_name == LUDUS
