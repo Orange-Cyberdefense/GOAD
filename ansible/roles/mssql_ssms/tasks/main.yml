@@ -1,22 +1,37 @@
+# SSMS is pinned to the last standalone release (20.2.1, ~495MB) : see defaults/main.yml.
+# https://aka.ms/ssmsfullsetup now serves the Visual Studio Installer bootstrapper
+# (vs_SSMS.exe / SSMS 22), which needs a different command line and 20-50GB of free disk.
+
+# normally created by the mssql role, but this role can be run alone with --tags mssql_ssms
+- name: create a directory for installer download
+  win_file:
+    path: c:\setup\mssql
+    state: directory
+
 - name: check SQL Server Manager Studio installer exists
   win_stat:
-    path: c:\setup\mssql\SSMS_installer.exe
+    path: 'c:\setup\mssql\SSMS_installer_{{ ssms_version }}.exe'
   register: ssms_installer_file
 
 - name: get the installer
   win_get_url:
-      url: 'https://aka.ms/ssmsfullsetup'
-      dest: 'c:\setup\mssql\SSMS_installer.exe'
+      url: '{{ ssms_installer_url }}'
+      dest: 'c:\setup\mssql\SSMS_installer_{{ ssms_version }}.exe'
+      follow_redirects: all
   when: not ssms_installer_file.stat.exists
 
+# Check the binary itself, not the directory : a failed install can leave the
+# directory behind and make the role skip forever.
 - name: check SSMS installation already done
   win_stat:
-    path: "C:\\Program Files (x86)\\Microsoft SQL Server Management Studio 18"
+    path: '{{ ssms_exe_path }}'
   register: ssms_installation
 
 - name: Install SSMS
-  win_command: c:\setup\mssql\SSMS_installer.exe /install /quiet /norestart
+  win_command: c:\setup\mssql\SSMS_installer_{{ ssms_version }}.exe /install /quiet /norestart
   register: install_ssmss
+  # 3010 / 1641 = success, reboot required
+  failed_when: install_ssmss.rc | default(1) not in [0, 3010, 1641]
   when: not ssms_installation.stat.exists
 
 - name: Reboot after install

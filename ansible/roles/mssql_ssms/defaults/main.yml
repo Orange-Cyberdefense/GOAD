@@ -1,0 +1,16 @@
+# SQL Server Management Studio 20.2.1 (last standalone release, ~495MB)
+# Supports SQL Server 2014 -> 2022, so it covers the lab's SQL Server 2019.
+# Requires .NET Framework 4.7.2, already present on Windows Server 2019.
+#
+# Do not use https://aka.ms/ssmsfullsetup : it now redirects to
+# https://aka.ms/ssms/22/release/vs_SSMS.exe, the Visual Studio Installer
+# bootstrapper for SSMS 22. That one is 64-bit, installs under
+# "C:\Program Files\Microsoft SQL Server Management Studio 22\Release",
+# takes "--quiet --norestart --wait" instead of "/install /quiet /norestart",
+# and wants 20-50GB of free disk.
+ssms_version: 20
+
+# SSMS-Setup-ENU.exe - https://learn.microsoft.com/en-us/ssms/release-history
+ssms_installer_url: 'https://go.microsoft.com/fwlink/?linkid=2313753&clcid=0x409'
+
+ssms_exe_path: 'C:\Program Files (x86)\Microsoft SQL Server Management Studio {{ ssms_version }}\Common7\IDE\Ssms.exe'
