@@ -27,7 +27,7 @@ class Config:
         config.set('default', '; lab: GOAD / GOAD-Light / MINILAB / NHA / SCCM')
         config.set('default', 'lab', 'GOAD')
 
-        config.set('default', '; provider : virtualbox / vmware / vmware_esxi / aws / azure / proxmox')
+        config.set('default', '; provider : virtualbox / vmware / vmware_esxi / aws / azure / proxmox / cloudru')
         config.set('default', 'provider', 'vmware')
 
         config.set('default', "; provisioner method : local / remote")
@@ -111,6 +111,8 @@ class Config:
                         Dependencies.azure_enabled = False
                     elif disable_dependence == 'aws':
                         Dependencies.aws_enabled = False
+                    elif disable_dependence == 'cloudru':
+                        Dependencies.cloudru_enabled = False
                     elif disable_dependence == 'ludus':
                         Dependencies.ludus_enabled = False
                     elif disable_dependence == 'proxmox':

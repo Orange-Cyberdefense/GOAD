@@ -5,7 +5,7 @@
 
 - Extension name : `exchange`
 - Compatibility  : GOAD, GOAD-Light
-- Providers : virtualbox/azure/vmware/aws/ludus/proxmox
+- Providers : virtualbox/azure/vmware/aws/cloudru/ludus/proxmox
 - Add a machine  : srv01 (the-eyrie.sevenkingdoms.local)  (ip_range.21)
 
 !!! warning "resources"

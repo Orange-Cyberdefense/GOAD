@@ -52,8 +52,8 @@ install
 - This will:
     - create an instance folder into workspaces/
     - run vagrant/terraform/ludus depending on the provider to create the machines
-    - synchronize source to jumpbox if provider is aws or azure
-    - provision jumpbox if provider is aws or azure
+    - synchronize source to jumpbox if provider is aws, azure, or cloudru
+    - provision jumpbox if provider is aws, azure, or cloudru
     - run the ansible provisioning 
 
 ![cmd_install](../img/cmd_install.png)
@@ -123,7 +123,7 @@ set_lab <lab_name>
 
 ### set_provider
 
-Choose the provider to use (virtualbox/vmware/aws/azure/ludus/proxmox)
+Choose the provider to use (virtualbox/vmware/aws/azure/cloudru/ludus/proxmox)
 
 ```
 set_provider <lab_name>
@@ -140,7 +140,7 @@ set_provisioning <provisioning_method>
 
 - local : launch ansible with subprocess (default for vbox/vmware/proxmox/ludus)
 - runner : launch ansible with ansible runner
-- remote : launch ansible through ssh using jumpbox (default for azure/aws)
+- remote : launch ansible through ssh using jumpbox (default for azure/aws/cloudru)
 - docker : user the docker container to launch ansible (docker container must be built first `sudo docker build -t goadansible .`)
 
 ### set_ip_range

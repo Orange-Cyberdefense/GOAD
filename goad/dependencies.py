@@ -9,6 +9,7 @@ class Dependencies:
     azure_enabled = True
     aws_enabled = True
     proxmox_enabled = True
+    cloudru_enabled = True
     ludus_enabled = True
     # Can change enabled provisioners (useful if you don't want some dependencies)
     provisioner_local_enabled = False if Utils.is_windows() else True

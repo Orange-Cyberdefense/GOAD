@@ -10,6 +10,7 @@
     - Cloud :
         - :material-microsoft-azure: [Azure](azure.md)
         - :simple-amazon: [Aws](aws.md)
+        - [CloudRU](cloudru.md)
 
     - Hypervisor :
         - :simple-proxmox: [Proxmox](proxmox.md)

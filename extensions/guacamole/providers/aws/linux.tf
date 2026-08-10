@@ -4,6 +4,6 @@
   linux_version      = "latest"
   ami                = "ami-04c332520bd9cedb4"
   private_ip_address = "{{ip_range}}.52"
-  password           = "sgHvnkThdsXlsd"
+  password           = "sgHvnkT1hdsXlsd!"
   size               = "t2.medium"  # 2cpu / 4GB
 }

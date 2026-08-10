@@ -13,6 +13,8 @@ if Dependencies.aws_enabled:
     from goad.provider.terraform.aws import AwsProvider
 if Dependencies.proxmox_enabled:
     from goad.provider.terraform.proxmox import ProxmoxProvider
+if Dependencies.cloudru_enabled:
+    from goad.provider.terraform.cloudru import CloudruProvider
 if Dependencies.ludus_enabled:
     from goad.provider.ludus.ludus import LudusProvider
 
@@ -34,6 +36,8 @@ class ProviderFactory:
             provider = AzureProvider(lab_name)
         elif provider_name == AWS and Dependencies.aws_enabled:
             provider = AwsProvider(lab_name, config)
+        elif provider_name == CLOUDRU and Dependencies.cloudru_enabled:
+            provider = CloudruProvider(lab_name, config)
         elif provider_name == LUDUS and Dependencies.ludus_enabled:
             provider = LudusProvider(lab_name, config)
         return provider

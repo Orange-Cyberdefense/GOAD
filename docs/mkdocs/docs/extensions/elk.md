@@ -2,7 +2,7 @@
 
 - Extension name : `elk`
 - Compatibility  : `*`
-- Providers : virtualbox/azure/vmware/aws/ludus
+- Providers : virtualbox/azure/vmware/aws/cloudru/ludus
 - Add a machine  : elk  (ip_range.50)
 
 - Kibana is configured on http://{{ip_range}}.50:5601 to follow the lab events
@@ -15,6 +15,9 @@
 ```bash
 sudo apt install sshpass
 ```
+
+!!! warning "Cloud download mirrors"
+    If Elastic downloads fail with `403` or `404` on CloudRU, apply the ELK part of the patch from [CloudRU manual download patches](../providers/cloudru.md#manual-download-patches).
 
 - On ludus prepare template :
 ```
@@ -33,5 +36,3 @@ load <instance_id>
 ```
 install_extension elk
 ```
-
-

@@ -49,5 +49,7 @@ class Provider(ABC):
         return None
 
     def restart_vm(self, vm_name):
-        self.stop_vm(vm_name)
-        self.start_vm(vm_name)
+        stopped = self.stop_vm(vm_name)
+        if stopped is False:
+            return False
+        return self.start_vm(vm_name)

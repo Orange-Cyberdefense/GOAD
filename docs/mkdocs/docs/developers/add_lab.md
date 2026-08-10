@@ -13,7 +13,7 @@
             inventory_disable_vagrant   # inventory to disable/enable vagrant
         files/
         providers/
-            aws|azure|proxmox/          # terraform based providers
+            aws|azure|cloudru|proxmox/  # terraform based providers
                 inventory               # inventory specific to the provider
                 linux.tf                # linux vms
                 windows.tf              # windows vms

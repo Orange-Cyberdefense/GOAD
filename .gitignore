@@ -1,3 +1,4 @@
+.DS_Store
 .vagrant/
 .idea/
 .venv/
@@ -38,3 +39,6 @@ docs/site/
 docs/olddocs/
 docs/mkdocs/site/
 scripts/archives/
+.env
+.opencode/
+extensions/private_*

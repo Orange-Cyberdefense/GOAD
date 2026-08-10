@@ -16,3 +16,6 @@ boto3
 # Proxmox
 proxmoxer
 requests
+# Cloudru
+huaweicloudsdkcore
+huaweicloudsdkecs

@@ -15,6 +15,7 @@ nav:
     - Vmware Esxi: providers/vmware_esxi.md
     - Aws: providers/aws.md
     - Azure: providers/azure.md
+    - CloudRU: providers/cloudru.md
     - Proxmox: providers/proxmox.md
     - Ludus: providers/ludus.md    
   - 🏰 Labs:

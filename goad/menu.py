@@ -81,7 +81,7 @@ def print_menu(lab_manager, advanced=True, debug=False):
         print_menu_entry('install', 'install the current instance (provide + prepare_jumpbox + provision_lab')
         print_menu_entry('set_as_default', 'set instance as default')
         print_menu_entry('update_instance_files', 'update lab instance files')
-        if provider != AZURE and provider != AWS:
+        if provider != AZURE and provider != AWS and provider != CLOUDRU:
             print_menu_entry('disable_vagrant', 'disable vagrant user')
             print_menu_entry('enable_vagrant', 'enable vagrant user')
     print_menu_entry('list', 'list lab instances')

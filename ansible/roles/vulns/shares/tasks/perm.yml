@@ -8,3 +8,4 @@
   loop: "{{users}}"
   loop_control:
     loop_var: share_user
+  when: share_user | length > 0

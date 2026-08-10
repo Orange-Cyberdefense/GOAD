@@ -1,5 +1,9 @@
 [default]
-lx01 ansible_host={{ip_range}}.32  dict_key=lx01 ansible_connection=ssh ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+{% if provider_name == 'cloudru' %}
+lx01 ansible_host={{ip_range}}.32  dict_key=lx01 ansible_connection=ssh ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' ansible_user=ansible ansible_password=HGLXP@ssw_rd$
+{% else %}
+lx01 ansible_host={{ip_range}}.32  dict_key=lx01 ansible_connection=ssh ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+{% endif %}
 
 [extensions]
 lx01

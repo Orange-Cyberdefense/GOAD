@@ -3,7 +3,7 @@
 - Extension name : `guacamole`
 - Description : Add a linux ubuntu 22.4 with guacamole ()
 - Compatibility  : any
-- Providers : virtualbox/azure/vmware/aws/ludus
+- Providers : virtualbox/azure/vmware/aws/cloudru/ludus
 
 - Add a machine  : {{lab_name}}-GUACAMOLE (ip_range.52)
 

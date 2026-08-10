@@ -6,7 +6,7 @@
 - Extension name : `wazuh`
 - Description : Add wazuh free EDR server and agent on all the domain computers + soc fortress rules (https://github.com/socfortress/Wazuh-Rules)
 - Compatibility  : *
-- Providers : virtualbox/azure/vmware/aws/ludus 
+- Providers : virtualbox/azure/vmware/aws/cloudru/ludus
 - Add a machine  : wazuh (ip_range.51)
 
 !!! warning "impacts"

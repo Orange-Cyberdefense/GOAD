@@ -1,3 +1,14 @@
+- name: Set Windows regional settings for SQL Server installer
+  win_shell: |
+    Set-Culture en-US
+    Set-WinSystemLocale en-US
+    Set-WinUILanguageOverride -Language en-US
+    Set-WinUserLanguageList en-US -Force
+    Set-WinHomeLocation -GeoId 244
+    if (Get-Command Copy-UserInternationalSettingsToSystem -ErrorAction SilentlyContinue) {
+      Copy-UserInternationalSettingsToSystem -WelcomeScreen $true -NewUser $true
+    }
+
 - name: Reboot before install (long timeout in case of update)
   win_reboot:
     reboot_timeout: 1200
@@ -87,7 +98,7 @@
 
 # Install the database with a domain admin user
 - name: Install the database
-  win_command: c:\setup\mssql\sql_installer.exe /configurationfile=c:\setup\mssql\sql_conf.ini /IACCEPTSQLSERVERLICENSETERMS /MEDIAPATH=c:\setup\mssql\media /QUIET /HIDEPROGRESSBAR
+  win_command: c:\setup\mssql\sql_installer.exe /ENU /configurationfile=c:\setup\mssql\sql_conf.ini /IACCEPTSQLSERVERLICENSETERMS /MEDIAPATH=c:\setup\mssql\media /QUIET /HIDEPROGRESSBAR
   args:
     chdir: c:\setup
   vars:

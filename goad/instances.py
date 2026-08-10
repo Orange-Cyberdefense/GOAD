@@ -61,6 +61,8 @@ class LabInstances:
             provider = f'[orange1]{provider}[/orange1]'
         elif provider == AZURE:
             provider = f'[deep_sky_blue1]{provider}[/deep_sky_blue1]'
+        elif provider == CLOUDRU:
+            provider = f'[light_green]{provider}[/light_green]'
         elif provider == VIRTUALBOX:
             provider = f'[dodger_blue3]{provider}[/dodger_blue3]'
         elif provider == VMWARE:

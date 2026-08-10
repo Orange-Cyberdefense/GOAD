@@ -1,5 +1,9 @@
 [default]
-guacamole ansible_host={{ip_range}}.52 ansible_connection=ssh ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+{% if provider_name == 'cloudru' %}
+guacamole ansible_host={{ip_range}}.52 ansible_connection=ssh ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' ansible_user=ansible ansible_password=sgHvnkT1hdsXlsd!
+{% else %}
+guacamole ansible_host={{ip_range}}.52 ansible_connection=ssh ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+{% endif %}
 
 [extensions]
 guacamole

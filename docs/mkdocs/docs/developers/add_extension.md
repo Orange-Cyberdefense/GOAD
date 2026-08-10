@@ -9,6 +9,7 @@ extensions/
         providers/          # mandatory
             aws/
             azure/
+            cloudru/
             ludus/
             proxmox/
             virtualbox/
@@ -46,6 +47,7 @@ extensions/
     - Terraform:
         - aws
         - azure
+        - cloudru
         - proxmox
     - Ludus
 
@@ -153,7 +155,7 @@ extensions/
             linux_version      = "latest"
             ami                = "ami-04c332520bd9cedb4"
             private_ip_address = "{{ip_range}}.51"
-            password           = "sgdvnkjhdshlsd"
+            password           = "sgDVn@kjhds1hlsd"
             size               = "t2.medium"
         }
         ```
@@ -176,6 +178,39 @@ extensions/
           --filters "Name=name,Values=Windows_Server-2019-English-Full-Base*" \ 
           --query "Images[*].{ImageId:ImageId,Name:Name,CreationDate:CreationDate,Description:Description}" \
           --output table
+        ```
+
+=== "CloudRU"
+    - As an example to add a new box for cloudru :
+        - Create the folder `extensions/<extension_name>/providers/cloudru/`
+        - Add a file (`linux.tf` or `windows.tf`) depending on the type of VM.
+        - For a linux box (`linux.tf` file) (change image, IP, password, and size):
+        ```
+        "vmname" = {
+            name               = "vmname"
+            os_image           = "Ubuntu 22.04 server 64bit"
+            private_ip_address = "{{ip_range}}.51"
+            password           = "rootpassword"
+            size               = "s7n.large.2"
+        }
+        ```
+        - For a windows box (`windows.tf` file) (change image, IP, password, and size):
+        ```
+        "vmname" = {
+            name               = "vmname"
+            os_image           = "Windows_Server_2019_Datacenter_64bit_06_2025_sysprep"
+            private_ip_address = "{{ip_range}}.21"
+            password           = "administrator_password"
+            size               = "s7n.large.2"
+        }
+        ```
+        - Linux extension inventories should add a CloudRU branch with explicit `ansible_user=ansible` and the VM password from the CloudRU `linux.tf` fragment:
+        ```ini
+        {% if provider_name == 'cloudru' %}
+        vmname ansible_host={{ip_range}}.51 ansible_connection=ssh ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' ansible_user=ansible ansible_password=rootpassword
+        {% else %}
+        vmname ansible_host={{ip_range}}.51 ansible_connection=ssh ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+        {% endif %}
         ```
 
 === ":simple-proxmox: Proxmox"
@@ -266,7 +301,7 @@ or for a windows machine associated to a domain:
 
 ```ini
 [default]
-{% if provider_name == 'aws' or provider_name == 'azure' %}
+{% if provider_name == 'aws' or provider_name == 'azure' or provider_name == 'cloudru' %}
 ws01 ansible_host={{ip_range}}.31 dns_domain=dc01 dict_key=ws01 ansible_user=ansible ansible_password=EP+xh7Rk6j90
 {% else %}
 ws01 ansible_host={{ip_range}}.31 dns_domain=dc01 dict_key=ws01

@@ -45,6 +45,6 @@
   windows_sku        = "2019-Datacenter"
   windows_version    = "latest"
   private_ip_address = "{{ip_range}}.23"
-  password           = "EalwxkfhqsdP+xh7sdfzaRk6j90"
+  password           = "EalwxkfhqsdP+xh7sdfzaRj90"
   size               = "Standard_B2s"
 }

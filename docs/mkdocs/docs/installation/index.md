@@ -13,6 +13,7 @@ The goad management script is now written in :simple-python: python to permit mo
     - :simple-proxmox: [Install with Proxmox](../providers/proxmox.md)
     - :material-microsoft-azure: [Install with Azure](../providers/azure.md)
     - :simple-amazon: [Install with Aws](../providers/aws.md)
+    - [Install with CloudRU](../providers/cloudru.md)
     - 🏟️ [Install with Ludus](../providers/ludus.md)
 
 ## TLDR - quick install
@@ -56,7 +57,7 @@ The goad management script is now written in :simple-python: python to permit mo
 - GOAD script cover the providing and provisioning part
 
 - The install script take multiple parameters:
-    - `-p`  : the provider to use (vmware/virtualbox/proxmox/ludus/azure/aws)
+    - `-p`  : the provider to use (vmware/virtualbox/proxmox/ludus/azure/aws/cloudru)
     - `-l`  : the lab to install (GOAD/GOAD-Light/SCCM/NHA/MINILAB)
     - `-m`  : the method of installation (local/runner/docker/remote), most of the time don't change it
     - `-ip` : the ip range to use
@@ -110,6 +111,13 @@ azure-mgmt-network
 boto3
 ```
 
+- Mandatory for CloudRU provider :
+```
+# CloudRU
+huaweicloudsdkcore
+huaweicloudsdkecs
+```
+
 - Mandatory for :simple-proxmox: proxmox provider:
 ```
 # Proxmox
@@ -122,7 +130,8 @@ requests
 -d vmware     : disable vmware provider
 -d virtualbox : disable virtualbox provider
 -d azure      : disable azure provider
--d aws        : disable azure provider
+-d aws        : disable aws provider
+-d cloudru    : disable cloudru provider
 -d proxmox    : disable proxmox provider
 -d ludus      : disable ludus provider
 -d local      : disable local provisioning method (if you use docker only)
@@ -144,7 +153,7 @@ requests
 [default]
 ; lab: goad / goad-light / minilab / nha / sccm
 lab = GOAD
-; provider : virtualbox / vmware / aws / azure / proxmox
+; provider : virtualbox / vmware / aws / azure / cloudru / proxmox
 provider = vmware
 ; provisioner method : local / remote
 provisioner = local
@@ -157,6 +166,11 @@ aws_zone = eu-west-3c
 
 [azure]
 az_location = westeurope
+
+[cloudru]
+cloudru_region = ru-moscow-1
+cloudru_iam_endpoint = https://iam.ru-moscow-1.hc.sbercloud.ru/v3
+cloudru_ecs_endpoint = https://ecs.ru-moscow-1.hc.sbercloud.ru
 
 [proxmox]
 pm_api_url = https://192.168.1.1:8006/api2/json

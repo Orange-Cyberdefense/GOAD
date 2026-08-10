@@ -35,3 +35,4 @@
       loop: "{{ groups['linux_domain'] }}"
       loop_control:
         loop_var: item
+      when: lab.hosts[item].domain == lab.hosts[dict_key].domain

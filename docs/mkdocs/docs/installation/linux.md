@@ -89,6 +89,18 @@
     - Terraform
         - The installation to Aws use terraform so you will have to install it: [https://developer.hashicorp.com/terraform/install](https://developer.hashicorp.com/terraform/install)
 
+=== "CloudRU"
+    - Terraform
+        - The installation to CloudRU use terraform so you will have to install it: [https://developer.hashicorp.com/terraform/install](https://developer.hashicorp.com/terraform/install)
+    - Credentials
+        - Export CloudRU temporary credentials before starting GOAD:
+            ```bash
+            export SBC_ACCESS_KEY="..."
+            export SBC_SECRET_KEY="..."
+            export SBC_SECURITY_TOKEN="..."
+            ```
+        - If project discovery fails or your account has multiple projects, also export `SBC_PROJECT_ID`.
+
 === ":simple-proxmox: Proxmox"
 
     - Proxmox install is very complex and use a lot of steps

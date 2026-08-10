@@ -16,10 +16,13 @@
 All vms got defender activated
 
 ## Prerequisites
-- The prerequisites for the lab are the same as GOAD lab (virtualbox/vmware, python, ansible,...)
+- The prerequisites for the lab are the same as GOAD lab for the selected provider (virtualbox/vmware/aws/azure/cloudru/proxmox, python, ansible,...)
 - The lab take 16GB for the vagrant image + 100GB for the 4 vms
 - The installation take environ 2,5 hours (with fiber connection)
 - The lab download multiple files during the install (windows iso, mecm installation package, mssql installation package, ...), be sure to have a good internet connection.
+
+!!! warning "Windows ISO mirror"
+    If the Windows 10 Enterprise evaluation ISO download fails on CloudRU because the Microsoft URL expired or returns `403`, apply the SCCM part of the patch from [CloudRU manual download patches](../providers/cloudru.md#manual-download-patches).
 
 ## Writeup
 

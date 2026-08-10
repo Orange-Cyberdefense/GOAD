@@ -88,6 +88,13 @@ class Goad(cmd.Cmd):
         else:
             self.lab_manager.get_current_instance_provider().stop_vm(arg)
 
+    def do_restart_vm(self, arg):
+        if arg == '':
+            Log.error('missing virtual machine name')
+            Log.info('restart_vm <vm>')
+        else:
+            self.lab_manager.get_current_instance_provider().restart_vm(arg)
+
     def do_destroy(self, arg=''):
         if self.lab_manager.get_current_instance_provider():
             self.lab_manager.get_current_instance_provider().destroy()
@@ -454,7 +461,7 @@ class Goad(cmd.Cmd):
 
 
 def parse_args():
-    task_help = 'tasks available : (install/start/stop/restart/destroy/status/show)'
+    task_help = 'tasks available : (install/start/stop/restart/destroy/status/show/check)'
     parser = argparse.ArgumentParser(prog='goad.py',
                                      description='Description : goad lab management console.',
                                      epilog=show_help(), formatter_class=argparse.RawDescriptionHelpFormatter)
