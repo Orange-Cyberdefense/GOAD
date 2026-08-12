@@ -21,7 +21,7 @@ class Config:
 
     def create_config_file(self):
         cfgfile = open(GoadPath.get_config_file(), "w")
-        config = configparser.ConfigParser(allow_no_value=True)
+        config = configparser.ConfigParser(allow_no_value=True, delimiters=("=",))
 
         config.add_section('default')
         config.set('default', '; lab: GOAD / GOAD-Light / MINILAB / NHA / SCCM')
