@@ -5,7 +5,7 @@
 
 - name: get the installer
   win_get_url:
-      url: 'https://aka.ms/ssmsfullsetup'
+      url: 'https://go.microsoft.com/fwlink/?linkid=2199013&clcid=0x409'
       dest: 'c:\setup\mssql\SSMS_installer.exe'
   when: not ssms_installer_file.stat.exists
 
