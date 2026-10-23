@@ -1,3 +1,13 @@
+# SQL Server setup is launched through WinRM; the default per-shell memory quota
+# (800MB on Windows Server 2019) makes setup.exe die with System.OutOfMemoryException
+# and leaves a half-installed instance behind. Raise it before installing.
+- name: Raise WinRM shell memory quota for SQL Server setup
+  win_shell: |
+    $current = [int](Get-Item WSMan:\localhost\Shell\MaxMemoryPerShellMB).Value
+    if ($current -lt 4096) { Set-Item WSMan:\localhost\Shell\MaxMemoryPerShellMB 4096; Write-Output "changed" } else { Write-Output "ok" }
+  register: winrs_quota
+  changed_when: "'changed' in winrs_quota.stdout"
+
 - name: Reboot before install (long timeout in case of update)
   win_reboot:
     reboot_timeout: 1200

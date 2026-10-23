@@ -7,7 +7,7 @@ sql_version: MSSQL_2019
 #sql_version: MSSQL_2022
 
 # SQL2019-SSEI-Expr.exe
-download_url_2019: https://download.microsoft.com/download/7/f/8/7f8a9c43-8c8a-4f7c-9f92-83c18d96b681/SQL2019-SSEI-Expr.exe
+download_url_2019: https://go.microsoft.com/fwlink/?linkid=866658
 # SQL2022-SSEI-Eval.exe
 download_url_2022: https://go.microsoft.com/fwlink/?linkid=2215202&clcid=0x409&culture=en-us&country=us
 

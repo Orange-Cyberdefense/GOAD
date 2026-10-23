@@ -5,7 +5,10 @@
 
 - name: get the installer
   win_get_url:
-      url: 'https://aka.ms/ssmsfullsetup'
+      # aka.ms/ssmsfullsetup now serves SSMS 21/22 (Visual Studio installer based),
+      # whose bootstrapper hangs forever when run from a WinRM session and installs
+      # to a different path. Pin the classic SSMS 18.12.1 installer instead.
+      url: 'https://go.microsoft.com/fwlink/?linkid=2199013&clcid=0x409'
       dest: 'c:\setup\mssql\SSMS_installer.exe'
   when: not ssms_installer_file.stat.exists
 
