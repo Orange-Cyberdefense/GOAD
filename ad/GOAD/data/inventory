@@ -130,6 +130,7 @@ srv03
 ; usage : update.yml
 [update]
 srv02
+srv03
 
 ; disable update
 ; usage : update.yml
@@ -137,7 +138,6 @@ srv02
 dc01
 dc02
 dc03
-srv03
 
 ; allow defender
 ; usage : security.yml
