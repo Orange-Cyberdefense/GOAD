@@ -49,3 +49,6 @@ class WindowsCommand(Command):
 
     def check_ludus(self):
         return False
+
+    def check_hyperv(self):
+        return self.file_exist("C:\\WINDOWS\\System32\\virtmgmt.msc")

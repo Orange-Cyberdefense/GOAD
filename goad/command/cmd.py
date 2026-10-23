@@ -58,6 +58,9 @@ class Command:
     def check_virtualbox(self):
         pass
 
+    def check_hyperv(self):
+        pass
+
     def check_terraform(self):
         return self.is_in_path(self.terraform_bin)
 

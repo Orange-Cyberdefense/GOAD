@@ -1,0 +1,167 @@
+Vagrant.configure("2") do |config|
+
+# Uncomment this depending on the provider you want to use
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'hyperv'
+
+{{lab}}
+
+{{extensions}}
+
+{% if use_provisioning_vm %}
+boxes.append(
+    { :name => "PROVISIONING",
+      :ip => "{{ip_range}}.3",
+      :box => "boxen/ubuntu-22.04",
+      :os => "linux",
+      :cpus => 2,
+      :mem => 1024,
+      :maxmem => 2000
+    }
+)
+{% endif %}
+
+  config.vm.boot_timeout = 600
+  config.vm.graceful_halt_timeout = 600
+  config.winrm.retry_limit = 30
+  config.winrm.retry_delay = 10
+  config.winrm.ssl_peer_verification = false
+
+  # Create the hyperv network switch before up
+  config.trigger.before :up do |trigger|
+    trigger.info = "Checking if internal network switch exists..."
+    trigger.run = { inline: "powershell.exe -ExecutionPolicy Bypass -File ../../../vagrant/hyperv_create_switch.ps1 {{ip_range}}" }
+  end
+
+  # Remove the switch and NAT after destroy
+  config.trigger.after :destroy do |dtrigger|
+    dtrigger.info = "Removing internal network switch..."
+    dtrigger.run = { inline: "powershell.exe -ExecutionPolicy Bypass -File ../../../vagrant/hyperv_remove_switch.ps1 {{ip_range}}" }
+  end
+
+  boxes.each do |box|
+    config.vm.define box[:name] do |target|
+      # BOX
+      target.vm.provider "hyperv" do |v|
+        v.vmname = box[:name]
+        v.memory = box[:mem]
+        v.maxmemory = box[:maxmem]
+        v.cpus = box[:cpus]
+      end
+      target.vm.box_download_insecure = box[:box]
+      target.vm.box = box[:box]
+      if box.has_key?(:box_version)
+        target.vm.box_version = box[:box_version]
+      end
+
+      # issues/49
+      target.vm.synced_folder '.', '/vagrant', disabled: true
+
+      #connect the fist interface to the default switch (we need this to get DHCP address to connect WinRM)
+      target.vm.network "public_network", bridge: "Default Switch"
+
+      #add 2nd network interface to be used by the domain 
+      target.trigger.before :"VagrantPlugins::HyperV::Action::StartInstance", type: :action do |boxtrigger|
+        boxtrigger.info = "VM created, adding 2nd network interface to #{box[:name]}"
+        boxtrigger.run = { inline: "powershell.exe -ExecutionPolicy Bypass -File ../../../vagrant/hyperv_add_network_adapter.ps1 #{box[:name]} GOAD_INTERNAL_{{ip_range}}" }
+      end
+
+      # make sure we have enough disk space to install exchange (if extension used)
+      if box[:name].include?("-SRV01")
+       target.trigger.before :"VagrantPlugins::HyperV::Action::StartInstance", type: :action do |boxtrigger2|
+         boxtrigger2.info = "Increasing disk size for #{box[:name]}"
+         boxtrigger2.run = { inline: "powershell.exe -Command \"Get-VMHardDiskDrive -VMName #{box[:name]} | Resize-VHD -SizeBytes 100GB\" -ErrorAction SilentlyContinue" }
+       end
+      end
+      
+      # remove the default network adapter after box is created
+      target.trigger.after :up do |nwtrigger|
+        nwtrigger.info = "Remove the default network adapter"
+        nwtrigger.run = {
+          inline: %Q[powershell -Command "& { if ((Get-VMNetworkAdapter -VMName '#{box[:name]}').Count -ge 2) { Stop-VM -Name '#{box[:name]}'; while ((Get-VM -Name '#{box[:name]}').state -ne 'Off') { start-sleep -s 5 } ; Get-VMNetworkAdapter -VMName '#{box[:name]}' | Where-Object Name -ne 'GOAD_INTERNAL' | Remove-VMNetworkAdapter -ErrorAction SilentlyContinue; Start-VM -Name '#{box[:name]}' } }"]
+        }
+      end
+
+      if box[:name] == "PROVISIONING"
+        target.trigger.after :up do |pingtrigger|
+          pingtrigger.info = "Make sure the PROVISIONING box is reachable"
+          pingtrigger.run = {
+            inline: %Q[powershell.exe -Command "& { 1..30 | ForEach-Object { if ((Test-NetConnection -ComputerName '#{box[:ip]}' -Port 22 -WarningAction SilentlyContinue).TcpTestSucceeded) { Write-Host 'VM is reachable through SSH on IP: #{box[:ip]}'; exit 0 }; Write-Host 'VM not reachable...' ; Start-Sleep -Seconds 5 }; Write-Host 'ERROR: VM not reachable after 30 attempts!'; exit 1 }"]
+          }
+        end
+      end
+
+      # OS specific
+      if box[:os] == "windows"
+        target.vm.guest = :windows
+        target.vm.communicator = "winrm"
+        target.vm.provision "shell", path: "../../../vagrant/Install-WMF3Hotfix.ps1", privileged: false
+        target.vm.provision "shell", path: "../../../vagrant/ConfigureRemotingForAnsible.ps1", privileged: false
+        target.vm.provision "shell", path: "../../../vagrant/hyperv_fix_ip.ps1", privileged: false, args: [box[:ip],"{{ip_range}}"], powershell_args: "-ExecutionPolicy Bypass"
+        
+        if box[:name].include?("-DC0") || box[:name].include?("-SRV01")
+          # disable windows updates early to prevent timeouts later
+          target.vm.provision "shell", path: "../../../ansible/roles/settings/no_updates/files/noupdate.ps1", privileged: false, powershell_args: "-ExecutionPolicy Bypass"
+        end
+        
+        if box[:name].include?("-SRV01")
+         # expand disk for SRV01
+         target.vm.provision "shell", privileged: false, inline: <<-SHELL
+           $Partition = Get-Partition -DriveLetter "C"
+           $MaxSize = (Get-PartitionSupportedSize -DriveLetter "C").SizeMax
+           Resize-Partition -DriveLetter "C" -Size $MaxSize
+         SHELL
+        end
+        
+        if box[:name].include?("-SRV02") || box[:name].include?("-SRV03")
+          # start windows updates scan
+          target.vm.provision "shell", privileged: false, inline: <<-SHELL
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+            Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
+            Install-Module -Name PSWindowsUpdate -Force
+            $TaskName = "PSWindowsUpdate"
+            Invoke-WUJob -ComputerName "localhost" -TaskName $TaskName -Script {
+              Import-Module PSWindowsUpdate
+              Get-WindowsUpdate -MicrosoftUpdate -Install -AcceptAll -RecurseCycle 5 -IgnoreReboot -ErrorAction SilentlyContinue
+            } -RunNow -Confirm:$false -Verbose
+            Write-Host "Waiting for Windows Updates to complete..."
+            do {
+              $Task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
+              $StateString = [string]$Task.State
+              if (-not $Task) {
+                  Write-Host "Could not query task status. Please wait..." -ForegroundColor Yellow
+                  Start-Sleep -Seconds 30
+                  continue 
+              }
+              if ($StateString -like "*Running*") {
+                  Write-Host "Still running Windows Updates... (Status: $StateString)"
+                  Start-Sleep -Seconds 30
+              }
+            } while ($StateString -like "*Running*" -or -not $Task)
+            Write-Host "Windows Updates completed!"
+          SHELL
+        end
+      else
+        if box[:name] == "PROVISIONING"
+          # increase unused disk space to make sure we can fit exchange iso
+          target.vm.provision "shell", privileged: true, inline: <<-SHELL
+            pvresize /dev/sda3
+            lvextend -l +100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv
+            resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
+          SHELL
+        end
+        target.vm.communicator = "ssh"
+        target.vm.provision "shell", path: "../../../vagrant/hyperv_fix_linux_ip.sh", privileged: true, args: [box[:ip],"{{ip_range}}"] 
+      end
+
+      #TODO
+      if box.has_key?(:forwarded_port)
+        # forwarded port explicit
+        box[:forwarded_port] do |forwarded_port|
+          target.vm.network :forwarded_port, guest: forwarded_port[:guest], host: forwarded_port[:host], host_ip: "127.0.0.1", id: forwarded_port[:id]
+        end
+      end
+
+    end
+  end
+end

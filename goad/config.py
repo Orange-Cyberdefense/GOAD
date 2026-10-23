@@ -27,10 +27,10 @@ class Config:
         config.set('default', '; lab: GOAD / GOAD-Light / MINILAB / NHA / SCCM')
         config.set('default', 'lab', 'GOAD')
 
-        config.set('default', '; provider : virtualbox / vmware / vmware_esxi / aws / azure / proxmox')
+        config.set('default', '; provider : virtualbox / vmware / vmware_esxi / aws / azure / proxmox / hyperv')
         config.set('default', 'provider', 'vmware')
 
-        config.set('default', "; provisioner method : local / remote")
+        config.set('default', "; provisioner method : local / remote / vm")
         config.set('default', 'provisioner', 'local')
 
         config.set('default', '; ip_range (3 first ip digits)')

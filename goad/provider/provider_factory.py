@@ -15,6 +15,8 @@ if Dependencies.proxmox_enabled:
     from goad.provider.terraform.proxmox import ProxmoxProvider
 if Dependencies.ludus_enabled:
     from goad.provider.ludus.ludus import LudusProvider
+if Dependencies.hyperv_enabled:
+    from goad.provider.vagrant.hyperv import HypervProvider
 
 
 class ProviderFactory:
@@ -36,4 +38,6 @@ class ProviderFactory:
             provider = AwsProvider(lab_name, config)
         elif provider_name == LUDUS and Dependencies.ludus_enabled:
             provider = LudusProvider(lab_name, config)
+        elif provider_name == HYPERV and Dependencies.hyperv_enabled:
+            provider = HypervProvider(lab_name)
         return provider

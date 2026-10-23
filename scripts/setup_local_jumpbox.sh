@@ -2,7 +2,7 @@
 
 # Install git and python3
 sudo apt-get update
-sudo apt-get install -y git python3-venv python3-pip git
+sudo NEEDRESTART_MODE=a apt-get install -y git python3-venv python3-pip git
 
 # git clone goad
 GOAD_REPO=/home/vagrant/GOAD
