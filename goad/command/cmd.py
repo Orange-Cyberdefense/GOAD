@@ -36,6 +36,7 @@ class Command:
             else:
                 if not mandatory:
                     Log.warning(f'Missing vagrant plugin {plugin_name}')
+                    return True
                 else:
                     Log.error(f'Missing vagrant plugin {plugin_name}')
                     return False
