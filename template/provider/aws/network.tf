@@ -1,3 +1,4 @@
+{% if not use_existing_vpc %}
 # VPC
 resource "aws_vpc" "goad_vpc" {
   cidr_block = var.goad_cidr 
@@ -191,3 +192,14 @@ resource "aws_nat_gateway" "nat_gateway" {
   depends_on = [aws_internet_gateway.internet_gateway]
 }
 
+{% else %}
+variable "existing_vpc_id" {
+  default = "{{config.get_value('aws', 'aws_vpc_id', '')}}"
+}
+variable "existing_subnet_id" {
+  default = "{{config.get_value('aws', 'aws_subnet_id', '')}}"
+}
+variable "existing_security_group_id" {
+  default = "{{config.get_value('aws', 'aws_security_group_id', '')}}"
+}
+{% endif %}

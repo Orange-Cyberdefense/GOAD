@@ -39,6 +39,10 @@ class Config:
         config.add_section('aws')
         config.set('aws', 'aws_region', 'eu-west-3')
         config.set('aws', 'aws_zone', 'eu-west-3c')
+        config.set('aws', '; existing VPC support (optional, leave empty to create new)')
+        config.set('aws', 'aws_vpc_id', '')
+        config.set('aws', 'aws_subnet_id', '')
+        config.set('aws', 'aws_security_group_id', '')
 
         config.add_section('azure')
         config.set('azure', 'az_location', 'westeurope')

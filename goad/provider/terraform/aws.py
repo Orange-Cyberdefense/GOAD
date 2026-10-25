@@ -12,7 +12,7 @@ from rich import print
 class AwsProvider(TerraformProvider):
     provider_name = AWS
     default_provisioner = PROVISIONING_REMOTE
-    allowed_provisioners = [PROVISIONING_REMOTE]
+    allowed_provisioners = [PROVISIONING_REMOTE, PROVISIONING_LOCAL]
 
     def __init__(self, lab_name, config):
         super().__init__(lab_name)
@@ -21,6 +21,24 @@ class AwsProvider(TerraformProvider):
         self.aws_region = config.get_value('aws', 'aws_region', 'eu-west-3')
         self.aws_zone = config.get_value('aws', 'aws_zone', 'eu-west-3c')
         self.profile_name = 'goad'
+        # Existing VPC support
+        self.aws_vpc_id = config.get_value('aws', 'aws_vpc_id', '')
+        self.aws_subnet_id = config.get_value('aws', 'aws_subnet_id', '')
+        self.aws_security_group_id = config.get_value('aws', 'aws_security_group_id', '')
+        self.vpn_path = None
+
+    def use_existing_vpc(self):
+        return bool(self.aws_vpc_id and self.aws_subnet_id and self.aws_security_group_id)
+
+    def set_vpn_path(self, vpn_path):
+        self.vpn_path = vpn_path
+
+    def vpn_connect(self):
+        self.command.run_terraform(['init'], self.vpn_path)
+        return self.command.run_terraform(['apply'], self.vpn_path)
+
+    def vpn_disconnect(self):
+        return self.command.run_terraform(['destroy'], self.vpn_path)
 
     def set_tag(self, tag):
         # tag should be <instance_id>-<LAB>

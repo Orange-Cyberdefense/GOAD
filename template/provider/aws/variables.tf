@@ -63,12 +63,29 @@ resource "aws_key_pair" "goad-windows-keypair" {
   public_key = tls_private_key.windows.public_key_openssh
 }
 
+{% if provisioner_name != 'local' %}
 resource "aws_key_pair" "goad-jumpbox-keypair" {
   key_name   = "{{lab_identifier}}-jumpbox-keypair"
   public_key = tls_private_key.ssh.public_key_openssh
 }
+{% endif %}
 
 resource "aws_key_pair" "goad-linux-keypair" {
   key_name   = "{{lab_identifier}}-linux-keypair"
   public_key = tls_private_key.ssh.public_key_openssh
 }
+
+{% if provisioner_name == 'local' %}
+variable "vpn_client_cidr" {
+  description = "CIDR for VPN client IP assignment"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_vpn_client_ingress" {
+  security_group_id = {% if use_existing_vpc %}var.existing_security_group_id{% else %}aws_security_group.goad_security_group.id{% endif %}
+
+  cidr_ipv4   = var.vpn_client_cidr
+  ip_protocol = "-1"
+}
+{% endif %}

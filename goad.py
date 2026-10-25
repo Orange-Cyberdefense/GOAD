@@ -90,6 +90,12 @@ class Goad(cmd.Cmd):
 
     def do_destroy(self, arg=''):
         if self.lab_manager.get_current_instance_provider():
+            instance = self.lab_manager.get_current_instance()
+            if instance and instance.provider_name == AWS and instance.provisioner_name == PROVISIONING_LOCAL:
+                try:
+                    instance.provider.vpn_disconnect()
+                except Exception as e:
+                    Log.warning(f'VPN disconnect failed during destroy: {e}')
             self.lab_manager.get_current_instance_provider().destroy()
 
     def do_destroy_vm(self, arg):
@@ -98,6 +104,26 @@ class Goad(cmd.Cmd):
             Log.info('destroy_vm <vm>')
         else:
             self.lab_manager.get_current_instance_provider().destroy_vm(arg)
+
+    def do_vpn_connect(self, arg=''):
+        instance = self.lab_manager.get_current_instance()
+        if instance is None:
+            Log.error('No instance loaded')
+            return
+        if instance.provider_name != AWS or instance.provisioner_name != PROVISIONING_LOCAL:
+            Log.error('VPN commands require AWS provider with local provisioning')
+            return
+        instance.provider.vpn_connect()
+
+    def do_vpn_disconnect(self, arg=''):
+        instance = self.lab_manager.get_current_instance()
+        if instance is None:
+            Log.error('No instance loaded')
+            return
+        if instance.provider_name != AWS or instance.provisioner_name != PROVISIONING_LOCAL:
+            Log.error('VPN commands require AWS provider with local provisioning')
+            return
+        instance.provider.vpn_disconnect()
 
     def do_snapshot(self, arg=''):
         self.do_stop()
@@ -349,8 +375,9 @@ class Goad(cmd.Cmd):
                 Log.info('Launch providing')
                 self.do_provide()
                 if self.lab_manager.get_current_instance().get_status() == PROVIDED:
-                    Log.info('Prepare jumpbox if needed')
-                    self.do_prepare_jumpbox()
+                    if self.lab_manager.get_current_instance_provisioner().use_jumpbox:
+                        Log.info('Prepare jumpbox')
+                        self.do_prepare_jumpbox()
                     Log.info('Launch provisioning')
                     provision_result = self.do_provision_lab()
                     if provision_result:
@@ -365,8 +392,9 @@ class Goad(cmd.Cmd):
         Log.info('Launch providing')
         self.do_provide()
         if self.lab_manager.get_current_instance().get_status() == PROVIDED:
-            Log.info('Prepare jumpbox if needed')
-            self.do_prepare_jumpbox()
+            if self.lab_manager.get_current_instance_provisioner().use_jumpbox:
+                Log.info('Prepare jumpbox')
+                self.do_prepare_jumpbox()
             Log.info('Launch provisioning')
             provision_result = self.do_provision_lab()
             if provision_result:
