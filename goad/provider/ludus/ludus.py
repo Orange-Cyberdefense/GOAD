@@ -41,12 +41,44 @@ class LudusProvider(Provider):
         self.use_impersonation = config.get_value('ludus', 'use_impersonation', 'no') == 'yes'
         self.lab_user = 'GOAD'
         self.major_version = _get_ludus_major_version(config)
-
+        self.range_id = config.get_value('ludus', 'range_id', 'None')
+        self._get_default_range()
+        if not self.use_impersonation and self.major_version >= 2 and self.default_range is None:
+            Log.error('User has no default range ID set, and is not using impersonation. Use impersonation or set a specific range ID. ' + 
+                      'A user requires a default range for GOAD or a specific range ID must be set with Ludus v2')
+            
     def _user_command(self, args):
         """Build a user-related command list, adding the v1 URL prefix when needed."""
         if self.major_version < 2:
             return ['--url', 'https://127.0.0.1:8081'] + args
         return args
+
+    def _get_default_range(self):
+        """Get the default range ID for the user, if it exists."""
+        if self.major_version >= 2:
+            command = self._user_command(['range', 'default', 'get', '--json'])
+            default = self.command.run_ludus_result(command, None, self.api_key, do_log=False)
+            if default != '':
+                default = json.loads(default)
+                self.default_range = default['defaultRangeID']
+            else:
+                Log.warning('User has no default range ID')
+                self.default_range = None
+            #Log.info(f"Default range ID is {self.default_range}")
+        else:
+            self.default_range = None
+
+    def _get_range_id(self):
+        """Determine the range ID to use for deployment, based on config and user defaults."""
+        if self.major_version >= 2:
+            if str.lower(self.range_id) == 'none' or self.range_id == '':
+                Log.info('Range ID is not set, falling back to default rangeID')
+                self.range_id = self.default_range
+            else:
+                Log.info(f"Range ID is set, using {self.range_id} as range ID")
+                self.range_id = self.range_id            
+        else:
+            self.range_id = None
 
     def set_lab_user(self, lab_user):
         if self.use_impersonation:
@@ -137,8 +169,34 @@ class LudusProvider(Provider):
             )
 
     def install(self):
+        self._get_range_id()
+        
+        # In edge cases a user might not have a default range. Thus checking for the edgecase.
+        if self.default_range is None and self.range_id is None and not self.use_impersonation and self.major_version >= 2:
+            Log.error('User has no default range ID set, and no range ID specified. Range ID or a default range must be set if not using impersonation with Ludus v2')
+            return False
+        if self.range_id is not None:
+            Log.info(f'Using range ID {self.range_id} for deployment')
+            command = self._user_command(['range', 'list', 'all', '--json'])
+            ranges = self.command.run_ludus_result(command, None, self.api_key, do_log=False)
+            exists = False
+            for range in json.loads(ranges):
+                if range['rangeID'] == self.range_id:
+                    Log.info(f'Range ID {self.range_id} exist, continue deployment')
+                    exists = True
+                    break
+            if not exists:
+                Log.info(f'Range ID {self.range_id} does not exist, creating it')
+                command = self._user_command(['range', 'create', '-r', self.range_id, '-n', self.range_id, '--json'])
+                self.command.run_ludus_result(command, None, self.api_key, do_log=False)
+            
+            Log.info(f'Setting default range ID to {self.range_id} for deployment')
+            command = self._user_command(['range', 'default', 'set', '-r', self.range_id, '--json'])
+            self.command.run_ludus_result(command, None, self.api_key, do_log=False)
+            
+                    
         current_ludus_user = ''
-        if self.use_impersonation:
+        if self.use_impersonation and self.range_id is None:
             current_ludus_user = self.get_ludus_user()
             if current_ludus_user is None:
                 return False
@@ -196,8 +254,13 @@ class LudusProvider(Provider):
                 return False
             time.sleep(30)
 
-        if self.use_impersonation:
+        if self.use_impersonation and self.range_id is None:
             self._grant_access(current_ludus_user)
+            
+        if self.range_id is not None and self.default_range is not None:
+            Log.info(f'Setting default range ID back to {self.default_range} for deployment')
+            command = self._user_command(['range', 'default', 'set', '-r', self.default_range, '--json'])
+            self.command.run_ludus_result(command, None, self.api_key, do_log=False)
         return True
 
     def get_ip_range(self):
