@@ -1,0 +1,57 @@
+- name: Check if Sysmon service exists
+  win_service:
+    name: "{{ sysmon_service_name }}"
+  register: sysmon_service
+  failed_when: false
+
+- name: Create Sysmon install directory
+  ansible.windows.win_file:
+    path: "{{ sysmon_install_location }}"
+    state: directory
+
+- name: Download Sysmon zip
+  win_get_url:
+    url: "{{ sysmon_download_url }}"
+    dest: "{{ sysmon_install_location }}\\Sysmon.zip"
+  register: sysmon_download
+  until: sysmon_download is succeeded
+  retries: 3
+  delay: 5
+  when: not sysmon_service.exists
+
+- name: Unzip Sysmon
+  community.windows.win_unzip:
+    src: "{{ sysmon_install_location }}\\Sysmon.zip"
+    dest: "{{ sysmon_install_location }}"
+  when: not sysmon_service.exists
+
+- name: Download olafhartong modular sysmon config
+  win_get_url:
+    url: "{{ sysmon_config_url }}"
+    dest: "{{ sysmon_install_location }}\\{{ sysmon_config_file }}"
+  register: sysmon_config_download
+  until: sysmon_config_download is succeeded
+  retries: 3
+  delay: 5
+
+- name: Install Sysmon with modular config
+  win_command: >
+    {{ sysmon_install_location }}\Sysmon64.exe -accepteula -i
+    {{ sysmon_install_location }}\{{ sysmon_config_file }}
+  args:
+    chdir: "{{ sysmon_install_location }}"
+  when: not sysmon_service.exists
+
+- name: Update Sysmon config if already installed
+  win_command: >
+    {{ sysmon_install_location }}\Sysmon64.exe -c
+    {{ sysmon_install_location }}\{{ sysmon_config_file }}
+  args:
+    chdir: "{{ sysmon_install_location }}"
+  when: sysmon_service.exists
+
+- name: Ensure Sysmon service is running
+  win_service:
+    name: "{{ sysmon_service_name }}"
+    state: started
+    start_mode: auto

@@ -1,0 +1,117 @@
+- name: Install prerequisites
+  ansible.builtin.apt:
+    name:
+      - curl
+      - gnupg2
+      - apt-transport-https
+    state: present
+    update_cache: yes
+
+- name: Add Zeek GPG key
+  ansible.builtin.apt_key:
+    url: "https://download.opensuse.org/repositories/security:zeek/xUbuntu_22.04/Release.key"
+    state: present
+
+- name: Add Zeek repository
+  ansible.builtin.apt_repository:
+    repo: "deb http://download.opensuse.org/repositories/security:/zeek/xUbuntu_22.04/ /"
+    state: present
+    update_cache: yes
+
+- name: Install Zeek
+  ansible.builtin.apt:
+    name: "{{ zeek_packages }}"
+    state: present
+
+- name: Add Zeek to PATH
+  ansible.builtin.lineinfile:
+    path: /etc/environment
+    regexp: 'PATH='
+    line: 'PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/zeek/bin"'
+
+- name: Configure ZeekControl node.cfg
+  ansible.builtin.template:
+    src: node.cfg.j2
+    dest: /opt/zeek/etc/node.cfg
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable JSON log format in local.zeek
+  ansible.builtin.lineinfile:
+    path: /opt/zeek/share/zeek/site/local.zeek
+    line: "@load policy/tuning/json-logs"
+    state: present
+  when: zeek_json_logs
+
+- name: Load additional detection scripts in local.zeek
+  ansible.builtin.blockinfile:
+    path: /opt/zeek/share/zeek/site/local.zeek
+    marker: "# {mark} GOAD purple team additions"
+    block: |
+      @load policy/protocols/smb
+      @load policy/protocols/dce-rpc
+      @load policy/protocols/kerberos
+      @load policy/protocols/rdp
+      @load policy/protocols/ldap
+      @load policy/frameworks/notice/weird-report-summary
+
+- name: Create log directory
+  ansible.builtin.file:
+    path: "{{ zeek_log_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Check if Zeek is already deployed
+  ansible.builtin.stat:
+    path: /opt/zeek/spool/zeek/.pid
+  register: zeek_pid
+
+- name: Deploy Zeek (zeekctl deploy)
+  ansible.builtin.shell: /opt/zeek/bin/zeekctl deploy
+  when: not zeek_pid.stat.exists
+  register: zeek_deploy
+  failed_when: zeek_deploy.rc != 0 and 'already running' not in zeek_deploy.stderr
+
+- name: Install zeek cron for log rotation and health check
+  ansible.builtin.cron:
+    name: zeekctl cron
+    minute: "*/5"
+    job: "/opt/zeek/bin/zeekctl cron"
+    state: present
+
+- name: Create zeek systemd service
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/zeek.service
+    content: |
+      [Unit]
+      Description=Zeek Network Security Monitor
+      After=network.target
+
+      [Service]
+      Type=forking
+      ExecStart=/opt/zeek/bin/zeekctl start
+      ExecStop=/opt/zeek/bin/zeekctl stop
+      ExecReload=/opt/zeek/bin/zeekctl restart
+      RemainAfterExit=yes
+
+      [Install]
+      WantedBy=multi-user.target
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable Zeek service
+  ansible.builtin.systemd:
+    name: zeek
+    enabled: yes
+    daemon_reload: yes
+
+- name: Display Zeek info
+  ansible.builtin.debug:
+    msg:
+      - "Zeek installed and monitoring interface: {{ zeek_monitor_interface }}"
+      - "Logs location: /opt/zeek/logs/current/"
+      - "Run 'zeekctl status' to check health"

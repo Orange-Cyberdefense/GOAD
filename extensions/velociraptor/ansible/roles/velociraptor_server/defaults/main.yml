@@ -1,0 +1,18 @@
+# Velociraptor version - check https://github.com/Velocidex/velociraptor/releases
+velociraptor_version: "0.72.4"
+
+velociraptor_linux_url: "https://github.com/Velocidex/velociraptor/releases/download/v{{ velociraptor_version }}/velociraptor-v{{ velociraptor_version }}-linux-amd64"
+velociraptor_windows_url: "https://github.com/Velocidex/velociraptor/releases/download/v{{ velociraptor_version }}/velociraptor-v{{ velociraptor_version }}-windows-amd64.exe"
+velociraptor_windows_msi_url: "https://github.com/Velocidex/velociraptor/releases/download/v{{ velociraptor_version }}/velociraptor-v{{ velociraptor_version }}-windows-amd64.msi"
+
+velociraptor_install_dir: "/opt/velociraptor"
+velociraptor_config_dir: "/etc/velociraptor"
+velociraptor_binary: "/usr/local/bin/velociraptor"
+
+# Web UI / API
+velociraptor_gui_port: 8889
+velociraptor_frontend_port: 8000
+
+# Admin credentials for the web UI
+velociraptor_admin_user: "admin"
+velociraptor_admin_password: "Velo@GOAD2024!"

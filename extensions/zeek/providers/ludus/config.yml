@@ -1,0 +1,8 @@
+  - vm_name: "{{ range_id }}-ZEEK"
+    hostname: "{{ range_id }}-ZEEK"
+    template: ubuntu-22.04-x64-server-template
+    vlan: 10
+    ip_last_octet: 53
+    ram_gb: 2
+    cpus: 2
+    linux: true

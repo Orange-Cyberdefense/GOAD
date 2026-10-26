@@ -1,0 +1,4 @@
+- name: Deploy Sysmon to all Windows domain machines
+  hosts: sysmon_targets
+  roles:
+    - { role: 'sysmon_windows', tags: 'sysmon' }

@@ -1,0 +1,5 @@
+- name: Install Zeek network security monitor
+  hosts: zeek_server
+  become: yes
+  roles:
+    - { role: 'zeek', tags: 'zeek' }
