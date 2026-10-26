@@ -8,4 +8,4 @@
 - name: Install log agent on windows vms
   hosts: elk_log
   roles:
-    - { role: 'logs_windows', tags: 'agent' }
+    - { role: 'logs_windows', tags: 'agent', goad_provider: "{{ provider | default(omit) }}" }

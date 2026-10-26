@@ -14,12 +14,12 @@ class Ansible(Provisioner):
         lab_inventory = GoadPath.get_lab_inventory_file(lab_name)
         if os.path.isfile(lab_inventory):
             inventory.append(lab_inventory)
-            Log.success(f'Lab inventory : {lab_inventory} file found')
+            Log.success(f'Lab inventory : {lab_inventory} file found for provider {provider_name}')
         # lab instance inventory
         instance_inventory = self.instance_path + os.path.sep + 'inventory'
         if os.path.isfile(instance_inventory):
             inventory.append(instance_inventory)
-            Log.success(f'Provider inventory : {instance_inventory} file found')
+            Log.success(f'Provider inventory : {instance_inventory} file found for provider {provider_name}')
         return inventory
 
     def _get_global_inventory(self):

@@ -13,7 +13,7 @@ class LocalAnsibleProvisionerEmbed(Ansible):
         if playbook_path is None:
             playbook_path = self.path
         Log.info(f'Run playbook : {playbook} with inventory file(s) : {", ".join(inventories)}')
-        Log.cmd(f'ansible-playbook -i {" -i ".join(inventories)} {playbook}')
+        Log.cmd(f'ansible-playbook -i {" -i ".join(inventories)} --extra-vars "provider={self.provider_name}" {playbook}')
 
         run_complete = False
         runner_result = None
