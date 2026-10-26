@@ -25,10 +25,11 @@ class LabInstances:
                     provider_name = instance_info['provider']
                     provisioning_method = instance_info['provisioner']
                     ip_range = instance_info['ip_range']
+                    keyboard_layout = instance_info['keyboard_layout']
                     extensions = instance_info['extensions']
                     status = instance_info['status']
                     is_default = instance_info['is_default']
-                    self.instances[instance] = LabInstance(instance, lab_name, config, provider_name, provisioning_method, ip_range, extensions, status, is_default)
+                    self.instances[instance] = LabInstance(instance, lab_name, config, provider_name, provisioning_method, ip_range, keyboard_layout, extensions, status, is_default)
 
     def nb_instances(self):
         return len(self.instances)
@@ -78,6 +79,7 @@ class LabInstances:
         table.add_column('Lab')
         table.add_column('Provider')
         table.add_column('IP Range')
+        table.add_column('Keyboard Layout')
         table.add_column('Status')
         table.add_column('Is Default')
         table.add_column('Extensions')
@@ -96,6 +98,7 @@ class LabInstances:
                           instance.lab_name,
                           self.color_provider(instance.provider_name),
                           instance.ip_range + '.0/24',
+                          ",".join(instance.keyboard_layout),
                           self.color_status(instance.status),
                           'Yes' if instance.is_default else 'No',
                           ", ".join(instance.extensions)
