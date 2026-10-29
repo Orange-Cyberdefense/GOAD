@@ -164,12 +164,12 @@
     - Install ansible-galaxy requirements:
         - If python < 3.11
         ```
-        poetry run ansible-galaxy ansible/requirements.yml
+        poetry run ansible-galaxy install -r ansible/requirements.yml
         ```
 
         - If python >= 3.11
         ```
-        poetry run ansible-galaxy ansible/requirements_311.yml
+        poetry run ansible-galaxy install -r ansible/requirements_311.yml
         ```
 
     - Run goad:
