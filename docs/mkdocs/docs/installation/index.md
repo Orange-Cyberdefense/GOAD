@@ -9,6 +9,7 @@ The goad management script is now written in :simple-python: python to permit mo
 
 - Installation depend of the provider you use, please follow the appropriate guide :
     - :simple-virtualbox: [Install with Virtualbox](../providers/virtualbox.md)
+    - :material-linux: [Install with Libvirt](../providers/libvirt.md)
     - :simple-vmware: [Install with VmWare](../providers/vmware.md)
     - :simple-proxmox: [Install with Proxmox](../providers/proxmox.md)
     - :material-microsoft-azure: [Install with Azure](../providers/azure.md)

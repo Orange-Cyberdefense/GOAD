@@ -3,6 +3,7 @@ from goad.utils import Utils
 
 class Dependencies:
     # Can change enabled providers (useful if you don't want some dependencies)
+    libvirt_enabled = True
     vmware_enabled = True
     vmware_esxi_enabled = True
     virtualbox_enabled = True

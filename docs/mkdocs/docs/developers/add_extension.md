@@ -112,6 +112,37 @@ extensions/
         )
         ```
 
+=== ":simple-libvirt: Libvirt"
+    - As an example to add a new box for libvirt:
+        - Create the folder `extensions/<extension_name>/providers/libvirt/`
+        - Add a file named Vagrantfile
+        - Add the following code for a linux machine  (and change box, ip, name, cpu, ram):
+        ```
+        boxes.append(
+            { :name => "{{lab_name}}-EXTNAME",
+            :ip => "{{ip_range}}.66",
+            :box => "bento/ubuntu-22.04", 
+            :os => "linux",
+            :cpus => 2,
+            :mem => 4000,
+            :forwarded_port => [ {:guest => 22, :host => 2210, :id => "ssh"} ]
+            }
+        )
+        ```
+        - Add the following code for a windows machine (and change box, ip, name, cpu, ram):
+        ```
+        # add windows box (windows server 2016 in this case)
+        boxes.append(
+            { :name => "{{lab_name}}-EXTNAME",
+                :ip => "{{ip_range}}.66",
+                :box => "jborean93/WindowsServer2016",
+                :os => "windows",
+                :cpus => 2,
+                :mem => 3000
+            }
+        )
+        ```
+
 === ":material-microsoft-azure: Azure"
     - As an example to add a new box for azure :
         - Create the folder `extensions/<extension_name>/providers/azure/`
