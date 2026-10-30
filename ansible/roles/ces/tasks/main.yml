@@ -1,0 +1,50 @@
+---
+# CES (Certificate Enrollment Web Service) role. Installs the AD CS Enrollment
+# Web Service on a CA host against the local CA and binds it over HTTPS.
+
+- name: "Install CES feature (ADCS-Enroll-Web-Svc)"
+  ansible.windows.win_feature:
+    name: ADCS-Enroll-Web-Svc
+    include_management_tools: true
+    state: present
+  register: ces_feat
+
+- name: "Reboot if feature install requires it"
+  ansible.windows.win_reboot:
+  when: ces_feat.reboot_required
+
+- name: "Find or create the SSL cert for the CES host"
+  ansible.windows.win_shell: |
+    $fqdn = '{{ ces_fqdn }}'
+    $c = Get-ChildItem Cert:\LocalMachine\My | Where-Object { $_.Subject -eq "CN=$fqdn" } | Select-Object -First 1
+    if (-not $c) { $c = New-SelfSignedCertificate -DnsName $fqdn -CertStoreLocation Cert:\LocalMachine\My -FriendlyName "CES SSL" }
+    $c.Thumbprint
+  register: ces_cert
+
+- name: "Configure CES against the local CA (as domain admin)"
+  become: true
+  become_method: runas
+  become_user: "{{ domain_admin_user }}"
+  vars:
+    ansible_become_password: "{{ domain_password }}"
+  ansible.windows.win_shell: |
+    $ErrorActionPreference = 'Stop'
+    Import-Module WebAdministration
+    if (Get-WebApplication | Where-Object { $_.path -match 'CES' }) { 'CES already configured'; exit 0 }
+    Import-Module ADCSDeployment
+    Install-AdcsEnrollmentWebService -CAConfig '{{ ca_config }}' -SSLCertThumbprint '{{ ces_cert.stdout | trim }}' -AuthenticationType Kerberos -Force
+    'CES configured'
+  register: ces_cfg
+
+- name: "Verify CES IIS application present"
+  ansible.windows.win_shell: |
+    Import-Module WebAdministration
+    (Get-WebApplication | Where-Object { $_.path -match 'CES' } | ForEach-Object path) -join ','
+  register: ces_verify
+
+- name: "CES summary"
+  debug:
+    msg:
+      - "cert: {{ ces_cert.stdout | trim }}"
+      - "config: {{ ces_cfg.stdout | default('') | trim }}"
+      - "ces app: {{ ces_verify.stdout | trim }}"

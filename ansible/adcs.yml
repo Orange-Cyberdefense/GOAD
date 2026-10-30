@@ -27,3 +27,14 @@
     domain_password: "{{lab.domains[domain].domain_password}}"
     ca_common_name: "{{lab.domains[domain].netbios_name}}-CA"
     ca_host: "{{lab.domains[domain].ca_server}}"
+
+- name: "ADCS - CES (Certificate Enrollment Web Service)"
+  hosts: ces
+  roles:
+  - { role: 'ces', tags: 'ces'}
+  vars:
+    domain: "{{lab.hosts[dict_key].domain}}"
+    domain_password: "{{lab.domains[domain].domain_password}}"
+    domain_admin_user: "{{lab.domains[domain].netbios_name}}\\{{admin_user}}"
+    ca_config: "{{lab.domains[domain].ca_server}}.{{domain}}\\{{lab.domains[domain].netbios_name}}-CA"
+    ces_fqdn: "{{lab.domains[domain].ca_server}}.{{domain}}"
