@@ -154,3 +154,7 @@ srv02
 
 ;stay empty until override
 [extensions]
+; install CES / Certificate Enrollment Web Service (essos CA)
+; usage : adcs.yml
+[ces]
+srv03
