@@ -75,7 +75,7 @@ boxes.append(
 
       if box.has_key?(:forwarded_port)
         # forwarded port explicit
-        box[:forwarded_port] do |forwarded_port|
+        box[:forwarded_port].each do |forwarded_port|
           target.vm.network :forwarded_port, guest: forwarded_port[:guest], host: forwarded_port[:host], host_ip: "127.0.0.1", id: forwarded_port[:id]
         end
       end

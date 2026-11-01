@@ -17,14 +17,16 @@ class WindowsCommand(Command):
             Log.success(f'File {file} present in the file system')
         return exist
 
-    def is_in_path(self, bin_file):
+    def is_in_path(self, bin_file, show_log=True):
         command = f'where {bin_file} >nul'
         try:
             subprocess.run(command, shell=True, check=True)
-            Log.success(f'{bin_file} found in PATH')
+            if show_log:
+                Log.success(f'{bin_file} found in PATH')
             return True
         except subprocess.CalledProcessError as e:
-            Log.error(f'{bin_file} not found in PATH')
+            if show_log:
+                Log.error(f'{bin_file} not found in PATH')
             return False
 
     # CHECK

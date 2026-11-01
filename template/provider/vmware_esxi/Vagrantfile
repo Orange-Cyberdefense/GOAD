@@ -37,6 +37,7 @@ boxes.append(
   config.vm.graceful_halt_timeout = 600
   config.winrm.retry_limit = 30
   config.winrm.retry_delay = 10
+  config.winrm.ssl_peer_verification = false
 
   boxes.each do |box|
     config.vm.define box[:name] do |target|
@@ -81,7 +82,7 @@ boxes.append(
 
       if box.has_key?(:forwarded_port)
         # forwarded port explicit
-        box[:forwarded_port] do |forwarded_port|
+        box[:forwarded_port].each do |forwarded_port|
           target.vm.network :forwarded_port, guest: forwarded_port[:guest], host: forwarded_port[:host], host_ip: "127.0.0.1", id: forwarded_port[:id]
         end
       end
