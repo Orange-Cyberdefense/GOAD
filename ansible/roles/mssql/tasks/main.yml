@@ -1,13 +1,3 @@
-# SQL Server setup is launched through WinRM; the default per-shell memory quota
-# (800MB on Windows Server 2019) makes setup.exe die with System.OutOfMemoryException
-# and leaves a half-installed instance behind. Raise it before installing.
-- name: Raise WinRM shell memory quota for SQL Server setup
-  win_shell: |
-    $current = [int](Get-Item WSMan:\localhost\Shell\MaxMemoryPerShellMB).Value
-    if ($current -lt 4096) { Set-Item WSMan:\localhost\Shell\MaxMemoryPerShellMB 4096; Write-Output "changed" } else { Write-Output "ok" }
-  register: winrs_quota
-  changed_when: "'changed' in winrs_quota.stdout"
-
 - name: Reboot before install (long timeout in case of update)
   win_reboot:
     reboot_timeout: 1200
@@ -57,16 +47,39 @@
     src: files/sql_conf.ini.{{sql_version}}.j2
     dest: c:\setup\mssql\sql_conf.ini
 
-- name: check downloaded file exists
-  win_stat:
-    path: c:\setup\mssql\sql_installer.exe
-  register: installer_file
+- name: Prepare SQL Server 2019 Express full media
+  when: sql_version == "MSSQL_2019"
+  block:
+    - name: check SQL Server 2019 Express full media exists
+      win_stat:
+        path: c:\setup\SQLEXPR_x64_ENU.exe
+      register: sql2019_media_file
 
-- name: get the installer
-  win_get_url:
-      url: "{{download_url}}"
-      dest: 'c:\setup\mssql\sql_installer.exe'
-  when: not installer_file.stat.exists
+    - name: download SQL Server 2019 Express full media
+      win_get_url:
+        url: "{{ download_url_2019 }}"
+        dest: 'c:\setup\SQLEXPR_x64_ENU.exe'
+      when: not sql2019_media_file.stat.exists
+
+    - name: extract SQL Server 2019 Express full media
+      ansible.windows.win_command:
+        cmd: C:\setup\SQLEXPR_x64_ENU.exe /q /x:C:\setup\mssql\media
+      args:
+        creates: c:\setup\mssql\media\setup.exe
+
+- name: Prepare SQL Server 2022 installer
+  when: sql_version == "MSSQL_2022"
+  block:
+    - name: check SQL Server 2022 installer exists
+      win_stat:
+        path: c:\setup\mssql\sql_installer.exe
+      register: sql2022_installer_file
+
+    - name: get SQL Server 2022 installer
+      win_get_url:
+        url: "{{ download_url_2022 }}"
+        dest: 'c:\setup\mssql\sql_installer.exe'
+      when: not sql2022_installer_file.stat.exists
 
 - name: Add service account to Log on as a service
   win_user_right:
@@ -95,8 +108,28 @@
 
 - debug: msg="{{mssql_install_already_done}}"
 
-# Install the database with a domain admin user
-- name: Install the database
+# Install SQL Server 2019 Express from the full staged media
+- name: Install SQL Server 2019 Express
+  ansible.windows.win_command:
+    cmd: C:\setup\mssql\media\setup.exe /configurationfile=C:\setup\mssql\sql_conf.ini /IACCEPTSQLSERVERLICENSETERMS /QUIET
+  args:
+    chdir: c:\setup\mssql\media
+  vars:
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: "{{ admin_user }}@{{ domain }}"
+    ansible_become_password: "{{ domain_admin_password }}"
+    ansible_become_flags: logon_type=batch
+  register: mssqlinstall_2019
+  until: "mssqlinstall_2019 is not failed"
+  retries: 3
+  delay: 120
+  when:
+    - sql_version == "MSSQL_2019"
+    - mssql_install_already_done.state is not defined or mssql_install_already_done.name is not defined
+
+# Keep the original bootstrapper installation path for SQL Server 2022
+- name: Install SQL Server 2022
   win_command: c:\setup\mssql\sql_installer.exe /configurationfile=c:\setup\mssql\sql_conf.ini /IACCEPTSQLSERVERLICENSETERMS /MEDIAPATH=c:\setup\mssql\media /QUIET /HIDEPROGRESSBAR
   args:
     chdir: c:\setup
@@ -106,11 +139,13 @@
     ansible_become_user: "{{domain_admin}}"
     ansible_become_password: "{{domain_admin_password}}"
     ansible_become_flags: logon_type=new_credentials logon_flags=netcredentials_only
-  register: mssqlinstall
-  until: "mssqlinstall is not failed"
+  register: mssqlinstall_2022
+  until: "mssqlinstall_2022 is not failed"
   retries: 3
   delay: 120
-  when: mssql_install_already_done.state is not defined or mssql_install_already_done.name is not defined
+  when:
+    - sql_version == "MSSQL_2022"
+    - mssql_install_already_done.state is not defined or mssql_install_already_done.name is not defined
 #  when: not mssql_install_already_done.stat.exists
 
 # sql server 2022
