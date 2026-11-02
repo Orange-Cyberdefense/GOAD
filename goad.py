@@ -360,6 +360,7 @@ class Goad(cmd.Cmd):
                     self.refresh_prompt()
                 else:
                     Log.error('Providing error stop')
+                    sys.exit(1)
 
     def do_install_instance(self, arg=''):
         Log.info('Launch providing')
@@ -376,6 +377,7 @@ class Goad(cmd.Cmd):
             self.refresh_prompt()
         else:
             Log.error('Providing error stop')
+            sys.exit(1)
 
     def do_create_empty(self, arg=''):
         Log.info('Create instance folder')
