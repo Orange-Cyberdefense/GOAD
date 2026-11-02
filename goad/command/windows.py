@@ -17,7 +17,7 @@ class WindowsCommand(Command):
             Log.success(f'File {file} present in the file system')
         return exist
 
-    def is_in_path(self, bin_file):
+    def is_in_path(self, bin_file, show_log=True):
         command = f'where {bin_file} >nul'
         try:
             subprocess.run(command, shell=True, check=True)
