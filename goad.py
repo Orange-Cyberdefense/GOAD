@@ -454,11 +454,11 @@ class Goad(cmd.Cmd):
 
 
 def parse_args():
-    task_help = 'tasks available : (install/start/stop/restart/destroy/status/show)'
+    allowed_tasks = ["install", "check", "start", "stop", "restart", "destroy", "status", "snapshot", "reset", "show"]
     parser = argparse.ArgumentParser(prog='goad.py',
                                      description='Description : goad lab management console.',
                                      epilog=show_help(), formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("-t", "--task", help=f"{task_help}", required=False)
+    parser.add_argument("-t", "--task", choices=allowed_tasks, required=False)
     parser.add_argument("-l", "--lab", help="lab to use (default: GOAD)", default='GOAD', required=False)
     parser.add_argument("-p", "--provider", help="provider to use (default: vmware)", default='vmware', required=False)
     parser.add_argument("-ip", "--ip_range", help="ip range to use (default: 192.168.56)", default='', required=False)
