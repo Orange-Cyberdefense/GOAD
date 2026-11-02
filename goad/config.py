@@ -27,7 +27,7 @@ class Config:
         config.set('default', '; lab: GOAD / GOAD-Light / MINILAB / NHA / SCCM')
         config.set('default', 'lab', 'GOAD')
 
-        config.set('default', '; provider : virtualbox / vmware / vmware_esxi / aws / azure / proxmox')
+        config.set('default', '; provider : virtualbox / vmware / vmware_esxi / vsphere / aws / azure / proxmox')
         config.set('default', 'provider', 'vmware')
 
         config.set('default', "; provisioner method : local / remote")
@@ -79,6 +79,35 @@ class Config:
         config.set('vmware_esxi', 'esxi_net_nat', 'VM Network')
         config.set('vmware_esxi', 'esxi_net_domain', 'GOAD-LAN')
         config.set('vmware_esxi', 'esxi_datastore', 'datastore1')
+
+        config.add_section('vsphere')
+        config.set('vsphere', 'vsphere_server', 'vcenter.example.local')
+        config.set('vsphere', 'vsphere_user', 'administrator@vsphere.local')
+        config.set('vsphere', 'vsphere_password', '')
+        config.set('vsphere', 'vsphere_allow_unverified_ssl', 'true')
+        config.set('vsphere', 'vsphere_datastore', 'datastore1')
+        config.set('vsphere', 'vsphere_network', 'GOAD-LAN')
+        config.set('vsphere', '; optional path after vi://user:pass@server/ for vCenter targets')
+        config.set('vsphere', '; example: Datacenter/host/Cluster/esxi.example.local')
+        config.set('vsphere', 'vsphere_ovftool_target', '')
+        config.set('vsphere', '; VM folder path relative to the datacenter vm folder, leave empty for root')
+        config.set('vsphere', 'vsphere_folder', '')
+        config.set('vsphere', '; optional resource pool for govc commands')
+        config.set('vsphere', 'vsphere_resource_pool', '')
+        config.set('vsphere', 'vsphere_disk_mode', 'thin')
+        config.set('vsphere', 'vsphere_box_provider', 'vmware_desktop')
+        config.set('vsphere', 'vsphere_bootstrap_guest_network', 'true')
+        config.set('vsphere', 'vsphere_guest_username', 'vagrant')
+        config.set('vsphere', 'vsphere_guest_password', 'vagrant')
+        config.set('vsphere', 'vsphere_ipv4_gateway', '')
+        config.set('vsphere', 'vsphere_ipv4_prefix_length', '27')
+        config.set('vsphere', 'vsphere_dns_server', '')
+        config.set('vsphere', '; optional VM name prefix, leave empty to use the GOAD instance id')
+        config.set('vsphere', 'vsphere_vm_name_prefix', '')
+        config.set('vsphere', 'vsphere_overwrite', 'false')
+        config.set('vsphere', 'vsphere_ovftool_bin', 'ovftool')
+        config.set('vsphere', 'vsphere_govc_bin', 'govc')
+        config.set('vsphere', 'vsphere_network_adapter', 'e1000')
         config.write(cfgfile)
         cfgfile.close()
 
@@ -105,6 +134,8 @@ class Config:
                         Dependencies.vmware_enabled = False
                     elif disable_dependence == 'vmware_esxi':
                         Dependencies.vmware_esxi_enabled = False
+                    elif disable_dependence == 'vsphere':
+                        Dependencies.vsphere_enabled = False
                     elif disable_dependence == 'virtualbox':
                         Dependencies.virtualbox_enabled = False
                     elif disable_dependence == 'azure':

@@ -41,6 +41,9 @@ class WindowsCommand(Command):
     def check_ovftool(self):
         return self.file_exist("c:\\Program Files\\VMware\\VMware OVF Tool\\ovftool.exe")
 
+    def check_govc(self):
+        return self.is_in_path('govc.exe')
+
     def check_virtualbox(self):
         return self.file_exist("c:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe")
 

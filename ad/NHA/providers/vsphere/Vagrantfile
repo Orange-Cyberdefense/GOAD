@@ -1,0 +1,7 @@
+boxes = [
+  { :name => "NHA-DC01",   :ip => "{{ip_range}}.10", :box => "mayfly/windows_server2019", :os => "windows", :cpus => "2", :mem => "3000"},
+  { :name => "NHA-DC02",   :ip => "{{ip_range}}.20", :box => "mayfly/windows_server2019", :os => "windows", :cpus => "2", :mem => "3000"},
+  { :name => "NHA-SRV01",  :ip => "{{ip_range}}.21", :box => "mayfly/windows_server2019", :os => "windows", :cpus => "2", :mem => "5000"},
+  { :name => "NHA-SRV02",  :ip => "{{ip_range}}.22", :box => "mayfly/windows_server2019", :os => "windows", :cpus => "2", :mem => "5000"},
+  { :name => "NHA-SRV03",  :ip => "{{ip_range}}.23", :box => "mayfly/windows_server2019", :os => "windows", :cpus => "2", :mem => "3000"}
+]

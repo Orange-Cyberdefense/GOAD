@@ -1,0 +1,6 @@
+boxes = [
+  { :name => "SCCM-DC",  :ip => "{{ip_range}}.10", :box => "mayfly/windows_server2019", :cpus => 2, :mem => 4000, :os => "windows"},
+  { :name => "SCCM-MECM" , :ip => "{{ip_range}}.11", :box => "mayfly/windows_server2019", :cpus => 2, :mem => 4000, :os => "windows"},
+  { :name => "SCCM-MSSQL", :ip => "{{ip_range}}.12", :box => "mayfly/windows_server2019", :cpus => 2, :mem => 4000, :os => "windows"},
+  { :name => "SCCM-CLIENT",  :ip => "{{ip_range}}.13", :box => "mayfly/windows_server2019", :cpus => 2, :mem => 4000, :os => "windows"},
+]

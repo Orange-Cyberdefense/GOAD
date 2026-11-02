@@ -111,7 +111,7 @@
 
 - name: "Install XactiveDirectory"
   win_psmodule:
-    name: ActiveDirectoryDSC
+    name: ActiveDirectoryDsc
     state: present
 
 # issue 156

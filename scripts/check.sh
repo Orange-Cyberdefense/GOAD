@@ -7,7 +7,7 @@ ERROR=$(tput setaf 1; echo -n "  [!]"; tput sgr0)
 GOODTOGO=$(tput setaf 2; echo -n "  [✓]"; tput sgr0)
 INFO=$(tput setaf 3; echo -n "  [-]"; tput sgr0)
 
-PROVIDERS="virtualbox vmware azure proxmox vmware_esxi"
+PROVIDERS="virtualbox vmware azure proxmox vmware_esxi vsphere"
 ANSIBLE_HOSTS="docker local"
 print_usage() {
   echo "Usage: ./check.sh <provider> <ansible_host>"
@@ -70,6 +70,17 @@ check_terraform_path() {
     exit 1
   else
     (echo >&2 "${GOODTOGO} terraform was found in your PATH")
+  fi
+}
+
+check_govc_path() {
+  if ! which govc >/dev/null; then
+    (echo >&2 "${ERROR} govc was not found in your PATH.")
+    (echo >&2 "${ERROR} Please correct this before continuing. Exiting.")
+    (echo >&2 "${ERROR} Correct this by installing govc : https://github.com/vmware/govmomi/releases")
+    exit 1
+  else
+    (echo >&2 "${GOODTOGO} govc was found in your PATH")
   fi
 }
 
@@ -487,6 +498,22 @@ main() {
       (echo >&2 "[+] Enumerating proxmox")
       check_packer_path
       check_terraform_path
+      case $ANSIBLE_HOST in
+        "docker")
+          check_docker_installed
+          ;;
+        "local")
+          check_python_env
+          ;;
+        *)
+          ;;
+      esac
+      ;;
+    "vsphere")
+      (echo >&2 "[+] Enumerating vsphere")
+      check_vagrant_path
+      check_ovftool_installed
+      check_govc_path
       case $ANSIBLE_HOST in
         "docker")
           check_docker_installed

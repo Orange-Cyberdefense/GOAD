@@ -1,0 +1,4 @@
+boxes = [
+  # windows server 2019
+  { :name => "GOAD-Mini-DC01",  :ip => "{{ip_range}}.10", :box => "StefanScherer/windows_2019", :box_version => "2021.05.15", :os => "windows", :cpus => 2, :mem => 3000}
+]
